@@ -11,7 +11,7 @@
 
         <!-- 弹窗内容 - 磨砂玻璃效果 -->
         <div
-          class="mobile-player-settings-panel relative w-full max-w-lg bg-gray-900/70 backdrop-blur-2xl rounded-t-xl overflow-hidden max-h-[85vh] flex flex-col border-t border-white/10 shadow-xl"
+          class="mobile-player-settings-panel relative w-full max-w-lg bg-gray-900/70 backdrop-blur-2xl rounded-t-xl overflow-hidden max-h-[85vh] flex flex-col border-t border-white/10 shadow-md shadow-black/10"
         >
           <!-- 顶部拖拽条 -->
           <div class="flex justify-center pt-3 pb-2 flex-shrink-0">

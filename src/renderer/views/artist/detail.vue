@@ -327,7 +327,7 @@
                       class="play-overlay absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/20 group-hover:opacity-100 transition-all duration-300"
                     >
                       <div
-                        class="play-icon w-12 h-12 rounded-full bg-white/90 flex items-center justify-center scale-75 group-hover:scale-100 transition-transform duration-300 shadow-xl"
+                        class="play-icon w-12 h-12 rounded-full bg-white/90 flex items-center justify-center translate-y-1 group-hover:translate-y-0 transition-transform duration-300 shadow-md"
                       >
                         <i class="iconfont icon-playfill text-xl text-neutral-900 ml-0.5" />
                       </div>

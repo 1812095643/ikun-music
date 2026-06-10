@@ -47,7 +47,7 @@
               class="absolute inset-0 bg-transparent group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center"
             >
               <div
-                class="play-icon w-12 h-12 rounded-full bg-white/90 flex items-center justify-center opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 shadow-xl"
+                class="play-icon w-12 h-12 rounded-full bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md"
                 @click.stop="playAlbum(album)"
               >
                 <i class="ri-play-fill text-2xl text-neutral-900 ml-1"></i>

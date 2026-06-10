@@ -24,21 +24,6 @@
         </div>
 
         <div v-else-if="heatmapData.length > 0" class="heatmap-container">
-          <!-- 颜色主题选择器 -->
-          <div class="color-theme-selector">
-            <span class="selector-label">{{ t('history.heatmap.colorTheme') }}:</span>
-            <div class="color-options">
-              <div
-                v-for="color in colorThemes"
-                :key="color"
-                :class="['color-option', `color-${color}`, { active: selectedColor === color }]"
-                @click="selectedColor = color"
-              >
-                <div class="color-block"></div>
-              </div>
-            </div>
-          </div>
-
           <n-heatmap
             :data="heatmapData"
             :unit="t('history.heatmap.unit')"
@@ -158,10 +143,8 @@ const playHistoryStore = usePlayHistoryStore();
 const playerStore = usePlayerStore();
 const loading = ref(true);
 
-// 颜色主题
-type ColorTheme = 'green' | 'blue' | 'orange' | 'purple' | 'red';
-const colorThemes: ColorTheme[] = ['green', 'blue', 'orange', 'purple', 'red'];
-const selectedColor = ref<ColorTheme>('green');
+// 固定使用 QQ 音乐设计体系的主绿色，避免多设计语言混用。
+const selectedColor = ref<'green'>('green');
 
 // 热力图数据
 interface HeatmapDataItem {
@@ -487,92 +470,6 @@ onMounted(() => {
       border: 1px solid rgba(255, 255, 255, 0.58);
       box-shadow: var(--qqm-shadow);
       backdrop-filter: blur(18px) saturate(1.08);
-
-      .color-theme-selector {
-        @apply flex items-center gap-4 mb-6 pb-4;
-        @apply border-b border-gray-200 dark:border-gray-700;
-
-        .selector-label {
-          @apply text-sm font-medium;
-          @apply text-gray-600 dark:text-gray-400;
-        }
-
-        .color-options {
-          @apply flex items-center gap-3;
-
-          .color-option {
-            @apply flex items-center gap-1 px-1 py-1 rounded-lg cursor-pointer;
-            @apply border-2 border-transparent;
-            @apply transition-all duration-200;
-            @apply hover:bg-gray-50 dark:hover:bg-gray-800;
-
-            &.active {
-              @apply border-current;
-              @apply bg-gray-50 dark:bg-gray-800;
-            }
-
-            .color-block {
-              @apply w-5 h-5 rounded;
-              @apply shadow-sm;
-            }
-
-            .color-name {
-              @apply text-sm font-medium;
-            }
-
-            // 绿色主题
-            &.color-green {
-              .color-block {
-                @apply bg-green-500;
-              }
-              &.active {
-                @apply border-green-500 text-green-600 dark:text-green-400;
-              }
-            }
-
-            // 蓝色主题
-            &.color-blue {
-              .color-block {
-                @apply bg-blue-500;
-              }
-              &.active {
-                @apply border-blue-500 text-blue-600 dark:text-blue-400;
-              }
-            }
-
-            // 橙色主题
-            &.color-orange {
-              .color-block {
-                @apply bg-orange-500;
-              }
-              &.active {
-                @apply border-orange-500 text-orange-600 dark:text-orange-400;
-              }
-            }
-
-            // 紫色主题
-            &.color-purple {
-              .color-block {
-                @apply bg-purple-500;
-              }
-              &.active {
-                @apply border-purple-500 text-purple-600 dark:text-purple-400;
-              }
-            }
-
-            // 红色主题
-            &.color-red {
-              .color-block {
-                @apply bg-red-500;
-              }
-              &.active {
-                @apply border-red-500 text-red-600 dark:text-red-400;
-              }
-            }
-          }
-        }
-      }
-
       .custom-heatmap {
         @apply w-full;
       }
@@ -742,7 +639,7 @@ onMounted(() => {
 
     &:hover {
       @apply ring-2 ring-green-400 ring-opacity-50;
-      @apply transform scale-110;
+      transform: scale(1.04);
     }
   }
 }
