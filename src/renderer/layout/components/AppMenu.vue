@@ -187,8 +187,9 @@ const toggleMenu = () => {
   border-radius: 8px;
   color: #8b929c;
   transition:
-    background-color 0.18s ease,
-    color 0.18s ease;
+    background-color 0.24s cubic-bezier(0.2, 0.9, 0.2, 1),
+    color 0.24s cubic-bezier(0.2, 0.9, 0.2, 1),
+    transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .app-menu-expanded .app-menu-item-link {
@@ -209,12 +210,36 @@ const toggleMenu = () => {
 .app-menu-item-link.router-link-active::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 11px;
-  bottom: 11px;
-  width: 2px;
-  border-radius: 0 3px 3px 0;
-  background: #1ecf73;
+  left: 4px;
+  top: 50%;
+  width: 3px;
+  height: 17px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #46e78f 0%, #12c86d 100%);
+  box-shadow:
+    0 0 0 3px rgba(30, 207, 115, 0.08),
+    0 3px 8px rgba(18, 200, 109, 0.28);
+  transform: translateY(-50%) scaleY(1);
+  transform-origin: center;
+  animation: activeIndicatorSpring 420ms cubic-bezier(0.16, 1.25, 0.32, 1) both;
+}
+
+@keyframes activeIndicatorSpring {
+  0% {
+    opacity: 0;
+    transform: translateY(-50%) translateX(-5px) scaleY(0.35);
+  }
+  58% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(1px) scaleY(1.14);
+  }
+  78% {
+    transform: translateY(-50%) translateX(0) scaleY(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0) scaleY(1);
+  }
 }
 
 .app-menu-item-icon {
