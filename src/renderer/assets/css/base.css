@@ -1388,6 +1388,31 @@ body {
   box-shadow: none !important;
 }
 
+.mobile-search-page .search-content {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+.mobile-search-page .search-section {
+  width: 100% !important;
+  margin: 0 0 16px !important;
+  border: 0 !important;
+  border-top: 1px solid var(--qqm-border) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.mobile-search-page .hot-list,
+.mobile-search-page .suggestion-list {
+  width: 100% !important;
+}
+
+.mobile-search-page .hot-item,
+.mobile-search-page .suggestion-item {
+  width: 100% !important;
+}
+
 /* 剩余功能页 QQ 音乐风格收口：MV、播客、歌单导入、热力图与关注列表统一清爽玻璃质感。 */
 .mv-page,
 .podcast-page,
@@ -1528,8 +1553,6 @@ body {
   color: var(--qqm-primary-strong) !important;
 }
 
-.mobile-search-page .search-section,
-.mobile-search-result .result-content,
 .mobile-search-result .empty-state,
 .mobile-search-result .loading-state {
   margin: 12px 14px !important;
@@ -1553,8 +1576,6 @@ body {
 .dark .heatmap-page .stat-card,
 .dark .history-recommend-page .music-list-content,
 .dark .history-recommend-page .date-tabs-wrapper,
-.dark .mobile-search-page .search-section,
-.dark .mobile-search-result .result-content,
 .dark .mobile-search-result .empty-state,
 .dark .mobile-search-result .loading-state {
   border-color: rgba(255, 255, 255, 0.08) !important;

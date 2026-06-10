@@ -308,7 +308,7 @@ onMounted(() => {
 }
 
 .result-header {
-  @apply flex items-center gap-2 px-3 py-3;
+  @apply flex items-center gap-2 px-3 py-2;
   border-bottom: 1px solid var(--qqm-border);
 
   &.safe-area-top {
@@ -318,7 +318,7 @@ onMounted(() => {
 
 .header-back {
   @apply flex items-center justify-center;
-  @apply w-9 h-9 rounded-lg text-xl;
+  @apply w-8 h-8 rounded-lg text-lg;
   @apply text-neutral-600 dark:text-neutral-300;
   &:active {
     background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface));
@@ -337,7 +337,7 @@ onMounted(() => {
 
 .action-btn {
   @apply flex items-center justify-center;
-  @apply w-9 h-9 rounded-lg text-xl;
+  @apply w-8 h-8 rounded-lg text-lg;
   @apply text-neutral-600 dark:text-neutral-300;
   &:active {
     background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface));
@@ -345,7 +345,7 @@ onMounted(() => {
 }
 
 .search-types {
-  @apply flex gap-2 px-4 py-3 overflow-x-auto;
+  @apply flex gap-2 px-4 py-2.5 overflow-x-auto;
   border-bottom: 1px solid var(--qqm-border);
 
   &::-webkit-scrollbar {
@@ -376,7 +376,7 @@ onMounted(() => {
 }
 
 .result-list {
-  @apply px-3 pb-24 pt-2;
+  @apply px-4 pb-24 pt-1;
 }
 
 .loading-more {
@@ -396,5 +396,25 @@ onMounted(() => {
   i {
     @apply text-6xl mb-4;
   }
+}
+
+.result-content {
+  background: transparent !important;
+}
+
+.result-list {
+  border: 0 !important;
+  border-top: 1px solid var(--qqm-border);
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.result-list :deep(.song-item) {
+  border-bottom: 1px solid var(--qqm-border);
+  border-radius: 0;
+}
+
+.result-list :deep(.song-item:hover) {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, var(--qqm-bg));
 }
 </style>
