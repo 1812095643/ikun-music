@@ -325,7 +325,7 @@ onMounted(() => {
 
 .header-keyword {
   @apply flex-1 text-base font-medium;
-  @apply text-gray-900 dark:text-white;
+  @apply text-neutral-900 dark:text-neutral-100;
   @apply truncate;
 }
 
@@ -351,7 +351,7 @@ onMounted(() => {
 
 .type-tag {
   @apply px-3.5 py-1.5 rounded-md text-sm whitespace-nowrap;
-  @apply bg-neutral-50 dark:bg-neutral-950 text-neutral-600 dark:text-neutral-300 border border-neutral-100 dark:border-neutral-800;
+  @apply bg-white dark:bg-black text-neutral-600 dark:text-neutral-300 border border-neutral-100 dark:border-neutral-800;
   @apply transition-colors duration-200;
 
   &.active {
@@ -366,7 +366,7 @@ onMounted(() => {
 
 .loading-state {
   @apply flex flex-col items-center justify-center py-20;
-  @apply text-gray-500 dark:text-gray-400;
+  @apply text-neutral-500 dark:text-neutral-400;
 }
 
 .result-list {
@@ -375,7 +375,7 @@ onMounted(() => {
 
 .loading-more {
   @apply flex justify-center items-center py-4;
-  @apply text-gray-500 dark:text-gray-400;
+  @apply text-neutral-500 dark:text-neutral-400;
 }
 
 .no-more {
@@ -385,7 +385,7 @@ onMounted(() => {
 
 .empty-state {
   @apply flex flex-col items-center justify-center py-20;
-  @apply text-gray-400 dark:text-gray-500;
+  @apply text-neutral-400 dark:text-neutral-500;
 
   i {
     @apply text-6xl mb-4;

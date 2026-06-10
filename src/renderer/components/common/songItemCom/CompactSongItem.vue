@@ -185,7 +185,7 @@ const formatDuration = (ms: number): string => {
   }
 
   .song-item-index {
-    @apply w-8 text-center text-gray-500 dark:text-gray-400 text-sm;
+    @apply w-8 text-center text-neutral-500 dark:text-neutral-400 text-sm;
   }
 
   .song-item-select {
@@ -200,19 +200,19 @@ const formatDuration = (ms: number): string => {
     }
 
     &-title {
-      @apply flex-[2.5] min-w-0 text-sm cursor-pointer text-gray-900 dark:text-white flex items-center;
+      @apply flex-[2.5] min-w-0 text-sm cursor-pointer text-neutral-900 dark:text-neutral-100 flex items-center;
     }
 
     &-artist {
-      @apply flex-[1.5] min-w-0 text-sm text-gray-500 dark:text-gray-400 flex items-center;
+      @apply flex-[1.5] min-w-0 text-sm text-neutral-500 dark:text-neutral-400 flex items-center;
     }
 
     &-album {
-      @apply flex-[1.5] min-w-0 text-sm text-gray-500 dark:text-gray-400 flex items-center;
+      @apply flex-[1.5] min-w-0 text-sm text-neutral-500 dark:text-neutral-400 flex items-center;
     }
 
     &-duration {
-      @apply w-14 flex-shrink-0 text-sm text-gray-500 dark:text-gray-400 flex items-center justify-end;
+      @apply w-14 flex-shrink-0 text-sm text-neutral-500 dark:text-neutral-400 flex items-center justify-end;
     }
   }
 
@@ -226,7 +226,7 @@ const formatDuration = (ms: number): string => {
     }
 
     .song-item-operating-play {
-      @apply w-7 h-7 flex items-center justify-center cursor-pointer rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white;
+      @apply w-7 h-7 flex items-center justify-center cursor-pointer rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100;
 
       &:hover,
       &.bg-primary {
@@ -244,7 +244,7 @@ const formatDuration = (ms: number): string => {
       @apply mr-1 ml-0 cursor-pointer;
 
       .iconfont {
-        @apply text-base transition text-gray-500 dark:text-gray-400 hover:text-neutral-700 dark:hover:text-neutral-200;
+        @apply text-base transition text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary;
       }
       .like-active {
         @apply text-red-500 dark:text-red-500;
@@ -255,7 +255,7 @@ const formatDuration = (ms: number): string => {
       @apply cursor-pointer flex items-center justify-center px-2;
 
       .iconfont {
-        @apply text-xl transition text-gray-500 dark:text-gray-400;
+        @apply text-xl transition text-neutral-500 dark:text-neutral-400;
         &:hover {
           color: var(--qqm-primary, #22c55e);
         }

@@ -179,19 +179,19 @@ const onPlayMusic = () => {
     &-title {
       flex-shrink: 0;
       max-width: 45%;
-      color: rgb(17 24 39); /* text-gray-900 */
+      color: rgb(23 23 23); /* text-neutral-900 */
     }
 
     &-divider {
       margin-left: 0.5rem; /* mx-2 */
       margin-right: 0.5rem;
-      color: rgb(107 114 128); /* text-gray-500 */
+      color: rgb(115 115 115); /* text-neutral-500 */
     }
 
     &-name {
       flex: 1;
       min-width: 0;
-      color: rgb(107 114 128); /* text-gray-500 */
+      color: rgb(115 115 115); /* text-neutral-500 */
     }
   }
 
@@ -211,7 +211,7 @@ const onPlayMusic = () => {
 
       .iconfont {
         font-size: 1rem;
-        color: rgb(107 114 128); /* text-gray-500 */
+        color: rgb(115 115 115); /* text-neutral-500 */
 
         &:hover {
           color: rgb(239 68 68);
@@ -244,7 +244,7 @@ const onPlayMusic = () => {
 
       &.bg-primary {
         background-color: var(--qqm-primary, rgb(34 197 94));
-        color: white;
+        color: rgb(245 245 245);
       }
     }
   }
@@ -261,17 +261,17 @@ const onPlayMusic = () => {
 
   .song-item-content {
     &-title {
-      color: white;
+      color: rgb(245 245 245);
     }
 
     &-divider,
     &-name {
-      color: rgb(156 163 175); /* dark:text-gray-400 */
+      color: rgb(163 163 163); /* dark:text-neutral-400 */
     }
   }
 
   .song-item-operating-list-like .iconfont {
-    color: rgb(156 163 175); /* dark:text-gray-400 */
+    color: rgb(163 163 163); /* dark:text-neutral-400 */
   }
 }
 

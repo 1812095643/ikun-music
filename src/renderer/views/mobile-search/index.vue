@@ -287,25 +287,25 @@ onMounted(() => {
 
 .search-input-wrapper {
   @apply flex-1 flex items-center gap-2;
-  @apply bg-neutral-50 dark:bg-neutral-950 rounded-lg border border-neutral-100 dark:border-neutral-800;
+  @apply bg-white dark:bg-black rounded-md border border-neutral-100 dark:border-neutral-800;
   @apply px-3.5 py-1.5;
 }
 
 .search-icon {
-  @apply text-gray-400 text-lg;
+  @apply text-neutral-400 text-lg;
 }
 
 .search-input {
   @apply flex-1 bg-transparent border-none outline-none;
-  @apply text-gray-900 dark:text-white text-base;
+  @apply text-neutral-900 dark:text-neutral-100 text-base;
 
   &::placeholder {
-    @apply text-gray-400;
+    @apply text-neutral-400;
   }
 }
 
 .clear-icon {
-  @apply text-gray-400 text-lg cursor-pointer;
+  @apply text-neutral-400 text-lg cursor-pointer;
 }
 
 .search-types {
@@ -319,7 +319,7 @@ onMounted(() => {
 
 .type-tag {
   @apply px-3.5 py-1.5 rounded-md text-sm whitespace-nowrap;
-  @apply bg-neutral-50 dark:bg-neutral-950 text-neutral-600 dark:text-neutral-300 border border-neutral-100 dark:border-neutral-800;
+  @apply bg-white dark:bg-black text-neutral-600 dark:text-neutral-300 border border-neutral-100 dark:border-neutral-800;
   @apply transition-colors duration-200;
 
   &.active {
@@ -341,11 +341,11 @@ onMounted(() => {
 }
 
 .section-title {
-  @apply text-sm font-medium text-gray-500 dark:text-gray-400 mb-3;
+  @apply text-sm font-medium text-neutral-500 dark:text-neutral-400 mb-3;
 }
 
 .clear-history {
-  @apply text-sm text-gray-400 dark:text-gray-500;
+  @apply text-sm text-neutral-400 hover:text-primary dark:text-neutral-500 transition-colors;
 }
 
 .suggestion-list {
@@ -358,7 +358,7 @@ onMounted(() => {
   @apply active:bg-primary/5 dark:active:bg-primary/10;
 
   i {
-    @apply text-gray-400;
+    @apply text-neutral-400;
   }
 }
 
@@ -368,7 +368,7 @@ onMounted(() => {
 
 .history-tag {
   @apply px-3 py-1.5 rounded-md text-sm;
-  @apply bg-neutral-50 dark:bg-neutral-950 text-neutral-600 dark:text-neutral-300 border border-neutral-100 dark:border-neutral-800;
+  @apply bg-white dark:bg-black text-neutral-600 dark:text-neutral-300 border border-neutral-100 dark:border-neutral-800;
   @apply active:bg-primary/5 active:text-primary dark:active:bg-primary/10;
 }
 
@@ -382,7 +382,7 @@ onMounted(() => {
 }
 
 .hot-rank {
-  @apply w-5 text-center text-sm font-medium text-gray-400;
+  @apply w-5 text-center text-sm font-medium text-neutral-400;
 
   &.top {
     @apply text-primary;
@@ -390,7 +390,7 @@ onMounted(() => {
 }
 
 .hot-word {
-  @apply flex-1 text-gray-700 dark:text-gray-200;
+  @apply flex-1 text-neutral-700 dark:text-neutral-200;
 }
 
 .hot-icon {

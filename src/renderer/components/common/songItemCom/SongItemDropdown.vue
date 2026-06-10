@@ -55,7 +55,7 @@ const renderSongPreview = () => {
   return h(
     'div',
     {
-      class: 'flex items-center gap-3 px-2 dark:border-neutral-800 dark:text-white'
+      class: 'flex items-center gap-3 px-2 dark:border-neutral-800 dark:text-neutral-100'
     },
     [
       h(NImage, {
@@ -95,7 +95,7 @@ const renderSongPreview = () => {
           h(
             'div',
             {
-              class: 'text-xs text-gray-500 dark:text-gray-400 overflow-hidden'
+              class: 'text-xs text-neutral-500 dark:text-neutral-400 overflow-hidden'
             },
             [
               h(

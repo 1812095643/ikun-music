@@ -112,7 +112,7 @@ defineExpose({
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  @apply rounded-lg p-3 flex items-center bg-transparent dark:text-white text-gray-900;
+  @apply rounded-lg p-3 flex items-center bg-transparent dark:text-neutral-100 text-neutral-900;
   position: relative;
   transition:
     background-color 180ms var(--qqm-ease, ease),

@@ -254,7 +254,7 @@ const onPlayMusic = () => {
 
     &-play {
       border-color: rgb(38 38 38);
-      color: white; /* dark:text-white */
+      color: rgb(245 245 245); /* dark:text-neutral-100 */
     }
   }
 }
