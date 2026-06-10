@@ -1763,3 +1763,61 @@ body {
   background: rgba(24, 27, 31, 0.76) !important;
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.26) !important;
 }
+
+/* 明确弹窗组件语义类，避免依赖脆弱的原子类组合命中。 */
+.disclaimer-modal-shell,
+.donate-modal-shell,
+.responsive-modal-shell {
+  background: rgba(17, 19, 21, 0.32) !important;
+  backdrop-filter: blur(8px) saturate(1.06) !important;
+}
+
+.disclaimer-modal-card,
+.donate-modal-card,
+.responsive-modal-card,
+.update-modal {
+  border: 1px solid rgba(255, 255, 255, 0.56) !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 86%, transparent) !important;
+  box-shadow: 0 18px 44px rgba(20, 24, 31, 0.14) !important;
+  backdrop-filter: blur(20px) saturate(1.1);
+}
+
+.disclaimer-modal-card [class*='rounded-3xl'],
+.disclaimer-modal-card [class*='rounded-2xl'],
+.donate-modal-card [class*='rounded-3xl'],
+.donate-modal-card [class*='rounded-2xl'],
+.responsive-modal-card [class*='rounded-2xl'],
+.update-modal [class*='rounded-2xl'],
+.update-modal [class*='rounded-xl'] {
+  border-radius: 9px !important;
+}
+
+.disclaimer-modal-card button,
+.donate-modal-card button,
+.responsive-modal-card button,
+.update-modal button {
+  border-radius: 9px !important;
+}
+
+.disclaimer-modal-card button[class*='from-green'],
+.donate-modal-card button[class*='from-gray'],
+.update-modal button[class*='bg-primary'] {
+  background: var(--qqm-primary) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(30, 207, 115, 0.2) !important;
+}
+
+.disclaimer-modal-card [class*='bg-gradient'],
+.donate-modal-card [class*='bg-gradient'] {
+  background: linear-gradient(90deg, rgba(30, 207, 115, 0.28), rgba(30, 207, 115, 0.08)) !important;
+}
+
+.dark .disclaimer-modal-card,
+.dark .donate-modal-card,
+.dark .responsive-modal-card,
+.dark .update-modal {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(24, 27, 31, 0.76) !important;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.26) !important;
+}

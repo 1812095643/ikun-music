@@ -3,7 +3,7 @@
     <Transition name="fade">
       <div
         v-if="show"
-        class="fixed inset-0 z-[1000] flex items-center justify-center md:items-center items-end"
+        class="responsive-modal-shell fixed inset-0 z-[1000] flex items-center justify-center md:items-center items-end"
         @click="handleMaskClick"
       >
         <!-- Overlay -->
@@ -13,7 +13,7 @@
         <Transition :name="isMobile ? 'slide-up' : 'scale-fade'">
           <div
             v-if="show"
-            class="relative z-10 w-full bg-white dark:bg-[#1c1c1e] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+            class="responsive-modal-card relative z-10 w-full bg-white dark:bg-[#1c1c1e] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
             :class="[isMobile ? 'rounded-t-[20px] pb-safe' : 'md:max-w-[720px] md:rounded-2xl']"
             @click.stop
           >

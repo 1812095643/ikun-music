@@ -3,10 +3,10 @@
     <Transition name="disclaimer-modal">
       <div
         v-if="showDisclaimer"
-        class="fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 backdrop-blur-md"
+        class="disclaimer-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 backdrop-blur-md"
       >
         <div
-          class="w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-2xl"
+          class="disclaimer-modal-card w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-2xl"
         >
           <div class="h-2 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500"></div>
           <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white px-6 mt-10">
@@ -82,10 +82,10 @@
     <Transition name="donate-modal">
       <div
         v-if="showDonate"
-        class="fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 backdrop-blur-md"
+        class="donate-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 backdrop-blur-md"
       >
         <div
-          class="w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-2xl"
+          class="donate-modal-card w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-2xl"
         >
           <div class="h-2 bg-gradient-to-r from-pink-400 via-rose-500 to-red-500"></div>
 
