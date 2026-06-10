@@ -146,13 +146,7 @@
         <div class="title">{{ t('user.ranking.title') }}</div>
         <div class="record-list">
           <n-scrollbar>
-            <div
-              v-for="(item, index) in recordList"
-              :key="item.id"
-              class="record-item"
-              :class="setAnimationClass('animate__fadeInUp')"
-              :style="setAnimationDelay(index, 25)"
-            >
+            <div v-for="(item, index) in recordList" :key="item.id" class="record-item">
               <div class="play-score">
                 {{ index + 1 }}
               </div>
@@ -477,11 +471,10 @@ const currentLoginType = computed(() => userStore.loginType);
       @apply p-4 w-full z-10 flex flex-col h-full;
       background: linear-gradient(
         180deg,
-        rgba(12, 16, 22, 0.46) 0%,
-        rgba(12, 16, 22, 0.34) 42%,
-        rgba(12, 16, 22, 0.5) 100%
+        rgba(12, 16, 22, 0.34) 0%,
+        rgba(12, 16, 22, 0.22) 45%,
+        rgba(12, 16, 22, 0.4) 100%
       );
-      backdrop-filter: blur(6px) saturate(1.02);
     }
     .title {
       @apply text-lg font-bold flex items-center justify-between;
@@ -519,10 +512,9 @@ const currentLoginType = computed(() => userStore.loginType);
 
     .record-list {
       @apply rounded-lg;
-      background: color-mix(in srgb, var(--qqm-surface) 64%, transparent);
+      background: color-mix(in srgb, var(--qqm-surface) 96%, transparent);
       border: 1px solid var(--qqm-border);
       box-shadow: none;
-      backdrop-filter: blur(8px) saturate(1.02);
       height: calc(100% - 60px);
 
       .record-item {
@@ -558,10 +550,9 @@ const currentLoginType = computed(() => userStore.loginType);
 
 .play-list {
   @apply mt-4 py-4 px-2 rounded-lg flex-1 overflow-hidden;
-  background: color-mix(in srgb, var(--qqm-surface) 68%, transparent);
+  background: color-mix(in srgb, var(--qqm-surface) 96%, transparent);
   border: 1px solid rgba(255, 255, 255, 0.55);
   box-shadow: none;
-  backdrop-filter: blur(8px) saturate(1.02);
 
   &-title {
     @apply text-lg;
@@ -602,8 +593,7 @@ const currentLoginType = computed(() => userStore.loginType);
         font-size: 10px;
         font-weight: 500;
         min-width: 60px;
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
+        background: color-mix(in srgb, var(--qqm-surface) 94%, transparent);
       }
     }
 

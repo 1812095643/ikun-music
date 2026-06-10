@@ -1231,7 +1231,6 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
     }
 
     &:hover {
-      transform: translateY(-1px);
     }
 
     &:active {
@@ -1249,20 +1248,20 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
       .progress-fill {
         @apply absolute top-0 left-0 h-full bg-white rounded-full;
-        box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        box-shadow: none;
         z-index: 1;
         transition: width 0.1s linear;
       }
 
       .progress-thumb {
         @apply absolute top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full bg-white;
-        box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.55);
         z-index: 2;
         transition: transform 0.15s ease-out;
 
         &.active {
           transform: translate(-50%, -50%);
-          box-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+          box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.75);
         }
 
         &:active {
@@ -1305,7 +1304,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45);
     }
 
     &.paused {
@@ -1372,7 +1371,6 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
     }
 
     &:hover {
-      transform: translateY(-1px);
     }
 
     &:active {
@@ -1502,7 +1500,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
             width: 54px;
             height: 54px;
             background-color: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(8px);
+            backdrop-filter: none;
             border-radius: 50%;
 
             &.play-pause {
@@ -1615,7 +1613,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
           }
 
           &.play-pause {
-            @apply w-16 h-16 bg-white/15 rounded-full backdrop-blur-sm;
+            @apply w-16 h-16 bg-white/15 rounded-full;
 
             i {
               @apply text-4xl;
@@ -1691,7 +1689,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
   }
   50% {
     opacity: 0.9;
-    transform: translateY(-1px);
+    transform: translateY(0);
   }
   100% {
     opacity: 1;
@@ -1706,7 +1704,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
   }
   50% {
     opacity: 1;
-    transform: translateY(-1px);
+    transform: translateY(0);
   }
   100% {
     opacity: 1;
@@ -1739,7 +1737,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
   }
 
   &:hover {
-    transform: translateY(-1px);
+    transform: translateY(0);
   }
 
   &:active {
@@ -1897,7 +1895,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 .control-btn {
   @apply w-9 h-9 flex items-center justify-center rounded cursor-pointer transition-colors duration-200 z-[9999];
   background: rgba(142, 142, 142, 0.192);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(6px);
   top: calc(var(--safe-area-inset-top, 0) + 20px);
 
   i {

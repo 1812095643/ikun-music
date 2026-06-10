@@ -20,7 +20,6 @@ import HistoryList from '@/views/history/index.vue';
   @apply flex-1 overflow-hidden rounded-lg border transition-colors duration-200;
   background: color-mix(in srgb, var(--qqm-surface) 70%, transparent);
   border-color: var(--qqm-border);
-  box-shadow: var(--qqm-shadow);
-  backdrop-filter: blur(16px) saturate(1.06);
+  box-shadow: none;
 }
 </style>

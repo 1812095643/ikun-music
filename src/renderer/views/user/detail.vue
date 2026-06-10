@@ -50,7 +50,7 @@
                 }"
               />
               <div
-                class="absolute inset-0 bg-gradient-to-b from-transparent via-white/75 to-white dark:via-neutral-900/75 dark:to-neutral-900"
+                class="absolute inset-0 bg-gradient-to-b from-white/70 via-white/92 to-white dark:from-neutral-900/70 dark:via-neutral-900/92 dark:to-neutral-900"
               />
             </div>
 
@@ -442,6 +442,6 @@ const isArtist = (profile: any) => {
 
 button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px var(--primary-color);
+  box-shadow: 0 0 0 1px var(--primary-color);
 }
 </style>

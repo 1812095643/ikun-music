@@ -1202,7 +1202,7 @@ body,
     border: 1px solid var(--control-border);
     border-radius: 14px;
     background: var(--control-bg);
-    backdrop-filter: blur(18px) saturate(1.2);
+    backdrop-filter: blur(8px) saturate(1.02);
   }
 
   .play-controls {
@@ -1217,7 +1217,7 @@ body,
     border: 1px solid var(--control-border);
     border-radius: 999px;
     background: var(--control-bg);
-    backdrop-filter: blur(18px) saturate(1.2);
+    backdrop-filter: blur(8px) saturate(1.02);
     -webkit-app-region: no-drag;
 
     .play-button {
@@ -1243,7 +1243,7 @@ body,
   border: 1px solid var(--control-border);
   border-radius: 14px;
   background: var(--control-bg);
-  backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(8px) saturate(1.02);
   -webkit-app-region: no-drag;
 }
 
@@ -1262,7 +1262,6 @@ body,
     transform 0.2s ease;
   &:hover {
     background: var(--control-hover-bg);
-    transform: translateY(-1px);
   }
 
   &:active {
@@ -1271,7 +1270,7 @@ body,
 
   i {
     font-size: 20px;
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    text-shadow: none;
 
     &.active {
       color: var(--highlight-color);
@@ -1338,7 +1337,6 @@ body,
 
     &.lyric-line-current {
       opacity: 1;
-      transform: translateY(-1px);
     }
   }
 }
@@ -1372,7 +1370,6 @@ body,
   align-items: center;
 
   &.lyric-line-current {
-    transform: translateY(-1px);
     opacity: 1;
 
     // 当前播放歌词的特殊样式
@@ -1382,7 +1379,7 @@ body,
 
       .lyric-text-inner {
         // 为渐变文字添加轻微的外发光
-        filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+        filter: none;
         // 确保渐变效果清晰
         -webkit-font-smoothing: antialiased;
       }
@@ -1407,11 +1404,7 @@ body,
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  // 为非当前播放的歌词添加阴影效果
-  text-shadow:
-    0 0 2px rgba(0, 0, 0, 0.8),
-    0 1px 1px rgba(0, 0, 0, 0.6),
-    0 0 4px rgba(255, 255, 255, 0.2);
+  text-shadow: none;
 
   .lyric-text-inner {
     transition: background 0.3s ease;
@@ -1443,13 +1436,7 @@ body,
   transition: font-size 0.2s ease;
   line-height: 1.4;
 
-  // 为翻译文本也添加阴影效果，但稍微轻一些
-  text-shadow:
-    0 0 2px rgba(0, 0, 0, 0.7),
-    0 1px 1px rgba(0, 0, 0, 0.5),
-    0 0 4px rgba(255, 255, 255, 0.2),
-    1px 1px 1px rgba(0, 0, 0, 0.4),
-    -1px -1px 1px rgba(0, 0, 0, 0.4);
+  text-shadow: none;
 }
 
 .lyric-empty {
@@ -1458,11 +1445,7 @@ body,
   font-size: 16px;
   padding: 20px;
 
-  // 为空歌词提示也添加阴影效果
-  text-shadow:
-    0 0 2px rgba(0, 0, 0, 0.7),
-    0 1px 1px rgba(0, 0, 0, 0.5),
-    0 0 4px rgba(255, 255, 255, 0.2);
+  text-shadow: none;
 }
 
 body {
