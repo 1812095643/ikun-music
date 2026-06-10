@@ -212,7 +212,7 @@
                         item.ar?.map((a) => a.name).join(', ')
                       }}</span>
                       <div
-                        class="hidden md:flex items-center gap-1 text-[10px] text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded-full truncate"
+                        class="hidden md:flex items-center gap-1 text-[10px] text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded-md truncate"
                       >
                         <i class="ri-folder-line" />
                         <span class="truncate">{{ shortenPath(item.path) }}</span>
@@ -224,7 +224,7 @@
                     <n-tooltip trigger="hover">
                       <template #trigger>
                         <button
-                          class="w-8 h-8 rounded-full flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/10 transition-all"
+                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/10 transition-all"
                           @click="copyPath(item.path)"
                         >
                           <i class="ri-file-copy-line" />
@@ -235,7 +235,7 @@
                     <n-tooltip trigger="hover">
                       <template #trigger>
                         <button
-                          class="w-8 h-8 rounded-full flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/10 transition-all"
+                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/10 transition-all"
                           @click="openDirectory(item.path)"
                         >
                           <i class="ri-folder-open-line" />
@@ -246,7 +246,7 @@
                     <n-tooltip trigger="hover">
                       <template #trigger>
                         <button
-                          class="w-8 h-8 rounded-full flex items-center justify-center text-neutral-400 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-red-500 hover:bg-red-500/10 transition-all"
                           @click="handleDelete(item)"
                         >
                           <i class="ri-delete-bin-line" />
@@ -1129,7 +1129,8 @@ onMounted(() => {
 .action-btn-icon {
   @apply transition-all;
   &:hover {
-    @apply scale-110 text-primary bg-primary/10;
+    @apply text-primary bg-primary/10;
+    transform: translateY(-1px);
   }
 }
 

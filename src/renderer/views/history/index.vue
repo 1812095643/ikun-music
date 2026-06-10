@@ -10,7 +10,7 @@
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ t('history.title') }}</h2>
 
         <button
-          class="h-8 px-3 rounded-full bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-600 dark:text-gray-300 text-xs font-medium transition-colors flex items-center gap-1.5"
+          class="h-8 px-3 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-600 dark:text-gray-300 text-xs font-medium transition-colors flex items-center gap-1.5"
           @click="handleNavigateToHeatmap"
         >
           <i class="ri-calendar-2-line"></i>
@@ -21,12 +21,12 @@
       <div class="flex items-center justify-between gap-4">
         <!-- Category Tabs -->
         <div
-          class="bg-gray-100 dark:bg-neutral-800 p-1 rounded-full inline-flex h-9 items-center overflow-x-auto no-scrollbar max-w-full"
+          class="bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg inline-flex h-9 items-center overflow-x-auto no-scrollbar max-w-full"
         >
           <div
             v-for="tab in ['songs', 'playlists', 'albums', 'podcasts']"
             :key="tab"
-            class="px-4 h-7 rounded-full text-xs font-medium cursor-pointer transition-all duration-300 flex items-center justify-center whitespace-nowrap"
+            class="px-4 h-7 rounded-md text-xs font-medium cursor-pointer transition-all duration-300 flex items-center justify-center whitespace-nowrap"
             :class="
               currentCategory === tab
                 ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
@@ -41,10 +41,10 @@
         <!-- Source Tabs (Local/Cloud) -->
         <div
           v-if="currentCategory !== 'podcasts'"
-          class="flex items-center bg-gray-100 dark:bg-neutral-800 rounded-full p-1 h-9 flex-shrink-0"
+          class="flex items-center bg-gray-100 dark:bg-neutral-800 rounded-lg p-1 h-9 flex-shrink-0"
         >
           <button
-            class="px-3 h-7 rounded-full text-xs font-medium transition-all duration-300"
+            class="px-3 h-7 rounded-md text-xs font-medium transition-all duration-300"
             :class="
               currentTab === 'local'
                 ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
@@ -55,7 +55,7 @@
             {{ t('history.tabs.local') }}
           </button>
           <button
-            class="px-3 h-7 rounded-full text-xs font-medium transition-all duration-300"
+            class="px-3 h-7 rounded-md text-xs font-medium transition-all duration-300"
             :class="
               currentTab === 'cloud'
                 ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
@@ -70,7 +70,7 @@
     </div>
 
     <!-- List Content -->
-    <div class="flex-grow min-h-0 px-2 mt-2" :class="setAnimationClass('animate__bounceInLeft')">
+    <div class="flex-grow min-h-0 px-2 mt-2" :class="setAnimationClass('animate__fadeInUp')">
       <n-scrollbar ref="scrollbarRef" class="h-full pr-4" :size="100" @scroll="handleScroll">
         <div class="pb-24 space-y-1">
           <!-- 歌曲列表 -->
@@ -79,7 +79,7 @@
               v-for="(item, index) in displayList"
               :key="item.id"
               class="group flex items-center justify-between rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors p-1"
-              :class="setAnimationClass('animate__bounceInRight')"
+              :class="setAnimationClass('animate__fadeInUp')"
               :style="setAnimationDelay(index, 30)"
             >
               <song-item
@@ -95,7 +95,7 @@
                   {{ t('history.playCount', { count: item.count }) }}
                 </div>
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-all opacity-0 group-hover:opacity-100"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-all opacity-0 group-hover:opacity-100"
                   v-show="currentTab === 'local'"
                   @click="handleDelMusic(item)"
                 >
@@ -114,7 +114,7 @@
               :show-count="currentTab === 'local'"
               :show-delete="currentTab === 'local'"
               class="rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-              :class="setAnimationClass('animate__bounceInRight')"
+              :class="setAnimationClass('animate__fadeInUp')"
               :style="setAnimationDelay(index, 30)"
               @click="handlePlaylistClick(item)"
               @delete="handleDelPlaylist(item)"
@@ -130,7 +130,7 @@
               :show-count="currentTab === 'local'"
               :show-delete="currentTab === 'local'"
               class="rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-              :class="setAnimationClass('animate__bounceInRight')"
+              :class="setAnimationClass('animate__fadeInUp')"
               :style="setAnimationDelay(index, 30)"
               @click="handleAlbumClick(item)"
               @delete="handleDelAlbum(item)"
@@ -141,10 +141,10 @@
           <template v-if="currentCategory === 'podcasts'">
             <div class="mb-4 px-2">
               <div
-                class="flex items-center bg-gray-100 dark:bg-neutral-800 rounded-full p-1 w-fit h-8"
+                class="flex items-center bg-gray-100 dark:bg-neutral-800 rounded-lg p-1 w-fit h-8"
               >
                 <button
-                  class="px-3 h-6 rounded-full text-xs font-medium transition-all duration-300"
+                  class="px-3 h-6 rounded-md text-xs font-medium transition-all duration-300"
                   :class="
                     currentPodcastSubTab === 'episodes'
                       ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
@@ -158,7 +158,7 @@
                   {{ t('history.podcastTabs.episodes') }}
                 </button>
                 <button
-                  class="px-3 h-6 rounded-full text-xs font-medium transition-all duration-300"
+                  class="px-3 h-6 rounded-md text-xs font-medium transition-all duration-300"
                   :class="
                     currentPodcastSubTab === 'radios'
                       ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
@@ -179,7 +179,7 @@
                 v-for="(item, index) in displayList"
                 :key="item.id"
                 class="group flex items-center justify-between rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors p-1"
-                :class="setAnimationClass('animate__bounceInRight')"
+                :class="setAnimationClass('animate__fadeInUp')"
                 :style="setAnimationDelay(index, 30)"
               >
                 <song-item
@@ -188,7 +188,7 @@
                   @play="handlePlayPodcast(item)"
                 />
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-all opacity-0 group-hover:opacity-100"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-all opacity-0 group-hover:opacity-100"
                   @click="handleDelPodcast(item)"
                 >
                   <i class="ri-close-line text-lg"></i>
@@ -201,7 +201,7 @@
                 v-for="(item, index) in displayList"
                 :key="item.id"
                 class="group flex items-center justify-between rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-                :class="setAnimationClass('animate__bounceInRight')"
+                :class="setAnimationClass('animate__fadeInUp')"
                 :style="setAnimationDelay(index, 30)"
               >
                 <playlist-item
@@ -210,7 +210,7 @@
                   @click="handlePodcastRadioClick(item)"
                 />
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-all opacity-0 group-hover:opacity-100 mr-2"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-all opacity-0 group-hover:opacity-100 mr-2"
                   @click="handleDelPodcastRadio(item)"
                 >
                   <i class="ri-close-line text-lg"></i>
@@ -221,7 +221,7 @@
 
           <div v-if="displayList.length === 0 && !loading" class="text-center py-12 text-gray-400">
             <div
-              class="w-20 h-20 mx-auto rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
+              class="w-20 h-20 mx-auto rounded-xl bg-gray-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
             >
               <i class="ri-history-line text-3xl text-gray-300 dark:text-gray-600"></i>
             </div>

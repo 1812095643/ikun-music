@@ -19,11 +19,11 @@
       <div v-if="!isComponent && isElectron" class="flex items-center gap-3">
         <template v-if="!isSelecting">
           <!-- Sort Controls -->
-          <div class="flex items-center bg-gray-100 dark:bg-neutral-800 rounded-full p-1 h-9">
+          <div class="flex items-center bg-gray-100 dark:bg-neutral-800 rounded-lg p-1 h-9">
             <button
               v-for="isDesc in [true, false]"
               :key="String(isDesc)"
-              class="px-3 h-full rounded-full text-xs font-medium transition-all duration-300 flex items-center gap-1"
+              class="px-3 h-full rounded-md text-xs font-medium transition-all duration-300 flex items-center gap-1"
               :class="
                 isDescending === isDesc
                   ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
@@ -37,7 +37,7 @@
           </div>
 
           <button
-            class="h-9 px-4 rounded-full bg-primary/10 hover:bg-primary text-primary hover:text-white text-xs font-medium transition-all duration-300 flex items-center gap-1.5"
+            class="h-9 px-4 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-white text-xs font-medium transition-all duration-300 flex items-center gap-1.5"
             @click="startSelect"
           >
             <i class="ri-checkbox-multiple-line text-sm"></i>
@@ -48,7 +48,7 @@
         <!-- Selection Controls -->
         <div
           v-else
-          class="flex items-center gap-3 bg-white dark:bg-neutral-800 shadow-sm rounded-full px-4 py-1.5 border border-gray-100 dark:border-neutral-700 h-9"
+          class="flex items-center gap-3 bg-white dark:bg-neutral-800 shadow-sm rounded-lg px-4 py-1.5 border border-gray-100 dark:border-neutral-700 h-9"
         >
           <n-checkbox
             :checked="isAllSelected"
@@ -61,7 +61,7 @@
           <div class="h-3 w-px bg-gray-200 dark:bg-neutral-700 mx-1"></div>
           <div class="flex items-center gap-2">
             <button
-              class="h-6 px-3 rounded-full bg-primary text-white text-xs font-medium hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+              class="h-6 px-3 rounded-md bg-primary text-white text-xs font-medium hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
               :disabled="selectedSongs.length === 0"
               @click="handleBatchDownload"
             >
@@ -69,7 +69,7 @@
               {{ t('favorite.download', { count: selectedSongs.length }) }}
             </button>
             <button
-              class="h-6 px-3 rounded-full bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 text-xs font-medium hover:bg-gray-200 dark:hover:bg-neutral-600 transition-colors"
+              class="h-6 px-3 rounded-md bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 text-xs font-medium hover:bg-gray-200 dark:hover:bg-neutral-600 transition-colors"
               @click="cancelSelect"
             >
               {{ t('common.cancel') }}
@@ -80,14 +80,14 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex-grow min-h-0 px-2" :class="setAnimationClass('animate__bounceInRight')">
+    <div class="flex-grow min-h-0 px-2" :class="setAnimationClass('animate__fadeInUp')">
       <n-scrollbar ref="scrollbarRef" class="h-full pr-4" @scroll="handleScroll">
         <div
           v-if="favoriteList.length === 0"
           class="h-full flex flex-col items-center justify-center text-gray-400"
         >
           <div
-            class="w-24 h-24 rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
+            class="w-20 h-20 rounded-xl bg-gray-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
           >
             <i class="ri-heart-line text-4xl text-gray-300 dark:text-gray-600"></i>
           </div>
@@ -102,7 +102,7 @@
             :favorite="false"
             class="rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
             :class="[
-              setAnimationClass('animate__bounceInLeft'),
+              setAnimationClass('animate__fadeInUp'),
               { '!bg-primary/10': selectedSongs.includes(song.id as number) }
             ]"
             :style="getItemAnimationDelay(index)"
