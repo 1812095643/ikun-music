@@ -2,11 +2,14 @@
   <div class="history-recommend-page">
     <!-- 头部标题和操作按钮 -->
     <div class="music-header h-12 flex items-center justify-between">
-      <n-ellipsis :line-clamp="1" class="flex-shrink-0 mr-3">
-        <div class="music-title">
-          {{ t('comp.musicList.historyRecommend') }}
-        </div>
-      </n-ellipsis>
+      <div class="music-heading min-w-0">
+        <n-ellipsis :line-clamp="1" class="flex-shrink-0 mr-3">
+          <div class="music-title">
+            {{ t('comp.musicList.historyRecommend') }}
+          </div>
+        </n-ellipsis>
+        <div class="music-subtitle">按日期回看每日推荐，保留熟悉的播放路径。</div>
+      </div>
 
       <!-- 操作按钮组 -->
       <div class="flex-grow flex-1 flex items-center justify-end gap-2">
@@ -102,9 +105,14 @@
         </div>
 
         <!-- 空状态 -->
-        <div v-else-if="!loadingSongs && selectedDate" class="empty-state">
-          <i class="icon iconfont ri-disc-line"></i>
-          <p>{{ t('comp.musicList.noSongs') }}</p>
+        <div v-else-if="!loadingSongs" class="empty-state">
+          <div class="empty-icon">
+            <i class="icon iconfont ri-disc-line"></i>
+          </div>
+          <p class="empty-title">
+            {{ selectedDate ? t('comp.musicList.noSongs') : '还没有历史日推' }}
+          </p>
+          <p class="empty-desc">听过每日推荐后，这里会按日期为你整理成清爽列表。</p>
         </div>
       </n-spin>
     </div>
@@ -272,109 +280,191 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .history-recommend-page {
-  @apply h-full bg-light-100 dark:bg-dark-100 px-4 mr-2 rounded-lg;
+  height: 100%;
+  margin-right: 8px;
+  padding: 0 18px;
+  border-radius: 10px;
+  background: var(--qqm-bg, #f7f8fa);
 }
 
 .music {
   &-header {
-    @apply h-12 flex items-center justify-between;
+    min-height: 72px;
+    border-bottom: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  }
+
+  &-heading {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
   }
 
   &-title {
-    @apply text-xl font-bold text-neutral-900 dark:text-neutral-100;
+    color: var(--qqm-text, #1f2329);
+    font-size: 22px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+  }
+
+  &-subtitle {
+    color: var(--qqm-muted, #7a828c);
+    font-size: 13px;
+    font-weight: 500;
   }
 
   &-content {
-    @apply h-[calc(100%-60px)];
+    height: calc(100% - 96px);
+    padding-top: 14px;
   }
 
   &-list {
-    @apply flex-grow min-h-0;
+    flex-grow: 1;
+    min-height: 0;
+
     &-container {
-      @apply flex-grow min-h-0 flex flex-col relative w-full;
+      position: relative;
+      display: flex;
+      width: 100%;
+      min-height: 0;
+      flex-direction: column;
+      flex-grow: 1;
     }
 
     &-content {
-      @apply min-h-[calc(80vh-60px)];
+      min-height: calc(80vh - 60px);
     }
   }
 }
 
 .date-tabs-wrapper {
-  @apply px-0 mb-4;
+  margin: 12px 0 4px;
 }
 
-.action-button {
-  @apply w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors text-neutral-500 dark:text-neutral-400;
+.action-button,
+.layout-toggle .toggle-button {
+  display: flex;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  border-radius: 10px;
+  background: var(--qqm-surface, #ffffff);
+  color: var(--qqm-muted, #7a828c);
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
 
   .icon {
-    @apply text-lg;
+    font-size: 18px;
   }
 
-  &.hover-green:hover {
-    .icon {
-      color: var(--qqm-primary, #22c55e);
-    }
+  &:hover {
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 28%, var(--qqm-border));
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface));
+    color: var(--qqm-primary, #22c55e);
+    transform: translateY(-1px);
   }
 }
 
-/* 虚拟列表样式 */
 .song-virtual-list {
-  @apply w-full;
+  width: 100%;
+
   :deep(.n-virtual-list__scroll) {
     scrollbar-width: thin;
+
     &::-webkit-scrollbar {
       width: 4px;
     }
+
     &::-webkit-scrollbar-thumb {
-      @apply bg-neutral-300 dark:bg-neutral-700 rounded;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--qqm-muted, #7a828c) 28%, transparent);
     }
   }
 }
 
 .double-item {
-  @apply w-full mb-2 bg-light-200 bg-opacity-30 dark:bg-dark-200 dark:bg-opacity-20 rounded-lg;
+  width: 100%;
+  margin-bottom: 2px;
+  border-radius: 8px;
+  transition: background-color 0.18s ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+  }
 }
 
 .empty-state {
-  @apply flex flex-col items-center justify-center h-full text-neutral-400 dark:text-neutral-600 py-20;
+  display: flex;
+  min-height: 320px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 18px;
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  border-radius: 12px;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, transparent),
+      transparent 64%
+    ),
+    var(--qqm-surface, #ffffff);
+  color: var(--qqm-muted, #7a828c);
+}
+
+.empty-icon {
+  display: flex;
+  width: 54px;
+  height: 54px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: var(--qqm-primary-soft, rgba(34, 197, 94, 0.12));
+  color: var(--qqm-primary, #22c55e);
 
   .icon {
-    @apply text-6xl mb-4;
+    font-size: 28px;
   }
+}
 
-  p {
-    @apply text-lg;
-  }
+.empty-title {
+  margin-top: 14px;
+  color: var(--qqm-text, #1f2329);
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.empty-desc {
+  margin-top: 6px;
+  color: var(--qqm-muted, #7a828c);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 :deep(.n-tabs-rail) {
-  @apply rounded-lg overflow-hidden !important;
+  overflow: hidden !important;
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  border-radius: 10px !important;
+  background: var(--qqm-surface, #ffffff) !important;
+
   .n-tabs-capsule {
-    @apply rounded-lg !important;
+    border-radius: 8px !important;
+    background-color: var(--qqm-primary, #22c55e) !important;
   }
-}
 
-.date-tabs-wrapper {
-  :deep(.n-tabs-rail) {
-    @apply rounded-lg overflow-hidden bg-white dark:bg-black !important;
-    .n-tabs-capsule {
-      @apply rounded-lg !important;
-      background-color: var(--qqm-primary, #22c55e) !important;
-    }
-    .n-tabs-tab--active {
-      @apply text-white !important;
-    }
+  .n-tabs-tab {
+    font-weight: 600;
   }
-}
 
-.layout-toggle {
-  .toggle-button {
-    @apply w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors;
-
-    .icon {
-      @apply text-lg text-neutral-500 dark:text-neutral-400 transition-colors;
-    }
+  .n-tabs-tab--active {
+    color: #fff !important;
   }
 }
 </style>

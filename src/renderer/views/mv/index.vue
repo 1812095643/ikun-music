@@ -58,7 +58,7 @@
           </div>
 
           <!-- Info -->
-          <div class="mt-3 space-y-1">
+          <div class="mv-info mt-3 space-y-1">
             <h3
               class="text-sm md:text-base font-bold text-neutral-900 dark:text-white line-clamp-1 group-hover:text-primary transition-colors"
             >
@@ -249,7 +249,10 @@ const isPrevDisabled = computed(() => currentIndex.value === 0);
 <style scoped lang="scss">
 .mv-card {
   border-radius: 10px;
-  transition: color 160ms var(--qqm-ease);
+  padding: 6px;
+  transition:
+    background-color 160ms var(--qqm-ease),
+    color 160ms var(--qqm-ease);
 
   .mv-cover {
     border: 1px solid var(--qqm-border);
@@ -258,6 +261,8 @@ const isPrevDisabled = computed(() => currentIndex.value === 0);
   }
 
   &:hover {
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, var(--qqm-surface, #fff));
+
     .mv-cover {
       border-color: color-mix(in srgb, var(--qqm-primary) 16%, var(--qqm-border));
       background: color-mix(in srgb, var(--qqm-primary-soft) 20%, var(--qqm-surface-2));
@@ -267,6 +272,10 @@ const isPrevDisabled = computed(() => currentIndex.value === 0);
       color: var(--qqm-primary-strong) !important;
     }
   }
+}
+
+.mv-info {
+  padding: 0 2px 2px;
 }
 
 .mv-load-more {

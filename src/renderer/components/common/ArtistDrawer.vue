@@ -285,48 +285,96 @@ defineExpose({
 
 <style lang="scss" scoped>
 .artist-drawer {
-  @apply h-full bg-light dark:bg-dark px-6 overflow-hidden flex flex-col;
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0 24px;
   border-left: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 92%, transparent);
 
   .close-btn {
-    @apply absolute top-4 right-4 text-neutral-500 dark:text-neutral-400 text-2xl cursor-pointer p-2;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    color: var(--qqm-muted, #7a828c);
+    font-size: 22px;
+    transition:
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+
     &:hover {
+      border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, var(--qqm-border));
+      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
       color: var(--qqm-primary, #22c55e);
     }
   }
 
   .artist-header {
-    @apply flex gap-6 pt-6 pb-5;
+    display: flex;
+    gap: 22px;
+    padding: 24px 42px 22px 0;
     border-bottom: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
 
     .artist-info {
-      @apply flex-1;
+      min-width: 0;
+      flex: 1;
 
       .artist-name {
-        @apply text-3xl font-bold mb-2;
+        margin-bottom: 8px;
+        color: var(--qqm-text, #1f2329);
+        font-size: 30px;
+        font-weight: 650;
+        letter-spacing: -0.03em;
       }
 
       .artist-alias {
-        @apply text-neutral-500 dark:text-neutral-400 mb-2;
+        margin-bottom: 8px;
+        color: var(--qqm-muted, #7a828c);
+        font-size: 13px;
+        font-weight: 500;
       }
 
       .artist-desc {
-        @apply text-sm text-neutral-600 dark:text-neutral-300 line-clamp-3;
+        display: -webkit-box;
+        overflow: hidden;
+        color: color-mix(in srgb, var(--qqm-text, #1f2329) 70%, transparent);
+        font-size: 13px;
+        line-height: 1.7;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
       }
     }
   }
 
   .albums-grid {
-    @apply grid gap-4 grid-cols-5;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
   }
 
   .loading-more {
-    @apply text-center py-4 text-neutral-500 dark:text-neutral-400;
+    padding: 16px 0;
+    text-align: center;
+    color: var(--qqm-muted, #7a828c);
+    font-size: 13px;
   }
 
   .artist-description {
     .description-content {
-      @apply text-sm leading-relaxed whitespace-pre-wrap;
+      color: color-mix(in srgb, var(--qqm-text, #1f2329) 76%, transparent);
+      font-size: 13px;
+      line-height: 1.8;
+      white-space: pre-wrap;
     }
   }
 }

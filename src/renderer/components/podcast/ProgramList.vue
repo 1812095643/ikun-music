@@ -164,31 +164,39 @@ const playProgram = async (program: DjProgram) => {
   </div>
 </template>
 <style scoped>
+.program-list {
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 86%, transparent);
+  overflow: hidden;
+}
+
 .program-list-body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0;
 }
 
 .program-row {
   position: relative;
   min-height: 72px;
   border: 1px solid transparent;
+  border-radius: 0;
   transition:
     background-color 0.18s ease,
     border-color 0.18s ease;
 }
 
 .program-row:hover {
-  border-color: color-mix(in srgb, var(--qqm-primary) 12%, transparent);
-  background-color: color-mix(in srgb, var(--qqm-primary-soft) 24%, transparent);
+  border-color: transparent;
+  background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface, #fff));
 }
 
 .program-row::after {
   position: absolute;
   right: 12px;
-  bottom: -3px;
-  left: 80px;
+  bottom: 0;
+  left: 82px;
   height: 1px;
   background: var(--qqm-border);
   content: '';
@@ -239,13 +247,14 @@ const playProgram = async (program: DjProgram) => {
 
 .program-empty {
   display: flex;
-  min-height: 220px;
+  min-height: 260px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  color: var(--qqm-text-muted);
+  gap: 12px;
+  color: var(--qqm-muted, #7a828c);
   font-size: 13px;
+  font-weight: 500;
 }
 
 .program-empty i {
@@ -253,8 +262,8 @@ const playProgram = async (program: DjProgram) => {
   width: 44px;
   height: 44px;
   place-items: center;
-  border: 1px solid var(--qqm-border);
-  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, var(--qqm-border));
+  border-radius: 14px;
   background: color-mix(in srgb, var(--qqm-primary-soft) 34%, transparent);
   color: var(--qqm-primary);
   font-size: 22px;

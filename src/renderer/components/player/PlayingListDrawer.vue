@@ -181,8 +181,8 @@ const handleDeleteSong = (song: SongResult) => {
 <style lang="scss" scoped>
 .fixed-overlay {
   @apply fixed inset-0 z-[999999];
-  background: rgba(15, 23, 42, 0.04);
-  backdrop-filter: none;
+  background: rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(2px);
   pointer-events: auto; // 允许点击关闭
   cursor: default;
 }
@@ -203,16 +203,16 @@ const handleDeleteSong = (song: SongResult) => {
     opacity: 0;
   }
 
-  background: var(--qqm-surface, #fff);
-  border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  box-shadow: none;
-  backdrop-filter: none;
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(20, 24, 31, 0.08)) 78%, #fff 22%);
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(18px) saturate(1.18);
 
   &-header {
     @apply flex items-center px-4 py-3;
     gap: 8px;
     border-bottom: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-    background: color-mix(in srgb, var(--qqm-surface, #fff) 99%, transparent);
+    background: color-mix(in srgb, var(--qqm-surface, #fff) 82%, transparent);
 
     .title {
       @apply text-base font-medium text-neutral-800 dark:text-neutral-200;
@@ -285,10 +285,11 @@ const handleDeleteSong = (song: SongResult) => {
 .music-play-list-content {
   @apply rounded-lg pr-2 transition-colors duration-150;
   border: 1px solid transparent;
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 72%, transparent);
 
   &.is-current {
     border-color: color-mix(in srgb, var(--qqm-primary) 14%, transparent);
-    background: color-mix(in srgb, var(--qqm-primary-soft) 22%, transparent);
+    background: color-mix(in srgb, var(--qqm-primary-soft) 32%, var(--qqm-surface, #fff) 68%);
   }
 
   &:hover {
@@ -344,7 +345,7 @@ const handleDeleteSong = (song: SongResult) => {
         width: 40px;
         height: 5px;
         border-radius: 5px;
-        background-color: rgba(150, 150, 150, 0.3);
+        background-color: color-mix(in srgb, var(--qqm-muted, #7a828c) 28%, transparent);
       }
     }
 

@@ -746,13 +746,20 @@ defineExpose({
 #drawer-target {
   @apply top-0 left-0 absolute overflow-hidden rounded w-full h-full;
   animation-duration: 300ms;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, transparent),
+      transparent 42%
+    ),
+    color-mix(in srgb, var(--qqm-bg, #f7f8fa) 76%, transparent);
 
   .content-wrapper {
     @apply grid items-center mx-auto h-full;
     grid-template-columns: minmax(300px, 40%) 1fr;
-    gap: 4rem;
-    max-width: 1600px;
-    padding: 2rem;
+    gap: 3.2rem;
+    max-width: 1360px;
+    padding: 2.6rem 3rem;
     transition: width 0.3s ease;
 
     @media (max-width: 1024px) {
@@ -781,21 +788,33 @@ defineExpose({
     }
 
     .img-container {
-      @apply relative w-[45vh] mb-8 aspect-square;
+      width: min(42vh, 360px);
       max-width: 100%;
+      margin-bottom: 26px;
+      aspect-ratio: 1;
+      border-radius: 14px;
+      padding: 8px;
+      background: color-mix(in srgb, var(--qqm-surface, #fff) 76%, transparent);
+      border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 78%, #fff 22%);
+      box-shadow: 0 18px 46px rgba(15, 23, 42, 0.08);
     }
 
     .music-info {
       @apply w-full text-center max-w-[400px];
 
       .music-content-name {
-        @apply text-3xl font-bold mb-2 line-clamp-2;
-        color: var(--text-color-active);
+        @apply mb-2 line-clamp-2;
+        color: var(--qqm-text, var(--text-color-active));
+        font-size: 26px;
+        font-weight: 650;
+        letter-spacing: -0.03em;
       }
 
       .music-content-singer {
-        @apply text-lg opacity-80;
-        color: var(--text-color-primary);
+        font-size: 15px;
+        font-weight: 500;
+        opacity: 0.78;
+        color: var(--qqm-muted, var(--text-color-primary));
       }
     }
   }
@@ -827,7 +846,9 @@ defineExpose({
     }
 
     .music-lrc {
-      @apply w-full h-full bg-transparent;
+      @apply w-full h-full;
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--qqm-surface, #fff) 58%, transparent);
       mask-image: linear-gradient(
         to bottom,
         transparent 0%,
@@ -864,9 +885,9 @@ defineExpose({
     }
 
     .music-lrc-text {
-      @apply text-2xl cursor-pointer font-bold px-4 py-3;
+      @apply cursor-pointer px-4 py-2;
       font-family: var(--current-font-family);
-      font-weight: var(--lyric-font-weight, bold) !important;
+      font-weight: var(--lyric-font-weight, 600) !important;
       transition:
         opacity 0.3s ease,
         color 0.3s ease,
@@ -874,7 +895,7 @@ defineExpose({
       background-color: transparent;
       font-size: var(--lyric-font-size, 22px) !important;
       letter-spacing: var(--lyric-letter-spacing, 0) !important;
-      line-height: var(--lyric-line-height, 2) !important;
+      line-height: var(--lyric-line-height, 1.82) !important;
       opacity: 0.6;
       transform-origin: left center;
 
@@ -932,7 +953,8 @@ defineExpose({
 
     .hover-text {
       &:hover {
-        @apply font-bold opacity-100 rounded-lg;
+        @apply opacity-100 rounded-lg;
+        font-weight: 650;
         background-color: var(--hover-bg-color);
 
         span {
@@ -1028,17 +1050,25 @@ defineExpose({
 }
 
 .control-btn {
-  @apply w-9 h-9 flex items-center justify-center rounded cursor-pointer transition-opacity duration-200;
-  background: rgba(142, 142, 142, 0.14);
-  backdrop-filter: none;
+  @apply w-9 h-9 flex items-center justify-center cursor-pointer;
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 70%, #fff 30%);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 72%, transparent);
+  backdrop-filter: blur(14px) saturate(1.1);
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    transform 0.18s ease;
 
   i {
     @apply text-xl;
-    color: var(--text-color-active);
+    color: var(--qqm-text, var(--text-color-active));
   }
 
   &:hover {
-    background: rgba(126, 121, 121, 0.2);
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface, #fff));
+    transform: translateY(-1px);
 
     i {
       opacity: 1;
