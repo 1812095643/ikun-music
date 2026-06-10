@@ -146,10 +146,14 @@ const onPlayMusic = () => {
   border-radius: 0.5rem;
   margin-bottom: 0.5rem; /* mb-2 */
   border-width: 1px;
-  border-color: rgb(229 231 235); /* border-gray-200 */
+  border-color: rgb(243 244 246); /* border-gray-100 */
+  transition:
+    background-color 180ms var(--qqm-ease, ease),
+    border-color 180ms var(--qqm-ease, ease);
 
   &:hover {
-    background-color: rgb(249 250 251); /* bg-gray-50 */
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent);
+    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, transparent);
   }
 
   .song-item-img {
@@ -251,7 +255,8 @@ const onPlayMusic = () => {
   border-color: rgb(31 41 55); /* dark:border-gray-800 */
 
   &:hover {
-    background-color: rgb(31 41 55); /* dark:bg-gray-800 */
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, transparent);
+    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, transparent);
   }
 
   .song-item-content {

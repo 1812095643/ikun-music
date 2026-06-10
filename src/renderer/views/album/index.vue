@@ -24,15 +24,14 @@
       <!-- Content State -->
       <template v-else>
         <div
-          v-for="(album, index) in albumList"
+          v-for="album in albumList"
           :key="album.id"
-          class="list-card group cursor-pointer animate-item"
-          :style="{ animationDelay: calculateAnimationDelay(index % TOTAL_ITEMS, 0.05) }"
+          class="list-card group cursor-pointer"
           @click.stop="openAlbum(album)"
         >
           <!-- Cover Image -->
           <div
-            class="relative aspect-square overflow-hidden rounded-lg shadow-sm transition-colors duration-200"
+            class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 transition-colors duration-200 dark:border-neutral-800 dark:bg-neutral-900"
           >
             <img
               :src="getImgUrl(album.picUrl, '400y400')"
@@ -104,7 +103,7 @@ import { navigateToMusicList } from '@/components/common/MusicListNavigator';
 import StickyTabPage from '@/components/common/StickyTabPage.vue';
 import { usePlayerCoreStore } from '@/store/modules/playerCore';
 import { usePlaylistStore } from '@/store/modules/playlist';
-import { calculateAnimationDelay, getImgUrl } from '@/utils';
+import { getImgUrl } from '@/utils';
 
 defineOptions({
   name: 'Album'
@@ -252,17 +251,4 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped>
-.animate-item {
-  animation: fadeInSoft 0.22s ease-out backwards;
-}
-
-@keyframes fadeInSoft {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

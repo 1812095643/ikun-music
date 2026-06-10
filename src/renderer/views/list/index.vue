@@ -23,21 +23,14 @@
       <!-- Content State -->
       <template v-else>
         <div
-          v-for="(item, index) in recommendList"
+          v-for="item in recommendList"
           :key="item.id"
           class="list-card group cursor-pointer"
-          :class="{ 'animate-item': !animatedIds.has(item.id) }"
-          :style="{
-            animationDelay: !animatedIds.has(item.id)
-              ? calculateAnimationDelay(index % TOTAL_ITEMS, 0.05)
-              : '0s'
-          }"
           @click.stop="openPlaylist(item)"
-          @animationend="animatedIds.add(item.id)"
         >
           <!-- Cover Image -->
           <div
-            class="relative aspect-square overflow-hidden rounded-lg shadow-sm transition-colors duration-200"
+            class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 transition-colors duration-200 dark:border-neutral-800 dark:bg-neutral-900"
           >
             <img
               :src="getImgUrl(item.picUrl || item.coverImgUrl, '400y400')"
@@ -90,7 +83,7 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, onDeactivated, onMounted, reactive, ref, watch } from 'vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -99,7 +92,7 @@ import { getListByCat } from '@/api/list';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
 import StickyTabPage from '@/components/common/StickyTabPage.vue';
 import type { IPlayListSort } from '@/types/playlist';
-import { calculateAnimationDelay, formatNumber, getImgUrl } from '@/utils';
+import { formatNumber, getImgUrl } from '@/utils';
 
 defineOptions({
   name: 'List'
@@ -107,12 +100,10 @@ defineOptions({
 
 const { t } = useI18n();
 const TOTAL_ITEMS = 42;
-
 const recommendList = ref<any[]>([]);
 const page = ref(0);
 const hasMore = ref(true);
 const isLoadingMore = ref(false);
-const animatedIds = reactive(new Set<number>());
 const pageRef = ref();
 
 const router = useRouter();
@@ -200,10 +191,6 @@ onMounted(() => {
   loadList(currentType.value);
 });
 
-onDeactivated(() => {
-  recommendList.value.forEach((item) => animatedIds.add(item.id));
-});
-
 watch(
   () => route.query,
   async (newParams) => {
@@ -220,19 +207,6 @@ watch(
 </script>
 
 <style lang="scss" scoped>
-.animate-item {
-  animation: fadeInSoft 0.22s ease-out backwards;
-}
-
-@keyframes fadeInSoft {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 .list-card {
   border-radius: 10px;
   transition: color 160ms var(--qqm-ease);

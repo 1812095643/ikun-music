@@ -650,7 +650,8 @@ onMounted(() => {
     @apply transition-colors duration-200;
 
     &:hover {
-      box-shadow: 0 0 0 1px color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
+      outline: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
+      outline-offset: 1px;
     }
   }
 }

@@ -66,7 +66,7 @@
                     class="avatar-glow absolute -inset-px rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   />
                   <div
-                    class="avatar-container relative w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10"
+                    class="avatar-container relative w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
                   >
                     <img
                       :src="getImgUrl(artistInfo.cover || artistInfo.picUrl, '500y500')"
@@ -304,15 +304,14 @@
                 class="album-grid grid grid-cols-2 gap-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
               >
                 <div
-                  v-for="(album, index) in albums"
+                  v-for="album in albums"
                   :key="album.id"
                   class="album-card group cursor-pointer"
-                  :style="{ animationDelay: calculateAnimationDelay(index, 0.03) }"
                   @click="handleAlbumClick(album)"
                 >
                   <!-- Cover -->
                   <div
-                    class="album-cover relative aspect-square overflow-hidden rounded-lg shadow-sm"
+                    class="album-cover relative aspect-square overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
                   >
                     <img
                       :src="getImgUrl(album.picUrl, '500y500')"
@@ -437,7 +436,7 @@ import { useScrollTitle } from '@/hooks/useScrollTitle';
 import router from '@/router';
 import { usePlayerStore } from '@/store';
 import { IArtist } from '@/types/artist';
-import { calculateAnimationDelay, getImgUrl, isMobile } from '@/utils';
+import { getImgUrl, isMobile } from '@/utils';
 
 defineOptions({
   name: 'ArtistDetail'
@@ -1012,22 +1011,6 @@ const formatSong = (item: any) => {
 /* Compact layout - smaller item height */
 .song-list.compact-mode .song-item-container {
   contain-intrinsic-size: 0 52px;
-}
-
-/* Album Card Animation */
-.album-card {
-  animation: fadeInUp 0.28s var(--qqm-ease, cubic-bezier(0.2, 0, 0, 1)) backwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* Loading Spinner */

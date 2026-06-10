@@ -28,15 +28,14 @@
           <!-- Content State -->
           <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             <div
-              v-for="(item, index) in topList"
+              v-for="item in topList"
               :key="item.id"
-              class="toplist-card group cursor-pointer animate-item"
-              :style="{ animationDelay: calculateAnimationDelay(index, 0.05) }"
+              class="toplist-card group cursor-pointer"
               @click.stop="openToplist(item)"
             >
               <!-- Cover Image -->
               <div
-                class="relative aspect-square overflow-hidden rounded-lg shadow-sm transition-colors duration-200"
+                class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 transition-colors duration-200 dark:border-neutral-800 dark:bg-neutral-900"
               >
                 <img
                   :src="getImgUrl(item.coverImgUrl, '400y400')"
@@ -99,7 +98,7 @@ import { useRouter } from 'vue-router';
 
 import { getToplist } from '@/api/list';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
-import { calculateAnimationDelay, formatNumber, getImgUrl } from '@/utils';
+import { formatNumber, getImgUrl } from '@/utils';
 
 defineOptions({
   name: 'Toplist'
@@ -144,19 +143,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 .toplist-page {
   position: relative;
-}
-
-.animate-item {
-  animation: fadeInSoft 0.22s ease-out backwards;
-}
-
-@keyframes fadeInSoft {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .toplist-card {

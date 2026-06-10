@@ -234,10 +234,10 @@ onMounted(() => {
 
     &.download-link {
       color: #fff;
-      background-color: #007aff;
+      background-color: var(--qqm-primary, #22c55e);
 
       &:hover {
-        background-color: #0062cc;
+        background-color: var(--qqm-primary-strong, #16a34a);
       }
     }
   }
@@ -256,14 +256,14 @@ onMounted(() => {
     height: 180px;
     border-radius: 10px;
     padding: 10px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
     background: white;
   }
 
   p {
     margin-top: 14px;
     font-size: 15px;
-    color: #0062cc;
+    color: var(--qqm-primary, #22c55e);
   }
 }
 
@@ -304,7 +304,7 @@ onMounted(() => {
     height: 220px;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
 
     img {
       width: 100%;
@@ -340,11 +340,11 @@ onMounted(() => {
     padding: 8px 16px;
 
     &.primary {
-      background-color: #007aff;
+      background-color: var(--qqm-primary, #22c55e);
       color: white;
 
       &:hover {
-        background-color: #0062cc;
+        background-color: var(--qqm-primary-strong, #16a34a);
       }
     }
   }

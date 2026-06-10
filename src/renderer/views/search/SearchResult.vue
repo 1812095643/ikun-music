@@ -126,12 +126,7 @@
             <template v-else>
               <!-- Music List Style (Songs) -->
               <div v-if="searchType === SEARCH_TYPE.MUSIC" class="song-results-list">
-                <div
-                  v-for="(item, index) in searchDetail?.songs"
-                  :key="item.id"
-                  class="mb-2 animate-item"
-                  :style="{ animationDelay: calculateAnimationDelay(index % 30, 0.04) }"
-                >
+                <div v-for="(item, index) in searchDetail?.songs" :key="item.id" class="mb-2">
                   <song-item
                     :index="index"
                     :item="formatSong(item)"
@@ -152,12 +147,7 @@
                   v-if="searchType === SEARCH_TYPE.MV"
                   class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
                 >
-                  <div
-                    v-for="(item, index) in searchDetail?.mvs"
-                    :key="item.id"
-                    class="animate-item"
-                    :style="{ animationDelay: calculateAnimationDelay(index % 30, 0.04) }"
-                  >
+                  <div v-for="item in searchDetail?.mvs" :key="item.id">
                     <search-item :item="item" />
                   </div>
                 </div>
@@ -175,24 +165,14 @@
                         key.toString() !== 'mvs'
                       "
                     >
-                      <div
-                        v-for="(item, index) in list"
-                        :key="item.id"
-                        class="animate-item"
-                        :style="{ animationDelay: calculateAnimationDelay(index % 30, 0.04) }"
-                      >
+                      <div v-for="item in list" :key="item.id">
                         <search-item :item="item" />
                       </div>
                     </template>
 
                     <!-- Handle djRadios specifically if they are in searchDetail -->
                     <template v-if="key.toString() === 'djRadios'">
-                      <div
-                        v-for="(item, index) in searchDetail.djRadios"
-                        :key="item.id"
-                        class="animate-item"
-                        :style="{ animationDelay: calculateAnimationDelay(index % 30, 0.04) }"
-                      >
+                      <div v-for="item in searchDetail.djRadios" :key="item.id">
                         <search-item :item="item" />
                       </div>
                     </template>
@@ -249,7 +229,7 @@ import { useScrollTitle } from '@/hooks/useScrollTitle';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSearchStore } from '@/store/modules/search';
 import type { SongResult } from '@/types/music';
-import { calculateAnimationDelay, isElectron, isMobile } from '@/utils';
+import { isElectron, isMobile } from '@/utils';
 
 defineOptions({
   name: 'SearchResult'
@@ -500,19 +480,6 @@ watch(
 <style lang="scss" scoped>
 .search-result-page {
   position: relative;
-}
-
-.animate-item {
-  animation: fadeInSoft 0.22s ease-out backwards;
-}
-
-@keyframes fadeInSoft {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .search-empty-state {

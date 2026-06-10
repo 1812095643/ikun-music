@@ -707,12 +707,12 @@ onActivated(() => {
 
 /* Card animation */
 .hero-card {
-  animation: cardUp 0.5s ease both;
+  animation: cardUp 0.28s var(--qqm-ease, ease) both;
 }
 @keyframes cardUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -722,20 +722,20 @@ onActivated(() => {
 
 /* FM background flow animation when playing */
 .fm-bg-flow {
-  animation: bgFlow 8s ease-in-out infinite alternate;
+  animation: bgFlow 12s ease-in-out infinite alternate;
 }
 @keyframes bgFlow {
   0% {
-    transform: scale(1.5) translate(0, 0);
+    transform: scale(1.08) translate(0, 0);
   }
   33% {
-    transform: scale(1.6) translate(-3%, 2%);
+    transform: scale(1.1) translate(-1%, 1%);
   }
   66% {
-    transform: scale(1.55) translate(2%, -2%);
+    transform: scale(1.09) translate(1%, -1%);
   }
   100% {
-    transform: scale(1.5) translate(-1%, 1%);
+    transform: scale(1.08) translate(-0.5%, 0.5%);
   }
 }
 
@@ -766,7 +766,7 @@ onActivated(() => {
     transform: scaleY(1);
   }
   50% {
-    transform: scaleY(1.6);
+    transform: scaleY(1.28);
   }
 }
 

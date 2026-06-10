@@ -174,10 +174,10 @@ const formatDuration = (ms: number): string => {
 
 <style lang="scss" scoped>
 .compact-song-item {
-  @apply rounded-lg p-2 h-12 mb-1 border-b dark:border-gray-800 border-gray-100;
+  @apply rounded-lg p-2 h-12 mb-1 border-b border-neutral-100 dark:border-neutral-800;
 
   &:hover {
-    @apply bg-gray-50 dark:bg-gray-700;
+    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, transparent);
 
     .opacity-0 {
       opacity: 1;

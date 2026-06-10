@@ -61,7 +61,7 @@
                     class="absolute -inset-px rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   />
                   <div
-                    class="relative w-28 h-28 md:w-40 md:h-40 rounded-full overflow-hidden shadow-sm ring-1 ring-white/60 dark:ring-neutral-800/60"
+                    class="relative w-28 h-28 md:w-40 md:h-40 rounded-full overflow-hidden border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
                   >
                     <img
                       :src="getImgUrl(userDetail.profile.avatarUrl, '300y300')"

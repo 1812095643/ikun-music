@@ -1565,7 +1565,8 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
     // 统一控制区域
     .unified-controls {
       @apply fixed bottom-0 left-0 right-0 px-6 pt-6 pb-6;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%);
+      background: color-mix(in srgb, var(--bg-color, #111111) 88%, transparent);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
       height: 230px;
       pointer-events: auto;
       z-index: 10000 !important;
@@ -1952,7 +1953,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
   .unified-controls {
     &.fullscreen-mode {
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.52) 0%, rgba(0, 0, 0, 0) 100%);
+      background: color-mix(in srgb, var(--bg-color, #111111) 88%, transparent);
     }
 
     .back-button {

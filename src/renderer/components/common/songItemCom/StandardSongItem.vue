@@ -151,10 +151,6 @@ const onPlayNext = () => {
 
 <style lang="scss" scoped>
 .standard-song-item {
-  &:hover {
-    @apply bg-light-100 dark:bg-dark-100;
-  }
-
   .song-item-img {
     @apply w-12 h-12 rounded-[9px] mr-4;
   }
@@ -172,7 +168,7 @@ const onPlayNext = () => {
   }
 
   .song-item-operating {
-    @apply flex items-center rounded-lg ml-4 border dark:border-gray-700 border-gray-200 bg-light dark:bg-black;
+    @apply flex items-center rounded-lg ml-4 border border-neutral-100 bg-white dark:border-neutral-800 dark:bg-neutral-900;
 
     .iconfont {
       @apply text-xl;

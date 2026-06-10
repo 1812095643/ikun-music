@@ -269,7 +269,7 @@
       >
         <div
           v-if="showModeHint"
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/60 px-6 py-4 rounded-lg flex flex-col items-center gap-2 pointer-events-none z-50"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/45 px-4 py-3 rounded-lg flex flex-col items-center gap-1.5 pointer-events-none z-50"
         >
           <n-icon size="32" class="text-primary">
             <i :class="playMode === 'single' ? 'ri-repeat-one-line' : 'ri-play-list-line'"></i>

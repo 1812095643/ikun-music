@@ -61,7 +61,7 @@
                 <!-- Avatar -->
                 <div class="relative mx-auto w-fit">
                   <div
-                    class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden shadow-sm ring-1 ring-neutral-100 dark:ring-neutral-800 group-hover:ring-primary/30 transition-colors duration-200"
+                    class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border border-neutral-100 bg-neutral-50 transition-colors duration-200 group-hover:border-primary/30 dark:border-neutral-800 dark:bg-neutral-900"
                   >
                     <img
                       :src="getImgUrl(item.avatarUrl, '100y100')"
@@ -73,7 +73,7 @@
                   <!-- Artist Badge -->
                   <div
                     v-if="isArtist(item)"
-                    class="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-white dark:bg-neutral-800 flex items-center justify-center shadow-sm"
+                    class="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-white dark:bg-neutral-800 flex items-center justify-center border border-neutral-100 dark:border-neutral-700"
                   >
                     <i class="ri-verified-badge-fill text-primary text-sm" />
                   </div>

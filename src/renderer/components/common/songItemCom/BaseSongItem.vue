@@ -112,7 +112,32 @@ defineExpose({
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  @apply rounded-lg p-3 flex items-center transition-colors bg-transparent dark:text-white text-gray-900;
+  @apply rounded-lg p-3 flex items-center bg-transparent dark:text-white text-gray-900;
+  position: relative;
+  transition:
+    background-color 180ms var(--qqm-ease, ease),
+    color 180ms var(--qqm-ease, ease);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    border-radius: 999px;
+    background: var(--qqm-primary, #22c55e);
+    opacity: 0;
+    transition: opacity 180ms var(--qqm-ease, ease);
+  }
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, transparent);
+  }
+
+  &:hover::before {
+    opacity: 1;
+  }
 }
 
 .text-ellipsis {

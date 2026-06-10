@@ -23,13 +23,12 @@
         <div
           v-for="(item, index) in mvList"
           :key="item.id"
-          class="mv-card group cursor-pointer animate-item"
-          :style="{ animationDelay: calculateAnimationDelay(index, 0.05) }"
+          class="mv-card group cursor-pointer"
           @click="handleShowMv(item, index)"
         >
           <!-- Cover Image -->
           <div
-            class="relative aspect-video overflow-hidden rounded-lg shadow-sm transition-opacity duration-200"
+            class="relative aspect-video overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 transition-colors duration-200 dark:border-neutral-800 dark:bg-neutral-900"
           >
             <img
               :src="getImgUrl(item.cover, '400y225')"
@@ -109,7 +108,7 @@ import MvPlayer from '@/components/MvPlayer.vue';
 import { audioService } from '@/services/audioService';
 import { usePlayerStore } from '@/store/modules/player';
 import { IMvItem } from '@/types/mv';
-import { calculateAnimationDelay, formatNumber, getImgUrl } from '@/utils';
+import { formatNumber, getImgUrl } from '@/utils';
 
 defineOptions({
   name: 'Mv'
@@ -248,19 +247,6 @@ const isPrevDisabled = computed(() => currentIndex.value === 0);
 </script>
 
 <style scoped lang="scss">
-.animate-item {
-  animation: fadeInSoft 0.22s ease-out backwards;
-}
-
-@keyframes fadeInSoft {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 .mv-card {
   border-radius: 10px;
   transition: color 160ms var(--qqm-ease);

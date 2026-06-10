@@ -26,7 +26,7 @@
                     class="cover-glow absolute -inset-px rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   ></div>
                   <div
-                    class="cover-container relative w-48 h-48 md:w-64 md:h-64 rounded-lg overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10"
+                    class="cover-container relative w-48 h-48 md:w-64 md:h-64 rounded-lg overflow-hidden border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
                   >
                     <n-image
                       :src="getImgUrl(getCoverImgUrl, '500y500')"
@@ -247,17 +247,7 @@
           </div>
 
           <div v-else class="song-list-container">
-            <div
-              v-for="(item, index) in filteredSongs"
-              :key="item.id"
-              class="mb-2"
-              :class="{ 'animate-item': index < initialAnimateCount }"
-              :style="
-                index < initialAnimateCount
-                  ? { animationDelay: calculateAnimationDelay(index, 0.03) }
-                  : undefined
-              "
-            >
+            <div v-for="(item, index) in filteredSongs" :key="item.id" class="mb-2">
               <song-item
                 :index="index"
                 :compact="isCompactLayout"
@@ -319,7 +309,7 @@ import { useScrollTitle } from '@/hooks/useScrollTitle';
 import { useMusicStore, usePlayerStore, useRecommendStore, useUserStore } from '@/store';
 import { usePlayHistoryStore } from '@/store/modules/playHistory';
 import { SongResult } from '@/types/music';
-import { calculateAnimationDelay, getImgUrl, isElectron, isMobile } from '@/utils';
+import { getImgUrl, isElectron, isMobile } from '@/utils';
 import { getLoginErrorMessage, hasPermission } from '@/utils/auth';
 
 defineOptions({
@@ -874,21 +864,6 @@ onMounted(checkCollectionStatus);
   transition:
     background-color 0.3s,
     border-color 0.2s;
-}
-
-.animate-item {
-  animation: fadeInUp 0.28s var(--qqm-ease, cubic-bezier(0.2, 0, 0, 1)) backwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .action-btn-pill {

@@ -166,13 +166,8 @@ watch(
     @apply bg-transparent;
     height: auto; /* 自动适应内容高度 */
     max-height: 230px; /* 限制最大高度 */
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.5) 20%,
-      rgba(0, 0, 0, 0.8) 80%,
-      rgba(0, 0, 0, 0.9) 100%
-    );
+    background: color-mix(in srgb, var(--qqm-surface, #ffffff) 92%, transparent);
+    border-top: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
   }
 
   &.play-bar-mini {
