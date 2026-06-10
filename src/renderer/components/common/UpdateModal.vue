@@ -64,7 +64,7 @@
 
       <div
         v-if="showErrorCard"
-        class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200"
+        class="mb-6 rounded-xl border border-primary/10 bg-primary/5 p-4 text-sm text-neutral-700 dark:border-primary/15 dark:bg-primary/10 dark:text-neutral-300"
       >
         <div class="mb-1 font-semibold">{{ t('comp.update.autoUpdateFailed') }}</div>
         <div>{{ errorText }}</div>

@@ -269,15 +269,15 @@ const isPrevDisabled = computed(() => currentIndex.value === 0);
 
   > div:first-child {
     border: 1px solid var(--qqm-border);
-    box-shadow: 0 8px 18px rgba(20, 24, 31, 0.06);
+    box-shadow: 0 4px 12px rgba(20, 24, 31, 0.045);
   }
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
 
     > div:first-child {
       border-color: rgba(30, 207, 115, 0.18);
-      box-shadow: 0 10px 22px rgba(20, 24, 31, 0.08);
+      box-shadow: 0 6px 14px rgba(20, 24, 31, 0.06);
     }
 
     h3 {

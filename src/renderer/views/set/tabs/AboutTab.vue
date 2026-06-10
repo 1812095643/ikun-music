@@ -8,7 +8,7 @@
             {{ t('settings.about.hasUpdate') }} {{ updateInfo.latestVersion }}
           </n-tag>
         </div>
-        <div v-if="hasManualUpdateFallback" class="mt-2 text-xs text-amber-600">
+        <div v-if="hasManualUpdateFallback" class="mt-2 text-xs text-primary">
           <i class="ri-information-line mr-1"></i>
           {{ appUpdateState.errorMessage || t('settings.about.messages.checkError') }}
         </div>

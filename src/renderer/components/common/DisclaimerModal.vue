@@ -16,11 +16,11 @@
           <div class="px-6 py-6">
             <div class="space-y-4 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
               <div
-                class="p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+                class="p-4 rounded-xl bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/15"
               >
                 <div class="flex items-start gap-3">
-                  <i class="ri-alert-line text-amber-500 text-xl flex-shrink-0 mt-0.5"></i>
-                  <p class="text-amber-700 dark:text-amber-300">
+                  <i class="ri-alert-line text-primary text-xl flex-shrink-0 mt-0.5"></i>
+                  <p class="text-neutral-700 dark:text-neutral-300">
                     {{ t('comp.disclaimer.warning') }}
                   </p>
                 </div>

@@ -170,7 +170,7 @@
         <div class="text-sm text-gray-500 mb-2">
           {{ t('settings.basic.gpuAccelerationDesc') }}
         </div>
-        <div v-if="gpuAccelerationChanged" class="text-xs text-amber-500">
+        <div v-if="gpuAccelerationChanged" class="text-xs text-primary">
           <i class="ri-information-line mr-1"></i>
           {{ t('settings.basic.gpuAccelerationRestart') }}
         </div>

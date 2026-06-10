@@ -151,9 +151,9 @@ const AVATAR_COLORS = [
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
   'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
-  'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
+  'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
   'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
-  'bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400',
+  'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary'
 ];
 

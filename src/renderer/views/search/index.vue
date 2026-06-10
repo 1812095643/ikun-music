@@ -19,11 +19,11 @@
         <!-- Hot Search Section -->
         <div class="space-y-12">
           <section>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1">
               <div
                 v-for="(item, index) in hotSearchData?.data"
                 :key="index"
-                class="hot-search-card group flex items-center gap-4 p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900/50 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 cursor-pointer transition-all duration-300 animate-item"
+                class="hot-search-card group flex items-center gap-4 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-300 animate-item"
                 :style="{ animationDelay: calculateAnimationDelay(index, 0.03) }"
                 @click="handleSearch(item.searchWord)"
               >
@@ -57,7 +57,7 @@
                 {{ t('search.title.searchHistory') }}
               </h2>
               <button
-                class="text-xs text-neutral-400 hover:text-red-500 transition-colors"
+                class="text-xs text-neutral-400 hover:text-primary transition-colors"
                 @click="clearSearchHistory"
               >
                 {{ t('search.button.clear') }}
@@ -67,12 +67,12 @@
               <div
                 v-for="(item, index) in searchHistory"
                 :key="index"
-                class="group relative flex items-center gap-2 px-4 py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-900 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all cursor-pointer"
+                class="group relative flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-neutral-100/80 dark:bg-neutral-900/80 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors cursor-pointer"
                 @click="handleSearch(item.keyword, item.type)"
               >
                 <span>{{ item.keyword }}</span>
                 <i
-                  class="ri-close-line text-neutral-400 hover:text-red-500 transition-colors"
+                  class="ri-close-line text-neutral-400 hover:text-primary transition-colors"
                   @click.stop="handleCloseSearchHistory(item)"
                 />
               </div>
@@ -187,15 +187,12 @@ onMounted(() => {
 }
 
 .hot-search-card {
-  border: 1px solid var(--qqm-border);
-  background: color-mix(in srgb, var(--qqm-surface) 70%, transparent) !important;
-  box-shadow: 0 6px 16px rgba(20, 24, 31, 0.045);
-  backdrop-filter: blur(12px) saturate(1.04);
+  border-bottom: 1px solid var(--qqm-border);
+  background: transparent !important;
 
   &:hover {
-    border-color: rgba(30, 207, 115, 0.16);
-    background: color-mix(in srgb, var(--qqm-surface-muted) 72%, transparent) !important;
-    transform: translateY(-1px);
+    background: color-mix(in srgb, var(--qqm-primary-soft) 42%, transparent) !important;
+    transform: translateX(2px);
 
     .hot-search-item-count {
       @apply text-primary;

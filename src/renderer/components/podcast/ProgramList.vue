@@ -108,42 +108,44 @@ const playProgram = async (program: DjProgram) => {
 <template>
   <div class="program-list">
     <n-spin :show="loading">
-      <div v-if="programs.length === 0" class="text-center py-12 text-gray-400">暂无节目</div>
+      <div v-if="programs.length === 0" class="text-center py-12 text-neutral-400">暂无节目</div>
 
       <div v-else class="space-y-2">
         <div
           v-for="program in programs"
           :key="program.id"
-          class="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer group"
+          class="program-row flex items-center gap-4 px-3 py-2.5 rounded-lg cursor-pointer group"
           @click="playProgram(program)"
         >
           <div class="relative flex-shrink-0 w-16 h-16">
             <img
               :src="getImgUrl(program.coverUrl, '100y100')"
               :alt="program.mainSong.name"
-              class="w-full h-full rounded object-cover"
+              class="w-full h-full rounded-lg object-cover"
             />
             <div
-              class="absolute inset-0 bg-black/40 rounded opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+              class="absolute inset-0 bg-black/35 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
             >
               <i class="ri-play-fill text-white text-2xl"></i>
             </div>
           </div>
 
           <div class="flex-1 min-w-0">
-            <h4 class="text-sm font-medium truncate">
+            <h4
+              class="text-sm font-medium truncate text-neutral-900 dark:text-neutral-100 group-hover:text-primary transition-colors"
+            >
               {{ program.mainSong.name || program.name }}
             </h4>
-            <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
+            <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-1">
               {{ program.description }}
             </p>
-            <div class="text-xs text-gray-400 mt-1">
+            <div class="text-xs text-neutral-400 mt-1">
               {{ formatDate(program.createTime) }} ·
               {{ secondToMinute(program.mainSong.duration / 1000) }}
             </div>
           </div>
 
-          <div class="flex-shrink-0 text-xs text-gray-400 text-right">
+          <div class="flex-shrink-0 text-xs text-neutral-400 text-right">
             <div>{{ formatNumber(program.listenerCount) }} {{ $t('podcast.listeners') }}</div>
             <div class="mt-1">{{ formatNumber(program.commentCount) }} 评论</div>
           </div>
@@ -152,3 +154,16 @@ const playProgram = async (program: DjProgram) => {
     </n-spin>
   </div>
 </template>
+<style scoped>
+.program-row {
+  border-bottom: 1px solid var(--qqm-border);
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.program-row:hover {
+  background: color-mix(in srgb, var(--qqm-primary-soft) 42%, transparent);
+  transform: translateX(2px);
+}
+</style>
