@@ -78,7 +78,7 @@
                   <!-- Badge -->
                   <div class="mb-2 md:mb-3" v-if="isArtist(userDetail.profile)">
                     <span
-                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
+                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
                     >
                       <i class="ri-verified-badge-fill text-sm" />
                       {{ t('user.detail.artist') }}
@@ -198,7 +198,7 @@
                     />
                     <!-- Play Count Overlay -->
                     <div
-                      class="absolute top-2 right-2 px-2 py-0.5 rounded-full text-xs bg-black/50 text-white flex items-center gap-1"
+                      class="absolute top-2 right-2 px-2 py-0.5 rounded-md text-xs bg-black/50 text-white flex items-center gap-1"
                     >
                       <i class="ri-play-fill" />
                       {{ formatNumber(item.playCount) }}
@@ -208,7 +208,7 @@
                       class="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/20 group-hover:opacity-100 transition-all duration-300"
                     >
                       <div
-                        class="w-11 h-11 rounded-full bg-white/90 flex items-center justify-center scale-90 group-hover:scale-100 transition-transform duration-300 shadow-md"
+                        class="w-11 h-11 rounded-full bg-white/90 flex items-center justify-center translate-y-1 group-hover:translate-y-0 transition-transform duration-300 shadow-md"
                       >
                         <i class="ri-play-fill text-xl text-neutral-900 ml-0.5" />
                       </div>

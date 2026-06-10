@@ -50,7 +50,7 @@
                   class="absolute inset-0 bg-transparent group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center"
                 >
                   <div
-                    class="play-icon w-11 h-11 rounded-full bg-white/90 flex items-center justify-center opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 shadow-md"
+                    class="play-icon w-11 h-11 rounded-full bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md"
                   >
                     <i class="ri-play-fill text-2xl text-neutral-900 ml-1"></i>
                   </div>
@@ -189,7 +189,8 @@ onMounted(() => {
     }
 
     .play-icon {
-      @apply opacity-100 scale-100;
+      @apply opacity-100;
+      transform: translateY(0);
     }
   }
 }

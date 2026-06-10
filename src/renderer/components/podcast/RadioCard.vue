@@ -39,7 +39,7 @@ const goToDetail = () => {
         class="absolute inset-0 bg-transparent group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center"
       >
         <div
-          class="w-11 h-11 rounded-[10px] bg-white/90 flex items-center justify-center opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 shadow-md"
+          class="w-11 h-11 rounded-[10px] bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md"
         >
           <i class="ri-play-fill text-2xl text-neutral-900 ml-0.5"></i>
         </div>

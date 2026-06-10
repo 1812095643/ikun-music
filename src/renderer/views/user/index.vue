@@ -546,7 +546,7 @@ const currentLoginType = computed(() => userStore.loginType);
       }
 
       .play-score {
-        @apply text-gray-500 dark:text-gray-400 mr-2 text-lg w-10 h-10 rounded-full flex items-center justify-center;
+        @apply text-gray-500 dark:text-gray-400 mr-2 text-lg w-10 h-10 rounded-lg flex items-center justify-center;
       }
     }
 
@@ -595,7 +595,7 @@ const currentLoginType = computed(() => userStore.loginType);
       @apply text-gray-900 dark:text-white text-base flex items-center gap-2;
 
       .playlist-creator-tag {
-        @apply inline-flex items-center justify-center px-2 rounded-full text-xs;
+        @apply inline-flex items-center justify-center px-2 rounded-md text-xs;
         @apply bg-light-300 text-primary dark:bg-dark-300 dark:text-white;
         @apply border border-primary/20 dark:border-primary/30;
         height: 18px;

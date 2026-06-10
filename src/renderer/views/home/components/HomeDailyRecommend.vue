@@ -63,7 +63,7 @@
             class="play-overlay absolute inset-0 flex items-center justify-center rounded-xl bg-black/0 opacity-0 backdrop-blur-0 transition-all duration-300 group-hover:bg-black/10 group-hover:opacity-100 group-hover:backdrop-blur-[2px]"
           >
             <div
-              class="play-button flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-white shadow-md transition-all duration-300 scale-95 group-hover:scale-100 hover:-translate-y-0.5 active:scale-95"
+              class="play-button flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-white shadow-md transition-all duration-300 translate-y-1 group-hover:translate-y-0 hover:-translate-y-0.5 active:translate-y-0"
             >
               <i class="iconfont icon-playfill text-lg md:text-2xl text-neutral-900 ml-0.5" />
             </div>
