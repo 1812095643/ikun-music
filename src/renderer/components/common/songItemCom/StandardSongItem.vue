@@ -75,8 +75,8 @@
           {{ t('songItem.menu.playNext') }}
         </n-tooltip>
         <div
-          class="song-item-operating-play bg-gray-300 dark:bg-gray-800 animate__animated"
-          :class="{ 'bg-primary': isPlaying, animate__flipInY: playLoading }"
+          class="song-item-operating-play bg-gray-300 dark:bg-gray-800"
+          :class="{ 'bg-primary': isPlaying, 'is-loading': playLoading }"
           @click="onPlayMusic"
         >
           <i v-if="isPlaying && play" class="iconfont icon-stop"></i>
@@ -217,5 +217,9 @@ const onPlayNext = () => {
   .song-item-select {
     @apply mr-3 cursor-pointer;
   }
+}
+
+.is-loading {
+  opacity: 0.72;
 }
 </style>

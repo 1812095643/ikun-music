@@ -67,8 +67,8 @@
           ></i>
         </div>
         <div
-          class="song-item-operating-play bg-gray-300 dark:bg-gray-800 animate__animated"
-          :class="{ 'bg-primary': isPlaying, animate__flipInY: playLoading }"
+          class="song-item-operating-play bg-gray-300 dark:bg-gray-800"
+          :class="{ 'bg-primary': isPlaying, 'is-loading': playLoading }"
           @click="onPlayMusic"
         >
           <i v-if="isPlaying && play" class="iconfont icon-stop"></i>
@@ -195,7 +195,7 @@ const onPlayMusic = () => {
         color: rgb(107 114 128); /* text-gray-500 */
 
         &:hover {
-          color: rgb(239 68 68); /* hover:text-red-500 */
+          color: rgb(239 68 68);
         }
       }
 
@@ -257,5 +257,9 @@ const onPlayMusic = () => {
       color: white; /* dark:text-white */
     }
   }
+}
+
+.is-loading {
+  opacity: 0.72;
 }
 </style>

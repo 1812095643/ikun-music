@@ -70,8 +70,8 @@
           ></i>
         </div>
         <div
-          class="song-item-operating-list-play bg-gray-300 dark:bg-gray-800 animate__animated"
-          :class="{ 'bg-primary': isPlaying, animate__flipInY: playLoading }"
+          class="song-item-operating-list-play bg-gray-300 dark:bg-gray-800"
+          :class="{ 'bg-primary': isPlaying, 'is-loading': playLoading }"
           @click="onPlayMusic"
         >
           <i v-if="isPlaying && play" class="iconfont icon-stop"></i>
@@ -202,7 +202,7 @@ const onPlayMusic = () => {
       transition-duration: 0.15s;
 
       &:hover {
-        transform: translateY(-1px);
+        background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, transparent);
       }
 
       .iconfont {
@@ -210,7 +210,7 @@ const onPlayMusic = () => {
         color: rgb(107 114 128); /* text-gray-500 */
 
         &:hover {
-          color: rgb(239 68 68); /* hover:text-red-500 */
+          color: rgb(239 68 68);
         }
       }
 
@@ -231,7 +231,7 @@ const onPlayMusic = () => {
       align-items: center;
 
       &:hover {
-        transform: translateY(-1px);
+        background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, transparent);
       }
 
       .iconfont {
@@ -268,5 +268,9 @@ const onPlayMusic = () => {
   .song-item-operating-list-like .iconfont {
     color: rgb(156 163 175); /* dark:text-gray-400 */
   }
+}
+
+.is-loading {
+  opacity: 0.72;
 }
 </style>

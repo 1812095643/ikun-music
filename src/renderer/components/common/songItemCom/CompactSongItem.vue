@@ -76,10 +76,10 @@
           ></i>
         </div>
         <div
-          class="song-item-operating-play animate__animated"
+          class="song-item-operating-play"
           :class="{
             'bg-primary': isPlaying,
-            animate__flipInY: playLoading,
+            'is-loading': playLoading,
             'opacity-0': !isHovering && !isPlaying
           }"
           @click="onPlayMusic"
@@ -226,7 +226,7 @@ const formatDuration = (ms: number): string => {
     }
 
     .song-item-operating-play {
-      @apply w-7 h-7 flex items-center justify-center cursor-pointer rounded-full bg-gray-300 dark:bg-gray-800 border dark:border-gray-700 border-gray-200 text-gray-900 dark:text-white;
+      @apply w-7 h-7 flex items-center justify-center cursor-pointer rounded-[9px] bg-gray-300 dark:bg-gray-800 border dark:border-gray-700 border-gray-200 text-gray-900 dark:text-white;
 
       &:hover,
       &.bg-primary {
@@ -271,5 +271,9 @@ const formatDuration = (ms: number): string => {
 // 全局应用
 :deep(.text-ellipsis) {
   width: 100%;
+}
+
+.is-loading {
+  opacity: 0.72;
 }
 </style>
