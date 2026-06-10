@@ -154,7 +154,7 @@
                         v-else
                         v-model="editingName"
                         ref="renameInputRef"
-                        class="w-full px-2 py-0.5 text-sm bg-white dark:bg-black/20 border border-primary rounded focus:outline-none"
+                        class="music-source-rename-input w-full px-2 py-0.5 text-sm rounded focus:outline-none"
                         @blur="saveScriptName(api.id)"
                         @keyup.enter="saveScriptName(api.id)"
                       />
@@ -768,5 +768,21 @@ watch(
 
 .music-source-form {
   border-top: 1px solid var(--qqm-border);
+}
+
+.music-source-rename-input {
+  border: 1px solid
+    color-mix(in srgb, var(--qqm-primary, #22c55e) 32%, var(--qqm-border, rgba(15, 23, 42, 0.08)));
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 92%, transparent);
+  color: var(--qqm-text, #111827);
+  transition:
+    border-color 160ms var(--qqm-ease, ease),
+    background-color 160ms var(--qqm-ease, ease),
+    box-shadow 160ms var(--qqm-ease, ease);
+}
+
+.music-source-rename-input:focus {
+  border-color: var(--qqm-primary, #22c55e);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
 }
 </style>

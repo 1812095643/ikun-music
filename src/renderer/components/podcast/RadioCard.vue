@@ -46,7 +46,7 @@ const goToDetail = () => {
       <!-- Recent played badge -->
       <div
         v-if="program"
-        class="absolute bottom-0 left-0 right-0 px-3 py-2 bg-black/35 text-white text-xs truncate"
+        class="radio-card-caption absolute bottom-0 left-0 right-0 px-3 py-2 text-white text-xs truncate"
       >
         {{ program.mainSong?.name || program.name }}
       </div>
@@ -96,5 +96,14 @@ const goToDetail = () => {
 
 .radio-play-icon:hover {
   color: var(--qqm-primary, #22c55e);
+}
+
+.radio-card-caption {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, #0f172a 46%, transparent) 100%
+  );
+  backdrop-filter: blur(4px) saturate(1.04);
 }
 </style>

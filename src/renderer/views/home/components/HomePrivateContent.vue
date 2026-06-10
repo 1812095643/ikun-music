@@ -39,7 +39,7 @@
           />
 
           <!-- Gradient Overlay -->
-          <div class="absolute inset-0 bg-black/35" />
+          <div class="private-cover-overlay absolute inset-0" />
 
           <!-- Exclusive Badge -->
           <div
@@ -140,5 +140,13 @@ onMounted(() => {
 .qqm-private-card:hover {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.private-cover-overlay {
+  background: linear-gradient(
+    180deg,
+    transparent 12%,
+    color-mix(in srgb, #0f172a 34%, transparent) 100%
+  );
 }
 </style>

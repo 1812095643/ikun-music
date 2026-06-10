@@ -50,7 +50,7 @@
                   backgroundImage: `url(${getImgUrl(artistInfo.cover || artistInfo.picUrl, '800y800')})`
                 }"
               />
-              <div class="absolute inset-0 bg-white/99 dark:bg-black/99" />
+              <div class="artist-hero-wash absolute inset-0" />
             </div>
 
             <!-- Hero Content -->
@@ -949,11 +949,23 @@ const formatSong = (item: any) => {
   min-height: 44px;
 }
 
+.artist-hero-wash {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--qqm-bg, #f7f8fa) 94%, transparent) 0%,
+      var(--qqm-bg, #f7f8fa) 72%
+    ),
+    color-mix(in srgb, var(--qqm-surface, #ffffff) 92%, transparent);
+  backdrop-filter: blur(14px) saturate(1.04);
+}
+
 .artist-secondary-button,
 .artist-tool-button {
   border: 1px solid color-mix(in srgb, var(--qqm-border) 72%, transparent);
-  background: rgba(255, 255, 255, 0.9);
-  color: #525252;
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 90%, transparent);
+  color: color-mix(in srgb, var(--qqm-text, #111827) 76%, var(--qqm-muted, #737373));
+  backdrop-filter: blur(12px) saturate(1.05);
 }
 
 .artist-secondary-button:hover,
@@ -978,7 +990,8 @@ const formatSong = (item: any) => {
 
 .artist-search-box {
   border: 1px solid color-mix(in srgb, var(--qqm-border) 72%, transparent);
-  background: rgba(255, 255, 255, 0.92);
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 92%, transparent);
+  backdrop-filter: blur(12px) saturate(1.05);
 }
 
 .artist-tab-list {
@@ -1010,7 +1023,17 @@ const formatSong = (item: any) => {
 .dark .artist-search-box,
 .dark .artist-tab-list {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, transparent);
-  background: color-mix(in srgb, #050505 90%, var(--qqm-primary, #22c55e) 8%);
+  background: color-mix(in srgb, var(--qqm-surface, #101112) 88%, var(--qqm-primary, #22c55e) 6%);
+}
+
+.dark .artist-hero-wash {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--qqm-bg, #050505) 92%, transparent) 0%,
+      var(--qqm-bg, #050505) 72%
+    ),
+    color-mix(in srgb, var(--qqm-surface, #101112) 90%, transparent);
 }
 
 .artist-tab-indicator {

@@ -28,7 +28,7 @@
         >
           <i :class="item.icon" class="text-sm" />
           <span class="whitespace-nowrap">{{ item.label }}</span>
-          <span v-if="item.active" class="h-[5px] w-[5px] rounded-full bg-white/50" />
+          <span v-if="item.active" class="hero-nav-active-dot h-[5px] w-[5px] rounded-full" />
         </button>
       </nav>
 
@@ -53,7 +53,7 @@
               @load="extractDailyColor"
             />
             <!-- Gradient Overlay -->
-            <div class="absolute inset-0 bg-black/35" />
+            <div class="hero-cover-overlay absolute inset-0" />
 
             <!-- Content -->
             <div class="relative flex h-full flex-col justify-between p-5 md:p-6">
@@ -93,7 +93,7 @@
                   </div>
                 </div>
                 <button
-                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-white/50 bg-white/90 text-neutral-900 transition-colors duration-200 hover:bg-white"
+                  class="hero-play-button flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg text-neutral-900 transition-colors duration-200"
                   @click.stop="playDayRecommend"
                 >
                   <i class="ri-play-fill ml-0.5 text-xl" />
@@ -170,7 +170,7 @@
                       <i class="ri-thumb-down-line text-lg" />
                     </button>
                     <button
-                      class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20 text-white transition-colors duration-200 hover:bg-white/30"
+                      class="hero-glass-action flex h-9 w-9 items-center justify-center rounded-lg text-white transition-colors duration-200"
                       @click.stop="handleFmPlay"
                     >
                       <i
@@ -242,8 +242,8 @@
             <div
               :class="
                 hotPlaylists.length > 0
-                  ? 'absolute inset-0 bg-black/25 transition-colors duration-200 group-hover:bg-black/30'
-                  : 'absolute inset-0 bg-white/10 dark:bg-black/10'
+                  ? 'hero-playlist-overlay absolute inset-0 transition-colors duration-200'
+                  : 'hero-empty-overlay absolute inset-0'
               "
             />
             <!-- Content -->
@@ -254,7 +254,9 @@
               <span
                 :class="[
                   'inline-flex w-fit items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold',
-                  hotPlaylists.length > 0 ? 'bg-black/35 text-white' : 'bg-primary/10 text-primary'
+                  hotPlaylists.length > 0
+                    ? 'hero-playlist-count text-white'
+                    : 'bg-primary/10 text-primary'
                 ]"
               >
                 <i class="ri-play-list-2-line" />
@@ -285,7 +287,7 @@
                   :class="[
                     'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-colors duration-200',
                     hotPlaylists.length > 0
-                      ? 'bg-white/22 text-white hover:bg-white/30'
+                      ? 'hero-glass-action text-white'
                       : 'bg-primary/10 text-primary hover:bg-primary/15'
                   ]"
                 >
@@ -800,5 +802,55 @@ onActivated(() => {
 .qqm-hero-card:hover {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.hero-nav-active-dot {
+  background: color-mix(in srgb, #ffffff 62%, var(--qqm-primary, #22c55e) 18%);
+}
+
+.hero-cover-overlay {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, #0f172a 16%, transparent),
+    color-mix(in srgb, #0f172a 38%, transparent)
+  );
+}
+
+.hero-play-button {
+  border: 1px solid color-mix(in srgb, #ffffff 58%, transparent);
+  background: color-mix(in srgb, #ffffff 88%, transparent);
+  backdrop-filter: blur(10px) saturate(1.08);
+}
+
+.hero-play-button:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 28%, #ffffff);
+  background: color-mix(in srgb, #ffffff 94%, var(--qqm-primary, #22c55e) 6%);
+}
+
+.hero-glass-action {
+  border: 1px solid color-mix(in srgb, #ffffff 18%, transparent);
+  background: color-mix(in srgb, #ffffff 18%, transparent);
+  backdrop-filter: blur(10px) saturate(1.08);
+}
+
+.hero-glass-action:hover {
+  background: color-mix(in srgb, #ffffff 26%, transparent);
+}
+
+.hero-playlist-overlay {
+  background: color-mix(in srgb, #0f172a 24%, transparent);
+}
+
+.group:hover .hero-playlist-overlay {
+  background: color-mix(in srgb, #0f172a 30%, transparent);
+}
+
+.hero-empty-overlay {
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 10%, transparent);
+}
+
+.hero-playlist-count {
+  background: color-mix(in srgb, #0f172a 38%, transparent);
+  backdrop-filter: blur(8px) saturate(1.06);
 }
 </style>

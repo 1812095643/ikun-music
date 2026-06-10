@@ -19,7 +19,7 @@
             </div>
           </div>
           <div class="h-4 w-3/4 skeleton-shimmer rounded-lg" />
-          <div class="mt-4 rounded-lg bg-light p-4 dark:bg-black">
+          <div class="user-skeleton-panel mt-4 rounded-lg p-4">
             <div class="mb-4 h-8 w-full skeleton-shimmer rounded-lg" />
             <div class="space-y-4">
               <div v-for="i in 5" :key="i" class="flex gap-3">
@@ -35,7 +35,7 @@
       </div>
       <div v-if="!isMobile" class="right">
         <div class="title"><div class="h-8 w-32 skeleton-shimmer rounded-lg" /></div>
-        <div class="rounded-lg bg-light p-4 dark:bg-black">
+        <div class="user-skeleton-panel rounded-lg p-4">
           <div class="space-y-2">
             <div
               v-for="i in 10"
@@ -634,5 +634,11 @@ const currentLoginType = computed(() => userStore.loginType);
 .user-profile-row {
   border: 1px solid var(--qqm-border);
   background: var(--qqm-surface-2, var(--qqm-surface));
+}
+
+.user-skeleton-panel {
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 72%, transparent);
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 92%, transparent);
+  backdrop-filter: blur(10px) saturate(1.04);
 }
 </style>

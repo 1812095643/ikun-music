@@ -7,7 +7,7 @@
         @click.self="close"
       >
         <!-- 遮罩层 -->
-        <div class="absolute inset-0 bg-black/30" @click="close"></div>
+        <div class="mobile-player-settings-mask absolute inset-0" @click="close"></div>
 
         <!-- 弹窗内容 -->
         <div
@@ -381,5 +381,10 @@ onUnmounted(() => {
 
 .mobile-setting-divider {
   background: var(--qqm-border);
+}
+
+.mobile-player-settings-mask {
+  background: color-mix(in srgb, #0f172a 22%, transparent);
+  backdrop-filter: blur(10px) saturate(1.06);
 }
 </style>

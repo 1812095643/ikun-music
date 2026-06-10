@@ -269,7 +269,7 @@
       >
         <div
           v-if="showModeHint"
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/35 px-4 py-3 rounded-lg flex flex-col items-center gap-1.5 pointer-events-none z-50"
+          class="mv-mode-hint absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-3 rounded-lg flex flex-col items-center gap-1.5 pointer-events-none z-50"
         >
           <n-icon size="32" class="text-primary">
             <i :class="playMode === 'single' ? 'ri-repeat-one-line' : 'ri-play-list-line'"></i>
@@ -576,5 +576,11 @@ onUnmounted(() => {
 /* Hide cursor when needed */
 .cursor-none {
   cursor: none;
+}
+
+.mv-mode-hint {
+  border: 1px solid color-mix(in srgb, #ffffff 16%, transparent);
+  background: color-mix(in srgb, #0f172a 34%, transparent);
+  backdrop-filter: blur(12px) saturate(1.08);
 }
 </style>

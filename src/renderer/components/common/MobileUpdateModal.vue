@@ -3,7 +3,7 @@
     <Transition name="update-modal">
       <div
         v-if="showModal"
-        class="fixed inset-0 z-[999999] flex items-end justify-center bg-black/30"
+        class="mobile-update-modal-mask fixed inset-0 z-[999999] flex items-end justify-center"
       >
         <!-- 弹窗内容 -->
         <div class="mobile-update-sheet w-full max-w-lg overflow-hidden rounded-t-md update-sheet">
@@ -279,5 +279,10 @@ onMounted(() => {
 .mobile-update-secondary:hover {
   color: var(--qqm-primary, #22c55e);
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.mobile-update-modal-mask {
+  background: color-mix(in srgb, #0f172a 22%, transparent);
+  backdrop-filter: blur(10px) saturate(1.06);
 }
 </style>

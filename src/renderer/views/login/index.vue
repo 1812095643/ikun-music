@@ -193,7 +193,7 @@ const handleLoginError = (error: string) => {
 <style lang="scss" scoped>
 .login-page {
   @apply flex flex-col items-center justify-center;
-  @apply bg-light dark:bg-black;
+  background: var(--qqm-bg, #f7f8fa);
   min-height: 100%;
   position: relative;
   overflow: hidden;
@@ -288,7 +288,8 @@ const handleLoginError = (error: string) => {
         width: 250px;
         margin: 0 auto;
         border: 1px solid color-mix(in srgb, var(--qqm-border) 78%, transparent);
-        background: rgba(255, 255, 255, 0.95);
+        background: color-mix(in srgb, var(--qqm-surface, #ffffff) 94%, transparent);
+        backdrop-filter: blur(10px) saturate(1.04);
       }
 
       &-input {

@@ -3,7 +3,7 @@
     <Transition name="disclaimer-modal">
       <div
         v-if="showDisclaimer"
-        class="disclaimer-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/30"
+        class="disclaimer-modal-shell qqm-modal-mask fixed inset-0 z-[999999] flex items-center justify-center"
       >
         <div
           class="disclaimer-modal-card qqm-modal-card w-full max-w-md mx-4 rounded-lg overflow-hidden"
@@ -84,7 +84,7 @@
     <Transition name="donate-modal">
       <div
         v-if="showDonate"
-        class="donate-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/30"
+        class="donate-modal-shell qqm-modal-mask fixed inset-0 z-[999999] flex items-center justify-center"
       >
         <div
           class="donate-modal-card qqm-modal-card w-full max-w-md mx-4 rounded-lg overflow-hidden"
@@ -162,7 +162,7 @@
     <Transition name="qrcode-modal">
       <div
         v-if="showQRCode"
-        class="fixed inset-0 z-[9999999] flex items-center justify-center bg-black/35"
+        class="qqm-modal-mask fixed inset-0 z-[9999999] flex items-center justify-center"
         @click.self="closeQRCode"
       >
         <div class="qqm-modal-card w-full max-w-sm mx-4 rounded-lg overflow-hidden">
@@ -181,7 +181,7 @@
           </div>
 
           <div class="px-6 pb-6">
-            <div class="bg-white p-4 rounded-lg">
+            <div class="qrcode-surface p-4 rounded-lg">
               <img
                 :src="qrcodeType === 'wechat' ? wechatQRCode : alipayQRCode"
                 :alt="qrcodeType === 'wechat' ? 'WeChat QR Code' : 'Alipay QR Code'"
@@ -330,5 +330,15 @@ onMounted(() => {
 .donate-qr-option:hover {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.qqm-modal-mask {
+  background: color-mix(in srgb, #0f172a 24%, transparent);
+  backdrop-filter: blur(12px) saturate(1.06);
+}
+
+.qrcode-surface {
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 76%, transparent);
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 94%, transparent);
 }
 </style>

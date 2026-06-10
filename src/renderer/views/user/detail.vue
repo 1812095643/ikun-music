@@ -92,7 +92,7 @@
                     class="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-6 mt-4 md:mt-5"
                   >
                     <div
-                      class="flex flex-col items-center gap-0.5 cursor-pointer px-3 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-200"
+                      class="flex flex-col items-center gap-0.5 cursor-pointer px-3 py-1.5 rounded-lg user-stat-hover transition-colors duration-200"
                       @click="showFollowerList"
                     >
                       <span class="text-lg font-bold text-neutral-900 dark:text-white">
@@ -103,7 +103,7 @@
                       </span>
                     </div>
                     <div
-                      class="flex flex-col items-center gap-0.5 cursor-pointer px-3 py-1.5 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-200"
+                      class="flex flex-col items-center gap-0.5 cursor-pointer px-3 py-1.5 rounded-lg user-stat-hover transition-colors duration-200"
                       @click="showFollowList"
                     >
                       <span class="text-lg font-bold text-neutral-900 dark:text-white">
@@ -524,5 +524,9 @@ button:focus-visible {
 
 .user-detail-play:hover {
   color: var(--qqm-primary, #22c55e);
+}
+
+.user-stat-hover:hover {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, transparent);
 }
 </style>
