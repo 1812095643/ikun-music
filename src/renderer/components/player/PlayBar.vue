@@ -377,8 +377,10 @@ const openPlayListDrawer = () => {
 }
 
 .music-play-bar {
-  @apply h-20 w-full absolute bottom-0 left-0 flex items-center box-border px-6 py-2 pt-3;
-  @apply bg-light dark:bg-dark shadow-2xl shadow-gray-300;
+  @apply h-[76px] w-full absolute bottom-0 left-0 flex items-center box-border px-6 py-2 pt-3;
+  @apply bg-light dark:bg-dark;
+  border-top: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+  box-shadow: 0 -8px 24px rgba(20, 24, 31, 0.08);
   z-index: 9999;
   animation-duration: 0.5s !important;
 
@@ -393,45 +395,65 @@ const openPlayListDrawer = () => {
   }
 
   .music-content {
-    width: 200px;
-    @apply ml-4;
+    width: 260px;
+    min-width: 0;
+    @apply ml-3;
 
     &-title {
-      @apply text-base;
+      @apply text-sm leading-5;
+      color: var(--qqm-text, currentColor);
+      font-weight: 600;
     }
 
     &-name {
-      @apply text-xs mt-1 opacity-80;
+      @apply text-xs mt-1;
+      color: var(--qqm-muted, rgba(107, 114, 128, 1));
     }
   }
 }
 
 .play-bar-img {
-  @apply w-14 h-14 rounded-2xl;
+  @apply w-12 h-12 rounded-lg;
 }
 
 .music-buttons {
-  @apply mx-6 flex-1 flex justify-center;
+  @apply mx-6 flex-1 flex justify-center items-center;
+  gap: 18px;
 
   .iconfont {
-    @apply text-2xl transition;
-    @apply hover:text-green-500;
+    @apply text-[24px] transition cursor-pointer;
+    color: var(--qqm-muted, rgba(107, 114, 128, 1));
+    line-height: 1;
+    transition:
+      color 180ms var(--qqm-ease, ease),
+      transform 180ms var(--qqm-ease, ease),
+      background-color 180ms var(--qqm-ease, ease);
+
+    &:hover {
+      color: var(--qqm-primary-strong, #0dbd62);
+      transform: translateY(-1px);
+    }
   }
 
   .icon {
-    @apply text-3xl;
-    @apply hover:text-green-500;
+    @apply text-[28px];
+    color: var(--qqm-primary-strong, #0dbd62);
   }
 
-  @apply flex items-center;
-
   > div {
-    @apply cursor-pointer;
+    @apply cursor-pointer flex items-center justify-center;
   }
 
   &-play {
-    @apply flex justify-center items-center w-20 h-12 rounded-full mx-4 transition text-gray-500;
-    @apply bg-gray-100 bg-opacity-60 dark:bg-gray-800 dark:bg-opacity-60 hover:bg-gray-200;
+    @apply flex justify-center items-center w-12 h-12 rounded-full transition;
+    color: var(--qqm-primary-strong, #0dbd62);
+    background: var(--qqm-primary-soft, rgba(30, 207, 115, 0.1));
+    border: 1px solid rgba(30, 207, 115, 0.18);
+
+    &:hover {
+      background: rgba(30, 207, 115, 0.16);
+      transform: translateY(-1px);
+    }
   }
 }
 
@@ -447,19 +469,25 @@ const openPlayListDrawer = () => {
   }
 
   .iconfont {
-    @apply text-2xl transition;
-    @apply hover:text-green-500;
+    @apply text-[22px] transition;
+    color: var(--qqm-muted, rgba(107, 114, 128, 1));
+
+    &:hover {
+      color: var(--qqm-primary-strong, #0dbd62);
+    }
   }
 
   .volume-slider {
-    @apply absolute opacity-0 invisible transition-all duration-300 bottom-[30px] left-1/2 -translate-x-1/2 h-[180px] px-2 py-4 rounded-xl;
-    @apply bg-light dark:bg-dark-200;
-    @apply border border-gray-200 dark:border-gray-700;
+    @apply absolute opacity-0 invisible transition-all duration-300 bottom-[34px] left-1/2 -translate-x-1/2 h-[168px] px-2 py-4 rounded-lg;
+    background: var(--qqm-surface, #ffffff);
+    border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+    box-shadow: var(--qqm-shadow, 0 8px 20px rgba(20, 24, 31, 0.06));
 
     .volume-percentage {
-      @apply absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-medium bg-light dark:bg-dark-200 px-2 py-1 rounded-md;
-      @apply border border-gray-200 dark:border-gray-700;
-      @apply text-gray-800 dark:text-white;
+      @apply absolute -top-7 left-1/2 -translate-x-1/2 text-xs font-medium px-2 py-1 rounded-md;
+      background: var(--qqm-surface, #ffffff);
+      border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+      color: var(--qqm-text, #151922);
       white-space: nowrap;
     }
   }
@@ -467,10 +495,15 @@ const openPlayListDrawer = () => {
 
 .audio-button {
   @apply flex items-center;
+  gap: 8px;
 
   .iconfont {
-    @apply text-2xl transition cursor-pointer mx-3;
-    @apply hover:text-green-500;
+    @apply text-[22px] transition cursor-pointer;
+    color: var(--qqm-muted, rgba(107, 114, 128, 1));
+
+    &:hover {
+      color: var(--qqm-primary-strong, #0dbd62);
+    }
   }
 }
 
@@ -524,12 +557,12 @@ const openPlayListDrawer = () => {
 // 自定义滑块样式
 .custom-slider {
   :deep(.n-slider) {
-    --n-rail-height: 4px;
-    --n-rail-color: theme('colors.gray.200');
-    --n-rail-color-dark: theme('colors.gray.700');
-    --n-fill-color: theme('colors.green.500');
-    --n-handle-size: 12px;
-    --n-handle-color: theme('colors.green.500');
+    --n-rail-height: 3px;
+    --n-rail-color: rgba(20, 24, 31, 0.1);
+    --n-rail-color-dark: rgba(255, 255, 255, 0.12);
+    --n-fill-color: var(--qqm-primary, #1ecf73);
+    --n-handle-size: 10px;
+    --n-handle-color: var(--qqm-primary, #1ecf73);
 
     &.n-slider--vertical {
       height: 100%;
@@ -552,7 +585,11 @@ const openPlayListDrawer = () => {
 
     .n-slider-rail {
       @apply overflow-hidden transition-all duration-200;
-      @apply bg-gray-500 dark:bg-dark-300 bg-opacity-10 !important;
+      background: rgba(20, 24, 31, 0.1) !important;
+    }
+
+    .n-slider-rail__fill {
+      background: var(--qqm-primary, #1ecf73) !important;
     }
 
     .n-slider-handle {
@@ -575,10 +612,10 @@ const openPlayListDrawer = () => {
 }
 
 .play-bar-img-wrapper {
-  @apply relative cursor-pointer w-14 h-14;
+  @apply relative cursor-pointer w-12 h-12 shrink-0;
 
   .hover-arrow {
-    @apply absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 rounded-2xl;
+    @apply absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 rounded-lg;
     background: rgba(0, 0, 0, 0.5);
 
     .hover-content {
@@ -606,7 +643,7 @@ const openPlayListDrawer = () => {
 }
 
 .play-bar-img {
-  @apply w-14 h-14 rounded-2xl;
+  @apply w-12 h-12 rounded-lg;
 }
 
 .like-active {
@@ -635,6 +672,16 @@ const openPlayListDrawer = () => {
   left: 0;
   padding: 0;
   border-radius: 0;
+}
+
+.music-time {
+  :deep(.n-slider-rail) {
+    border-radius: 0 !important;
+  }
+
+  :deep(.n-slider-handle) {
+    transform: scale(0.82);
+  }
 }
 
 .music-eq {
@@ -666,7 +713,7 @@ const openPlayListDrawer = () => {
 }
 
 .loading-overlay {
-  @apply absolute inset-0 flex items-center justify-center rounded-2xl;
+  @apply absolute inset-0 flex items-center justify-center rounded-lg;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 2;
 }
