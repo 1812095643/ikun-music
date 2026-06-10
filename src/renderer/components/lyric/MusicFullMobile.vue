@@ -42,7 +42,7 @@
           class="flex items-center gap-1 px-2 py-1 rounded-full bg-black/30 backdrop-blur-sm text-xs text-white/90"
           @click="showPlayerSettings = true"
         >
-          <i class="ri-timer-line text-green-400"></i>
+          <i class="ri-timer-line text-primary"></i>
           <span class="font-medium tabular-nums">{{ sleepTimerDisplayText }}</span>
         </div>
         <div @click="showPlayerSettings = true">
@@ -1217,7 +1217,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
   // 通用控制按钮样式
   .main-button {
-    @apply flex items-center justify-center cursor-pointer transition-all duration-200 rounded-full;
+    @apply flex items-center justify-center cursor-pointer transition-colors duration-200 rounded-full;
 
     i {
       @apply text-2xl;
@@ -1360,7 +1360,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
   // 通用收藏按钮样式
   .favorite-icon {
-    @apply cursor-pointer transition-all duration-200;
+    @apply cursor-pointer transition-colors duration-200;
 
     i {
       @apply text-xl;
@@ -1524,7 +1524,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
       // 封面样式
       .cover-container {
-        @apply relative mb-6 transition-all duration-500 border-gray-900 z-[9995];
+        @apply relative mb-6 transition-colors duration-200 border-gray-900 z-[9995];
 
         &.style-changing {
           animation: styleChange 0.5s ease;
@@ -1589,14 +1589,14 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
         @apply flex items-center justify-between w-full px-4;
 
         .side-button {
-          @apply w-10 h-10 flex items-center justify-center cursor-pointer transition-all duration-200;
+          @apply w-10 h-10 flex items-center justify-center cursor-pointer transition-colors duration-200;
 
           i {
             @apply text-2xl;
             color: var(--text-color-primary);
 
             &.intelligence-active {
-              @apply text-green-500;
+              color: var(--qqm-primary, #22c55e);
             }
           }
 
@@ -1727,7 +1727,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 }
 
 .favorite-icon {
-  @apply cursor-pointer transition-all duration-200;
+  @apply cursor-pointer transition-colors duration-200;
 
   i {
     @apply text-xl;
@@ -1766,7 +1766,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
 // 通用歌词样式
 .lyric-line {
-  @apply cursor-pointer transition-all duration-300 font-medium;
+  @apply cursor-pointer transition-colors duration-200 font-medium;
   font-weight: 500;
   letter-spacing: var(--lyric-letter-spacing, 0);
   line-height: var(--lyric-line-height, 1.6);
@@ -1895,7 +1895,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
 // 必要的控制按钮样式
 .control-btn {
-  @apply w-9 h-9 flex items-center justify-center rounded cursor-pointer transition-all duration-300 z-[9999];
+  @apply w-9 h-9 flex items-center justify-center rounded cursor-pointer transition-colors duration-200 z-[9999];
   background: rgba(142, 142, 142, 0.192);
   backdrop-filter: blur(12px);
   top: calc(var(--safe-area-inset-top, 0) + 20px);
@@ -1961,7 +1961,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
     }
 
     .back-button {
-      @apply absolute top-4 left-1/2 -translate-x-1/2 w-10 h-10 flex items-center justify-center bg-black bg-opacity-30 rounded-xl;
+      @apply absolute top-4 left-1/2 -translate-x-1/2 w-10 h-10 flex items-center justify-center bg-black bg-opacity-30 rounded-lg;
 
       i {
         @apply text-4xl;
@@ -1978,7 +1978,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
         @apply w-full flex flex-col items-center justify-center;
 
         .lyric-line {
-          @apply text-center py-1 transition-all duration-300 opacity-70;
+          @apply text-center py-1 transition-colors duration-200 opacity-70;
 
           &:nth-child(2) {
             @apply text-lg font-medium opacity-100;
@@ -2006,7 +2006,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 .cover-container {
   // 方形封面样式
   &.square-style {
-    @apply w-[85%] shadow-md shadow-black/30 rounded-xl overflow-hidden mt-8 aspect-square;
+    @apply w-[85%] shadow-sm shadow-black/30 rounded-lg overflow-hidden mt-8 aspect-square;
 
     .cover-image {
       @apply w-full h-full;
@@ -2050,7 +2050,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
 .is-dark {
   .square-style {
-    @apply shadow-md shadow-black/30;
+    @apply shadow-sm shadow-black/30;
   }
 }
 </style>

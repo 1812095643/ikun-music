@@ -13,11 +13,11 @@
                   class="h-28 w-28 md:h-40 md:w-40 skeleton-shimmer rounded-full flex-shrink-0"
                 />
                 <div class="flex-1 space-y-4 text-center md:text-left">
-                  <div class="h-8 w-40 skeleton-shimmer rounded-xl" />
+                  <div class="h-8 w-40 skeleton-shimmer rounded-lg" />
                   <div class="flex justify-center gap-6 md:justify-start">
-                    <div class="h-12 w-16 skeleton-shimmer rounded-xl" />
-                    <div class="h-12 w-16 skeleton-shimmer rounded-xl" />
-                    <div class="h-12 w-16 skeleton-shimmer rounded-xl" />
+                    <div class="h-12 w-16 skeleton-shimmer rounded-lg" />
+                    <div class="h-12 w-16 skeleton-shimmer rounded-lg" />
+                    <div class="h-12 w-16 skeleton-shimmer rounded-lg" />
                   </div>
                   <div class="h-4 w-2/3 skeleton-shimmer rounded-lg" />
                 </div>
@@ -26,10 +26,10 @@
           </div>
           <!-- Content Skeleton -->
           <div class="mt-8 page-padding-x">
-            <div class="h-10 w-48 mb-6 skeleton-shimmer rounded-xl" />
+            <div class="h-10 w-48 mb-6 skeleton-shimmer rounded-lg" />
             <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               <div v-for="i in 10" :key="i" class="space-y-2">
-                <div class="aspect-square w-full skeleton-shimmer rounded-xl" />
+                <div class="aspect-square w-full skeleton-shimmer rounded-lg" />
                 <div class="h-4 w-3/4 skeleton-shimmer rounded-lg" />
                 <div class="h-3 w-1/2 skeleton-shimmer rounded-lg" />
               </div>

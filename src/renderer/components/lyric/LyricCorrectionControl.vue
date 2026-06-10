@@ -52,7 +52,13 @@ const { t } = useI18n();
 }
 
 .lyric-correction-btn {
-  @apply w-7 h-7 flex items-center justify-center rounded-lg bg-white dark:bg-neutral-800 border border-white/20 dark:border-neutral-700/40 shadow-md backdrop-blur-2xl cursor-pointer transition-all duration-150 text-gray-700 dark:text-gray-200 hover:bg-green-500/80 hover:text-white hover:border-green-400/60 active:translate-y-0 bg-opacity-40 dark:hover:bg-green-500/80 dark:hover:text-white dark:hover:border-green-400/60 dark:hover:bg-opacity-40;
+  @apply w-7 h-7 flex items-center justify-center rounded-lg bg-white dark:bg-neutral-800 border border-white/20 dark:border-neutral-700/40 shadow-sm backdrop-blur-xl cursor-pointer transition-colors duration-150 text-gray-700 dark:text-gray-200 bg-opacity-40;
+
+  &:hover {
+    color: white;
+    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 82%, transparent);
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 60%, transparent);
+  }
 }
 
 .mobile {

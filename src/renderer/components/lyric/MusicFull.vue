@@ -76,7 +76,7 @@
                 <span
                   v-for="(item, index) in artistList"
                   :key="index"
-                  class="cursor-pointer hover:text-green-500"
+                  class="cursor-pointer hover:text-primary"
                   @click="handleArtistClick(item.id)"
                 >
                   {{ item.name }}
@@ -121,7 +121,7 @@
                   <span
                     v-for="(item, index) in artistList"
                     :key="index"
-                    class="cursor-pointer hover:text-green-500"
+                    class="cursor-pointer hover:text-primary"
                     @click="handleArtistClick(item.id)"
                   >
                     {{ item.name }}
@@ -932,7 +932,7 @@ defineExpose({
 
     .hover-text {
       &:hover {
-        @apply font-bold opacity-100 rounded-xl;
+        @apply font-bold opacity-100 rounded-lg;
         background-color: var(--hover-bg-color);
 
         span {
@@ -1008,7 +1008,7 @@ defineExpose({
     @apply pointer-events-auto;
 
     .control-btn {
-      @apply opacity-0 transition-all duration-300;
+      @apply opacity-0 transition-opacity duration-200;
       pointer-events: none;
     }
 
@@ -1028,7 +1028,7 @@ defineExpose({
 }
 
 .control-btn {
-  @apply w-9 h-9 flex items-center justify-center rounded cursor-pointer transition-all duration-300;
+  @apply w-9 h-9 flex items-center justify-center rounded cursor-pointer transition-opacity duration-200;
   background: rgba(142, 142, 142, 0.192);
   backdrop-filter: blur(12px);
 

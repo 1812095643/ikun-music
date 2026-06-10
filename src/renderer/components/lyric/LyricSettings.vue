@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-80 rounded-xl bg-black/30 backdrop-blur-3xl border border-white/10 shadow-md overflow-hidden"
+    class="w-80 rounded-lg bg-black/30 backdrop-blur-xl border border-white/10 shadow-sm overflow-hidden"
   >
     <!-- 标题栏 -->
     <div class="px-6 py-4 border-b border-white/5">
@@ -11,16 +11,14 @@
 
     <!-- 标签页导航 -->
     <div class="px-4 pt-3 pb-2">
-      <div class="flex gap-1 p-1 bg-black/20 rounded-xl">
+      <div class="flex gap-1 p-1 bg-black/20 rounded-lg">
         <button
           v-for="tab in tabs"
           :key="tab.key"
           @click="activeTab = tab.key"
           :class="[
-            'flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200',
-            activeTab === tab.key
-              ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
-              : 'hover:bg-white/5'
+            'flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200',
+            activeTab === tab.key ? 'bg-primary text-white' : 'hover:bg-white/5'
           ]"
           :style="activeTab !== tab.key ? 'color: rgba(255, 255, 255, 0.7);' : ''"
         >
@@ -72,7 +70,7 @@
             min="50"
             max="100"
             step="5"
-            class="slider-emerald"
+            class="slider-primary"
           />
           <div class="slider-marks">
             <span>50%</span>
@@ -92,7 +90,7 @@
             min="12"
             max="32"
             step="1"
-            class="slider-emerald"
+            class="slider-primary"
           />
           <div class="slider-marks">
             <span>{{ t('settings.lyricSettings.fontSizeMarks.small') }}</span>
@@ -109,7 +107,7 @@
             min="-2"
             max="10"
             step="0.2"
-            class="slider-emerald"
+            class="slider-primary"
           />
           <div class="slider-marks">
             <span>{{ t('settings.lyricSettings.letterSpacingMarks.compact') }}</span>
@@ -126,7 +124,7 @@
             min="100"
             max="900"
             step="100"
-            class="slider-emerald"
+            class="slider-primary"
           />
           <div class="slider-marks">
             <span>{{ t('settings.lyricSettings.fontWeightMarks.thin') }}</span>
@@ -143,7 +141,7 @@
             min="1"
             max="3"
             step="0.1"
-            class="slider-emerald"
+            class="slider-primary"
           />
           <div class="slider-marks">
             <span>{{ t('settings.lyricSettings.lineHeightMarks.compact') }}</span>
@@ -258,7 +256,7 @@
           <button
             v-if="config.gradientColors.colors.length < 5"
             @click="addGradientColor"
-            class="w-full py-2 px-4 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 transition-colors text-sm font-medium flex items-center justify-center gap-2 text-white/90"
+            class="w-full py-2 px-4 rounded-lg bg-primary/15 hover:bg-primary/25 transition-colors text-sm font-medium flex items-center justify-center gap-2 text-white/90"
           >
             <i class="ri-add-line"></i>
             {{ t('settings.lyricSettings.background.addColor') }}
@@ -293,7 +291,7 @@
           />
           <button
             @click="fileInput?.click()"
-            class="w-full py-2 px-4 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 transition-colors text-sm font-medium flex items-center justify-center gap-2 text-white/90"
+            class="w-full py-2 px-4 rounded-lg bg-primary/15 hover:bg-primary/25 transition-colors text-sm font-medium flex items-center justify-center gap-2 text-white/90"
           >
             <i class="ri-image-add-line"></i>
             {{ t('settings.lyricSettings.background.imageUpload') }}
@@ -324,7 +322,7 @@
                 min="0"
                 max="20"
                 step="1"
-                class="slider-emerald"
+                class="slider-primary"
               />
               <div class="slider-marks">
                 <span>0</span>
@@ -343,7 +341,7 @@
                 min="0"
                 max="200"
                 step="5"
-                class="slider-emerald"
+                class="slider-primary"
               />
               <div class="slider-marks">
                 <span>暗</span>
@@ -367,7 +365,7 @@
             v-model="config.customCss"
             :placeholder="t('settings.lyricSettings.background.customCssPlaceholder')"
             rows="4"
-            class="w-full px-3 py-2 bg-black/20 border border-white/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 font-mono text-white/90"
+            class="w-full px-3 py-2 bg-black/20 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-primary font-mono text-white/90"
           ></textarea>
           <p class="text-xs text-white/50">
             {{ t('settings.lyricSettings.background.customCssHelp') }}
@@ -545,7 +543,7 @@ defineExpose({
 }
 
 .toggle-switch:checked {
-  background: #10b981;
+  background: var(--qqm-primary, #22c55e);
 }
 
 .toggle-switch:checked::before {
@@ -571,7 +569,7 @@ defineExpose({
   margin-bottom: 8px;
 }
 
-.slider-emerald {
+.slider-primary {
   width: 100%;
   height: 4px;
   background: rgba(255, 255, 255, 0.1);
@@ -580,24 +578,24 @@ defineExpose({
   appearance: none;
 }
 
-.slider-emerald::-webkit-slider-thumb {
+.slider-primary::-webkit-slider-thumb {
   appearance: none;
   width: 16px;
   height: 16px;
-  background: #10b981;
+  background: var(--qqm-primary, #22c55e);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--qqm-primary, #22c55e) 35%, transparent);
 }
 
-.slider-emerald::-moz-range-thumb {
+.slider-primary::-moz-range-thumb {
   width: 16px;
   height: 16px;
-  background: #10b981;
+  background: var(--qqm-primary, #22c55e);
   border-radius: 50%;
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--qqm-primary, #22c55e) 35%, transparent);
 }
 
 .slider-marks {
@@ -682,7 +680,7 @@ defineExpose({
 }
 
 .radio-input:checked {
-  border-color: #10b981;
+  border-color: var(--qqm-primary, #22c55e);
   opacity: 1;
 }
 
@@ -691,7 +689,7 @@ defineExpose({
   position: absolute;
   width: 10px;
   height: 10px;
-  background: #10b981;
+  background: var(--qqm-primary, #22c55e);
   border-radius: 50%;
   left: 2px;
   top: 2px;
@@ -785,8 +783,8 @@ defineExpose({
 }
 
 .select-input:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+  border-color: var(--qqm-primary, #22c55e);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
 }
 
 /* 滚动条 */

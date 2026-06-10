@@ -7,7 +7,7 @@
         <!-- Loading State -->
         <div v-if="followerListLoading && followerList.length === 0">
           <div class="page-padding-x pt-8">
-            <div class="h-8 w-48 mb-6 skeleton-shimmer rounded-xl" />
+            <div class="h-8 w-48 mb-6 skeleton-shimmer rounded-lg" />
             <div
               class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
             >

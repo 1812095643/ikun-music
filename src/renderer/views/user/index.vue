@@ -2,7 +2,7 @@
   <div class="user-page">
     <template v-if="infoLoading">
       <div
-        class="left-skeleton flex-1 max-w-[600px] rounded-xl overflow-hidden p-4 bg-light-200 dark:bg-dark-100"
+        class="left-skeleton flex-1 max-w-[600px] rounded-lg overflow-hidden p-4 bg-light-200 dark:bg-dark-100"
       >
         <div class="flex flex-col gap-6">
           <div class="flex justify-between">
@@ -19,11 +19,11 @@
             </div>
           </div>
           <div class="h-4 w-3/4 skeleton-shimmer rounded-lg" />
-          <div class="mt-4 rounded-xl bg-light p-4 dark:bg-black">
-            <div class="mb-4 h-8 w-full skeleton-shimmer rounded-xl" />
+          <div class="mt-4 rounded-lg bg-light p-4 dark:bg-black">
+            <div class="mb-4 h-8 w-full skeleton-shimmer rounded-lg" />
             <div class="space-y-4">
               <div v-for="i in 5" :key="i" class="flex gap-3">
-                <div class="h-[50px] w-[50px] skeleton-shimmer rounded-xl flex-shrink-0" />
+                <div class="h-[50px] w-[50px] skeleton-shimmer rounded-lg flex-shrink-0" />
                 <div class="flex flex-1 flex-col justify-center gap-2">
                   <div class="h-4 w-1/2 skeleton-shimmer rounded-lg" />
                   <div class="h-3 w-1/3 skeleton-shimmer rounded-lg" />
@@ -35,15 +35,15 @@
       </div>
       <div v-if="!isMobile" class="right">
         <div class="title"><div class="h-8 w-32 skeleton-shimmer rounded-lg" /></div>
-        <div class="rounded-xl bg-light p-4 dark:bg-black">
+        <div class="rounded-lg bg-light p-4 dark:bg-black">
           <div class="space-y-2">
             <div
               v-for="i in 10"
               :key="i"
-              class="flex items-center gap-4 rounded-xl bg-light-100 p-2 dark:bg-dark-100"
+              class="flex items-center gap-4 rounded-lg bg-light-100 p-2 dark:bg-dark-100"
             >
               <div class="h-10 w-10 skeleton-shimmer rounded-full flex-shrink-0" />
-              <div class="h-10 w-10 skeleton-shimmer rounded-xl flex-shrink-0" />
+              <div class="h-10 w-10 skeleton-shimmer rounded-lg flex-shrink-0" />
               <div class="flex flex-1 flex-col gap-2">
                 <div class="h-4 w-1/3 skeleton-shimmer rounded-lg" />
                 <div class="h-3 w-1/4 skeleton-shimmer rounded-lg" />
@@ -468,7 +468,7 @@ const currentLoginType = computed(() => userStore.loginType);
   @apply flex h-full;
   .left {
     max-width: 600px;
-    @apply flex-1 rounded-xl overflow-hidden relative bg-no-repeat h-full;
+    @apply flex-1 rounded-lg overflow-hidden relative bg-no-repeat h-full;
     @apply bg-gray-900 dark:bg-gray-800;
     border: 1px solid var(--qqm-border);
     box-shadow: var(--qqm-shadow);
@@ -518,7 +518,7 @@ const currentLoginType = computed(() => userStore.loginType);
     @apply flex-1 ml-4 overflow-hidden h-full;
 
     .record-list {
-      @apply rounded-xl;
+      @apply rounded-lg;
       background: color-mix(in srgb, var(--qqm-surface) 64%, transparent);
       border: 1px solid var(--qqm-border);
       box-shadow: var(--qqm-shadow);
@@ -630,9 +630,9 @@ const currentLoginType = computed(() => userStore.loginType);
 }
 
 :deep(.n-tabs-rail) {
-  @apply rounded-xl overflow-hidden !important;
+  @apply rounded-lg overflow-hidden !important;
   .n-tabs-capsule {
-    @apply rounded-xl !important;
+    @apply rounded-lg !important;
   }
 }
 </style>
