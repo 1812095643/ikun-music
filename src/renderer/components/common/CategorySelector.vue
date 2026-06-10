@@ -13,7 +13,7 @@
           :class="[
             animationClass,
             index === 0 ? 'ml-0.5' : '',
-            isActive(category) ? 'bg-primary text-white shadow-sm shadow-primary/20' : ''
+            isActive(category) ? 'bg-primary text-white' : ''
           ]"
           :style="getAnimationDelay(index)"
           @click="handleClickCategory(category)"
@@ -44,7 +44,7 @@ type CategorySelectorProps = {
 const props = withDefaults(defineProps<CategorySelectorProps>(), {
   labelKey: 'label',
   valueKey: 'value',
-  animationClass: 'animate__fadeInUp'
+  animationClass: ''
 });
 
 const emit = defineEmits<{

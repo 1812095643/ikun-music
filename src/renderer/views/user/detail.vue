@@ -157,7 +157,7 @@
                 <Transition name="tab-indicator">
                   <div
                     v-if="activeTab === tab.value"
-                    class="absolute inset-0 bg-white dark:bg-neutral-700 rounded-lg shadow-sm"
+                    class="absolute inset-0 rounded-lg border border-neutral-100 bg-white dark:border-neutral-700 dark:bg-neutral-700"
                   />
                 </Transition>
               </button>
@@ -180,14 +180,15 @@
                 class="grid grid-cols-2 gap-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
               >
                 <div
-                  v-for="(item, index) in playList"
-                  :key="item.id || index"
+                  v-for="item in playList"
+                  :key="item.id"
                   class="group cursor-pointer"
-                  :style="{ animationDelay: `${index * 0.03}s` }"
                   @click="openPlaylist(item)"
                 >
                   <!-- Cover -->
-                  <div class="relative aspect-square overflow-hidden rounded-lg shadow-sm">
+                  <div
+                    class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
+                  >
                     <n-image
                       :src="getImgUrl(item.coverImgUrl, '300y300')"
                       lazy
@@ -440,6 +441,8 @@ const isArtist = (profile: any) => {
 
 button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 1px var(--primary-color);
+  box-shadow: none;
+  outline: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 32%, transparent);
+  outline-offset: 2px;
 }
 </style>

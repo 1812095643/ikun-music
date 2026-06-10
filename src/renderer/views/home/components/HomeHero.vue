@@ -16,7 +16,7 @@
       <!-- Quick Navigation (mobile only) -->
       <nav class="scrollbar-hide flex gap-1.5 overflow-x-auto pb-0.5 md:hidden">
         <button
-          v-for="(item, index) in quickNavItems"
+          v-for="item in quickNavItems"
           :key="item.key"
           class="nav-chip flex flex-shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-[7px] text-[13px] font-medium transition-colors duration-200 hover:text-neutral-900 dark:hover:text-neutral-100"
           :class="[
@@ -24,7 +24,6 @@
               ? 'bg-primary text-white'
               : 'bg-neutral-100/60 text-neutral-500 hover:bg-neutral-200/80 dark:bg-white/[0.04] dark:text-neutral-400 dark:hover:bg-white/[0.07]'
           ]"
-          :style="{ animationDelay: `${index * 0.03}s` }"
           @click="item.action"
         >
           <i :class="item.icon" class="text-sm" />
@@ -36,10 +35,10 @@
       <!-- Hero Cards -->
       <div class="hero-grid grid gap-3">
         <!-- ===== 每日推荐 (Left - Large Card) ===== -->
-        <div class="hero-card" :style="{ animationDelay: '0.12s' }">
+        <div class="hero-card">
           <!-- Card -->
           <div
-            class="daily-card group relative cursor-pointer overflow-hidden rounded-lg shadow-sm transition-colors duration-200 ease-out"
+            class="daily-card group relative cursor-pointer overflow-hidden rounded-lg border border-neutral-100 transition-colors duration-200 ease-out dark:border-neutral-800"
             :style="{ background: dailyCardBg }"
             @click="showDayRecommend"
           >
@@ -94,7 +93,7 @@
                   </div>
                 </div>
                 <button
-                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-white/90 text-neutral-900 shadow-sm transition-colors duration-200 hover:bg-white"
+                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-white/50 bg-white/90 text-neutral-900 transition-colors duration-200 hover:bg-white"
                   @click.stop="playDayRecommend"
                 >
                   <i class="ri-play-fill ml-0.5 text-xl" />
@@ -105,9 +104,9 @@
         </div>
 
         <!-- ===== 已登录: 私人FM (Right Card) ===== -->
-        <div v-if="isLoggedIn" class="hero-card" :style="{ animationDelay: '0.22s' }">
+        <div v-if="isLoggedIn" class="hero-card">
           <div
-            class="fm-card group relative cursor-pointer overflow-hidden rounded-lg shadow-sm transition-colors duration-200 ease-out"
+            class="fm-card group relative cursor-pointer overflow-hidden rounded-lg border border-neutral-100 transition-colors duration-200 ease-out dark:border-neutral-800"
             :style="{ background: fmCardBg }"
             @click="handleFmPlay"
           >
@@ -128,7 +127,7 @@
             <div class="relative flex h-full items-center gap-4 p-5">
               <!-- Album Cover -->
               <div
-                class="fm-cover relative aspect-square flex-shrink-0 overflow-hidden rounded-lg shadow-sm"
+                class="fm-cover relative aspect-square flex-shrink-0 overflow-hidden rounded-lg border border-white/50 dark:border-white/10"
               >
                 <img
                   v-if="fmCurrentCover"
@@ -203,11 +202,10 @@
         <div
           v-if="!isLoggedIn"
           class="hero-card group cursor-pointer"
-          :style="{ animationDelay: '0.22s' }"
           @click="router.push('/list')"
         >
           <div
-            class="fm-card relative overflow-hidden rounded-lg bg-neutral-100 shadow-sm transition-colors duration-200 ease-out dark:bg-neutral-800"
+            class="fm-card relative overflow-hidden rounded-lg border border-neutral-100 bg-neutral-100 transition-colors duration-200 ease-out dark:border-neutral-800 dark:bg-neutral-800"
           >
             <!-- 2x2 Cover Grid -->
             <div class="absolute inset-0 grid grid-cols-2 grid-rows-2">
@@ -703,21 +701,6 @@ onActivated(() => {
   height: 100%;
   min-height: 140px;
   max-height: 180px;
-}
-
-/* Card animation */
-.hero-card {
-  animation: cardUp 0.28s var(--qqm-ease, ease) both;
-}
-@keyframes cardUp {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* FM background flow animation when playing */

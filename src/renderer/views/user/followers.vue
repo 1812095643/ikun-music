@@ -52,10 +52,9 @@
               class="grid grid-cols-2 gap-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
             >
               <div
-                v-for="(item, index) in followerList"
+                v-for="item in followerList"
                 :key="item.userId"
                 class="user-card group cursor-pointer"
-                :style="{ animationDelay: `${index * 0.03}s` }"
                 @click="viewUserDetail(item.userId, item.nickname)"
               >
                 <!-- Avatar -->
@@ -273,6 +272,8 @@ watch(
 
 button:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 1px var(--primary-color);
+  box-shadow: none;
+  outline: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 32%, transparent);
+  outline-offset: 2px;
 }
 </style>

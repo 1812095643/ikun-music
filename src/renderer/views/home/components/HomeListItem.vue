@@ -2,7 +2,7 @@
   <div class="home-list-card group cursor-pointer" @click="$emit('click')">
     <!-- Cover -->
     <div
-      class="relative aspect-square overflow-hidden rounded-lg border border-white/60 bg-neutral-100 shadow-sm transition-colors duration-200 ease-out dark:border-white/10 dark:bg-neutral-800"
+      class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 bg-neutral-100 transition-colors duration-200 ease-out dark:border-neutral-800 dark:bg-neutral-800"
     >
       <img
         ref="coverRef"
