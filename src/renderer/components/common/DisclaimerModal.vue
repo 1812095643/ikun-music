@@ -6,7 +6,7 @@
         class="disclaimer-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/30"
       >
         <div
-          class="disclaimer-modal-card w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
+          class="disclaimer-modal-card w-full max-w-md mx-4 bg-white dark:bg-black rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
         >
           <div class="h-1 bg-primary"></div>
           <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white px-6 mt-10">
@@ -85,7 +85,7 @@
         class="donate-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/30"
       >
         <div
-          class="donate-modal-card w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
+          class="donate-modal-card w-full max-w-md mx-4 bg-white dark:bg-black rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
         >
           <div class="h-1 bg-primary"></div>
 
@@ -164,7 +164,7 @@
         @click.self="closeQRCode"
       >
         <div
-          class="w-full max-w-sm mx-4 bg-white dark:bg-gray-900 rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
+          class="w-full max-w-sm mx-4 bg-white dark:bg-black rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
         >
           <div class="h-2" :class="qrcodeType === 'wechat' ? 'bg-primary' : 'bg-neutral-500'"></div>
 
@@ -174,7 +174,7 @@
             </h3>
             <button
               @click="closeQRCode"
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
             >
               <i class="ri-close-line text-xl"></i>
             </button>

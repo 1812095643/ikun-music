@@ -105,9 +105,9 @@ const openSettings = () => {
 
 .header-btn {
   @apply flex items-center justify-center;
-  @apply w-10 h-10 rounded-full;
+  @apply w-10 h-10 rounded-lg;
   @apply text-xl text-gray-600 dark:text-gray-300;
-  @apply active:bg-gray-100 dark:active:bg-gray-800;
+  @apply active:bg-primary/5 dark:active:bg-primary/10;
   @apply transition-colors duration-150;
 }
 </style>

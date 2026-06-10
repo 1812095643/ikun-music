@@ -1215,7 +1215,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
   // 通用控制按钮样式
   .main-button {
-    @apply flex items-center justify-center cursor-pointer transition-colors duration-200 rounded-full;
+    @apply flex items-center justify-center cursor-pointer transition-colors duration-200 rounded-lg;
 
     i {
       @apply text-2xl;
@@ -1611,7 +1611,8 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
           }
 
           &.play-pause {
-            @apply w-16 h-16 bg-white/15 rounded-full;
+            @apply w-16 h-16 rounded-lg;
+            background: color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
 
             i {
               @apply text-4xl;

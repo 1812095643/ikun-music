@@ -254,7 +254,7 @@ const handleLoginError = (error: string) => {
       max-width: 300px;
 
       &-page {
-        @apply bg-light dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90;
+        @apply bg-white/95 dark:bg-black/95 border border-neutral-100 dark:border-neutral-800;
         width: 250px;
         @apply rounded-lg overflow-hidden;
         margin: 0 auto;
@@ -264,7 +264,7 @@ const handleLoginError = (error: string) => {
         height: 40px;
         @apply w-full px-4 outline-none;
         @apply text-gray-900 dark:text-white bg-transparent;
-        @apply border-b border-gray-200 dark:border-gray-700;
+        @apply border-b border-neutral-200 dark:border-neutral-800;
         @apply placeholder-gray-500 dark:placeholder-gray-400;
         transition:
           border-color 0.2s ease,

@@ -125,7 +125,7 @@ defineExpose({
   }
 
   .uid-page {
-    @apply bg-light dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90;
+    @apply bg-white/95 dark:bg-black/95 border border-neutral-100 dark:border-neutral-800;
     @apply rounded-lg overflow-hidden;
   }
 

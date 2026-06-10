@@ -2,7 +2,7 @@
   <div class="user-page">
     <template v-if="infoLoading">
       <div
-        class="left-skeleton flex-1 max-w-[600px] rounded-lg overflow-hidden p-4 bg-light-200 dark:bg-dark-100"
+        class="left-skeleton flex-1 max-w-[600px] rounded-lg overflow-hidden p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800"
       >
         <div class="flex flex-col gap-6">
           <div class="flex justify-between">
@@ -10,7 +10,7 @@
             <div class="h-6 w-20 skeleton-shimmer rounded-lg" />
           </div>
           <div class="flex items-center gap-4">
-            <div class="h-[50px] w-[50px] skeleton-shimmer rounded-full" />
+            <div class="h-[50px] w-[50px] skeleton-shimmer rounded-lg" />
             <div class="flex w-2/5 justify-around">
               <div v-for="i in 3" :key="i" class="flex flex-col items-center gap-1">
                 <div class="h-5 w-8 skeleton-shimmer rounded-lg" />

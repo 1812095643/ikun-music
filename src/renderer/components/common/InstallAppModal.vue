@@ -111,7 +111,7 @@ const handleInstall = async (): Promise<void> => {
         @apply flex-1;
       }
       .cancel-btn {
-        @apply bg-gray-800 text-gray-300 border-none;
+        @apply bg-neutral-900 text-neutral-300 border-none;
         &:hover {
           @apply bg-gray-700;
         }

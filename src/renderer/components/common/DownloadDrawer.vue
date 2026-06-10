@@ -98,8 +98,8 @@ onMounted(() => {
   @apply fixed left-6 bottom-24 z-[999];
 
   .n-button {
-    @apply bg-white dark:bg-gray-800;
-    @apply hover:bg-light dark:hover:bg-dark-200;
+    @apply bg-white dark:bg-black;
+    @apply hover:bg-primary/5 dark:hover:bg-primary/10 hover:text-primary;
     @apply text-gray-600 dark:text-gray-300;
     @apply transition-opacity duration-200;
     @apply w-10 h-10;

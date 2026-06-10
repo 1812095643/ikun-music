@@ -244,7 +244,7 @@ watch(
       }
 
       &.play-pause {
-        @apply w-12 h-12 rounded-full flex items-center justify-center;
+        @apply w-12 h-12 rounded-lg flex items-center justify-center;
         background: color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
 
         i {
