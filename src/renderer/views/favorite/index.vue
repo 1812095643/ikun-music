@@ -28,7 +28,7 @@
               class="px-3 h-full rounded-md text-xs font-medium transition-colors duration-200 flex items-center gap-1"
               :class="
                 isDescending === isDesc
-                  ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
+                  ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white ring-1 ring-black/5 dark:ring-white/10'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
               "
               @click="toggleSort(isDesc)"
@@ -50,7 +50,7 @@
         <!-- Selection Controls -->
         <div
           v-else
-          class="flex items-center gap-3 bg-white dark:bg-neutral-900 shadow-sm rounded-lg px-4 py-1.5 border border-gray-100 dark:border-neutral-800 h-9"
+          class="flex items-center gap-3 bg-white dark:bg-neutral-900 rounded-lg px-4 py-1.5 border border-gray-100 dark:border-neutral-800 h-9"
         >
           <n-checkbox
             :checked="isAllSelected"
