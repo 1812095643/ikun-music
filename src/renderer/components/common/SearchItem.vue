@@ -1,12 +1,12 @@
 <template>
   <div
-    class="search-item group cursor-pointer transition-colors duration-300"
+    class="search-item group cursor-pointer transition-colors duration-200"
     :class="[item.type === 'mv' ? 'flex flex-col' : 'flex flex-col']"
     @click="handleClick"
   >
     <!-- Image Container -->
     <div
-      class="relative overflow-hidden rounded-lg border border-neutral-100 transition-colors duration-300 group-hover:border-primary/20 dark:border-neutral-800"
+      class="relative overflow-hidden rounded-lg border border-neutral-100 transition-colors duration-200 group-hover:border-primary/20 dark:border-neutral-800"
       :class="[item.type === 'mv' ? 'aspect-video' : 'aspect-square']"
     >
       <n-image
@@ -19,10 +19,10 @@
       <!-- Play Overlay (for MV) -->
       <div
         v-if="item.type === 'mv'"
-        class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 group-hover:bg-black/25"
+        class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-200 group-hover:bg-black/25"
       >
         <div
-          class="play-icon flex h-10 w-10 items-center justify-center rounded-lg bg-white/90 opacity-0 translate-y-1 transition-opacity duration-300 group-hover:opacity-100"
+          class="play-icon flex h-10 w-10 items-center justify-center rounded-lg bg-white/90 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
         >
           <i class="ri-play-fill text-2xl text-neutral-900 ml-1" />
         </div>
@@ -31,7 +31,7 @@
       <!-- Item Size Badge (for Album) -->
       <div
         v-if="item.type === '专辑' && item.size"
-        class="absolute top-2 right-2 flex items-center gap-1 rounded-md bg-black/40 px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        class="absolute top-2 right-2 flex items-center gap-1 rounded-md bg-black/40 px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
       >
         <i class="ri-music-2-line" />
         <span>{{ item.size }}</span>

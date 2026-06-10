@@ -1,6 +1,6 @@
 <template>
   <div
-    class="home-song-card group flex cursor-pointer items-center gap-3 md:gap-4 rounded-lg p-2 md:p-2.5 transition-colors duration-300 hover:bg-primary/5 dark:hover:bg-primary/10"
+    class="home-song-card group flex cursor-pointer items-center gap-3 md:gap-4 rounded-lg p-2 md:p-2.5 transition-colors duration-200 hover:bg-primary/5 dark:hover:bg-primary/10"
     @click="onPlayMusic"
     @contextmenu.prevent="onMenuClick"
   >
@@ -20,7 +20,7 @@
         }"
       />
       <div
-        class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
       >
         <i class="iconfont icon-playfill text-lg md:text-xl text-white"></i>
       </div>
@@ -48,7 +48,7 @@
 
     <!-- More Button -->
     <button
-      class="more-btn flex h-8 w-8 items-center justify-center rounded-lg opacity-0 transition-opacity duration-300 group-hover:bg-white dark:group-hover:bg-neutral-800 group-hover:opacity-100"
+      class="more-btn flex h-8 w-8 items-center justify-center rounded-lg opacity-0 transition-opacity duration-200 group-hover:bg-white dark:group-hover:bg-neutral-800 group-hover:opacity-100"
       @click.stop="onMenuClick"
     >
       <i class="ri-more-fill text-sm text-neutral-600 dark:text-neutral-300"></i>

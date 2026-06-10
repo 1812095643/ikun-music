@@ -257,7 +257,7 @@ onUnmounted(() => {
 }
 
 .text {
-  @apply mt-4 text-white text-xs transition-colors duration-300;
+  @apply mt-4 text-white text-xs transition-colors duration-200;
 
   &.expired {
     color: var(--qqm-primary, #22c55e);
