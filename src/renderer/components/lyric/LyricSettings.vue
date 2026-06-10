@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="w-80 rounded-lg bg-black/25 backdrop-blur-md border border-white/10 shadow-sm overflow-hidden"
-  >
+  <div class="w-80 rounded-lg bg-neutral-950/88 border border-white/10 overflow-hidden">
     <!-- 标题栏 -->
     <div class="px-6 py-4 border-b border-white/5">
       <h2 class="text-lg font-semibold tracking-tight text-white/90">
@@ -585,7 +583,7 @@ defineExpose({
   background: var(--qqm-primary, #22c55e);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--qqm-primary, #22c55e) 35%, transparent);
+  box-shadow: none;
 }
 
 .slider-primary::-moz-range-thumb {
@@ -595,7 +593,7 @@ defineExpose({
   border-radius: 50%;
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--qqm-primary, #22c55e) 35%, transparent);
+  box-shadow: none;
 }
 
 .slider-marks {
@@ -784,7 +782,7 @@ defineExpose({
 
 .select-input:focus {
   border-color: var(--qqm-primary, #22c55e);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, transparent);
 }
 
 /* 滚动条 */

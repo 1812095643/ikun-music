@@ -92,7 +92,7 @@ defineExpose({
     @apply flex flex-col items-center gap-2 p-4 rounded-lg;
     @apply bg-light-200 bg-opacity-70 dark:bg-dark-200 dark:bg-opacity-90;
     @apply text-dark-100 dark:text-light-100;
-    @apply shadow-sm backdrop-blur-sm;
+    @apply border border-black/5 dark:border-white/10;
     min-width: 120px;
   }
 

@@ -299,7 +299,7 @@ const formatFreq = (freq: number) => {
   text-align: center;
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(0);
   }
 }
 
@@ -315,7 +315,7 @@ const formatFreq = (freq: number) => {
   --n-fill-color: #22c55e;
   --n-fill-color-hover: #16a34a;
   --n-handle-color: #22c55e;
-  --n-handle-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --n-handle-box-shadow: none;
 
   .n-slider-handle {
     transition:
@@ -323,7 +323,7 @@ const formatFreq = (freq: number) => {
       box-shadow 0.2s ease,
       transform 0.2s ease;
     &:hover {
-      transform: translateY(-1px);
+      transform: translateY(0);
     }
   }
 }

@@ -2,11 +2,6 @@
   <div
     class="playlist-import-page h-full w-full bg-gray-50 dark:bg-black transition-colors duration-200 overflow-hidden flex flex-col relative"
   >
-    <!-- 背景装饰 -->
-    <div
-      class="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none"
-    ></div>
-
     <!-- 头部区域 -->
     <div class="flex-shrink-0 z-10 page-padding pt-8 pb-4 relative">
       <div class="max-w-5xl mx-auto w-full flex items-end justify-between">
@@ -32,7 +27,7 @@
         <!-- 自定义 Tab 切换 -->
         <div class="flex justify-center mb-8">
           <div
-            class="bg-white dark:bg-white/5 p-1.5 rounded-lg shadow-sm border border-gray-100 dark:border-white/10 flex gap-1 relative"
+            class="bg-white dark:bg-white/5 p-1.5 rounded-lg border border-gray-100 dark:border-white/10 flex gap-1 relative"
           >
             <div
               v-for="tab in tabs"
@@ -51,7 +46,7 @@
 
             <!-- 滑动背景 -->
             <div
-              class="absolute top-1.5 bottom-1.5 bg-primary rounded-lg shadow-sm transition-colors duration-200 ease-out"
+              class="absolute top-1.5 bottom-1.5 bg-primary rounded-lg transition-colors duration-200 ease-out"
               :style="tabIndicatorStyle"
             ></div>
           </div>
@@ -62,7 +57,7 @@
           <!-- 左侧：输入区域 -->
           <div class="lg:col-span-2 space-y-6">
             <div
-              class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-none overflow-hidden p-1 transition-colors duration-200"
+              class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 overflow-hidden p-1 transition-colors duration-200"
             >
               <!-- 链接导入内容 -->
               <div v-if="currentTab === 'link'" class="p-6 space-y-6 animate-fade-in">
@@ -179,7 +174,7 @@
           <div class="space-y-6">
             <!-- 选项卡片 -->
             <div
-              class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-none p-6"
+              class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 p-6"
             >
               <h3 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <i class="ri-settings-4-line text-primary"></i>
@@ -256,7 +251,7 @@
             <!-- 状态反馈 -->
             <div v-if="taskId" class="animate-fade-in-up">
               <div
-                class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-none p-6"
+                class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 p-6"
               >
                 <div class="flex items-center justify-between mb-4">
                   <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">

@@ -711,9 +711,7 @@ onUnmounted(() => {
   padding: 12px 14px;
   border: 1px solid #e5e7eb;
   border-radius: 14px;
-  background:
-    linear-gradient(160deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9)),
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.08), transparent 40%);
+  background: #ffffff;
   gap: 12px;
   margin-bottom: 12px;
 }
@@ -759,7 +757,7 @@ onUnmounted(() => {
 .shortcut-section {
   border: 1px solid #dbe2ea;
   border-radius: 14px;
-  background: linear-gradient(180deg, #ffffff, #f8fafc);
+  background: #ffffff;
   margin-bottom: 12px;
   overflow: hidden;
   box-shadow: none;
@@ -775,7 +773,7 @@ onUnmounted(() => {
   font-weight: 600;
   letter-spacing: 0.02em;
   color: #334155;
-  background: linear-gradient(90deg, rgba(226, 232, 240, 0.9), rgba(241, 245, 249, 0.65));
+  background: #f8fafc;
   border-bottom: 1px solid #e2e8f0;
 }
 
@@ -793,7 +791,7 @@ onUnmounted(() => {
 }
 
 .shortcut-row--error {
-  background: linear-gradient(90deg, rgba(254, 242, 242, 0.92), rgba(255, 247, 237, 0.76));
+  background: #fff7ed;
 }
 
 .shortcut-row__name {
@@ -828,13 +826,13 @@ onUnmounted(() => {
 .shortcut-recorder:hover,
 .shortcut-recorder:focus-visible {
   border-color: #14b8a6;
-  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.18);
+  box-shadow: none;
   outline: none;
 }
 
 .shortcut-recorder--recording {
   border-color: #2563eb;
-  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
+  box-shadow: none;
 }
 
 .shortcut-recorder__value {
@@ -969,14 +967,12 @@ onUnmounted(() => {
 }
 
 :deep(.dark) .shortcut-modal .n-card__content {
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.9));
+  background: #0f172a;
 }
 
 :deep(.dark) .shortcut-panel__header {
   border-color: #334155;
-  background:
-    linear-gradient(160deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.88)),
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.24), transparent 45%);
+  background: #0f172a;
 }
 
 :deep(.dark) .shortcut-panel__content {
@@ -986,12 +982,12 @@ onUnmounted(() => {
 
 :deep(.dark) .shortcut-section {
   border-color: #334155;
-  background: linear-gradient(180deg, #111827, #0f172a);
+  background: #111827;
 }
 
 :deep(.dark) .shortcut-section__title {
   color: #cbd5e1;
-  background: linear-gradient(90deg, rgba(51, 65, 85, 0.75), rgba(30, 41, 59, 0.68));
+  background: #1f2937;
   border-bottom-color: #334155;
 }
 
@@ -1000,7 +996,7 @@ onUnmounted(() => {
 }
 
 :deep(.dark) .shortcut-row--error {
-  background: linear-gradient(90deg, rgba(127, 29, 29, 0.28), rgba(154, 52, 18, 0.2));
+  background: rgba(127, 29, 29, 0.24);
 }
 
 :deep(.dark) .shortcut-row__name,
@@ -1016,7 +1012,7 @@ onUnmounted(() => {
 :deep(.dark) .shortcut-recorder {
   border-color: #4b5563;
   background: #0f172a;
-  box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.07);
+  box-shadow: none;
 }
 
 :deep(.dark) .shortcut-panel__footer {
