@@ -880,7 +880,7 @@ defineExpose({
 
       &.now-text {
         opacity: 1;
-        transform: translateX(2px);
+        transform: none;
       }
 
       &.no-scroll-tip {

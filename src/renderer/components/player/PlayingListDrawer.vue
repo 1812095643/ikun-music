@@ -11,6 +11,7 @@
   >
     <div class="playlist-panel-header">
       <div class="title">{{ t('player.playBar.playList') }}</div>
+      <div class="playlist-count">{{ playList.length }}</div>
       <div class="header-actions">
         <n-tooltip trigger="hover">
           <template #trigger>
@@ -32,13 +33,14 @@
       </div>
       <n-virtual-list v-else ref="playListRef" :item-size="62" item-resizable :items="playList">
         <template #default="{ item }">
-          <div class="music-play-list-content">
+          <div
+            class="music-play-list-content"
+            :class="{ 'is-current': item.id === playerStore.playMusic?.id }"
+          >
             <div class="flex items-center justify-between">
               <song-item :key="item.id" class="flex-1" :item="item" mini></song-item>
               <div class="delete-btn" @click.stop="handleDeleteSong(item)">
-                <i
-                  class="iconfont ri-delete-bin-line text-neutral-400 hover:text-primary dark:hover:text-primary transition-colors"
-                ></i>
+                <i class="iconfont ri-delete-bin-line transition-colors"></i>
               </div>
             </div>
           </div>
@@ -179,13 +181,14 @@ const handleDeleteSong = (song: SongResult) => {
 <style lang="scss" scoped>
 .fixed-overlay {
   @apply fixed inset-0 z-[999999];
-  background: rgba(15, 23, 42, 0.08);
+  background: rgba(15, 23, 42, 0.04);
+  backdrop-filter: blur(2px);
   pointer-events: auto; // 允许点击关闭
   cursor: default;
 }
 
 .playlist-panel {
-  @apply fixed right-4 z-[9999999] rounded-lg overflow-hidden;
+  @apply fixed right-4 z-[9999999] overflow-hidden rounded-lg;
   width: 360px;
   height: 68vh;
   top: 16vh; // 轻量右侧浮层，保留桌面播放器呼吸感
@@ -196,16 +199,18 @@ const handleDeleteSong = (song: SongResult) => {
     opacity 0.18s ease;
 
   &.closing {
-    transform: translateX(12px);
+    transform: translateX(10px);
     opacity: 0;
   }
 
-  background: color-mix(in srgb, var(--qqm-surface, #fff) 98%, transparent);
+  background: var(--qqm-surface, #fff);
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
   box-shadow: none;
+  backdrop-filter: none;
 
   &-header {
-    @apply flex items-center justify-between px-4 py-3;
+    @apply flex items-center px-4 py-3;
+    gap: 8px;
     border-bottom: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
     background: color-mix(in srgb, var(--qqm-surface, #fff) 99%, transparent);
 
@@ -213,17 +218,31 @@ const handleDeleteSong = (song: SongResult) => {
       @apply text-base font-medium text-neutral-800 dark:text-neutral-200;
     }
 
+    .playlist-count {
+      display: inline-flex;
+      min-width: 24px;
+      height: 20px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--qqm-primary-soft) 52%, transparent);
+      color: var(--qqm-primary);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
     .header-actions {
-      @apply flex items-center;
+      @apply ml-auto flex items-center;
     }
 
     .action-btn,
     .close-btn {
-      @apply w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer mx-1 text-neutral-800 dark:text-neutral-200;
-      @apply transition-colors;
+      @apply mx-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-neutral-800 transition-colors dark:text-neutral-200;
+      border: 1px solid transparent;
 
       &:hover {
-        background: var(--qqm-primary-soft, rgba(30, 207, 115, 0.1));
+        border-color: color-mix(in srgb, var(--qqm-primary) 14%, transparent);
+        background: color-mix(in srgb, var(--qqm-primary-soft) 34%, transparent);
         color: var(--qqm-primary-strong, #0dbd62);
       }
 
@@ -234,9 +253,6 @@ const handleDeleteSong = (song: SongResult) => {
 
     .action-btn {
       @apply text-neutral-500 dark:text-neutral-400;
-      &:hover {
-        @apply text-neutral-700 dark:text-neutral-200;
-      }
     }
   }
 
@@ -246,10 +262,19 @@ const handleDeleteSong = (song: SongResult) => {
 }
 
 .empty-playlist {
-  @apply flex flex-col items-center justify-center h-full text-neutral-400 dark:text-neutral-500;
+  @apply flex h-full flex-col items-center justify-center text-neutral-400 dark:text-neutral-500;
+  gap: 10px;
 
   .iconfont {
-    @apply text-5xl mb-4;
+    display: grid;
+    width: 46px;
+    height: 46px;
+    place-items: center;
+    border: 1px solid var(--qqm-border);
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--qqm-primary-soft) 34%, transparent);
+    color: var(--qqm-primary);
+    font-size: 23px;
   }
 
   p {
@@ -259,17 +284,32 @@ const handleDeleteSong = (song: SongResult) => {
 
 .music-play-list-content {
   @apply rounded-lg pr-2 transition-colors duration-150;
+  border: 1px solid transparent;
+
+  &.is-current {
+    border-color: color-mix(in srgb, var(--qqm-primary) 14%, transparent);
+    background: color-mix(in srgb, var(--qqm-primary-soft) 22%, transparent);
+  }
+
   &:hover {
-    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, transparent);
+    border-color: color-mix(in srgb, var(--qqm-primary) 12%, transparent);
+    background: color-mix(in srgb, var(--qqm-primary-soft) 26%, transparent);
 
     .delete-btn {
       @apply visible;
     }
   }
+
   .delete-btn {
-    @apply pr-2 cursor-pointer invisible;
+    @apply invisible cursor-pointer pr-2;
+
     .iconfont {
       @apply text-lg;
+      color: var(--qqm-text-muted);
+    }
+
+    &:hover .iconfont {
+      color: var(--qqm-primary);
     }
   }
 }

@@ -1313,56 +1313,54 @@ body {
 }
 
 .fixed-overlay {
-  background: rgba(17, 19, 21, 0.28) !important;
-  backdrop-filter: blur(7px) saturate(1.06);
+  background: rgba(17, 19, 21, 0.08) !important;
+  backdrop-filter: blur(2px);
 }
 
 .playlist-panel {
   overflow: hidden !important;
-  border-left: 1px solid rgba(255, 255, 255, 0.52) !important;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(30, 207, 115, 0.11), transparent 34%),
-    color-mix(in srgb, var(--qqm-surface) 82%, transparent) !important;
-  box-shadow: -18px 0 44px rgba(20, 24, 31, 0.16) !important;
-  backdrop-filter: blur(22px) saturate(1.12);
+  border-left: 1px solid var(--qqm-border) !important;
+  background: var(--qqm-surface) !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 .playlist-panel-header {
-  height: 66px !important;
-  padding: 0 22px !important;
+  height: 58px !important;
+  padding: 0 16px !important;
   border-bottom: 1px solid var(--qqm-border) !important;
-  background: color-mix(in srgb, var(--qqm-surface) 62%, transparent) !important;
+  background: var(--qqm-surface) !important;
 }
 
 .playlist-panel-header .title {
   color: var(--qqm-text) !important;
-  font-size: 18px !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.02em;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em;
 }
 
 .playlist-panel .action-btn,
 .playlist-panel .close-btn,
 .playlist-panel .delete-btn {
-  border: 1px solid var(--qqm-border) !important;
+  border: 1px solid transparent !important;
   border-radius: 9px !important;
-  background: color-mix(in srgb, var(--qqm-surface) 72%, transparent) !important;
+  background: transparent !important;
   transition:
     color 180ms var(--qqm-ease),
     background-color 180ms var(--qqm-ease),
-    transform 180ms var(--qqm-ease) !important;
+    border-color 180ms var(--qqm-ease) !important;
 }
 
 .playlist-panel .action-btn:hover,
 .playlist-panel .close-btn:hover,
 .playlist-panel .delete-btn:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary) 14%, transparent) !important;
   color: var(--qqm-primary-strong) !important;
-  background: var(--qqm-primary-soft) !important;
-  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--qqm-primary-soft) 34%, transparent) !important;
 }
 
 .playlist-panel-content {
-  padding: 12px 14px 18px !important;
+  padding: 10px 10px 16px !important;
 }
 
 .music-play-list-content {
@@ -1376,18 +1374,18 @@ body {
 }
 
 .music-play-list-content:hover {
-  border-color: rgba(30, 207, 115, 0.14) !important;
-  background: color-mix(in srgb, var(--qqm-surface) 68%, transparent) !important;
-  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.055) !important;
+  border-color: color-mix(in srgb, var(--qqm-primary) 12%, transparent) !important;
+  background: color-mix(in srgb, var(--qqm-primary-soft) 26%, transparent) !important;
+  box-shadow: none !important;
 }
 
 .empty-playlist {
-  margin: 18px !important;
-  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  margin: 14px !important;
+  border: 1px solid var(--qqm-border) !important;
   border-radius: 12px !important;
-  background: color-mix(in srgb, var(--qqm-surface) 54%, transparent) !important;
-  box-shadow: 0 12px 28px rgba(20, 24, 31, 0.06) !important;
-  backdrop-filter: blur(14px) saturate(1.06);
+  background: color-mix(in srgb, var(--qqm-primary-soft) 18%, var(--qqm-surface)) !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 .dark .search-result-page .header-section,
@@ -1401,8 +1399,8 @@ body {
 .dark .playlist-panel,
 .dark .empty-playlist {
   border-color: rgba(255, 255, 255, 0.08) !important;
-  background: rgba(24, 27, 31, 0.58) !important;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22) !important;
+  background: var(--qqm-surface) !important;
+  box-shadow: none !important;
 }
 
 /* 剩余功能页 QQ 音乐风格收口：MV、播客、歌单导入、热力图与关注列表统一清爽玻璃质感。 */
