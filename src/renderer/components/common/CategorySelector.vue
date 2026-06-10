@@ -44,7 +44,7 @@ type CategorySelectorProps = {
 const props = withDefaults(defineProps<CategorySelectorProps>(), {
   labelKey: 'label',
   valueKey: 'value',
-  animationClass: 'animate__bounceIn'
+  animationClass: 'animate__fadeInUp'
 });
 
 const emit = defineEmits<{

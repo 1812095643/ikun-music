@@ -150,7 +150,7 @@
               v-for="(item, index) in recordList"
               :key="item.id"
               class="record-item"
-              :class="setAnimationClass('animate__bounceInUp')"
+              :class="setAnimationClass('animate__fadeInUp')"
               :style="setAnimationDelay(index, 25)"
             >
               <div class="play-score">

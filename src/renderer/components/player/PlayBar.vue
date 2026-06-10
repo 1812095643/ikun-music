@@ -2,7 +2,7 @@
   <div
     class="music-play-bar"
     :class="[
-      setAnimationClass('animate__bounceInUp'),
+      setAnimationClass('animate__fadeInUp'),
       musicFullVisible ? 'play-bar-opcity' : '',
       musicFullVisible && MusicFullRef?.musicFullRef?.config?.hidePlayBar
         ? 'animate__animated animate__slideOutDown'

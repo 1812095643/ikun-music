@@ -9,7 +9,7 @@
             <!-- Background Image with Blur -->
             <div class="hero-bg absolute inset-0 -top-20">
               <div
-                class="absolute inset-0 bg-cover bg-center scale-110 blur-3xl opacity-40 dark:opacity-30"
+                class="absolute inset-0 bg-cover bg-center scale-105 blur-3xl opacity-40 dark:opacity-30"
                 :style="{
                   backgroundImage: `url(${getImgUrl(getCoverImgUrl, '800y800')})`
                 }"
@@ -903,7 +903,8 @@ onMounted(checkCollectionStatus);
 .action-btn-icon {
   @apply transition-all;
   &:hover {
-    @apply scale-110 text-primary bg-primary/10;
+    @apply text-primary bg-primary/10;
+    transform: translateY(-1px);
   }
 }
 

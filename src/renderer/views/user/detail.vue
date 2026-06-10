@@ -44,7 +44,7 @@
             <!-- Background Image with Blur -->
             <div class="absolute inset-0 -top-20">
               <div
-                class="absolute inset-0 bg-cover bg-center scale-110 blur-2xl opacity-40 dark:opacity-30"
+                class="absolute inset-0 bg-cover bg-center scale-105 blur-2xl opacity-40 dark:opacity-30"
                 :style="{
                   backgroundImage: `url(${getImgUrl(userDetail.profile.backgroundUrl)})`
                 }"
