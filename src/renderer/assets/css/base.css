@@ -667,3 +667,276 @@ body {
 .dark .private-content-section {
   border-top-color: rgba(255, 255, 255, 0.07) !important;
 }
+
+/* 详情页、列表页、搜索页与播放页 QQ 音乐风格统一：轻玻璃、细线、舒展行距。 */
+.music-list-page,
+.search-page,
+.album-page,
+.list-page,
+.toplist-page,
+.artist-detail-page,
+.user-detail-page,
+.history-page,
+.favorite-page,
+.download-page,
+.local-music-page,
+.set-page {
+  color: var(--qqm-text) !important;
+  background: var(--qqm-bg) !important;
+}
+
+.music-list-content,
+.search-content,
+.album-content,
+.list-content,
+.toplist-content,
+.artist-detail-content,
+.user-detail-content,
+.history-content,
+.favorite-content,
+.download-content,
+.local-music-content {
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+.music-list-page .hero-section,
+.artist-detail-page .hero-section,
+.user-detail-page .hero-section,
+.playlist-detail-hero,
+.detail-hero {
+  margin: 14px 18px 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.62) !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
+  box-shadow: 0 12px 30px rgba(20, 24, 31, 0.08) !important;
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+.music-list-page .hero-bg,
+.artist-detail-page .hero-bg,
+.user-detail-page .hero-bg {
+  opacity: 0.76;
+}
+
+.music-list-page .hero-content,
+.artist-detail-page .hero-content,
+.user-detail-page .hero-content {
+  padding: 28px 30px 30px !important;
+}
+
+.cover-container,
+.artist-avatar-large,
+.detail-cover,
+.album-cover,
+.playlist-cover {
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    0 14px 30px rgba(20, 24, 31, 0.12) !important;
+  overflow: hidden;
+}
+
+.cover-glow {
+  opacity: 0 !important;
+}
+
+.music-list-page h1,
+.artist-detail-page h1,
+.user-detail-page h1,
+.music-list-page .title,
+.detail-title {
+  color: var(--qqm-text) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em;
+}
+
+.music-list-page .description,
+.artist-detail-page .description,
+.user-detail-page .description,
+.detail-description {
+  color: var(--qqm-muted) !important;
+  line-height: 1.72 !important;
+}
+
+.music-list-page button,
+.artist-detail-page button,
+.search-page button,
+.album-page button,
+.list-page button,
+.toplist-page button {
+  border-radius: 9px !important;
+}
+
+.music-list-page .play-all-button,
+.music-list-page .primary-button,
+.artist-detail-page .play-all-button,
+.primary-action,
+.n-button--primary-type {
+  color: #fff !important;
+  background: var(--qqm-primary) !important;
+  border-color: var(--qqm-primary) !important;
+  box-shadow: 0 8px 18px rgba(30, 207, 115, 0.22) !important;
+}
+
+.sticky-tab-page,
+.sticky-tabs,
+.music-list-tabs,
+.search-tabs {
+  border-bottom: 1px solid var(--qqm-border) !important;
+  background: color-mix(in srgb, var(--qqm-bg) 86%, transparent) !important;
+  backdrop-filter: blur(16px) saturate(1.05);
+}
+
+.song-item,
+.standard-song-item,
+.list-song-item,
+.compact-song-item,
+.search-item,
+.playlist-drawer-item {
+  border-radius: 9px !important;
+  border: 1px solid transparent !important;
+  transition:
+    background-color 180ms var(--qqm-ease),
+    border-color 180ms var(--qqm-ease),
+    transform 180ms var(--qqm-ease),
+    box-shadow 180ms var(--qqm-ease) !important;
+}
+
+.song-item:hover,
+.standard-song-item:hover,
+.list-song-item:hover,
+.compact-song-item:hover,
+.search-item:hover,
+.playlist-drawer-item:hover {
+  background: color-mix(in srgb, var(--qqm-surface) 72%, transparent) !important;
+  border-color: rgba(30, 207, 115, 0.14) !important;
+  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.06) !important;
+  transform: translateY(-1px);
+}
+
+.song-item .cover,
+.standard-song-item .cover,
+.list-song-item .cover,
+.compact-song-item .cover,
+.search-item img,
+.search-item .cover {
+  border-radius: 8px !important;
+  border: 1px solid var(--qqm-border);
+}
+
+.song-item .name,
+.standard-song-item .name,
+.list-song-item .name,
+.compact-song-item .name,
+.search-item .name,
+.song-name,
+.music-name {
+  color: var(--qqm-text) !important;
+  font-weight: 600 !important;
+}
+
+.song-item .artist,
+.standard-song-item .artist,
+.list-song-item .artist,
+.compact-song-item .artist,
+.search-item .artist,
+.song-artist,
+.music-artist,
+.album-name {
+  color: var(--qqm-muted) !important;
+}
+
+.playlist-item,
+.album-item,
+.radio-card,
+.playlists-item {
+  border-radius: 10px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 54%, transparent) !important;
+  border: 1px solid rgba(255, 255, 255, 0.58) !important;
+  box-shadow: 0 8px 22px rgba(20, 24, 31, 0.055) !important;
+  backdrop-filter: blur(14px) saturate(1.08);
+}
+
+.playlist-item:hover,
+.album-item:hover,
+.radio-card:hover,
+.playlists-item:hover {
+  border-color: rgba(30, 207, 115, 0.18) !important;
+  box-shadow: 0 14px 30px rgba(20, 24, 31, 0.09) !important;
+}
+
+.n-card,
+.n-modal,
+.n-drawer-content {
+  border-radius: 12px !important;
+}
+
+.n-drawer-content {
+  background: color-mix(in srgb, var(--qqm-surface) 92%, transparent) !important;
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+#drawer-target,
+.music-drawer,
+.music-full-container {
+  color: var(--qqm-text);
+}
+
+.music-full-container,
+.music-drawer .n-drawer-content,
+#drawer-target {
+  background:
+    radial-gradient(circle at 24% 18%, rgba(30, 207, 115, 0.12), transparent 30%),
+    color-mix(in srgb, var(--qqm-bg) 88%, transparent) !important;
+}
+
+.music-img,
+.music-img img,
+.cover-3d,
+.cover-3d img {
+  border-radius: 14px !important;
+}
+
+.music-lrc {
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 36%, transparent) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(16px) saturate(1.08);
+}
+
+.music-lrc-text {
+  border-radius: 8px !important;
+  color: color-mix(in srgb, var(--qqm-text) 72%, transparent) !important;
+}
+
+.music-lrc-text.now-text,
+.music-lrc-text:hover {
+  color: var(--qqm-primary-strong) !important;
+  background: rgba(30, 207, 115, 0.08) !important;
+}
+
+.dark .music-list-page .hero-section,
+.dark .artist-detail-page .hero-section,
+.dark .user-detail-page .hero-section,
+.dark .playlist-detail-hero,
+.dark .detail-hero,
+.dark .playlist-item,
+.dark .album-item,
+.dark .radio-card,
+.dark .playlists-item {
+  background: rgba(24, 27, 31, 0.56) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22) !important;
+}
+
+.dark .song-item:hover,
+.dark .standard-song-item:hover,
+.dark .list-song-item:hover,
+.dark .compact-song-item:hover,
+.dark .search-item:hover,
+.dark .playlist-drawer-item:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(30, 207, 115, 0.18) !important;
+}
