@@ -192,7 +192,7 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .qr-login {
-  animation-duration: 0.5s;
+  animation-duration: 0.2s;
 }
 
 .login-title {

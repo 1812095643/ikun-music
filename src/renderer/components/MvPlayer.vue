@@ -60,7 +60,7 @@
         class="absolute inset-0 flex items-center justify-center bg-black/50 z-30 cursor-pointer"
         @click="togglePlay"
       >
-        <n-button quaternary circle size="large" class="!text-white hover:!text-primary scale-125">
+        <n-button quaternary circle size="large" class="!text-white hover:!text-primary">
           <template #icon>
             <n-icon size="48"><i class="ri-play-circle-line"></i></n-icon>
           </template>
@@ -69,7 +69,7 @@
 
       <!-- Top Bar (Title & Close) -->
       <div
-        class="absolute top-0 left-0 right-0 p-4 z-[9999999] transition-opacity duration-200 bg-gradient-to-b from-black/80 to-transparent pointer-events-auto"
+        class="absolute top-0 left-0 right-0 p-4 z-[9999999] transition-opacity duration-200 bg-black/45 pointer-events-auto"
         :class="{ '-translate-y-full opacity-0': !showControls }"
         style="-webkit-app-region: drag"
         @click.stop
@@ -105,7 +105,7 @@
 
       <!-- Bottom Controls -->
       <div
-        class="absolute bottom-0 left-0 right-0 z-40 transition-opacity duration-200 bg-gradient-to-t from-black/90 via-black/60 to-transparent pb-6 pt-12 px-4 md:px-6"
+        class="absolute bottom-0 left-0 right-0 z-40 transition-opacity duration-200 bg-black/55 pb-6 pt-12 px-4 md:px-6"
         :class="{ 'translate-y-full opacity-0': !showControls }"
         @click.stop
       >

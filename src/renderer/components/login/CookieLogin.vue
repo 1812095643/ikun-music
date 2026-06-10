@@ -127,7 +127,7 @@ onBeforeUnmount(() => {
     <n-button class="btn-login" @click="loginByToken()">{{
       t('login.button.cookieLogin')
     }}</n-button>
-    <n-button v-if="isElectron" class="btn-auto-cookie" @click="autoGetCookie()" type="info">
+    <n-button v-if="isElectron" class="btn-auto-cookie" @click="autoGetCookie()">
       {{ t('login.button.autoGetCookie') }}
     </n-button>
   </div>
@@ -135,7 +135,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .cookie-login {
-  animation-duration: 0.5s;
+  animation-duration: 0.2s;
   @apply flex flex-col items-center;
 }
 
@@ -202,7 +202,7 @@ onBeforeUnmount(() => {
   width: 250px;
   height: 40px;
   @apply mt-10 text-white rounded-lg;
-  @apply transition-colors;
+  @apply transition-colors duration-200;
   background-color: var(--qqm-primary, #22c55e);
 }
 
@@ -210,7 +210,7 @@ onBeforeUnmount(() => {
   width: 250px;
   height: 40px;
   @apply mt-4 text-white rounded-lg;
-  @apply transition-colors;
+  @apply transition-colors duration-200;
   background-color: var(--qqm-primary, #22c55e);
 }
 </style>

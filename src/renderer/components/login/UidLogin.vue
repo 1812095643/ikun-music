@@ -107,7 +107,7 @@ defineExpose({
 
 <style lang="scss" scoped>
 .uid-login {
-  animation-duration: 0.5s;
+  animation-duration: 0.2s;
   width: 250px;
 
   .login-title {
@@ -145,7 +145,7 @@ defineExpose({
     width: 250px;
     height: 40px;
     @apply mt-10 text-white rounded-lg;
-    @apply transition-colors;
+    @apply transition-colors duration-200;
     background-color: var(--qqm-primary, #22c55e);
   }
 }
