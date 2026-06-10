@@ -175,7 +175,7 @@ const onPlayNext = () => {
     }
 
     .icon-likefill {
-      @apply text-xl transition text-gray-500 dark:text-gray-400 hover:text-red-500;
+      @apply text-xl transition text-gray-500 dark:text-gray-400 hover:text-neutral-700 dark:hover:text-neutral-200;
     }
 
     &-like {

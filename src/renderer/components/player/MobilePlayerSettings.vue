@@ -7,7 +7,7 @@
         @click.self="close"
       >
         <!-- 遮罩层 -->
-        <div class="absolute inset-0 bg-black/45" @click="close"></div>
+        <div class="absolute inset-0 bg-black/30" @click="close"></div>
 
         <!-- 弹窗内容 -->
         <div
@@ -343,12 +343,12 @@ onUnmounted(() => {
 /* 弹窗动画 */
 .settings-drawer-enter-active,
 .settings-drawer-leave-active {
-  transition: opacity 0.2s ease;
+  transition: opacity 0.18s ease;
 }
 
 .settings-drawer-enter-active > div:last-child,
 .settings-drawer-leave-active > div:last-child {
-  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.18s ease;
 }
 
 .settings-drawer-enter-from,
@@ -358,6 +358,6 @@ onUnmounted(() => {
 
 .settings-drawer-enter-from > div:last-child,
 .settings-drawer-leave-to > div:last-child {
-  transform: translateY(100%);
+  transform: translateY(16px);
 }
 </style>

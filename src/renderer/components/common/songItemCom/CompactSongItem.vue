@@ -244,7 +244,7 @@ const formatDuration = (ms: number): string => {
       @apply mr-1 ml-0 cursor-pointer;
 
       .iconfont {
-        @apply text-base transition text-gray-500 dark:text-gray-400 hover:text-red-500;
+        @apply text-base transition text-gray-500 dark:text-gray-400 hover:text-neutral-700 dark:hover:text-neutral-200;
       }
       .like-active {
         @apply text-red-500 dark:text-red-500;

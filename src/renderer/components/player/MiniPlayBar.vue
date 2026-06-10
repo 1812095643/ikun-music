@@ -112,7 +112,7 @@
               <song-item :key="item.id" class="flex-1" :item="item" mini></song-item>
               <div class="delete-btn" @click.stop="handleDeleteSong(item)">
                 <i
-                  class="iconfont ri-delete-bin-line text-gray-400 hover:text-red-500 transition-colors"
+                  class="iconfont ri-delete-bin-line text-gray-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
                 ></i>
               </div>
             </div>
@@ -604,7 +604,7 @@ const setMusicFull = () => {
 // 过渡动画
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.18s ease;
 }
 
 .fade-enter-from,

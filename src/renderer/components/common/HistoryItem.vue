@@ -23,7 +23,7 @@
     </div>
     <div
       v-if="showDelete"
-      class="cursor-pointer rounded-lg border w-8 h-8 flex flex-shrink-0 justify-center items-center border-neutral-300 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 hover:border-red-500 hover:text-red-500 transition-colors duration-200"
+      class="cursor-pointer rounded-lg border w-8 h-8 flex flex-shrink-0 justify-center items-center border-neutral-300 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 hover:border-neutral-400 hover:text-neutral-700 dark:hover:border-neutral-500 dark:hover:text-neutral-200 transition-colors duration-200"
       @click.stop="$emit('delete')"
     >
       <i class="iconfont icon-close" />

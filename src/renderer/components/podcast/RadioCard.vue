@@ -46,7 +46,7 @@ const goToDetail = () => {
       <!-- Recent played badge -->
       <div
         v-if="program"
-        class="absolute bottom-0 left-0 right-0 px-3 py-2 bg-black/45 text-white text-xs truncate"
+        class="absolute bottom-0 left-0 right-0 px-3 py-2 bg-black/35 text-white text-xs truncate"
       >
         {{ program.mainSong?.name || program.name }}
       </div>

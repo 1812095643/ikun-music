@@ -53,7 +53,7 @@
               @load="extractDailyColor"
             />
             <!-- Gradient Overlay -->
-            <div class="absolute inset-0 bg-black/45" />
+            <div class="absolute inset-0 bg-black/35" />
 
             <!-- Content -->
             <div class="relative flex h-full flex-col justify-between p-5 md:p-6">
@@ -247,7 +247,7 @@
               <span
                 :class="[
                   'inline-flex w-fit items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold',
-                  hotPlaylists.length > 0 ? 'bg-black/45 text-white' : 'bg-primary/10 text-primary'
+                  hotPlaylists.length > 0 ? 'bg-black/35 text-white' : 'bg-primary/10 text-primary'
                 ]"
               >
                 <i class="ri-play-list-2-line" />
