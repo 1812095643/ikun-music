@@ -19,7 +19,7 @@
             <div class="flex flex-col md:flex-row gap-8 items-center md:items-end">
               <div class="cover-wrapper relative group">
                 <div
-                  class="cover-container relative w-32 h-32 md:w-40 md:h-40 rounded-2xl bg-primary/10 flex items-center justify-center shadow-2xl ring-4 ring-white/50 dark:ring-neutral-800/50"
+                  class="cover-container relative w-32 h-32 md:w-40 md:h-40 rounded-xl bg-primary/10 flex items-center justify-center shadow-md ring-1 ring-white/50 dark:ring-neutral-800/50"
                 >
                   <i class="ri-download-cloud-2-line text-6xl text-primary opacity-80" />
                 </div>
@@ -28,7 +28,7 @@
               <div class="info-content text-center md:text-left">
                 <div class="badge mb-3">
                   <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-[9px] bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
                   >
                     {{ t('download.title') }}
                   </span>
@@ -80,7 +80,7 @@
             <div class="flex items-center gap-3">
               <button
                 v-if="tabName === 'downloaded' && downloadedList.length > 0"
-                class="action-btn-pill flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm transition-all hover:bg-red-50 dark:hover:bg-red-900/10 text-red-500 border border-neutral-200 dark:border-neutral-800"
+                class="action-btn-pill flex items-center gap-2 px-4 py-2 rounded-[9px] font-semibold text-sm transition-all hover:bg-red-50 dark:hover:bg-red-900/10 text-red-500 border border-neutral-200 dark:border-neutral-800"
                 @click="showClearConfirm = true"
               >
                 <i class="ri-delete-bin-line text-lg" />
@@ -88,14 +88,14 @@
               </button>
 
               <button
-                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
+                class="action-btn-icon w-10 h-10 rounded-[9px] flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
                 @click="openDownloadPath"
               >
                 <i class="ri-folder-open-line text-lg" />
               </button>
 
               <button
-                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
+                class="action-btn-icon w-10 h-10 rounded-[9px] flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
                 @click="showSettingsDrawer = true"
               >
                 <i class="ri-settings-3-line text-lg" />
@@ -118,7 +118,7 @@
               <div
                 v-for="item in downloadList"
                 :key="item.path"
-                class="downloading-item group p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-100 dark:border-neutral-800/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
+                class="downloading-item group p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-100 dark:border-neutral-800/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
               >
                 <div class="flex items-center gap-4">
                   <n-image
@@ -182,7 +182,7 @@
                 <div
                   v-for="(item, index) in downList"
                   :key="item.path"
-                  class="downloaded-item group animate-item p-3 rounded-2xl flex items-center gap-4 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all"
+                  class="downloaded-item group animate-item p-3 rounded-xl flex items-center gap-4 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all"
                   :style="{ animationDelay: `${index * 0.03}s` }"
                 >
                   <div

@@ -1,5 +1,7 @@
 <template>
-  <div class="h-full w-full bg-white dark:bg-black transition-colors duration-500 flex flex-col">
+  <div
+    class="set-page h-full w-full bg-white dark:bg-black transition-colors duration-500 flex flex-col"
+  >
     <!-- 顶部导航区 -->
     <div
       class="flex-shrink-0 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-black z-10 page-padding pt-6 pb-2"
@@ -13,10 +15,10 @@
           <div
             v-for="section in navSections"
             :key="section.id"
-            class="py-1.5 px-4 mr-3 inline-block rounded-full cursor-pointer transition-all duration-300 text-sm font-medium select-none"
+            class="py-1.5 px-4 mr-3 inline-block rounded-[9px] cursor-pointer transition-all duration-300 text-sm font-medium select-none"
             :class="
               currentSection === section.id
-                ? 'bg-primary text-white shadow-lg shadow-primary/25 scale-105'
+                ? 'bg-primary text-white shadow-sm shadow-primary/20 scale-[1.02]'
                 : 'bg-gray-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-gray-200 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white'
             "
             @click="currentSection = section.id"

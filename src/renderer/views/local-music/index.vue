@@ -19,7 +19,7 @@
             <div class="flex flex-col md:flex-row gap-8 items-center md:items-end">
               <div class="cover-wrapper relative group">
                 <div
-                  class="cover-container relative w-32 h-32 md:w-40 md:h-40 rounded-2xl bg-primary/10 flex items-center justify-center shadow-2xl ring-4 ring-white/50 dark:ring-neutral-800/50"
+                  class="cover-container relative w-32 h-32 md:w-40 md:h-40 rounded-xl bg-primary/10 flex items-center justify-center shadow-md ring-1 ring-white/50 dark:ring-neutral-800/50"
                 >
                   <i class="ri-folder-music-fill text-6xl text-primary opacity-80" />
                 </div>
@@ -28,7 +28,7 @@
               <div class="info-content text-center md:text-left">
                 <div class="badge mb-3">
                   <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-[9px] bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
                   >
                     {{ t('localMusic.title') }}
                   </span>
@@ -71,7 +71,7 @@
               <!-- 播放全部按钮 -->
               <button
                 v-if="filteredList.length > 0"
-                class="action-btn-pill flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm transition-all bg-primary text-white hover:bg-primary/90"
+                class="action-btn-pill flex items-center gap-2 px-4 py-2 rounded-[9px] font-semibold text-sm transition-all bg-primary text-white hover:bg-primary/90"
                 @click="handlePlayAll"
               >
                 <i class="ri-play-fill text-lg" />
@@ -80,7 +80,7 @@
 
               <!-- 扫描按钮 -->
               <button
-                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
+                class="action-btn-icon w-10 h-10 rounded-[9px] flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
                 :disabled="localMusicStore.scanning"
                 @click="handleScan"
               >
@@ -92,7 +92,7 @@
 
               <!-- 添加文件夹按钮 -->
               <button
-                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
+                class="action-btn-icon w-10 h-10 rounded-[9px] flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
                 @click="handleAddFolder"
               >
                 <i class="ri-folder-add-line text-lg" />
@@ -101,7 +101,7 @@
               <!-- 文件夹管理按钮 -->
               <button
                 v-if="localMusicStore.folderPaths.length > 0"
-                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
+                class="action-btn-icon w-10 h-10 rounded-[9px] flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
                 @click="showFolderManager = true"
               >
                 <i class="ri-folder-settings-line text-lg" />
@@ -113,7 +113,7 @@
         <!-- 扫描进度提示 -->
         <section v-if="localMusicStore.scanning" class="page-padding-x mt-6">
           <div
-            class="flex items-center gap-4 p-4 rounded-2xl bg-primary/5 dark:bg-primary/10 border border-primary/20"
+            class="flex items-center gap-4 p-4 rounded-xl bg-primary/5 dark:bg-primary/10 border border-primary/20"
           >
             <n-spin size="small" />
             <div>
@@ -137,7 +137,7 @@
             <i class="ri-folder-music-fill text-5xl mb-4 text-neutral-200 dark:text-neutral-800" />
             <p class="text-neutral-400">{{ t('localMusic.emptyState') }}</p>
             <button
-              class="mt-6 px-6 py-2 rounded-full bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all"
+              class="mt-6 px-6 py-2 rounded-[9px] bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all"
               @click="handleAddFolder"
             >
               <i class="ri-folder-add-line mr-2" />
