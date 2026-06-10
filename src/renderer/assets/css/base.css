@@ -141,7 +141,7 @@ body {
 
 .tabs-track {
   background: var(--qqm-surface) !important;
-  border-radius: 18px !important;
+  border-radius: 10px !important;
 }
 
 .tab-slider-bg {
@@ -158,7 +158,7 @@ body {
 .action-btn,
 .user-btn {
   background: var(--qqm-surface) !important;
-  border-radius: 18px !important;
+  border-radius: 10px !important;
 }
 
 .search-inner--focus {
@@ -188,13 +188,13 @@ body {
 .fm-card {
   border-radius: 10px !important;
   border: 1px solid var(--qqm-border);
-  box-shadow: 0 8px 18px rgba(20, 24, 31, 0.08) !important;
+  box-shadow: none !important;
 }
 
 .daily-card:hover,
 .fm-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(20, 24, 31, 0.1) !important;
+  box-shadow: none !important;
 }
 
 .playlist-section,
@@ -279,7 +279,7 @@ body {
 .home-song-card:hover {
   border-color: var(--qqm-border);
   background: var(--qqm-surface) !important;
-  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.07);
+  box-shadow: none;
 }
 
 .home-song-card .cover {
@@ -293,7 +293,7 @@ body {
 }
 
 .artists-section .artist-item:hover .artist-avatar {
-  box-shadow: 0 10px 22px rgba(20, 24, 31, 0.1) !important;
+  box-shadow: none !important;
 }
 
 .artists-section .artist-name {
@@ -325,7 +325,7 @@ body {
 .music-buttons-play {
   color: #ffffff !important;
   background: var(--qqm-primary) !important;
-  box-shadow: 0 8px 18px rgba(30, 207, 115, 0.24);
+  box-shadow: none;
 }
 
 .music-buttons-prev:hover,
@@ -582,9 +582,7 @@ body {
 
 .home-polished-card:hover .home-polished-cover,
 .home-list-card:hover > div:first-child {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
-    0 12px 26px rgba(20, 24, 31, 0.12) !important;
+  box-shadow: none !important;
 }
 
 .home-polished-overlay {
@@ -596,7 +594,7 @@ body {
 .home-list-card [role='button'] {
   color: #ffffff !important;
   background: var(--qqm-primary) !important;
-  box-shadow: 0 8px 18px rgba(30, 207, 115, 0.24) !important;
+  box-shadow: none !important;
 }
 
 .home-polished-extra {
@@ -610,7 +608,7 @@ body {
 .dark .home-list-card {
   background: rgba(24, 27, 31, 0.5) !important;
   border-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18) !important;
+  box-shadow: none !important;
 }
 
 .dark .home-polished-card:hover,
@@ -622,9 +620,7 @@ body {
 .dark .home-polished-cover,
 .dark .home-list-card > div:first-child {
   border-color: rgba(255, 255, 255, 0.1);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 10px 24px rgba(0, 0, 0, 0.22) !important;
+  box-shadow: none !important;
 }
 
 .home-polished-title,
@@ -770,7 +766,7 @@ body {
   color: #fff !important;
   background: var(--qqm-primary) !important;
   border-color: var(--qqm-primary) !important;
-  box-shadow: 0 8px 18px rgba(30, 207, 115, 0.22) !important;
+  box-shadow: none !important;
 }
 
 .sticky-tab-page,
@@ -918,7 +914,7 @@ body {
 .dark .playlists-item {
   background: rgba(24, 27, 31, 0.56) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22) !important;
+  box-shadow: none !important;
 }
 
 .dark .song-item:hover,
@@ -1009,7 +1005,7 @@ body {
 .favorite-item:hover,
 .rank-song-item:hover {
   background: color-mix(in srgb, var(--qqm-surface) 72%, transparent) !important;
-  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.055) !important;
+  box-shadow: none !important;
 }
 
 .setting-nav,
@@ -1096,7 +1092,7 @@ body {
 .artist-avatar,
 .n-avatar {
   border: 1px solid rgba(255, 255, 255, 0.62) !important;
-  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.08) !important;
+  box-shadow: none !important;
 }
 
 .toplist-page h1,
@@ -1153,7 +1149,7 @@ body {
 .dark .heatmap-card {
   background: rgba(24, 27, 31, 0.58) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22) !important;
+  box-shadow: none !important;
 }
 
 .dark .n-data-table-th {
@@ -1203,7 +1199,7 @@ body {
   border: 1px solid var(--qqm-border) !important;
   border-radius: 11px !important;
   background: color-mix(in srgb, var(--qqm-surface) 72%, transparent) !important;
-  box-shadow: 0 8px 22px rgba(20, 24, 31, 0.045) !important;
+  box-shadow: none !important;
   backdrop-filter: none;
 }
 
@@ -1230,7 +1226,7 @@ body {
 .history-page button[class*='bg-primary'] {
   min-height: 36px;
   border: 1px solid rgba(30, 207, 115, 0.22) !important;
-  box-shadow: 0 8px 18px rgba(30, 207, 115, 0.18) !important;
+  box-shadow: none !important;
 }
 
 .search-result-page .action-btn-icon,
@@ -1253,7 +1249,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.52) !important;
   border-radius: 12px !important;
   background: color-mix(in srgb, var(--qqm-surface) 48%, transparent) !important;
-  box-shadow: 0 10px 26px rgba(20, 24, 31, 0.045) !important;
+  box-shadow: none !important;
   backdrop-filter: none;
 }
 
@@ -1280,7 +1276,7 @@ body {
 .search-result-page .search-item [class*='aspect-video'] {
   border-radius: 10px !important;
   border: 1px solid rgba(255, 255, 255, 0.58) !important;
-  box-shadow: 0 10px 24px rgba(20, 24, 31, 0.075) !important;
+  box-shadow: none !important;
 }
 
 .album-page .play-icon,
@@ -1291,7 +1287,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.72) !important;
   color: var(--qqm-primary-strong) !important;
   background: rgba(255, 255, 255, 0.88) !important;
-  box-shadow: 0 8px 18px rgba(20, 24, 31, 0.18) !important;
+  box-shadow: none !important;
   backdrop-filter: none;
 }
 
@@ -1454,7 +1450,7 @@ body {
 .user-follows-page .user-card [class*='rounded-full'],
 .user-followers-page .user-card [class*='rounded-full'] {
   border: 1px solid rgba(255, 255, 255, 0.58) !important;
-  box-shadow: 0 10px 24px rgba(20, 24, 31, 0.075) !important;
+  box-shadow: none !important;
 }
 
 .mv-page .mv-card [class*='aspect-video'],
@@ -1471,7 +1467,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.72) !important;
   color: var(--qqm-primary-strong) !important;
   background: rgba(255, 255, 255, 0.88) !important;
-  box-shadow: 0 8px 18px rgba(20, 24, 31, 0.18) !important;
+  box-shadow: none !important;
   backdrop-filter: none;
 }
 
@@ -1541,7 +1537,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.52) !important;
   border-radius: 12px !important;
   background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
-  box-shadow: 0 10px 26px rgba(20, 24, 31, 0.045) !important;
+  box-shadow: none !important;
   backdrop-filter: none;
 }
 
@@ -1564,7 +1560,7 @@ body {
 .dark .mobile-search-result .loading-state {
   border-color: rgba(255, 255, 255, 0.08) !important;
   background: rgba(24, 27, 31, 0.58) !important;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22) !important;
+  box-shadow: none !important;
 }
 
 /* 播客页组件未暴露稳定卡片类名，按 StickyTabPage 内容结构补齐卡片质感。 */
@@ -1590,7 +1586,7 @@ body {
 .podcast-page .grid > .group.cursor-pointer.animate-item [class*='aspect-square'] {
   border-radius: 10px !important;
   border: 1px solid rgba(255, 255, 255, 0.58) !important;
-  box-shadow: 0 10px 24px rgba(20, 24, 31, 0.075) !important;
+  box-shadow: none !important;
 }
 
 .podcast-page .grid > .group.cursor-pointer.animate-item [class*='w-12'][class*='h-12'] {
@@ -1599,7 +1595,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.72) !important;
   color: var(--qqm-primary-strong) !important;
   background: rgba(255, 255, 255, 0.88) !important;
-  box-shadow: 0 8px 18px rgba(20, 24, 31, 0.18) !important;
+  box-shadow: none !important;
   backdrop-filter: none;
 }
 
@@ -1628,7 +1624,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.56) !important;
   border-radius: 12px !important;
   background: color-mix(in srgb, var(--qqm-surface) 62%, transparent) !important;
-  box-shadow: 0 14px 32px rgba(20, 24, 31, 0.08) !important;
+  box-shadow: none !important;
   backdrop-filter: none;
 }
 
@@ -1651,7 +1647,7 @@ body {
 .login-page .btn-login {
   background: var(--qqm-primary) !important;
   color: #fff !important;
-  box-shadow: 0 8px 18px rgba(30, 207, 115, 0.2) !important;
+  box-shadow: none !important;
 }
 
 .n-drawer .n-drawer-content,
@@ -1684,7 +1680,7 @@ body {
 }
 
 .download-drawer-trigger .n-button {
-  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.07) !important;
+  box-shadow: none !important;
 }
 
 .playlist-drawer .group:hover,
@@ -1764,7 +1760,7 @@ body {
 .update-modal button[class*='bg-primary'] {
   background: var(--qqm-primary) !important;
   color: #fff !important;
-  box-shadow: 0 8px 18px rgba(30, 207, 115, 0.2) !important;
+  box-shadow: none !important;
 }
 
 .disclaimer-modal-card [class*='bg-gradient'],

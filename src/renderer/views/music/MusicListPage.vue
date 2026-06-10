@@ -18,15 +18,15 @@
             </div>
 
             <!-- Hero Content -->
-            <div class="hero-content relative z-10 page-padding-x pt-4 md:pt-10 pb-8">
-              <div class="flex flex-col md:flex-row gap-8 md:gap-12 items-center md:items-end">
+            <div class="hero-content relative z-10 page-padding-x pt-4 md:pt-8 pb-7">
+              <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-center">
                 <!-- Playlist Cover -->
                 <div class="cover-wrapper relative group">
                   <div
                     class="cover-glow absolute -inset-px rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   ></div>
                   <div
-                    class="cover-container relative w-48 h-48 md:w-64 md:h-64 rounded-lg overflow-hidden"
+                    class="cover-container relative w-44 h-44 md:w-56 md:h-56 rounded-lg overflow-hidden"
                   >
                     <n-image
                       v-if="getCoverImgUrl"
@@ -67,7 +67,7 @@
                   </div>
                   <h1
                     ref="titleElRef"
-                    class="playlist-name text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight mb-3"
+                    class="playlist-name text-3xl md:text-4xl lg:text-[42px] font-bold text-neutral-900 dark:text-neutral-100 tracking-tight mb-3"
                   >
                     {{ name }}
                   </h1>
@@ -118,9 +118,9 @@
         <!-- Action Bar (Sticky) -->
         <section
           v-if="songList.length > 0"
-          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5"
+          class="action-bar sticky top-0 z-20 page-padding-x py-3"
         >
-          <div class="flex items-center justify-between gap-4">
+          <div class="action-bar-inner flex items-center justify-between gap-4">
             <div class="flex items-center gap-3">
               <!-- Play All Button -->
               <button
@@ -872,16 +872,35 @@ onMounted(checkCollectionStatus);
 }
 
 .hero-section {
-  min-height: 300px;
+  min-height: 264px;
+  border: 1px solid var(--qqm-border);
+  border-right: 0;
+  border-left: 0;
+  background:
+    radial-gradient(
+      circle at 84% 18%,
+      color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, transparent),
+      transparent 30%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, var(--qqm-bg)),
+      var(--qqm-bg)
+    );
 }
 
 .cover-container {
-  border: 1px solid var(--qqm-border);
+  border: 1px solid color-mix(in srgb, var(--qqm-border) 78%, #ffffff 22%);
   background: var(--qqm-surface-muted);
 }
 
 .cover-glow {
-  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
+}
+
+.playlist-name {
+  max-width: 920px;
+  line-height: 1.12;
 }
 
 .play-icon:hover {
@@ -937,10 +956,18 @@ onMounted(checkCollectionStatus);
 
 .action-bar {
   border-bottom: 1px solid var(--qqm-border);
-  background: color-mix(in srgb, var(--qqm-surface) 94%, transparent);
+  background: color-mix(in srgb, var(--qqm-bg) 96%, transparent);
   transition:
     background-color 180ms var(--qqm-ease, ease),
     border-color 180ms var(--qqm-ease, ease);
+}
+
+.action-bar-inner {
+  min-height: 42px;
+}
+
+.play-all-btn {
+  min-height: 38px;
 }
 
 .action-btn-pill {
@@ -972,6 +999,11 @@ onMounted(checkCollectionStatus);
 
 .song-list-container {
   padding-bottom: 96px;
+  border-top: 1px solid var(--qqm-border);
+}
+
+.song-list-container :deep(.song-item) {
+  border-radius: 8px;
 }
 
 .music-list-empty-state {

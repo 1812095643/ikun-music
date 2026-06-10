@@ -35,7 +35,7 @@
         </section>
 
         <!-- Action Bar (Sticky) -->
-        <section class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4">
+        <section class="action-bar sticky top-0 z-20 page-padding-x py-3">
           <div class="flex items-center justify-between gap-4">
             <!-- Tabs (Segment Control) -->
             <div class="download-tabs flex items-center gap-1 rounded-md p-1">
@@ -83,7 +83,7 @@
         </section>
 
         <!-- List Section -->
-        <section class="list-section page-padding-x mt-6">
+        <section class="list-section page-padding-x mt-4">
           <!-- Downloading List -->
           <div v-if="tabName === 'downloading'" class="downloading-container">
             <div v-if="downloadList.length === 0" class="empty-state py-20 text-center">
@@ -1091,7 +1091,18 @@ onMounted(() => {
 
 .action-bar {
   border-bottom: 1px solid var(--qqm-border);
-  background: color-mix(in srgb, var(--qqm-surface) 94%, transparent);
+  background: color-mix(in srgb, var(--qqm-bg) 96%, transparent);
+}
+
+.list-section {
+  border-top: 1px solid var(--qqm-border);
+}
+
+.empty-state {
+  min-height: 232px;
+  border: 1px dashed color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, var(--qqm-bg));
 }
 
 .download-tabs {

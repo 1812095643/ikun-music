@@ -23,7 +23,7 @@
               <div
                 v-for="(item, index) in hotSearchData?.data"
                 :key="index"
-                class="hot-search-card group flex cursor-pointer items-center gap-4 rounded-lg px-3 py-2.5 transition-colors duration-200"
+                class="hot-search-card group flex cursor-pointer items-center gap-4 rounded-lg px-3 py-3 transition-colors duration-200"
                 @click="handleSearch(item.searchWord)"
               >
                 <span
@@ -185,8 +185,8 @@ onMounted(() => {
 
   &::after {
     position: absolute;
-    right: 12px;
-    bottom: -2px;
+    right: 14px;
+    bottom: 0;
     left: 52px;
     height: 1px;
     background: var(--qqm-border);
@@ -195,8 +195,8 @@ onMounted(() => {
   }
 
   &:hover {
-    border-color: color-mix(in srgb, var(--qqm-primary) 12%, transparent);
-    background: color-mix(in srgb, var(--qqm-primary-soft) 24%, transparent) !important;
+    border-color: color-mix(in srgb, var(--qqm-primary) 14%, transparent);
+    background: color-mix(in srgb, var(--qqm-primary-soft) 26%, transparent) !important;
 
     &::after {
       opacity: 0;

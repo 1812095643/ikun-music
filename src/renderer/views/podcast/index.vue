@@ -55,7 +55,7 @@
             class="podcast-channel-row flex items-center gap-4 p-4 rounded-lg cursor-pointer group transition-colors duration-200"
             @click="playProgram(program)"
           >
-            <div class="relative flex-shrink-0 w-16 h-16 md:w-20 md:h-20">
+            <div class="podcast-program-cover relative flex-shrink-0 w-16 h-16 md:w-20 md:h-20">
               <img
                 :src="getImgUrl(program.coverUrl, '100y100')"
                 :alt="program.mainSong?.name || program.name"
@@ -365,5 +365,12 @@ onMounted(async () => {
 .podcast-channel-row:hover {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.podcast-program-cover {
+  border: 1px solid var(--qqm-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--qqm-surface);
 }
 </style>
