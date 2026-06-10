@@ -172,7 +172,7 @@ const onPlayMusic = () => {
   .song-item-operating {
     display: flex;
     align-items: center;
-    border-radius: 9999px; /* rounded-full */
+    border-radius: 10px;
     margin-left: 1rem; /* ml-4 */
     padding-left: 0.5rem; /* pl-2 */
     border-width: 1px;
@@ -206,7 +206,7 @@ const onPlayMusic = () => {
 
     &-play {
       cursor: pointer;
-      border-radius: 9999px; /* rounded-full */
+      border-radius: 9px;
       width: 2rem; /* w-8 */
       height: 2rem; /* h-8 */
       display: flex;
@@ -220,8 +220,8 @@ const onPlayMusic = () => {
 
       &:hover,
       &.bg-green-600 {
-        background-color: rgb(34 197 94); /* bg-green-500 = #22c55e */
-        border-color: rgb(34 197 94);
+        background-color: var(--qqm-primary, rgb(34 197 94));
+        border-color: var(--qqm-primary, rgb(34 197 94));
         color: white;
       }
     }

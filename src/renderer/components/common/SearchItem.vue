@@ -6,7 +6,7 @@
   >
     <!-- Image Container -->
     <div
-      class="relative overflow-hidden rounded-2xl shadow-sm transition-all duration-500 group-hover:shadow-xl group-hover:-translate-y-1"
+      class="relative overflow-hidden rounded-xl border border-white/60 shadow-sm transition-all duration-500 group-hover:shadow-md group-hover:-translate-y-0.5 dark:border-white/10"
       :class="[item.type === 'mv' ? 'aspect-video' : 'aspect-square']"
     >
       <n-image
@@ -22,7 +22,7 @@
         class="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-300 group-hover:bg-black/30"
       >
         <div
-          class="play-icon flex h-12 w-12 items-center justify-center rounded-full bg-white/90 opacity-0 scale-75 transition-all duration-300 shadow-xl group-hover:opacity-100 group-hover:scale-100"
+          class="play-icon flex h-11 w-11 items-center justify-center rounded-[10px] bg-white/90 opacity-0 scale-75 transition-all duration-300 shadow-md group-hover:opacity-100 group-hover:scale-100"
         >
           <i class="ri-play-fill text-2xl text-neutral-900 ml-1" />
         </div>

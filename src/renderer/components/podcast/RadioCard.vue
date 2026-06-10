@@ -23,14 +23,10 @@ const goToDetail = () => {
 </script>
 
 <template>
-  <div
-    class="group cursor-pointer animate-item"
-    :style="{ animationDelay }"
-    @click="goToDetail"
-  >
+  <div class="group cursor-pointer animate-item" :style="{ animationDelay }" @click="goToDetail">
     <!-- Cover -->
     <div
-      class="relative aspect-square overflow-hidden rounded-2xl shadow-md group-hover:shadow-xl transition-all duration-500"
+      class="relative aspect-square overflow-hidden rounded-xl border border-white/60 shadow-sm group-hover:shadow-md transition-all duration-500 dark:border-white/10"
     >
       <img
         :src="getImgUrl(radio?.picUrl || program?.coverUrl || '', '400y400')"
@@ -43,7 +39,7 @@ const goToDetail = () => {
         class="absolute inset-0 bg-transparent group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center"
       >
         <div
-          class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 shadow-xl"
+          class="w-11 h-11 rounded-[10px] bg-white/90 flex items-center justify-center opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 shadow-md"
         >
           <i class="ri-play-fill text-2xl text-neutral-900 ml-0.5"></i>
         </div>

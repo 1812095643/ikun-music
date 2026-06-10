@@ -159,7 +159,7 @@ const onPlayNext = () => {
   }
 
   .song-item-img {
-    @apply w-12 h-12 rounded-xl mr-4;
+    @apply w-12 h-12 rounded-[9px] mr-4;
   }
 
   .song-item-content {
@@ -175,7 +175,7 @@ const onPlayNext = () => {
   }
 
   .song-item-operating {
-    @apply flex items-center rounded-full ml-4 border dark:border-gray-700 border-gray-200 bg-light dark:bg-black;
+    @apply flex items-center rounded-[10px] ml-4 border dark:border-gray-700 border-gray-200 bg-light dark:bg-black;
 
     .iconfont {
       @apply text-xl;
@@ -202,12 +202,12 @@ const onPlayNext = () => {
     }
 
     &-play {
-      @apply cursor-pointer rounded-full w-10 h-10 flex justify-center items-center transition
+      @apply cursor-pointer rounded-[9px] w-10 h-10 flex justify-center items-center transition
              border dark:border-gray-700 border-gray-200 text-gray-900 dark:text-white;
 
       &:hover,
       &.bg-green-600 {
-        @apply bg-green-500 border-green-500 text-white;
+        @apply bg-primary border-primary text-white;
       }
     }
   }

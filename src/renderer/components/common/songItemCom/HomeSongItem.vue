@@ -1,12 +1,12 @@
 <template>
   <div
-    class="home-song-card group flex cursor-pointer items-center gap-3 md:gap-4 rounded-xl md:rounded-2xl p-2 md:p-2.5 transition-all duration-300 hover:bg-light-200 dark:hover:bg-dark-200"
+    class="home-song-card group flex cursor-pointer items-center gap-3 md:gap-4 rounded-[10px] p-2 md:p-2.5 transition-all duration-300 hover:bg-light-200 dark:hover:bg-dark-200"
     @click="onPlayMusic"
     @contextmenu.prevent="onMenuClick"
   >
     <!-- Album Cover -->
     <div
-      class="cover relative h-14 w-14 md:h-16 md:w-16 flex-shrink-0 overflow-hidden rounded-lg md:rounded-xl bg-neutral-100 dark:bg-neutral-800 shadow-sm"
+      class="cover relative h-14 w-14 md:h-16 md:w-16 flex-shrink-0 overflow-hidden rounded-[9px] bg-neutral-100 dark:bg-neutral-800 shadow-sm"
     >
       <n-image
         v-if="item.picUrl"
@@ -48,7 +48,7 @@
 
     <!-- More Button -->
     <button
-      class="more-btn flex h-8 w-8 items-center justify-center rounded-full opacity-0 transition-all duration-300 group-hover:bg-white dark:group-hover:bg-neutral-800 group-hover:opacity-100 hover:scale-110 active:scale-95"
+      class="more-btn flex h-8 w-8 items-center justify-center rounded-[9px] opacity-0 transition-all duration-300 group-hover:bg-white dark:group-hover:bg-neutral-800 group-hover:opacity-100 hover:scale-110 active:scale-95"
       @click.stop="onMenuClick"
     >
       <i class="ri-more-fill text-sm text-neutral-600 dark:text-neutral-300"></i>

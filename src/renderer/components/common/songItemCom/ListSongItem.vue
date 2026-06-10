@@ -225,7 +225,7 @@ const onPlayMusic = () => {
       cursor: pointer;
       transition-property: transform;
       transition-duration: 0.15s;
-      border-radius: 9999px;
+      border-radius: 9px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -239,7 +239,7 @@ const onPlayMusic = () => {
       }
 
       &.bg-green-600 {
-        background-color: rgb(34 197 94);
+        background-color: var(--qqm-primary, rgb(34 197 94));
         color: white;
       }
     }
