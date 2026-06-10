@@ -70,7 +70,7 @@
           ></i>
         </div>
         <div
-          class="song-item-operating-list-play bg-gray-300 dark:bg-gray-800"
+          class="song-item-operating-list-play bg-neutral-100 dark:bg-neutral-900"
           :class="{ 'bg-primary': isPlaying, 'is-loading': playLoading }"
           @click="onPlayMusic"
         >
@@ -252,7 +252,7 @@ const onPlayMusic = () => {
 
 /* dark mode */
 .dark .list-song-item {
-  border-color: rgb(31 41 55); /* dark:border-gray-800 */
+  border-color: transparent;
 
   &:hover {
     border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, transparent);

@@ -306,7 +306,7 @@ const selectSpeed = (speed: number) => {
   }
   .speed-option {
     @apply py-2 px-4 rounded-lg cursor-pointer transition-colors;
-    @apply bg-gray-100 dark:bg-gray-800;
+    @apply bg-neutral-100 dark:bg-neutral-900;
     &:hover {
       background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
     }

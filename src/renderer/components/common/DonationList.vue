@@ -22,7 +22,7 @@
         class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
-          class="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
+          class="absolute -right-4 -top-4 w-24 h-24 rounded-lg bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
         ></div>
         <img
           :src="alipay"
@@ -40,7 +40,7 @@
         class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
-          class="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
+          class="absolute -right-4 -top-4 w-24 h-24 rounded-lg bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
         ></div>
         <img
           :src="wechat"
@@ -70,19 +70,19 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <div v-for="(donor, index) in visibleDonors" :key="donor.id" class="donor-card group">
           <div
-            class="h-full bg-white dark:bg-neutral-800/50 border border-gray-100 dark:border-gray-800 rounded-lg p-3 flex gap-3 hover:border-primary/30 hover:bg-white dark:hover:bg-neutral-800 transition-colors duration-200"
+            class="h-full bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 rounded-lg p-3 flex gap-3 hover:border-primary/30 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors duration-200"
           >
             <!-- 头像 -->
             <div class="relative flex-shrink-0">
               <div
-                class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold border border-gray-100 dark:border-gray-700"
+                class="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold border border-neutral-100 dark:border-neutral-800"
                 :class="avatarColorClass(donor.name)"
               >
                 {{ avatarInitial(donor.name) }}
               </div>
               <div
                 v-if="index < 3"
-                class="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[10px] text-white border border-white dark:border-gray-800"
+                class="absolute -top-1 -right-1 w-4 h-4 rounded-md flex items-center justify-center text-[10px] text-white border border-white dark:border-neutral-900"
                 :class="[
                   index === 0 ? 'bg-primary' : index === 1 ? 'bg-neutral-400' : 'bg-primary/80'
                 ]"
@@ -106,7 +106,7 @@
               <div class="mt-1">
                 <div
                   v-if="donor.message"
-                  class="text-xs text-gray-500 dark:text-gray-400 truncate border-b border-dashed border-gray-300 dark:border-gray-600 inline-block max-w-full"
+                  class="text-xs text-neutral-500 dark:text-neutral-400 truncate border-b border-dashed border-neutral-200 dark:border-neutral-700 inline-block max-w-full"
                   :title="donor.message"
                 >
                   "{{ donor.message }}"

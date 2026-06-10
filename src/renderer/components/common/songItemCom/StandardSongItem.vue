@@ -75,7 +75,7 @@
           {{ t('songItem.menu.playNext') }}
         </n-tooltip>
         <div
-          class="song-item-operating-play bg-gray-300 dark:bg-gray-800"
+          class="song-item-operating-play bg-neutral-100 dark:bg-neutral-900"
           :class="{ 'bg-primary': isPlaying, 'is-loading': playLoading }"
           @click="onPlayMusic"
         >
@@ -199,7 +199,7 @@ const onPlayNext = () => {
 
     &-play {
       @apply cursor-pointer rounded-[9px] w-10 h-10 flex justify-center items-center transition
-             border dark:border-gray-700 border-gray-200 text-gray-900 dark:text-white;
+             border border-neutral-200 dark:border-neutral-800 text-gray-900 dark:text-white;
 
       &:hover,
       &.bg-primary {

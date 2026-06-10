@@ -67,7 +67,7 @@
           ></i>
         </div>
         <div
-          class="song-item-operating-play bg-gray-300 dark:bg-gray-800"
+          class="song-item-operating-play bg-neutral-100 dark:bg-neutral-900"
           :class="{ 'bg-primary': isPlaying, 'is-loading': playLoading }"
           @click="onPlayMusic"
         >
@@ -231,7 +231,7 @@ const onPlayMusic = () => {
 /* dark mode */
 .dark .mini-song-item {
   &:hover {
-    background-color: rgb(31 41 55); /* dark:bg-gray-800 */
+    background-color: rgb(23 23 23);
   }
 
   .song-item-content {
@@ -245,7 +245,7 @@ const onPlayMusic = () => {
   }
 
   .song-item-operating {
-    border-color: rgb(55 65 81); /* dark:border-gray-700 */
+    border-color: rgb(38 38 38);
     background-color: black; /* dark:bg-black */
 
     &-like .icon-likefill {
@@ -253,7 +253,7 @@ const onPlayMusic = () => {
     }
 
     &-play {
-      border-color: rgb(55 65 81); /* dark:border-gray-700 */
+      border-color: rgb(38 38 38);
       color: white; /* dark:text-white */
     }
   }
