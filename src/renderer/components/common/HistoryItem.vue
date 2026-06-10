@@ -10,14 +10,14 @@
       preview-disabled
     />
     <div class="flex-1 min-w-0">
-      <div class="text-base text-gray-900 dark:text-white mb-1">
+      <div class="text-base text-neutral-900 dark:text-neutral-100 mb-1">
         <n-ellipsis :line-clamp="1">{{ name }}</n-ellipsis>
       </div>
-      <div class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ description }}</div>
+      <div class="text-sm text-neutral-500 dark:text-neutral-400 truncate">{{ description }}</div>
     </div>
     <div
       v-if="showCount && count"
-      class="px-4 text-lg text-center min-w-[60px] text-gray-600 dark:text-gray-400 flex-shrink-0"
+      class="px-4 text-lg text-center min-w-[60px] text-neutral-600 dark:text-neutral-400 flex-shrink-0"
     >
       {{ count }}
     </div>

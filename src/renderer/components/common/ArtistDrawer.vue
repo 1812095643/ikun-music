@@ -289,7 +289,7 @@ defineExpose({
   border-left: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
 
   .close-btn {
-    @apply absolute top-4 right-4 text-gray-500 dark:text-gray-400 text-2xl cursor-pointer p-2;
+    @apply absolute top-4 right-4 text-neutral-500 dark:text-neutral-400 text-2xl cursor-pointer p-2;
     &:hover {
       color: var(--qqm-primary, #22c55e);
     }
@@ -307,11 +307,11 @@ defineExpose({
       }
 
       .artist-alias {
-        @apply text-gray-500 dark:text-gray-400 mb-2;
+        @apply text-neutral-500 dark:text-neutral-400 mb-2;
       }
 
       .artist-desc {
-        @apply text-sm text-gray-600 dark:text-gray-300 line-clamp-3;
+        @apply text-sm text-neutral-600 dark:text-neutral-300 line-clamp-3;
       }
     }
   }
@@ -321,7 +321,7 @@ defineExpose({
   }
 
   .loading-more {
-    @apply text-center py-4 text-gray-500 dark:text-gray-400;
+    @apply text-center py-4 text-neutral-500 dark:text-neutral-400;
   }
 
   .artist-description {

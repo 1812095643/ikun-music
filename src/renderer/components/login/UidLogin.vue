@@ -132,9 +132,9 @@ defineExpose({
   .uid-input {
     height: 40px;
     @apply w-full px-4 outline-none;
-    @apply text-gray-900 dark:text-white bg-transparent;
+    @apply text-neutral-900 dark:text-neutral-100 bg-transparent;
     @apply border-b border-neutral-200 dark:border-neutral-800;
-    @apply placeholder-gray-500 dark:placeholder-gray-400;
+    @apply placeholder-neutral-400 dark:placeholder-neutral-500;
 
     &:focus {
       border-color: var(--qqm-primary, #22c55e);

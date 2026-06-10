@@ -9,12 +9,14 @@
           class="disclaimer-modal-card w-full max-w-md mx-4 bg-white dark:bg-black rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
         >
           <div class="h-1 bg-primary"></div>
-          <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white px-6 mt-10">
+          <h2
+            class="text-2xl font-bold text-center text-neutral-900 dark:text-neutral-100 px-6 mt-10"
+          >
             {{ t('comp.disclaimer.title') }}
           </h2>
 
           <div class="px-6 py-6">
-            <div class="space-y-4 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+            <div class="space-y-4 text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
               <div
                 class="p-4 rounded-lg bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/15"
               >
@@ -70,7 +72,7 @@
 
             <button
               @click="handleDisagree"
-              class="w-full py-3 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              class="w-full py-3 rounded-lg text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary transition-colors"
             >
               {{ t('comp.disclaimer.disagree') }}
             </button>
@@ -95,11 +97,11 @@
             </div>
           </div>
 
-          <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white px-6">
+          <h2 class="text-2xl font-bold text-center text-neutral-900 dark:text-neutral-100 px-6">
             {{ t('comp.donate.title') }}
           </h2>
 
-          <p class="text-sm text-gray-500 dark:text-gray-400 text-center mt-2 px-6">
+          <p class="text-sm text-neutral-500 dark:text-neutral-400 text-center mt-2 px-6">
             {{ t('comp.donate.subtitle') }}
           </p>
 
@@ -149,7 +151,7 @@
               </span>
             </button>
 
-            <p class="text-xs text-gray-400 dark:text-gray-500 text-center mt-3">
+            <p class="text-xs text-neutral-400 dark:text-neutral-500 text-center mt-3">
               {{ t('comp.donate.noForce') }}
             </p>
           </div>
@@ -169,12 +171,12 @@
           <div class="h-2" :class="qrcodeType === 'wechat' ? 'bg-primary' : 'bg-neutral-500'"></div>
 
           <div class="flex items-center justify-between px-6 py-4">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white">
+            <h3 class="text-lg font-bold text-neutral-900 dark:text-neutral-100">
               {{ qrcodeType === 'wechat' ? t('comp.donate.wechatQR') : t('comp.donate.alipayQR') }}
             </h3>
             <button
               @click="closeQRCode"
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
             >
               <i class="ri-close-line text-xl"></i>
             </button>
@@ -188,7 +190,7 @@
                 class="w-full rounded-lg"
               />
             </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400 text-center mt-4">
+            <p class="text-sm text-neutral-500 dark:text-neutral-400 text-center mt-4">
               {{ t('comp.donate.scanTip') }}
             </p>
           </div>

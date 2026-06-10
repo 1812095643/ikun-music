@@ -271,7 +271,7 @@ onUnmounted(() => {
   @apply mt-3;
 
   .manual-refresh {
-    @apply text-gray-300 hover:text-white text-xs;
+    @apply text-neutral-300 hover:text-white text-xs;
   }
 }
 </style>

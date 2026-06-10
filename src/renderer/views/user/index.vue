@@ -482,7 +482,7 @@ const currentLoginType = computed(() => userStore.loginType);
     }
     .title {
       @apply text-lg font-bold flex items-center justify-between;
-      @apply text-gray-900 dark:text-white;
+      @apply text-neutral-900 dark:text-neutral-100;
     }
     .user-name {
       @apply text-xl font-bold mb-4 flex justify-between;
@@ -541,13 +541,13 @@ const currentLoginType = computed(() => userStore.loginType);
       }
 
       .play-score {
-        @apply text-gray-500 dark:text-gray-400 mr-2 text-lg w-10 h-10 rounded-lg flex items-center justify-center;
+        @apply text-neutral-500 dark:text-neutral-400 mr-2 text-lg w-10 h-10 rounded-lg flex items-center justify-center;
       }
     }
 
     .title {
       @apply text-xl font-bold m-4;
-      @apply text-gray-900 dark:text-white;
+      @apply text-neutral-900 dark:text-neutral-100;
     }
   }
 }
@@ -560,7 +560,7 @@ const currentLoginType = computed(() => userStore.loginType);
 
   &-title {
     @apply text-lg;
-    @apply text-gray-900 dark:text-white;
+    @apply text-neutral-900 dark:text-neutral-100;
   }
 
   &-item {
@@ -585,7 +585,7 @@ const currentLoginType = computed(() => userStore.loginType);
     }
 
     &-name {
-      @apply text-gray-900 dark:text-white text-base flex items-center gap-2;
+      @apply text-neutral-900 dark:text-neutral-100 text-base flex items-center gap-2;
 
       .playlist-creator-tag {
         @apply inline-flex items-center justify-center px-2 rounded-md text-xs;
@@ -602,7 +602,7 @@ const currentLoginType = computed(() => userStore.loginType);
     }
 
     &-count {
-      @apply text-gray-500 dark:text-gray-400;
+      @apply text-neutral-500 dark:text-neutral-400;
     }
   }
 }

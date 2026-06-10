@@ -157,8 +157,8 @@ onBeforeUnmount(() => {
 
 .token-input {
   @apply w-full outline-none resize-none;
-  @apply text-gray-900 dark:text-white bg-transparent;
-  @apply placeholder-gray-500 dark:placeholder-gray-400;
+  @apply text-neutral-900 dark:text-neutral-100 bg-transparent;
+  @apply placeholder-neutral-400 dark:placeholder-neutral-500;
   font-family: monospace;
   font-size: 12px;
   line-height: 1.4;
@@ -176,7 +176,7 @@ onBeforeUnmount(() => {
   }
 
   &::placeholder {
-    @apply text-gray-400 dark:text-gray-500;
+    @apply text-neutral-400 dark:text-neutral-500;
   }
 
   /* 移除浏览器默认样式 */
