@@ -1,12 +1,7 @@
 <template>
   <div
-    class="nav-card group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300"
-    :class="[
-      aspectClass,
-      colorClasses.bg,
-      active ? colorClasses.activeBg : '',
-      'hover:shadow-md hover:-translate-y-0.5'
-    ]"
+    class="nav-card group relative overflow-hidden rounded-lg cursor-pointer transition-colors duration-200"
+    :class="[aspectClass, colorClasses.bg, active ? colorClasses.activeBg : '']"
     @click="$emit('click')"
   >
     <!-- Background Pattern -->
@@ -24,7 +19,7 @@
 
     <!-- Glow Effect on Hover -->
     <div
-      class="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"
+      class="absolute -inset-[1px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
       :class="colorClasses.glow"
     />
 
@@ -34,14 +29,14 @@
       <div class="flex items-start justify-between">
         <!-- Icon -->
         <div
-          class="icon-wrapper flex items-center justify-center h-10 w-10 md:h-11 md:w-11 rounded-[10px] transition-all duration-300 group-hover:-translate-y-0.5"
+          class="icon-wrapper flex items-center justify-center h-10 w-10 md:h-11 md:w-11 rounded-[10px] transition-colors duration-200"
           :class="[colorClasses.iconBg, active ? colorClasses.activeIconBg : '']"
         >
           <i
             :class="[
               icon,
               colorClasses.iconColor,
-              'text-lg md:text-xl transition-all duration-300'
+              'text-lg md:text-xl transition-colors duration-200'
             ]"
           ></i>
         </div>
@@ -71,7 +66,7 @@
 
       <!-- Arrow Indicator -->
       <div
-        class="absolute bottom-3 right-3 md:bottom-4 md:right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1"
+        class="absolute bottom-3 right-3 md:bottom-4 md:right-4 opacity-0 group-hover:opacity-100 transition-colors duration-200"
         :class="colorClasses.arrow"
       >
         <i class="ri-arrow-right-line text-sm md:text-base"></i>

@@ -6,12 +6,12 @@
   >
     <!-- Cover -->
     <div
-      class="relative aspect-square overflow-hidden rounded-xl border border-white/60 bg-neutral-100 shadow-sm transition-all duration-300 ease-out group-hover:shadow-md dark:border-white/10 dark:bg-neutral-800"
+      class="relative aspect-square overflow-hidden rounded-lg border border-white/60 bg-neutral-100 shadow-sm transition-colors duration-200 ease-out dark:border-white/10 dark:bg-neutral-800"
     >
       <img
         ref="coverRef"
         :src="getImgUrl(cover, '512y512')"
-        class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+        class="h-full w-full object-cover"
         loading="lazy"
         :alt="title"
         crossorigin="anonymous"
@@ -21,15 +21,13 @@
       <!-- Hover Overlay with Song Preview -->
       <div
         v-if="showHoverTracks"
-        class="absolute inset-0 flex items-end opacity-0 transition-all duration-500 ease-out group-hover:opacity-100"
+        class="absolute inset-0 flex items-end opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100"
         :style="overlayStyle"
       >
         <!-- Song Preview + Play Button Container -->
         <div class="flex w-full items-end justify-between gap-3 p-4">
           <!-- Song List -->
-          <div
-            class="min-w-0 flex-1 translate-y-3 space-y-1.5 transition-all duration-500 ease-out group-hover:translate-y-0"
-          >
+          <div class="min-w-0 flex-1 space-y-1.5 transition-opacity duration-200 ease-out">
             <div
               v-for="(track, idx) in displayTracks"
               :key="idx"
@@ -47,7 +45,7 @@
 
           <!-- Play Button -->
           <button
-            class="flex h-11 w-11 flex-shrink-0 translate-y-2 items-center justify-center rounded-[10px] bg-white text-neutral-900 shadow-sm transition-all duration-500 ease-out hover:-translate-y-0.5 group-hover:translate-y-0 active:translate-y-0"
+            class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] bg-white text-neutral-900 shadow-sm transition-opacity duration-200 ease-out"
             @click.stop="$emit('play')"
           >
             <i class="ri-play-fill ml-0.5 text-lg" />

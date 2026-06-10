@@ -1,26 +1,19 @@
 <template>
   <div
-    class="home-polished-card group relative overflow-hidden transition-all duration-300"
+    class="home-polished-card group relative overflow-hidden transition-colors duration-200"
     :class="[containerClass]"
     @click="$emit('click')"
   >
     <!-- 图片区域 -->
     <div class="home-polished-cover relative aspect-square overflow-hidden mb-2.5">
-      <img
-        v-if="image"
-        :src="image"
-        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-        loading="lazy"
-      />
+      <img v-if="image" :src="image" class="h-full w-full object-cover" loading="lazy" />
       <div v-else class="h-full w-full skeleton-shimmer" />
 
       <!-- 播放按钮遮罩 (Apple Music 风格) -->
       <div
         class="home-polished-overlay absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       >
-        <div
-          class="home-polished-play flex h-11 w-11 items-center justify-center rounded-full transition-transform duration-300 hover:-translate-y-0.5 active:translate-y-0"
-        >
+        <div class="home-polished-play flex h-11 w-11 items-center justify-center rounded-full">
           <slot name="play-icon">
             <svg
               xmlns="http://www.w3.org/2000/svg"

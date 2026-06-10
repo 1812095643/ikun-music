@@ -31,11 +31,11 @@
         >
           <!-- Artist Avatar -->
           <div
-            class="artist-avatar relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800 shadow-sm transition-all duration-500 group-hover:-translate-y-0.5 group-hover:shadow-md group-hover:shadow-primary/15"
+            class="artist-avatar relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800 shadow-sm transition-opacity duration-200 group-hover:shadow-primary/15"
           >
             <img
               :src="getImgUrl(item.picUrl, '300y300')"
-              class="h-full w-full object-cover grayscale-[0.15] transition-all duration-700 group-hover:grayscale-0 group-hover:brightness-110"
+              class="h-full w-full object-cover grayscale-[0.15] transition-colors duration-200 group-hover:grayscale-0 group-hover:brightness-110"
               loading="lazy"
               :alt="item.name"
             />
@@ -47,7 +47,7 @@
 
           <!-- Artist Name -->
           <span
-            class="artist-name text-xs sm:text-sm md:text-base font-semibold text-neutral-700 dark:text-neutral-300 transition-all duration-300 group-hover:text-primary dark:group-hover:text-white"
+            class="artist-name text-xs sm:text-sm md:text-base font-semibold text-neutral-700 dark:text-neutral-300 transition-colors duration-200 group-hover:text-primary dark:group-hover:text-white"
           >
             {{ item.name }}
           </span>

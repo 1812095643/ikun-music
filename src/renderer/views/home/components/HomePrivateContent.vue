@@ -15,7 +15,7 @@
       v-if="loading"
       class="grid grid-cols-1 gap-4 md:gap-5 lg:gap-6 md:grid-cols-2 lg:grid-cols-3"
     >
-      <div v-for="i in 3" :key="i" class="skeleton-shimmer rounded-xl" style="aspect-ratio: 16/9" />
+      <div v-for="i in 3" :key="i" class="skeleton-shimmer rounded-lg" style="aspect-ratio: 16/9" />
     </div>
 
     <!-- Private Content Grid -->
@@ -26,7 +26,7 @@
       <div
         v-for="(content, index) in contentList"
         :key="content.id"
-        class="content-item animate-item group relative flex flex-col cursor-pointer overflow-hidden rounded-xl bg-neutral-50 dark:bg-neutral-900"
+        class="content-item animate-item group relative flex flex-col cursor-pointer overflow-hidden rounded-lg bg-neutral-50 dark:bg-neutral-900"
         :style="{ animationDelay: calculateAnimationDelay(index, 0.1) }"
         @click="handleContentClick(content)"
       >
@@ -34,7 +34,7 @@
         <div class="cover-wrapper relative" style="aspect-ratio: 16/9">
           <img
             :src="getImgUrl(content.picUrl, '640y360')"
-            class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+            class="h-full w-full object-cover"
             loading="lazy"
             :alt="content.name"
           />

@@ -26,7 +26,7 @@
       v-if="loading"
       class="grid grid-cols-2 gap-4 md:gap-5 lg:gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
     >
-      <div v-for="i in 12" :key="i" class="aspect-square skeleton-shimmer rounded-xl" />
+      <div v-for="i in 12" :key="i" class="aspect-square skeleton-shimmer rounded-lg" />
     </div>
 
     <!-- Songs Grid -->
@@ -45,14 +45,14 @@
         <div class="cover-wrapper relative aspect-square">
           <!-- 背景层 -->
           <div
-            class="cover-bg absolute inset-0 rounded-xl bg-neutral-100 dark:bg-neutral-800 transition-shadow duration-300 group-hover:shadow-md group-hover:shadow-primary/10"
+            class="cover-bg absolute inset-0 rounded-lg bg-neutral-100 dark:bg-neutral-800 transition-shadow duration-300 group-hover:shadow-primary/10"
           />
 
           <!-- 图片层 -->
-          <div class="cover-container absolute inset-0 overflow-hidden rounded-xl">
+          <div class="cover-container absolute inset-0 overflow-hidden rounded-lg">
             <img
               :src="getImgUrl(song.album?.picUrl || song.al?.picUrl, '500y500')"
-              class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+              class="h-full w-full object-cover"
               loading="lazy"
               :alt="song.name"
             />
@@ -60,10 +60,10 @@
 
           <!-- Play Overlay -->
           <div
-            class="play-overlay absolute inset-0 flex items-center justify-center rounded-xl bg-black/0 opacity-0 backdrop-blur-0 transition-all duration-300 group-hover:bg-black/10 group-hover:opacity-100 group-hover:backdrop-blur-[2px]"
+            class="play-overlay absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 opacity-0 backdrop-blur-0 transition-colors duration-200 group-hover:bg-black/10 group-hover:opacity-100"
           >
             <div
-              class="play-button flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-white shadow-md transition-all duration-300 translate-y-1 group-hover:translate-y-0 hover:-translate-y-0.5 active:translate-y-0"
+              class="play-button flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-white shadow-sm transition-colors duration-200"
             >
               <i class="iconfont icon-playfill text-lg md:text-2xl text-neutral-900 ml-0.5" />
             </div>
