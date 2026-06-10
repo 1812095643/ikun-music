@@ -278,10 +278,10 @@ const selectSpeed = (speed: number) => {
 .eq-modal-content,
 .timer-modal-content,
 .speed-modal-content {
-  @apply p-6 rounded-lg filter backdrop-blur-sm;
-  background: color-mix(in srgb, var(--qqm-surface, #fff) 82%, transparent);
+  @apply p-6 rounded-lg;
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 96%, transparent);
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  box-shadow: 0 12px 28px rgba(20, 24, 31, 0.1);
+  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.07);
   max-width: 600px;
   margin: 0 auto;
 }

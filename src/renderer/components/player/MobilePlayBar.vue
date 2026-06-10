@@ -149,7 +149,7 @@ watch(
 .mobile-play-bar {
   @apply fixed bottom-[76px] left-0 w-full flex flex-col;
   z-index: 10000;
-  animation-duration: 0.3s !important;
+  animation-duration: 0.22s !important;
   transition:
     bottom 0.3s ease,
     opacity 0.3s ease,
@@ -212,13 +212,13 @@ watch(
 
           .n-slider-fill {
             @apply rounded-full !important;
-            box-shadow: 0 0 4px rgba(30, 215, 96, 0.5); /* 发光效果 */
+            box-shadow: none;
           }
 
           .n-slider-handle {
             @apply transition-colors duration-200;
             opacity: 0;
-            box-shadow: 0 0 4px rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
           }
 
           &:hover .n-slider-handle,
@@ -278,8 +278,8 @@ watch(
     @apply flex items-center justify-between pr-4 mx-3 h-12 rounded-lg;
     background: color-mix(in srgb, var(--qqm-surface, #fff) 78%, transparent);
     border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-    box-shadow: 0 8px 20px rgba(20, 24, 31, 0.08);
-    backdrop-filter: blur(16px) saturate(1.06);
+    box-shadow: 0 4px 14px rgba(20, 24, 31, 0.06);
+    backdrop-filter: blur(8px) saturate(1.02);
 
     .mini-song-info {
       @apply flex items-center flex-1 min-w-0 cursor-pointer;
@@ -334,10 +334,10 @@ watch(
   max-width: 400px;
   @apply relative rounded-t-2xl overflow-hidden;
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  box-shadow: 0 -10px 26px rgba(20, 24, 31, 0.1);
+  box-shadow: 0 -4px 14px rgba(20, 24, 31, 0.06);
 
   .mobile-play-list-back {
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(8px);
     @apply absolute top-0 left-0 w-full h-full;
     background: color-mix(in srgb, var(--qqm-surface, #fff) 82%, transparent);
   }

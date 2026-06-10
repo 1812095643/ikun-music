@@ -376,15 +376,11 @@ onMounted(() => {
   /* 极亮主题色适配 */
   &.light-theme-color {
     .progress-fill {
-      box-shadow:
-        0 0 8px var(--fill-color-transparent),
-        inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
     }
 
     .control-btn.play-btn {
-      box-shadow:
-        0 3px 8px var(--fill-color-transparent),
-        0 1px 2px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
       color: var(--text-on-fill);
     }
 
@@ -396,19 +392,11 @@ onMounted(() => {
   /* 极暗主题色适配 */
   &.dark-theme-color {
     .progress-fill {
-      box-shadow:
-        0 0 10px var(--fill-color-transparent),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
     }
 
     .control-btn.play-btn {
-      box-shadow:
-        0 3px 12px var(--fill-color-transparent),
-        0 0 0 1px rgba(255, 255, 255, 0.2);
-
-      .iconfont {
-        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-      }
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
     }
 
     .volume-control .iconfont:hover {
@@ -435,8 +423,8 @@ onMounted(() => {
 
     .progress-fill {
       @apply absolute top-0 left-0 h-full rounded-full transition-[width] duration-150;
-      background: linear-gradient(90deg, var(--fill-color), var(--fill-color-light));
-      box-shadow: 0 0 8px var(--fill-color-transparent);
+      background: var(--fill-color);
+      box-shadow: none;
     }
 
     &:hover {
@@ -445,7 +433,7 @@ onMounted(() => {
       }
 
       .progress-fill {
-        box-shadow: 0 0 12px var(--fill-color-transparent);
+        box-shadow: 0 0 0 1px var(--high-contrast-color);
       }
     }
   }
@@ -496,7 +484,6 @@ onMounted(() => {
 
   &:hover {
     background-color: var(--button-bg);
-    transform: translateY(-1px);
   }
 
   &:active {
@@ -505,14 +492,13 @@ onMounted(() => {
   }
 
   &.play-btn {
-    background: linear-gradient(145deg, var(--fill-color), var(--fill-color-alt));
+    background: var(--fill-color);
     color: var(--text-on-fill);
     width: 46px;
     height: 46px;
-    box-shadow: 0 3px 8px var(--fill-color-transparent);
+    box-shadow: none;
 
     &:hover {
-      box-shadow: 0 4px 12px var(--fill-color-transparent);
     }
 
     .iconfont {
@@ -542,7 +528,6 @@ onMounted(() => {
       color 0.2s ease;
 
     &:hover {
-      transform: translateY(-1px);
       color: var(--fill-color);
     }
   }
@@ -561,16 +546,14 @@ onMounted(() => {
       }
 
       .n-slider-rail__fill {
-        background: linear-gradient(90deg, var(--fill-color), var(--fill-color-light));
-        box-shadow: 0 0 6px var(--fill-color-transparent);
+        background: var(--fill-color);
+        box-shadow: none;
       }
 
       .n-slider-handle {
         @apply opacity-0 transition-opacity duration-200;
         background: white;
-        box-shadow:
-          0 0 6px var(--fill-color-transparent),
-          0 0 0 1px var(--high-contrast-color);
+        box-shadow: 0 0 0 1px var(--high-contrast-color);
         border: 2px solid var(--fill-color);
       }
 
@@ -587,7 +570,7 @@ onMounted(() => {
 
 .like-active {
   color: var(--fill-color);
-  text-shadow: 0 0 8px var(--fill-color-transparent);
+  text-shadow: none;
 }
 
 .intelligence-active {

@@ -221,35 +221,31 @@ watch(
 
 <style lang="scss" scoped>
 .animate-item {
-  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation: fadeInSoft 0.22s ease-out backwards;
 }
 
-@keyframes fadeInUp {
+@keyframes fadeInSoft {
   from {
     opacity: 0;
-    transform: translateY(24px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 .list-card {
   border-radius: 10px;
-  transition: transform 180ms var(--qqm-ease);
+  transition: color 160ms var(--qqm-ease);
 
   > div:first-child {
     border: 1px solid var(--qqm-border);
-    box-shadow: 0 8px 18px rgba(20, 24, 31, 0.06);
+    box-shadow: none;
   }
 
   &:hover {
-    transform: translateY(-2px);
-
     > div:first-child {
       border-color: rgba(30, 207, 115, 0.18);
-      box-shadow: 0 10px 22px rgba(20, 24, 31, 0.08);
+      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, transparent);
     }
 
     h3 {
