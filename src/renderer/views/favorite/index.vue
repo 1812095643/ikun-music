@@ -1,7 +1,7 @@
 <template>
   <div v-if="isComponent ? favoriteSongs.length : true" class="favorite-page h-full flex flex-col">
     <!-- Header Section -->
-    <div class="flex items-center justify-between px-6 py-4 flex-shrink-0">
+    <div class="favorite-header flex flex-shrink-0 items-center justify-between px-6 py-4">
       <div class="flex items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
@@ -79,18 +79,14 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex-grow min-h-0 px-2">
+    <div class="favorite-content min-h-0 flex-grow px-4">
       <n-scrollbar ref="scrollbarRef" class="h-full pr-4" @scroll="handleScroll">
-        <div
-          v-if="favoriteList.length === 0"
-          class="h-full flex flex-col items-center justify-center text-neutral-400"
-        >
-          <div
-            class="w-20 h-20 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
-          >
-            <i class="ri-heart-line text-4xl text-neutral-300 dark:text-neutral-600"></i>
+        <div v-if="favoriteList.length === 0" class="favorite-empty-state">
+          <div class="favorite-empty-icon">
+            <i class="ri-heart-line"></i>
           </div>
-          <p>{{ t('favorite.emptyTip') }}</p>
+          <p class="favorite-empty-title">{{ t('favorite.emptyTip') }}</p>
+          <p class="favorite-empty-desc">喜欢的歌曲会在这里汇总，播放时点击爱心即可收藏。</p>
         </div>
 
         <div v-else class="space-y-1 pb-24" :class="{ 'max-w-[400px]': isComponent }">
@@ -116,10 +112,10 @@
           <!-- Loading Skeletons -->
           <div v-if="loading" class="space-y-2 pt-2">
             <div v-for="i in 5" :key="i" class="flex items-center gap-4 rounded-lg p-2">
-              <div class="h-12 w-12 rounded-lg bg-neutral-200 dark:bg-neutral-800"></div>
+              <div class="h-12 w-12 rounded-lg skeleton-shimmer"></div>
               <div class="flex-1 space-y-2">
-                <div class="h-4 w-1/3 rounded bg-neutral-200 dark:bg-neutral-800"></div>
-                <div class="h-3 w-1/4 rounded bg-neutral-200 dark:bg-neutral-800"></div>
+                <div class="h-4 w-1/3 rounded skeleton-shimmer"></div>
+                <div class="h-3 w-1/4 rounded skeleton-shimmer"></div>
               </div>
             </div>
           </div>
@@ -364,5 +360,63 @@ const handleSelectAll = (checked: boolean) => {
 </script>
 
 <style lang="scss" scoped>
-/* Scoped styles kept minimal as we use Tailwind classes */
+.favorite-header {
+  border-bottom: 1px solid color-mix(in srgb, var(--qqm-border) 65%, transparent);
+  background: color-mix(in srgb, var(--qqm-surface) 92%, transparent);
+}
+
+.favorite-content :deep(.n-scrollbar-content) {
+  min-height: 100%;
+}
+
+.favorite-empty-state {
+  display: flex;
+  min-height: 360px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #737373;
+  text-align: center;
+}
+
+.favorite-empty-icon {
+  display: flex;
+  width: 54px;
+  height: 54px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, #ffffff 94%, var(--qqm-primary, #22c55e) 6%);
+  color: var(--qqm-primary, #22c55e);
+  font-size: 26px;
+}
+
+.favorite-empty-title {
+  margin-top: 14px;
+  color: #525252;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.favorite-empty-desc {
+  margin-top: 6px;
+  max-width: 260px;
+  color: #8a8a8a;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.dark .favorite-empty-icon {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent);
+  background: color-mix(in srgb, #050505 90%, var(--qqm-primary, #22c55e) 10%);
+}
+
+.dark .favorite-empty-title {
+  color: #d4d4d4;
+}
+
+.dark .favorite-empty-desc {
+  color: #8a8a8a;
+}
 </style>

@@ -1,14 +1,14 @@
 <template>
   <div class="history-page h-full flex flex-col">
     <!-- Header Section -->
-    <div class="flex flex-col gap-4 px-6 pt-4 pb-2 flex-shrink-0" v-if="!isMobile">
+    <div class="history-header flex flex-shrink-0 flex-col gap-4 px-6 pb-3 pt-4" v-if="!isMobile">
       <div class="flex items-center justify-between">
         <h2 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
           {{ t('history.title') }}
         </h2>
 
         <button
-          class="h-8 px-3 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-primary/10 dark:hover:bg-primary/15 text-neutral-600 dark:text-neutral-300 text-xs font-medium transition-colors flex items-center gap-1.5"
+          class="history-soft-button h-8 px-3 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5"
           @click="handleNavigateToHeatmap"
         >
           <i class="ri-calendar-2-line"></i>
@@ -18,9 +18,7 @@
 
       <div class="flex items-center justify-between gap-4">
         <!-- Category Tabs -->
-        <div
-          class="bg-neutral-100 dark:bg-neutral-800 p-1 rounded-lg inline-flex h-9 items-center overflow-x-auto no-scrollbar max-w-full"
-        >
+        <div class="history-tab-group inline-flex h-9 flex-shrink-0 items-center rounded-lg p-1">
           <div
             v-for="tab in ['songs', 'playlists', 'albums', 'podcasts']"
             :key="tab"
@@ -39,7 +37,7 @@
         <!-- Source Tabs (Local/Cloud) -->
         <div
           v-if="currentCategory !== 'podcasts'"
-          class="flex items-center bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1 h-9 flex-shrink-0"
+          class="history-tab-group flex h-9 flex-shrink-0 items-center rounded-lg p-1"
         >
           <button
             class="px-3 h-7 rounded-md text-xs font-medium transition-colors duration-200"
@@ -221,10 +219,10 @@
 
           <div v-if="loading" class="space-y-2 pt-2">
             <div v-for="i in 8" :key="i" class="flex items-center gap-4 rounded-lg p-2">
-              <div class="h-12 w-12 rounded-lg bg-neutral-200 dark:bg-neutral-800"></div>
+              <div class="h-12 w-12 rounded-lg skeleton-shimmer"></div>
               <div class="flex-1 space-y-2">
-                <div class="h-4 w-1/3 rounded bg-neutral-200 dark:bg-neutral-800"></div>
-                <div class="h-3 w-1/4 rounded bg-neutral-200 dark:bg-neutral-800"></div>
+                <div class="h-4 w-1/3 rounded skeleton-shimmer"></div>
+                <div class="h-3 w-1/4 rounded skeleton-shimmer"></div>
               </div>
             </div>
           </div>
@@ -688,5 +686,34 @@ const handleNavigateToHeatmap = () => {
 </script>
 
 <style scoped lang="scss">
-/* Minimal scoped styles */
+.history-header {
+  border-bottom: 1px solid color-mix(in srgb, var(--qqm-border) 65%, transparent);
+  background: color-mix(in srgb, var(--qqm-surface) 92%, transparent);
+}
+
+.history-soft-button {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, transparent);
+  background: color-mix(in srgb, #ffffff 94%, var(--qqm-primary, #22c55e) 6%);
+  color: color-mix(in srgb, var(--qqm-primary, #22c55e) 70%, #262626 30%);
+}
+
+.history-soft-button:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
+  background: color-mix(in srgb, #ffffff 88%, var(--qqm-primary, #22c55e) 12%);
+}
+
+.history-tab-group {
+  border: 1px solid color-mix(in srgb, var(--qqm-border) 70%, transparent);
+  background: color-mix(in srgb, var(--qqm-surface) 86%, transparent);
+}
+
+.dark .history-soft-button {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent);
+  background: color-mix(in srgb, #050505 88%, var(--qqm-primary, #22c55e) 12%);
+  color: color-mix(in srgb, var(--qqm-primary, #22c55e) 78%, #f5f5f5 22%);
+}
+
+.dark .history-soft-button:hover {
+  background: color-mix(in srgb, #050505 82%, var(--qqm-primary, #22c55e) 18%);
+}
 </style>
