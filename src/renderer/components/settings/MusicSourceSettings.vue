@@ -38,9 +38,7 @@
                   :key="source.key"
                   class="group relative flex items-center p-2.5 rounded-lg border transition-colors duration-200 cursor-pointer"
                   :class="[
-                    isSourceSelected(source.key)
-                      ? 'bg-primary/10 dark:bg-primary/15 border-primary/20 dark:border-primary/25'
-                      : 'music-source-card',
+                    isSourceSelected(source.key) ? 'music-source-selected' : 'music-source-card',
                     { 'opacity-60 cursor-not-allowed': !source.available }
                   ]"
                   @click="toggleSource(source.key)"
@@ -125,9 +123,7 @@
                   :key="api.id"
                   class="flex items-center p-2.5 rounded-lg border transition-colors duration-200"
                   :class="[
-                    activeLxApiId === api.id
-                      ? 'bg-primary/10 dark:bg-primary/15 border-primary/20 dark:border-primary/25'
-                      : 'music-source-card'
+                    activeLxApiId === api.id ? 'music-source-selected' : 'music-source-card'
                   ]"
                 >
                   <div class="relative flex items-center justify-center w-4 h-4 mr-3">
@@ -246,7 +242,7 @@
 
               <div
                 v-if="settingsStore.setData.customApiPluginName"
-                class="mt-4 flex items-center gap-2 px-3 py-1.5 bg-primary/10 dark:bg-primary/15 text-primary dark:text-primary rounded-lg text-xs"
+                class="music-source-current mt-4 flex items-center gap-2 px-3 py-1.5 text-primary rounded-lg text-xs"
               >
                 <i class="ri-check-circle-fill"></i>
                 <span
@@ -784,5 +780,11 @@ watch(
 .music-source-rename-input:focus {
   border-color: var(--qqm-primary, #22c55e);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
+}
+
+.music-source-selected,
+.music-source-current {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

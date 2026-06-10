@@ -45,7 +45,7 @@
         class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"
       >
         <div
-          class="bg-neutral-950/70 rounded-lg p-4 pointer-events-auto active:translate-y-0"
+          class="mv-mobile-toggle rounded-lg p-4 pointer-events-auto active:translate-y-0"
           @click.stop="togglePlay"
         >
           <n-icon size="48" color="white">
@@ -581,6 +581,12 @@ onUnmounted(() => {
 .mv-mode-hint {
   border: 1px solid color-mix(in srgb, #ffffff 16%, transparent);
   background: color-mix(in srgb, #0f172a 34%, transparent);
+  backdrop-filter: blur(12px) saturate(1.08);
+}
+
+.mv-mobile-toggle {
+  border: 1px solid color-mix(in srgb, #ffffff 14%, transparent);
+  background: color-mix(in srgb, #0f172a 46%, transparent);
   backdrop-filter: blur(12px) saturate(1.08);
 }
 </style>

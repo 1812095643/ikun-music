@@ -286,7 +286,7 @@
 
                   <div
                     v-if="taskStatus === 'success'"
-                    class="bg-primary/10 dark:bg-primary/15 rounded-lg p-3 text-primary dark:text-primary text-sm flex justify-between"
+                    class="import-success-panel rounded-lg p-3 text-primary text-sm flex justify-between"
                   >
                     <span>{{ t('comp.playlist.import.successCount') }}</span>
                     <span class="font-bold">{{ successCount }}</span>
@@ -549,5 +549,10 @@ onUnmounted(() => {
 
 .playlist-import-page {
   background: var(--qqm-bg, #f7f8fa);
+}
+
+.import-success-panel {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 20%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

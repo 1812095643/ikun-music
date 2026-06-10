@@ -20,7 +20,7 @@
         }"
       />
       <div
-        class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        class="home-song-overlay absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100"
       >
         <i class="iconfont icon-playfill text-lg md:text-xl text-white"></i>
       </div>
@@ -149,5 +149,9 @@ const onMenuClick = (event: MouseEvent) => handleMenuClick(event);
 .home-song-more:hover {
   color: var(--qqm-primary, #22c55e);
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface));
+}
+
+.home-song-overlay {
+  background: color-mix(in srgb, #0f172a 20%, transparent);
 }
 </style>

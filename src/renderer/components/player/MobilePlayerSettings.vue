@@ -77,7 +77,7 @@
 
               <!-- 已激活状态 -->
               <div v-if="hasTimerActive" class="space-y-3">
-                <div class="p-4 rounded-lg bg-primary/10 border border-primary/20">
+                <div class="mobile-timer-active p-4 rounded-lg">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                       <i class="ri-timer-line text-primary text-xl"></i>
@@ -386,5 +386,10 @@ onUnmounted(() => {
 .mobile-player-settings-mask {
   background: color-mix(in srgb, #0f172a 22%, transparent);
   backdrop-filter: blur(10px) saturate(1.06);
+}
+
+.mobile-timer-active {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 20%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

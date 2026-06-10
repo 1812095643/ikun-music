@@ -120,7 +120,7 @@
             <div class="grid grid-cols-2 gap-4">
               <button
                 @click="openDonateLink('wechat')"
-                class="flex flex-col items-center gap-2 p-4 rounded-lg bg-primary/10 dark:bg-primary/15 border border-primary/20 dark:border-primary/25 hover:bg-primary/15 dark:hover:bg-primary/20 transition-colors"
+                class="donate-qr-option flex flex-col items-center gap-2 p-4 rounded-lg transition-colors"
               >
                 <div class="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
                   <i class="ri-wechat-fill text-2xl text-white"></i>

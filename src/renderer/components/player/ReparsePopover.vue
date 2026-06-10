@@ -36,7 +36,7 @@
                   ? 'reparse-option-active cursor-pointer'
                   : 'reparse-option-disabled opacity-40 cursor-not-allowed',
                 {
-                  'bg-primary/10 dark:bg-primary/15 text-primary': isCurrentSource(source.id),
+                  'reparse-option-current text-primary': isCurrentSource(source.id),
                   'opacity-50 cursor-not-allowed': isReparsing && source.available
                 }
               ]"
@@ -352,5 +352,9 @@ watch(
 .reparse-custom-entry:hover {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.reparse-option-current {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface, #ffffff));
 }
 </style>
