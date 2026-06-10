@@ -71,7 +71,7 @@
                       >
                         <i
                           v-if="isSourceSelected(source.key)"
-                          class="ri-check-line text-white text-xs scale-75"
+                          class="ri-check-line text-white text-[10px]"
                         ></i>
                       </div>
                     </div>

@@ -112,11 +112,11 @@ defineExpose({
 
 .shortcut-toast-enter-from,
 .shortcut-toast-leave-to {
-  @apply opacity-0 scale-90;
+  @apply opacity-0 translate-y-1;
 }
 
 .shortcut-toast-enter-to,
 .shortcut-toast-leave-from {
-  @apply opacity-100 scale-100;
+  @apply opacity-100 translate-y-0;
 }
 </style>

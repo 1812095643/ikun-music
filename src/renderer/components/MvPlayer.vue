@@ -129,7 +129,7 @@
           >
             <template #thumb>
               <div
-                class="w-3 h-3 bg-white rounded-full shadow-md scale-0 group-hover/slider:scale-100 transition-transform duration-200"
+                class="w-3 h-3 bg-white rounded-full shadow-md opacity-0 group-hover/slider:opacity-100 transition-opacity duration-200"
               ></div>
             </template>
           </n-slider>
@@ -266,11 +266,11 @@
       <!-- Mode Switch Toast -->
       <transition
         enter-active-class="transition ease-out duration-300"
-        enter-from-class="opacity-0 scale-90"
-        enter-to-class="opacity-100 scale-100"
+        enter-from-class="opacity-0 translate-y-1"
+        enter-to-class="opacity-100 translate-y-0"
         leave-active-class="transition ease-in duration-200"
-        leave-from-class="opacity-100 scale-100"
-        leave-to-class="opacity-0 scale-90"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 translate-y-1"
       >
         <div
           v-if="showModeHint"
@@ -288,11 +288,11 @@
       <!-- Double Tap Toast -->
       <transition
         enter-active-class="transition ease-out duration-200"
-        enter-from-class="opacity-0 scale-50"
-        enter-to-class="opacity-100 scale-100"
+        enter-from-class="opacity-0 translate-y-1"
+        enter-to-class="opacity-100 translate-y-0"
         leave-active-class="transition ease-in duration-150"
-        leave-from-class="opacity-100 scale-100"
-        leave-to-class="opacity-0 scale-50"
+        leave-from-class="opacity-100 translate-y-0"
+        leave-to-class="opacity-0 translate-y-1"
       >
         <div
           v-if="doubleTapAction"

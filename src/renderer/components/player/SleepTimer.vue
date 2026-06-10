@@ -277,7 +277,7 @@ onUnmounted(() => {
       }
 
       &:active {
-        @apply transform scale-95;
+        transform: translateY(1px);
       }
     }
   }
@@ -315,7 +315,7 @@ onUnmounted(() => {
           }
 
           &:active {
-            @apply transform scale-95;
+            transform: translateY(1px);
           }
         }
 

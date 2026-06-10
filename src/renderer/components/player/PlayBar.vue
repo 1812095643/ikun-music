@@ -660,7 +660,7 @@ const openPlayListDrawer = () => {
       }
 
       .hover-text {
-        @apply text-white text-xs scale-90;
+        @apply text-white text-xs;
       }
     }
   }
