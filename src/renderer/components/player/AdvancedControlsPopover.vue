@@ -274,7 +274,10 @@ const selectSpeed = (speed: number) => {
 .eq-modal-content,
 .timer-modal-content,
 .speed-modal-content {
-  @apply p-6 rounded-3xl bg-light-100 dark:bg-dark-100 bg-opacity-80 filter backdrop-blur-sm;
+  @apply p-6 rounded-xl filter backdrop-blur-sm;
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 82%, transparent);
+  border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+  box-shadow: 0 12px 28px rgba(20, 24, 31, 0.1);
   max-width: 600px;
   margin: 0 auto;
 }
@@ -298,7 +301,7 @@ const selectSpeed = (speed: number) => {
     @apply mt-4;
   }
   .speed-option {
-    @apply py-2 px-4 rounded-full cursor-pointer transition-all;
+    @apply py-2 px-4 rounded-lg cursor-pointer transition-all;
     @apply bg-gray-100 dark:bg-gray-800;
     @apply hover:bg-green-100 dark:hover:bg-green-900;
   }

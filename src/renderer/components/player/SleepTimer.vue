@@ -245,11 +245,10 @@ onUnmounted(() => {
 
     // 定时状态卡片
     .timer-status {
-      @apply flex flex-col items-center justify-center p-8 mb-5 w-full rounded-2xl dark:bg-gray-800 dark:bg-opacity-40 dark:shadow-gray-900/20;
-      background-color: rgba(255, 255, 255, 0.5);
-      box-shadow:
-        0 1px 3px rgba(0, 0, 0, 0.05),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
+      @apply flex flex-col items-center justify-center p-8 mb-5 w-full rounded-xl;
+      background: color-mix(in srgb, var(--qqm-surface-muted, #f2f4f5) 72%, transparent);
+      border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+      box-shadow: 0 8px 20px rgba(20, 24, 31, 0.06);
       transition: all 0.3s ease;
 
       // 定时值显示
@@ -270,10 +269,11 @@ onUnmounted(() => {
 
     // 取消按钮
     .cancel-timer-btn {
-      @apply w-full py-3 text-base rounded-full transition-all duration-200;
+      @apply w-full py-3 text-base rounded-lg transition-all duration-200;
 
       &:hover {
-        @apply transform scale-105 shadow-md;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(20, 24, 31, 0.08);
       }
 
       &:active {
@@ -304,16 +304,14 @@ onUnmounted(() => {
         // 选项按钮共享样式
         .time-option-btn,
         .songs-option-btn {
-          @apply px-4 py-2 rounded-full text-gray-800 dark:text-gray-200 transition-all duration-200;
-          background-color: rgba(255, 255, 255, 0.5);
-          @apply dark:bg-gray-800 dark:bg-opacity-40 hover:bg-white dark:hover:bg-gray-700;
-          box-shadow:
-            0 1px 2px rgba(0, 0, 0, 0.05),
-            0 0 0 1px rgba(255, 255, 255, 0.1);
-          @apply dark:shadow-gray-900/20;
+          @apply px-4 py-2 rounded-lg text-gray-800 dark:text-gray-200 transition-all duration-200;
+          background: color-mix(in srgb, var(--qqm-surface-muted, #f2f4f5) 70%, transparent);
+          border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+          box-shadow: 0 4px 12px rgba(20, 24, 31, 0.04);
 
           &:hover {
-            @apply transform scale-105 shadow-md;
+            transform: translateY(-1px);
+            border-color: rgba(30, 207, 115, 0.16);
           }
 
           &:active {
@@ -335,7 +333,7 @@ onUnmounted(() => {
           // 设置按钮
           .custom-time-btn,
           .custom-songs-btn {
-            @apply py-2 px-4 rounded-full transition-all duration-200;
+            @apply py-2 px-4 rounded-lg transition-all duration-200;
           }
         }
       }
@@ -346,7 +344,7 @@ onUnmounted(() => {
       @apply mt-2;
 
       .playlist-end-btn {
-        @apply py-3 text-base rounded-full transition-all duration-200;
+        @apply py-3 text-base rounded-lg transition-all duration-200;
       }
     }
   }

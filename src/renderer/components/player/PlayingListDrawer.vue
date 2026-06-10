@@ -200,16 +200,16 @@ const handleDeleteSong = (song: SongResult) => {
   top: 15vh; // 距离顶部15%
   animation-duration: 0.4s !important; // 动画持续时间
 
-  @apply bg-light dark:bg-dark shadow-2xl dark:border dark:border-gray-700;
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 82%, transparent);
+  border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+  box-shadow: 0 14px 36px rgba(20, 24, 31, 0.12);
+  backdrop-filter: blur(18px) saturate(1.08);
 
   &-header {
-    @apply flex items-center justify-between px-4 py-2 border-b border-gray-100 dark:border-gray-900;
+    @apply flex items-center justify-between px-4 py-2;
+    border-bottom: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
     backdrop-filter: blur(10px);
-    background-color: rgba(255, 255, 255, 0.7);
-
-    .dark & {
-      background-color: rgba(18, 18, 18, 0.7);
-    }
+    background: color-mix(in srgb, var(--qqm-surface, #fff) 74%, transparent);
 
     .title {
       @apply text-base font-medium text-gray-800 dark:text-gray-200;
@@ -221,8 +221,13 @@ const handleDeleteSong = (song: SongResult) => {
 
     .action-btn,
     .close-btn {
-      @apply w-8 h-8 flex items-center justify-center rounded-full cursor-pointer mx-1 text-gray-800 dark:text-gray-200;
-      @apply hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors;
+      @apply w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer mx-1 text-gray-800 dark:text-gray-200;
+      @apply transition-colors;
+
+      &:hover {
+        background: var(--qqm-primary-soft, rgba(30, 207, 115, 0.1));
+        color: var(--qqm-primary-strong, #0dbd62);
+      }
 
       .iconfont {
         @apply text-xl;
@@ -277,10 +282,10 @@ const handleDeleteSong = (song: SongResult) => {
     height: 80vh;
     top: auto;
     bottom: 0; // 移动端底部留出导航栏高度
-    border-radius: 30px 30px 0 0;
+    border-radius: 14px 14px 0 0;
     border-left: none;
     border-top: 1px solid theme('colors.gray.200');
-    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -10px 26px rgba(20, 24, 31, 0.1);
 
     &-header {
       @apply text-center relative px-4;

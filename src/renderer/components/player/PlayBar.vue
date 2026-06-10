@@ -537,11 +537,13 @@ const openPlayListDrawer = () => {
   &-list {
     height: 50vh;
     width: 300px;
-    @apply relative rounded-3xl overflow-hidden py-2;
+    @apply relative rounded-xl overflow-hidden py-2;
+    border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+    box-shadow: var(--qqm-shadow, 0 8px 20px rgba(20, 24, 31, 0.06));
     &-back {
       backdrop-filter: blur(20px);
       @apply absolute top-0 left-0 w-full h-full;
-      @apply bg-light dark:bg-black bg-opacity-75;
+      background: color-mix(in srgb, var(--qqm-surface, #fff) 72%, transparent);
     }
     &-content {
       @apply mx-2;
@@ -717,9 +719,11 @@ const openPlayListDrawer = () => {
 }
 
 .music-eq {
-  @apply p-4 rounded-3xl;
+  @apply p-4 rounded-xl;
   backdrop-filter: blur(20px);
-  @apply bg-light dark:bg-black bg-opacity-75;
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 72%, transparent);
+  border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+  box-shadow: var(--qqm-shadow, 0 8px 20px rgba(20, 24, 31, 0.06));
 }
 
 .music-play-list-content {

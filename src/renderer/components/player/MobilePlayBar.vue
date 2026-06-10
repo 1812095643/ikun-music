@@ -272,7 +272,11 @@ watch(
 
   // Mini模式样式
   .mobile-mini-controls {
-    @apply flex items-center justify-between pr-4 mx-3 h-12 rounded-full bg-light-100 dark:bg-dark-100 shadow-lg;
+    @apply flex items-center justify-between pr-4 mx-3 h-12 rounded-xl;
+    background: color-mix(in srgb, var(--qqm-surface, #fff) 78%, transparent);
+    border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+    box-shadow: 0 8px 20px rgba(20, 24, 31, 0.08);
+    backdrop-filter: blur(16px) saturate(1.06);
 
     .mini-song-info {
       @apply flex items-center flex-1 min-w-0 cursor-pointer;
@@ -323,11 +327,13 @@ watch(
   width: 90vw;
   max-width: 400px;
   @apply relative rounded-t-2xl overflow-hidden;
+  border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+  box-shadow: 0 -10px 26px rgba(20, 24, 31, 0.1);
 
   .mobile-play-list-back {
     backdrop-filter: blur(20px);
     @apply absolute top-0 left-0 w-full h-full;
-    @apply bg-light dark:bg-black bg-opacity-90;
+    background: color-mix(in srgb, var(--qqm-surface, #fff) 82%, transparent);
   }
 
   .mobile-play-list-item {

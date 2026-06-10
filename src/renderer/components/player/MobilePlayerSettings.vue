@@ -11,7 +11,7 @@
 
         <!-- 弹窗内容 - 磨砂玻璃效果 -->
         <div
-          class="mobile-player-settings-panel relative w-full max-w-lg bg-gray-900/70 backdrop-blur-2xl rounded-t-3xl overflow-hidden max-h-[85vh] flex flex-col border-t border-white/10 shadow-2xl"
+          class="mobile-player-settings-panel relative w-full max-w-lg bg-gray-900/70 backdrop-blur-2xl rounded-t-xl overflow-hidden max-h-[85vh] flex flex-col border-t border-white/10 shadow-xl"
         >
           <!-- 顶部拖拽条 -->
           <div class="flex justify-center pt-3 pb-2 flex-shrink-0">
@@ -25,7 +25,7 @@
             </h2>
             <button
               @click="close"
-              class="w-8 h-8 rounded-full flex items-center justify-center text-white/60 hover:bg-white/10"
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-white/60 hover:bg-white/10"
             >
               <i class="ri-close-line text-xl"></i>
             </button>
@@ -49,7 +49,7 @@
                   v-for="option in speedOptions"
                   :key="option"
                   @click="setSpeed(option)"
-                  class="px-4 py-2 rounded-full text-sm font-medium transition-colors"
+                  class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                   :class="
                     playbackRate === option
                       ? 'bg-green-500 text-white'
@@ -77,7 +77,7 @@
 
               <!-- 已激活状态 -->
               <div v-if="hasTimerActive" class="space-y-3">
-                <div class="p-4 rounded-2xl bg-green-500/15 border border-green-500/30">
+                <div class="p-4 rounded-xl bg-green-500/15 border border-green-500/30">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                       <i class="ri-timer-line text-green-400 text-xl"></i>
@@ -87,7 +87,7 @@
                     </div>
                     <button
                       @click="cancelTimer"
-                      class="px-3 py-1 rounded-full text-sm bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                      class="px-3 py-1 rounded-lg text-sm bg-red-500/20 text-red-400 hover:bg-red-500/30"
                     >
                       {{ t('player.sleepTimer.cancel') }}
                     </button>
@@ -107,14 +107,14 @@
                       v-for="minutes in [15, 30, 60, 90]"
                       :key="minutes"
                       @click="setTimeTimer(minutes)"
-                      class="px-4 py-2 rounded-full text-sm font-medium bg-white/10 text-white/70 hover:bg-white/15"
+                      class="px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/70 hover:bg-white/15"
                     >
                       {{ minutes }}{{ t('player.sleepTimer.minutes') }}
                     </button>
                   </div>
                   <!-- 自定义时间 -->
                   <div class="flex items-center gap-2 mt-3">
-                    <div class="flex items-center flex-1 bg-white/10 rounded-full overflow-hidden">
+                    <div class="flex items-center flex-1 bg-white/10 rounded-lg overflow-hidden">
                       <button
                         @click="decreaseMinutes"
                         class="w-10 h-10 flex items-center justify-center text-white/70 hover:bg-white/10 active:bg-white/20"
@@ -140,7 +140,7 @@
                     <button
                       @click="setCustomTimeTimer"
                       :disabled="!customMinutes || Number(customMinutes) < 1"
-                      class="px-4 py-2 rounded-full text-sm font-medium bg-green-500 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                      class="px-4 py-2 rounded-lg text-sm font-medium bg-green-500 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {{ t('player.sleepTimer.set') }}
                     </button>
@@ -157,7 +157,7 @@
                       v-for="songs in [1, 3, 5, 10]"
                       :key="songs"
                       @click="setSongsTimer(songs)"
-                      class="px-4 py-2 rounded-full text-sm font-medium bg-white/10 text-white/70 hover:bg-white/15"
+                      class="px-4 py-2 rounded-lg text-sm font-medium bg-white/10 text-white/70 hover:bg-white/15"
                     >
                       {{ songs }}{{ t('player.sleepTimer.songs') }}
                     </button>
@@ -167,7 +167,7 @@
                 <!-- 播放列表结束 -->
                 <button
                   @click="setPlaylistEndTimer"
-                  class="w-full py-3 rounded-2xl text-sm font-medium bg-white/10 text-white/70 hover:bg-white/15"
+                  class="w-full py-3 rounded-lg text-sm font-medium bg-white/10 text-white/70 hover:bg-white/15"
                 >
                   {{ t('player.sleepTimer.playlistEnd') }}
                 </button>
