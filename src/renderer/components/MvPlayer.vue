@@ -45,7 +45,7 @@
         class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"
       >
         <div
-          class="bg-black/40 backdrop-blur-sm rounded-full p-4 pointer-events-auto transition-transform active:scale-95"
+          class="bg-black/40 backdrop-blur-sm rounded-full p-4 pointer-events-auto transition-transform active:translate-y-0"
           @click.stop="togglePlay"
         >
           <n-icon size="48" color="white">

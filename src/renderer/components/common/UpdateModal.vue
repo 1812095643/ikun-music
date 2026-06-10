@@ -79,7 +79,7 @@
           {{ t('comp.update.cancel') }}
         </button>
         <button
-          class="flex-1 rounded-xl bg-primary py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:scale-[1.02] hover:bg-primary/90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+          class="flex-1 rounded-xl bg-primary py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary/90 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
           :disabled="primaryButtonDisabled"
           @click="handlePrimaryAction"
         >

@@ -106,7 +106,7 @@
             <!-- Load More Button -->
             <div v-else-if="hasMoreFollows" class="flex justify-center py-8">
               <button
-                class="px-6 py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-sm font-medium text-neutral-700 dark:text-neutral-200 transition-all duration-200 hover:-translate-y-0.5 active:scale-95"
+                class="px-6 py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-sm font-medium text-neutral-700 dark:text-neutral-200 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
                 @click="loadMoreFollows"
               >
                 {{ t('user.follow.loadMore') }}

@@ -88,7 +88,7 @@
                 </div>
 
                 <button
-                  class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/20 transition-all duration-200 hover:bg-primary/90 hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/20 transition-all duration-200 hover:bg-primary/90 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed"
                   :disabled="!formValue.name || creating"
                   @click="handleCreatePlaylist"
                 >
@@ -104,7 +104,7 @@
             <div
               v-for="(playlist, index) in playlists"
               :key="playlist.id"
-              class="group flex cursor-pointer items-center gap-3.5 rounded-xl p-2.5 transition-all duration-200 hover:bg-neutral-50 active:scale-[0.98] dark:hover:bg-neutral-800/60"
+              class="group flex cursor-pointer items-center gap-3.5 rounded-xl p-2.5 transition-all duration-200 hover:bg-neutral-50 active:translate-y-0 dark:hover:bg-neutral-800/60"
               :style="{ animationDelay: `${index * 0.03}s` }"
               @click="handleAddToPlaylist(playlist)"
             >

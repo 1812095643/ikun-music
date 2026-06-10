@@ -60,7 +60,7 @@
           <div class="px-6 pb-8 space-y-3">
             <button
               @click="handleAgree"
-              class="w-full py-4 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 shadow-sm shadow-green-500/20"
+              class="w-full py-4 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary/90 active:translate-y-0 transition-all duration-200 shadow-sm shadow-green-500/20"
             >
               <span class="flex items-center justify-center gap-2">
                 <i class="ri-check-line text-lg"></i>
@@ -145,7 +145,7 @@
           <div class="px-6 pb-8">
             <button
               @click="handleEnterApp"
-              class="w-full py-4 rounded-lg text-base font-medium text-white bg-neutral-800 dark:bg-neutral-700 hover:bg-neutral-900 dark:hover:bg-neutral-600 active:scale-[0.98] transition-all duration-200 shadow-sm"
+              class="w-full py-4 rounded-lg text-base font-medium text-white bg-neutral-800 dark:bg-neutral-700 hover:bg-neutral-900 dark:hover:bg-neutral-600 active:translate-y-0 transition-all duration-200 shadow-sm"
             >
               <span class="flex items-center justify-center gap-2">
                 <i class="ri-arrow-right-line text-lg"></i>

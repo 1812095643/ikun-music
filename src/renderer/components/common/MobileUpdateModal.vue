@@ -59,13 +59,13 @@
           >
             <button
               @click="handleLater"
-              class="flex-1 py-4 px-4 rounded-lg text-base font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-[0.98] transition-all duration-200"
+              class="flex-1 py-4 px-4 rounded-lg text-base font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 active:translate-y-0 transition-all duration-200"
             >
               {{ t('comp.update.noThanks') }}
             </button>
             <button
               @click="handleUpdate"
-              class="flex-1 py-4 px-4 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 shadow-sm shadow-green-500/20"
+              class="flex-1 py-4 px-4 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary/90 active:translate-y-0 transition-all duration-200 shadow-sm shadow-green-500/20"
             >
               <span class="flex items-center justify-center gap-2">
                 <i class="ri-download-2-line text-lg"></i>

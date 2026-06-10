@@ -94,7 +94,7 @@
                   </div>
                 </div>
                 <button
-                  class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white/90 text-neutral-900 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white active:scale-95"
+                  class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white/90 text-neutral-900 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white active:translate-y-0"
                   @click.stop="playDayRecommend"
                 >
                   <i class="ri-play-fill ml-0.5 text-xl" />
@@ -171,7 +171,7 @@
                       <i class="ri-thumb-down-line text-lg" />
                     </button>
                     <button
-                      class="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/30 active:scale-95"
+                      class="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/30 active:translate-y-0"
                       @click.stop="handleFmPlay"
                     >
                       <i

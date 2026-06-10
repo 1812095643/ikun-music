@@ -47,7 +47,7 @@
 
           <!-- Play Button -->
           <button
-            class="flex h-11 w-11 flex-shrink-0 translate-y-2 items-center justify-center rounded-[10px] bg-white text-neutral-900 shadow-sm transition-all duration-500 ease-out hover:-translate-y-0.5 group-hover:translate-y-0 active:scale-95"
+            class="flex h-11 w-11 flex-shrink-0 translate-y-2 items-center justify-center rounded-[10px] bg-white text-neutral-900 shadow-sm transition-all duration-500 ease-out hover:-translate-y-0.5 group-hover:translate-y-0 active:translate-y-0"
             @click.stop="$emit('play')"
           >
             <i class="ri-play-fill ml-0.5 text-lg" />

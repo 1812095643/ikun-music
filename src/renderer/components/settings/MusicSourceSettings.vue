@@ -273,7 +273,7 @@
           {{ t('common.cancel') }}
         </button>
         <button
-          class="px-4 py-2 text-xs font-medium text-white bg-primary hover:bg-primary/90 rounded-lg shadow-sm shadow-primary/20 transition-all active:scale-95"
+          class="px-4 py-2 text-xs font-medium text-white bg-primary hover:bg-primary/90 rounded-lg shadow-sm shadow-primary/20 transition-all active:translate-y-0"
           @click="handleConfirm"
         >
           {{ t('common.confirm') }}

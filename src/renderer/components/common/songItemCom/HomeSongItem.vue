@@ -48,7 +48,7 @@
 
     <!-- More Button -->
     <button
-      class="more-btn flex h-8 w-8 items-center justify-center rounded-[9px] opacity-0 transition-all duration-300 group-hover:bg-white dark:group-hover:bg-neutral-800 group-hover:opacity-100 hover:-translate-y-0.5 active:scale-95"
+      class="more-btn flex h-8 w-8 items-center justify-center rounded-[9px] opacity-0 transition-all duration-300 group-hover:bg-white dark:group-hover:bg-neutral-800 group-hover:opacity-100 hover:-translate-y-0.5 active:translate-y-0"
       @click.stop="onMenuClick"
     >
       <i class="ri-more-fill text-sm text-neutral-600 dark:text-neutral-300"></i>
