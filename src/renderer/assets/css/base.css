@@ -554,35 +554,30 @@ body {
 .home-polished-card,
 .home-list-card {
   position: relative;
-  background: color-mix(in srgb, var(--qqm-surface) 54%, transparent) !important;
-  border: 1px solid rgba(255, 255, 255, 0.62);
+  background: var(--qqm-surface) !important;
+  border: 1px solid var(--qqm-border);
   border-radius: 10px !important;
-  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.045) !important;
-  backdrop-filter: blur(14px) saturate(1.08);
+  box-shadow: none !important;
+  backdrop-filter: none;
   transition:
-    transform 180ms var(--qqm-ease),
     background-color 180ms var(--qqm-ease),
     border-color 180ms var(--qqm-ease),
-    box-shadow 180ms var(--qqm-ease),
     color 180ms var(--qqm-ease);
 }
 
 .home-polished-card:hover,
 .home-list-card:hover {
-  transform: translateY(-2px);
-  background: color-mix(in srgb, var(--qqm-surface) 72%, transparent) !important;
-  border-color: rgba(30, 207, 115, 0.18);
-  box-shadow: 0 14px 28px rgba(20, 24, 31, 0.08) !important;
+  background: color-mix(in srgb, var(--qqm-primary-soft) 22%, var(--qqm-surface)) !important;
+  border-color: color-mix(in srgb, var(--qqm-primary) 16%, var(--qqm-border));
+  box-shadow: none !important;
 }
 
 .home-polished-cover,
 .home-list-card > div:first-child {
   border-radius: 10px !important;
-  border: 1px solid rgba(255, 255, 255, 0.62);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 8px 18px rgba(20, 24, 31, 0.07) !important;
-  background: color-mix(in srgb, var(--qqm-surface-muted) 72%, transparent);
+  border: 1px solid var(--qqm-border);
+  box-shadow: none !important;
+  background: var(--qqm-surface-muted);
 }
 
 .home-polished-card:hover .home-polished-cover,
@@ -706,11 +701,11 @@ body {
 .playlist-detail-hero,
 .detail-hero {
   margin: 14px 18px 18px !important;
-  border: 1px solid rgba(255, 255, 255, 0.62) !important;
+  border: 1px solid var(--qqm-border) !important;
   border-radius: 12px !important;
-  background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
-  box-shadow: 0 12px 30px rgba(20, 24, 31, 0.08) !important;
-  backdrop-filter: blur(18px) saturate(1.08);
+  background: var(--qqm-surface) !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 .music-list-page .hero-bg,
@@ -731,10 +726,8 @@ body {
 .album-cover,
 .playlist-cover {
   border-radius: 12px !important;
-  border: 1px solid rgba(255, 255, 255, 0.6) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.42),
-    0 14px 30px rgba(20, 24, 31, 0.12) !important;
+  border: 1px solid var(--qqm-border) !important;
+  box-shadow: none !important;
   overflow: hidden;
 }
 
@@ -785,8 +778,8 @@ body {
 .music-list-tabs,
 .search-tabs {
   border-bottom: 1px solid var(--qqm-border) !important;
-  background: color-mix(in srgb, var(--qqm-bg) 86%, transparent) !important;
-  backdrop-filter: blur(16px) saturate(1.05);
+  background: var(--qqm-bg) !important;
+  backdrop-filter: none;
 }
 
 .song-item,
@@ -810,10 +803,9 @@ body {
 .compact-song-item:hover,
 .search-item:hover,
 .playlist-drawer-item:hover {
-  background: color-mix(in srgb, var(--qqm-surface) 72%, transparent) !important;
-  border-color: rgba(30, 207, 115, 0.14) !important;
-  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.06) !important;
-  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--qqm-primary-soft) 22%, var(--qqm-surface)) !important;
+  border-color: color-mix(in srgb, var(--qqm-primary) 14%, var(--qqm-border)) !important;
+  box-shadow: none !important;
 }
 
 .song-item .cover,
@@ -853,18 +845,18 @@ body {
 .radio-card,
 .playlists-item {
   border-radius: 10px !important;
-  background: color-mix(in srgb, var(--qqm-surface) 54%, transparent) !important;
-  border: 1px solid rgba(255, 255, 255, 0.58) !important;
-  box-shadow: 0 8px 22px rgba(20, 24, 31, 0.055) !important;
-  backdrop-filter: blur(14px) saturate(1.08);
+  background: var(--qqm-surface) !important;
+  border: 1px solid var(--qqm-border) !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 .playlist-item:hover,
 .album-item:hover,
 .radio-card:hover,
 .playlists-item:hover {
-  border-color: rgba(30, 207, 115, 0.18) !important;
-  box-shadow: 0 14px 30px rgba(20, 24, 31, 0.09) !important;
+  border-color: color-mix(in srgb, var(--qqm-primary) 16%, var(--qqm-border)) !important;
+  box-shadow: none !important;
 }
 
 .n-card,
@@ -874,8 +866,8 @@ body {
 }
 
 .n-drawer-content {
-  background: color-mix(in srgb, var(--qqm-surface) 92%, transparent) !important;
-  backdrop-filter: blur(18px) saturate(1.08);
+  background: var(--qqm-surface) !important;
+  backdrop-filter: none;
 }
 
 #drawer-target,
@@ -887,9 +879,7 @@ body {
 .music-full-container,
 .music-drawer .n-drawer-content,
 #drawer-target {
-  background:
-    radial-gradient(circle at 24% 18%, rgba(30, 207, 115, 0.12), transparent 30%),
-    color-mix(in srgb, var(--qqm-bg) 88%, transparent) !important;
+  background: var(--qqm-bg) !important;
 }
 
 .music-img,
@@ -901,9 +891,9 @@ body {
 
 .music-lrc {
   border-radius: 12px !important;
-  background: color-mix(in srgb, var(--qqm-surface) 36%, transparent) !important;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  backdrop-filter: blur(16px) saturate(1.08);
+  background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--qqm-border) 72%, transparent);
+  backdrop-filter: none;
 }
 
 .music-lrc-text {
@@ -989,10 +979,10 @@ body {
 .local-folder-card,
 .local-music-panel,
 .heatmap-card {
-  background: color-mix(in srgb, var(--qqm-surface) 62%, transparent) !important;
-  border: 1px solid rgba(255, 255, 255, 0.58) !important;
-  box-shadow: 0 10px 26px rgba(20, 24, 31, 0.065) !important;
-  backdrop-filter: blur(16px) saturate(1.08);
+  background: var(--qqm-surface) !important;
+  border: 1px solid var(--qqm-border) !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 .setting-item,
@@ -1766,19 +1756,19 @@ body {
 .disclaimer-modal-shell,
 .donate-modal-shell,
 .responsive-modal-shell {
-  background: rgba(17, 19, 21, 0.32) !important;
-  backdrop-filter: blur(8px) saturate(1.06) !important;
+  background: rgba(17, 19, 21, 0.12) !important;
+  backdrop-filter: blur(2px) !important;
 }
 
 .disclaimer-modal-card,
 .donate-modal-card,
 .responsive-modal-card,
 .update-modal {
-  border: 1px solid rgba(255, 255, 255, 0.56) !important;
+  border: 1px solid var(--qqm-border) !important;
   border-radius: 12px !important;
-  background: color-mix(in srgb, var(--qqm-surface) 86%, transparent) !important;
-  box-shadow: 0 18px 44px rgba(20, 24, 31, 0.14) !important;
-  backdrop-filter: blur(20px) saturate(1.1);
+  background: var(--qqm-surface) !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 .disclaimer-modal-card [class*='rounded-3xl'],
@@ -1834,11 +1824,11 @@ body {
 .mini-play-bar .function-button,
 .mini-play-bar .close-button,
 .play-bar .control-btn {
-  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  border: 1px solid color-mix(in srgb, var(--qqm-border) 78%, transparent) !important;
   border-radius: 10px !important;
-  background: color-mix(in srgb, var(--qqm-surface) 42%, transparent) !important;
-  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.08) !important;
-  backdrop-filter: blur(14px) saturate(1.08);
+  background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 #drawer-target .control-btn:hover,
@@ -1859,9 +1849,9 @@ body {
 .mini-play-bar .album-cover,
 .play-bar .cover,
 .play-bar .album-cover {
-  border: 1px solid rgba(255, 255, 255, 0.48) !important;
+  border: 1px solid color-mix(in srgb, var(--qqm-border) 80%, transparent) !important;
   border-radius: 12px !important;
-  box-shadow: 0 16px 36px rgba(20, 24, 31, 0.14) !important;
+  box-shadow: none !important;
   overflow: hidden;
 }
 
@@ -1871,11 +1861,11 @@ body {
 #mobile-drawer-target .landscape-progress-container,
 .mini-play-bar .playlist-container,
 .mini-play-bar .mini-bar-container {
-  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  border: 1px solid color-mix(in srgb, var(--qqm-border) 72%, transparent) !important;
   border-radius: 12px !important;
-  background: color-mix(in srgb, var(--qqm-surface) 32%, transparent) !important;
-  box-shadow: 0 12px 30px rgba(20, 24, 31, 0.08) !important;
-  backdrop-filter: blur(18px) saturate(1.08);
+  background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 #drawer-target .music-lrc-text,
@@ -1895,15 +1885,15 @@ body {
 }
 
 .mobile-player-settings .absolute.inset-0 {
-  background: rgba(17, 19, 21, 0.34) !important;
-  backdrop-filter: blur(8px) saturate(1.06);
+  background: rgba(17, 19, 21, 0.14) !important;
+  backdrop-filter: blur(2px);
 }
 
 .mobile-player-settings-panel {
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 12px 12px 0 0 !important;
-  background: color-mix(in srgb, #151922 78%, transparent) !important;
-  box-shadow: 0 -18px 44px rgba(0, 0, 0, 0.26) !important;
+  background: #151922 !important;
+  box-shadow: none !important;
 }
 
 .mobile-player-settings-panel button,
