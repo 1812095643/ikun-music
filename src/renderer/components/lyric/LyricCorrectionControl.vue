@@ -52,7 +52,7 @@ const { t } = useI18n();
 }
 
 .lyric-correction-btn {
-  @apply w-7 h-7 flex items-center justify-center rounded-lg bg-white dark:bg-neutral-800 border border-white/20 dark:border-neutral-700/40 shadow-sm backdrop-blur-xl cursor-pointer transition-colors duration-150 text-gray-700 dark:text-gray-200 bg-opacity-40;
+  @apply w-7 h-7 flex items-center justify-center rounded-lg bg-white dark:bg-neutral-800 border border-white/20 dark:border-neutral-700/40 shadow-sm backdrop-blur-md cursor-pointer transition-colors duration-150 text-gray-700 dark:text-gray-200 bg-opacity-40;
 
   &:hover {
     color: white;

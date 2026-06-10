@@ -22,7 +22,7 @@
         class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
-          class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/15 transition-colors"
+          class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-md group-hover:bg-primary/10 transition-colors duration-200"
         ></div>
         <img :src="alipay" alt="Alipay" class="w-52 h-52 rounded-lg shadow-sm mb-4" />
         <div class="flex items-center gap-2 text-primary font-bold text-lg">
@@ -36,7 +36,7 @@
         class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
-          class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/15 transition-colors"
+          class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-md group-hover:bg-primary/10 transition-colors duration-200"
         ></div>
         <img :src="wechat" alt="WeChat" class="w-52 h-52 rounded-lg shadow-sm mb-4" />
         <div class="flex items-center gap-2 text-primary font-bold text-lg">

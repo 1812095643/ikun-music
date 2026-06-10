@@ -11,7 +11,7 @@
 
         <!-- 弹窗内容 - 磨砂玻璃效果 -->
         <div
-          class="mobile-player-settings-panel relative w-full max-w-lg bg-gray-900/70 backdrop-blur-xl rounded-t-lg overflow-hidden max-h-[85vh] flex flex-col border-t border-white/10 shadow-sm shadow-black/10"
+          class="mobile-player-settings-panel relative w-full max-w-lg bg-gray-900/75 backdrop-blur-md rounded-t-lg overflow-hidden max-h-[85vh] flex flex-col border-t border-white/10 shadow-sm shadow-black/10"
         >
           <!-- 顶部拖拽条 -->
           <div class="flex justify-center pt-3 pb-2 flex-shrink-0">
@@ -343,12 +343,12 @@ onUnmounted(() => {
 /* 弹窗动画 */
 .settings-drawer-enter-active,
 .settings-drawer-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
 }
 
 .settings-drawer-enter-active > div:last-child,
 .settings-drawer-leave-active > div:last-child {
-  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .settings-drawer-enter-from,

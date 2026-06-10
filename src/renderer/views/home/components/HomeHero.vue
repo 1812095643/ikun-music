@@ -117,7 +117,7 @@
               ref="fmCoverRef"
               :src="getImgUrl(fmCurrentCover, '512y512')"
               alt=""
-              class="absolute inset-0 h-full w-full scale-110 object-cover opacity-25 blur-xl"
+              class="absolute inset-0 h-full w-full object-cover opacity-20"
               :class="isFmPlaying ? 'fm-bg-flow' : ''"
               crossorigin="anonymous"
               @load="extractFmColor"
@@ -235,7 +235,9 @@
               </template>
             </div>
             <!-- Overlay -->
-            <div class="absolute inset-0 bg-black/30 transition-colors group-hover:bg-black/40" />
+            <div
+              class="absolute inset-0 bg-black/25 transition-colors duration-200 group-hover:bg-black/30"
+            />
             <!-- Content -->
             <div class="relative flex h-full flex-col justify-between p-5">
               <span

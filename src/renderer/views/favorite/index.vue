@@ -122,11 +122,7 @@
 
           <!-- Loading Skeletons -->
           <div v-if="loading" class="space-y-2 pt-2">
-            <div
-              v-for="i in 5"
-              :key="i"
-              class="flex items-center gap-4 rounded-lg p-2 animate-pulse"
-            >
+            <div v-for="i in 5" :key="i" class="flex items-center gap-4 rounded-lg p-2">
               <div class="h-12 w-12 rounded-lg bg-gray-200 dark:bg-neutral-800"></div>
               <div class="flex-1 space-y-2">
                 <div class="h-4 w-1/3 rounded bg-gray-200 dark:bg-neutral-800"></div>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-80 rounded-lg bg-black/30 backdrop-blur-xl border border-white/10 shadow-sm overflow-hidden"
+    class="w-80 rounded-lg bg-black/25 backdrop-blur-md border border-white/10 shadow-sm overflow-hidden"
   >
     <!-- 标题栏 -->
     <div class="px-6 py-4 border-b border-white/5">

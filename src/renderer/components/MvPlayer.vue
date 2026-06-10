@@ -45,7 +45,7 @@
         class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"
       >
         <div
-          class="bg-black/40 backdrop-blur-sm rounded-full p-4 pointer-events-auto transition-transform active:translate-y-0"
+          class="bg-neutral-950/55 backdrop-blur-sm rounded-full p-4 pointer-events-auto active:translate-y-0"
           @click.stop="togglePlay"
         >
           <n-icon size="48" color="white">
@@ -260,7 +260,7 @@
 
       <!-- Mode Switch Toast -->
       <transition
-        enter-active-class="transition ease-out duration-300"
+        enter-active-class="transition ease-out duration-200"
         enter-from-class="opacity-0 translate-y-1"
         enter-to-class="opacity-100 translate-y-0"
         leave-active-class="transition ease-in duration-200"
