@@ -1,0 +1,53 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": true,
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "strict": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "types": [
+      "naive-ui/volar",
+      "node"
+    ],
+    "paths": {
+      "@/*": [
+        "src/renderer/*"
+      ],
+      "@renderer/*": [
+        "src/renderer/*"
+      ],
+      "@main/*": [
+        "src/main/*"
+      ],
+      "@i18n/*": [
+        "src/i18n/*"
+      ]
+    },
+    "noImplicitAny": false
+  },
+  "include": [
+    "src/renderer/**/*",
+    "src/renderer/**/*.vue",
+    "src/renderer/auto-imports.d.ts",
+    "src/renderer/components.d.ts",
+    "src/shared/**/*",
+    "src/i18n/**/*",
+    "src/main/set.json",
+    "src/preload/index.d.ts"
+  ],
+  "references": []
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main",
+  "description": "主窗口默认权限，尽量复刻原 Electron 桌面能力入口。",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    "dialog:default",
+    "fs:default",
+    "fs:allow-home-read-recursive",
+    "fs:allow-download-read-recursive",
+    "fs:allow-download-write-recursive",
+    "http:default",
+    "shell:default",
+    "store:default"
+  ]
+}
