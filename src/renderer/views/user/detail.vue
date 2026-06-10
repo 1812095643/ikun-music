@@ -5,7 +5,7 @@
         <!-- Loading State -->
         <div v-if="loading">
           <!-- Hero Skeleton -->
-          <div class="relative h-[300px] overflow-hidden rounded-tl-2xl">
+          <div class="relative h-[300px] overflow-hidden rounded-tl-lg">
             <div class="absolute inset-0 skeleton-shimmer" />
             <div class="relative z-10 page-padding-x pt-8 pb-6">
               <div class="flex flex-col items-center gap-6 md:flex-row md:items-end md:gap-10">
@@ -40,7 +40,7 @@
         <!-- Main Content -->
         <div v-else-if="userDetail">
           <!-- Hero Section -->
-          <section class="hero-section relative overflow-hidden rounded-tl-2xl">
+          <section class="hero-section relative overflow-hidden rounded-tl-lg">
             <!-- Background Image with Blur -->
             <div class="absolute inset-0 -top-20">
               <div
@@ -208,7 +208,7 @@
                       class="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/20 group-hover:opacity-100 transition-opacity duration-200"
                     >
                       <div
-                        class="w-11 h-11 rounded-full bg-white/90 flex items-center justify-center transition-opacity duration-200"
+                        class="w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center transition-opacity duration-200"
                       >
                         <i class="ri-play-fill text-xl text-neutral-900 ml-0.5" />
                       </div>

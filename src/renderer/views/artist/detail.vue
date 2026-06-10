@@ -7,7 +7,7 @@
         <!-- Loading State -->
         <div v-if="loading" class="artist-content">
           <!-- Hero Skeleton -->
-          <div class="hero-section relative h-[400px] overflow-hidden rounded-tl-2xl">
+          <div class="hero-section relative h-[400px] overflow-hidden rounded-tl-lg">
             <div class="hero-bg absolute inset-0 -top-20">
               <div class="absolute inset-0 skeleton-shimmer" />
             </div>
@@ -45,7 +45,7 @@
         <!-- Main Content -->
         <div v-else-if="artistInfo" class="artist-content">
           <!-- Hero Section -->
-          <section class="hero-section relative overflow-hidden overflow-hidden rounded-tl-2xl">
+          <section class="hero-section relative overflow-hidden rounded-tl-lg">
             <!-- Background Image with Blur -->
             <div class="hero-bg absolute inset-0 -top-20">
               <div
@@ -80,7 +80,7 @@
                       class="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/25 transition-colors duration-200"
                     >
                       <div
-                        class="play-icon w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+                        class="play-icon w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
                         @click="handlePlayAll"
                       >
                         <i class="iconfont icon-playfill text-2xl text-neutral-900 ml-1" />
@@ -93,7 +93,7 @@
                 <div class="artist-info flex-1 text-center md:text-left">
                   <div class="artist-badge mb-2 md:mb-3">
                     <span
-                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
+                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
                     >
                       <i class="iconfont icon-verified text-sm" />
                       Artist
@@ -327,7 +327,7 @@
                       class="play-overlay absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/20 group-hover:opacity-100 transition-opacity duration-200"
                     >
                       <div
-                        class="play-icon w-12 h-12 rounded-full bg-white/90 flex items-center justify-center transition-opacity duration-200"
+                        class="play-icon w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center transition-opacity duration-200"
                       >
                         <i class="iconfont icon-playfill text-xl text-neutral-900 ml-0.5" />
                       </div>

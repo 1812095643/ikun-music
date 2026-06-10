@@ -19,7 +19,9 @@
       <div v-if="!isComponent && isElectron" class="flex items-center gap-3">
         <template v-if="!isSelecting">
           <!-- Sort Controls -->
-          <div class="flex items-center bg-gray-100 dark:bg-neutral-800 rounded-lg p-1 h-9">
+          <div
+            class="flex items-center bg-white dark:bg-neutral-900 rounded-lg p-1 h-9 border border-gray-100 dark:border-neutral-800"
+          >
             <button
               v-for="isDesc in [true, false]"
               :key="String(isDesc)"
@@ -48,7 +50,7 @@
         <!-- Selection Controls -->
         <div
           v-else
-          class="flex items-center gap-3 bg-white dark:bg-neutral-800 shadow-sm rounded-lg px-4 py-1.5 border border-gray-100 dark:border-neutral-700 h-9"
+          class="flex items-center gap-3 bg-white dark:bg-neutral-900 shadow-sm rounded-lg px-4 py-1.5 border border-gray-100 dark:border-neutral-800 h-9"
         >
           <n-checkbox
             :checked="isAllSelected"

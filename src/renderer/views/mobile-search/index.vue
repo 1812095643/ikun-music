@@ -80,10 +80,10 @@
             v-for="(item, index) in hotSearchList"
             :key="index"
             class="hot-item"
-            @click="selectSuggestion(item.searchWord)"
+            @click="selectSuggestion(sanitizeSearchText(item.searchWord))"
           >
             <span class="hot-rank" :class="{ top: index < 3 }">{{ index + 1 }}</span>
-            <span class="hot-word">{{ item.searchWord }}</span>
+            <span class="hot-word">{{ sanitizeSearchText(item.searchWord) }}</span>
             <span v-if="item.iconUrl" class="hot-icon">
               <img :src="item.iconUrl" alt="" />
             </span>
@@ -139,11 +139,19 @@ const searchHistory = ref<string[]>([]);
 // 热门搜索
 const hotSearchList = ref<any[]>([]);
 
+/**
+ * 清理接口热词里的装饰符号，保持 QQ 音乐式的干净搜索体验。
+ * @param text 接口返回的搜索展示文案
+ * @returns 去除装饰符号后的搜索文案
+ */
+const sanitizeSearchText = (text: string): string =>
+  text.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
+
 // 加载热门搜索关键词
 const loadHotSearchKeyword = async () => {
   try {
     const { data } = await getSearchKeyword();
-    hotSearchKeyword.value = data.data.showKeyword;
+    hotSearchKeyword.value = sanitizeSearchText(data.data.showKeyword);
   } catch (e) {
     console.error('加载热门搜索关键词失败:', e);
   }
@@ -272,14 +280,14 @@ onMounted(() => {
 
 .header-back {
   @apply flex items-center justify-center;
-  @apply w-8 h-8 rounded-full text-2xl;
+  @apply w-8 h-8 rounded-lg text-2xl;
   @apply text-gray-600 dark:text-gray-300;
-  @apply active:bg-gray-100 dark:active:bg-gray-800;
+  @apply active:bg-gray-100 dark:active:bg-neutral-800;
 }
 
 .search-input-wrapper {
   @apply flex-1 flex items-center gap-2;
-  @apply bg-gray-100 dark:bg-gray-800 rounded-full;
+  @apply bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-neutral-800;
   @apply px-4 py-1;
 }
 
@@ -310,8 +318,8 @@ onMounted(() => {
 }
 
 .type-tag {
-  @apply px-4 py-1.5 rounded-full text-sm whitespace-nowrap;
-  @apply bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300;
+  @apply px-3.5 py-1.5 rounded-md text-sm whitespace-nowrap;
+  @apply bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-neutral-800;
   @apply transition-colors duration-200;
 
   &.active {
@@ -359,8 +367,8 @@ onMounted(() => {
 }
 
 .history-tag {
-  @apply px-3 py-1.5 rounded-full text-sm;
-  @apply bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300;
+  @apply px-3 py-1.5 rounded-md text-sm;
+  @apply bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-neutral-800;
   @apply active:bg-gray-200 dark:active:bg-gray-700;
 }
 

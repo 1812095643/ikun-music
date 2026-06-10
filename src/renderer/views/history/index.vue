@@ -29,7 +29,7 @@
             class="px-4 h-7 rounded-md text-xs font-medium cursor-pointer transition-colors duration-200 flex items-center justify-center whitespace-nowrap"
             :class="
               currentCategory === tab
-                ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
+                ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
             "
             @click="handleCategoryChange(tab as any)"
@@ -47,7 +47,7 @@
             class="px-3 h-7 rounded-md text-xs font-medium transition-colors duration-200"
             :class="
               currentTab === 'local'
-                ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
+                ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
             "
             @click="handleTabChange('local')"
@@ -58,7 +58,7 @@
             class="px-3 h-7 rounded-md text-xs font-medium transition-colors duration-200"
             :class="
               currentTab === 'cloud'
-                ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
+                ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
             "
             @click="handleTabChange('cloud')"
@@ -141,13 +141,13 @@
           <template v-if="currentCategory === 'podcasts'">
             <div class="mb-4 px-2">
               <div
-                class="flex items-center bg-gray-100 dark:bg-neutral-800 rounded-lg p-1 w-fit h-8"
+                class="flex items-center bg-white dark:bg-neutral-900 rounded-lg p-1 w-fit h-8 border border-gray-100 dark:border-neutral-800"
               >
                 <button
                   class="px-3 h-6 rounded-md text-xs font-medium transition-colors duration-200"
                   :class="
                     currentPodcastSubTab === 'episodes'
-                      ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
+                      ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm'
                       : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                   "
                   @click="
@@ -161,7 +161,7 @@
                   class="px-3 h-6 rounded-md text-xs font-medium transition-colors duration-200"
                   :class="
                     currentPodcastSubTab === 'radios'
-                      ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
+                      ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm'
                       : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                   "
                   @click="

@@ -5,7 +5,7 @@
         <!-- Hero Section 和 Action Bar -->
         <n-spin :show="loading">
           <!-- Hero Section -->
-          <section class="hero-section relative overflow-hidden rounded-tl-2xl">
+          <section class="hero-section relative overflow-hidden rounded-tl-lg">
             <!-- Background Image with Blur -->
             <div class="hero-bg absolute inset-0 -top-20">
               <div
@@ -44,7 +44,7 @@
                       <button
                         v-if="!isMobile"
                         type="button"
-                        class="play-icon w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-auto"
+                        class="play-icon w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-auto"
                         @click.stop="handlePlayAll"
                       >
                         <i class="ri-play-fill text-3xl text-neutral-900 ml-1" />
@@ -57,7 +57,7 @@
                 <div class="playlist-info flex-1 text-center md:text-left">
                   <div class="playlist-badge mb-3">
                     <span
-                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
+                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
                     >
                       {{ isAlbum ? 'Album' : 'Playlist' }}
                     </span>
@@ -156,7 +156,7 @@
 
               <button
                 v-if="!isSelecting && isElectron"
-                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
                 @click="startSelect"
               >
                 <i class="ri-checkbox-multiple-line text-lg" />
@@ -174,7 +174,7 @@
                   {{ t('common.selectAll') }}
                 </n-checkbox>
                 <button
-                  class="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors"
+                  class="px-4 py-1.5 rounded-md bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors"
                   :disabled="selectedSongs.length === 0 || isDownloading"
                   @click="handleBatchDownload"
                 >
@@ -182,7 +182,7 @@
                   {{ t('favorite.download', { count: selectedSongs.length }) }}
                 </button>
                 <button
-                  class="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors"
+                  class="px-4 py-1.5 rounded-md bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors"
                   :disabled="selectedSongs.length === 0"
                   @click="handleAddToPlaylist"
                 >
@@ -208,7 +208,7 @@
                   round
                   clearable
                   size="small"
-                  class="w-48 focus:w-64 transition-[width] duration-300 !bg-neutral-100 dark:!bg-neutral-900 border-none"
+                  class="w-48 focus:w-60 transition-[width] duration-200 !bg-neutral-100 dark:!bg-neutral-900 border-none"
                 >
                   <template #prefix>
                     <i class="ri-search-line text-neutral-400"></i>
@@ -219,7 +219,7 @@
               <!-- Locate Current Song -->
               <button
                 v-if="currentPlayingIndex >= 0"
-                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
                 :title="t('comp.musicList.locateCurrent', '定位当前播放')"
                 @click="scrollToCurrentSong"
               >
@@ -229,7 +229,7 @@
               <!-- Layout Toggle -->
               <button
                 v-if="!isMobile"
-                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
                 @click="toggleLayout"
               >
                 <i :class="isCompactLayout ? 'ri-list-check-2' : 'ri-grid-line'" class="text-lg" />
