@@ -458,7 +458,7 @@ const currentLoginType = computed(() => userStore.loginType);
   .left {
     max-width: 600px;
     @apply flex-1 rounded-lg overflow-hidden relative bg-no-repeat h-full;
-    @apply bg-gray-900 dark:bg-gray-800;
+    @apply bg-white dark:bg-black;
     border: 1px solid var(--qqm-border);
     box-shadow: none;
 
@@ -466,10 +466,19 @@ const currentLoginType = computed(() => userStore.loginType);
       @apply p-4 w-full z-10 flex flex-col h-full;
       background: linear-gradient(
         180deg,
-        rgba(12, 16, 22, 0.34) 0%,
-        rgba(12, 16, 22, 0.22) 45%,
-        rgba(12, 16, 22, 0.4) 100%
+        rgba(255, 255, 255, 0.92) 0%,
+        rgba(255, 255, 255, 0.84) 45%,
+        rgba(255, 255, 255, 0.96) 100%
       );
+
+      :global(.dark) & {
+        background: linear-gradient(
+          180deg,
+          rgba(0, 0, 0, 0.76) 0%,
+          rgba(0, 0, 0, 0.66) 45%,
+          rgba(0, 0, 0, 0.82) 100%
+        );
+      }
     }
     .title {
       @apply text-lg font-bold flex items-center justify-between;
@@ -477,22 +486,22 @@ const currentLoginType = computed(() => userStore.loginType);
     }
     .user-name {
       @apply text-xl font-bold mb-4 flex justify-between;
-      @apply text-white;
+      @apply text-neutral-900 dark:text-white;
     }
 
     .uesr-signature {
       @apply mt-4;
-      @apply text-white/80;
+      @apply text-neutral-500 dark:text-neutral-400;
     }
 
     .user-info {
       @apply flex items-center;
       &-list {
         @apply flex justify-around w-2/5 text-center;
-        @apply text-white/80;
+        @apply text-neutral-500 dark:text-neutral-400;
 
         .label {
-          @apply text-xl font-bold text-white;
+          @apply text-xl font-bold text-neutral-900 dark:text-white;
         }
       }
 
@@ -546,7 +555,7 @@ const currentLoginType = computed(() => userStore.loginType);
 .play-list {
   @apply mt-4 py-4 px-2 rounded-lg flex-1 overflow-hidden;
   background: color-mix(in srgb, var(--qqm-surface) 96%, transparent);
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--qqm-border);
   box-shadow: none;
 
   &-title {

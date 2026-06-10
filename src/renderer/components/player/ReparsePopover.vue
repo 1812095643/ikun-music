@@ -36,8 +36,8 @@
               class="source-button flex items-center p-2 rounded-lg transition-colors duration-200"
               :class="[
                 source.available
-                  ? 'cursor-pointer bg-light-200 dark:bg-dark-200 hover:bg-light-300 dark:hover:bg-dark-300'
-                  : 'opacity-40 cursor-not-allowed bg-light-200 dark:bg-dark-200',
+                  ? 'cursor-pointer bg-neutral-50 dark:bg-neutral-900 hover:bg-primary/5 dark:hover:bg-primary/10'
+                  : 'opacity-40 cursor-not-allowed bg-neutral-50 dark:bg-neutral-900',
                 {
                   'bg-primary/10 dark:bg-primary/15 text-primary': isCurrentSource(source.id),
                   'opacity-50 cursor-not-allowed': isReparsing && source.available
@@ -78,7 +78,7 @@
       </div>
       <!-- 清除自定义音源 -->
       <div
-        class="flex cursor-pointer items-center rounded-lg bg-light-200 p-2 text-sm text-neutral-500 transition-colors hover:text-neutral-700 dark:bg-dark-200 dark:text-neutral-400 dark:hover:text-neutral-200"
+        class="flex cursor-pointer items-center rounded-lg bg-neutral-50 p-2 text-sm text-neutral-500 transition-colors hover:bg-primary/5 hover:text-primary dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-primary/10"
         @click="clearCustomSource"
       >
         <div class="flex items-center justify-center w-6 h-6 mr-3 text-lg">

@@ -55,7 +55,7 @@
                 <div class="playlist-info flex-1 text-center md:text-left">
                   <div class="playlist-badge mb-3">
                     <span
-                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/8 dark:bg-primary/15 text-primary text-xs font-semibold uppercase tracking-wider"
+                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/10 dark:bg-primary/15 text-primary text-xs font-semibold uppercase tracking-wider"
                     >
                       {{ isAlbum ? '专辑' : '歌单' }}
                     </span>
