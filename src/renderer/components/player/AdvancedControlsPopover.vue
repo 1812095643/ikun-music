@@ -242,13 +242,27 @@ const selectSpeed = (speed: number) => {
 }
 
 .advanced-controls-btn {
-  @apply cursor-pointer mx-3 relative;
+  @apply cursor-pointer mx-2 relative;
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
 
   .iconfont {
-    @apply text-2xl transition;
-    &:hover {
-      color: var(--qqm-primary, #22c55e);
-    }
+    @apply text-xl transition;
+  }
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface));
+    color: var(--qqm-primary, #22c55e);
   }
 
   .active-indicator {
@@ -278,10 +292,12 @@ const selectSpeed = (speed: number) => {
 .eq-modal-content,
 .timer-modal-content,
 .speed-modal-content {
-  @apply p-6 rounded-lg;
-  background: color-mix(in srgb, var(--qqm-surface, #fff) 96%, transparent);
-  border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  box-shadow: none;
+  @apply p-6;
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(20, 24, 31, 0.08)) 78%, #fff 22%);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 92%, transparent);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(14px) saturate(1.12);
   max-width: 600px;
   margin: 0 auto;
 }
@@ -299,13 +315,17 @@ const selectSpeed = (speed: number) => {
     @apply my-8 mx-4;
   }
   .speed-options {
-    @apply flex flex-wrap justify-center gap-4;
+    @apply flex flex-wrap justify-center gap-2;
   }
   .speed-slider {
     @apply mt-4;
   }
   .speed-option {
-    @apply py-2 px-4 rounded-lg cursor-pointer transition-colors;
+    @apply cursor-pointer transition-colors;
+    min-width: 68px;
+    padding: 8px 14px;
+    border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+    border-radius: 10px;
     background: var(--qqm-surface);
     &:hover {
       background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
@@ -325,6 +345,12 @@ const selectSpeed = (speed: number) => {
 
 .modal-close {
   @apply absolute top-4 right-4 cursor-pointer;
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
   &:hover {
     color: var(--qqm-primary, #22c55e);
   }

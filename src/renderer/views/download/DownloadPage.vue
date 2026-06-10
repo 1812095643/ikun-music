@@ -1083,10 +1083,17 @@ onMounted(() => {
 <style lang="scss" scoped>
 .download-page {
   position: relative;
+  background: var(--qqm-bg, #f7f8fa);
 }
 
 .hero-section {
-  min-height: 240px;
+  min-height: 220px;
+  border-bottom: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, var(--qqm-bg)),
+    var(--qqm-bg)
+  );
 }
 
 .action-bar {
@@ -1096,6 +1103,7 @@ onMounted(() => {
 
 .list-section {
   border-top: 1px solid var(--qqm-border);
+  background: var(--qqm-bg, #f7f8fa);
 }
 
 .empty-state {
@@ -1107,7 +1115,7 @@ onMounted(() => {
 
 .download-tabs {
   border: 1px solid var(--qqm-border);
-  background: var(--qqm-surface-muted);
+  background: var(--qqm-surface, #ffffff);
 }
 
 .download-path-chip {
@@ -1130,6 +1138,7 @@ onMounted(() => {
 .format-component-row,
 .download-preview-card {
   border: 1px solid var(--qqm-border);
+  border-radius: 10px;
   background: var(--qqm-surface);
 }
 
@@ -1168,6 +1177,7 @@ onMounted(() => {
 .downloading-item,
 .downloaded-item {
   border-bottom: 1px solid var(--qqm-border);
+  background: var(--qqm-surface, #ffffff);
   transition:
     background 0.2s ease,
     border-color 0.2s ease;

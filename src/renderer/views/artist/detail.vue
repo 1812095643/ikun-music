@@ -924,11 +924,18 @@ const formatSong = (item: any) => {
 /* Artist Detail Page Styles */
 .artist-detail-page {
   position: relative;
+  background: var(--qqm-bg, #f7f8fa);
 }
 
 /* Hero Section */
 .hero-section {
   min-height: 200px;
+  border-bottom: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, var(--qqm-bg)),
+    var(--qqm-bg)
+  );
 }
 
 /* Action Bar Sticky Behavior */
@@ -962,7 +969,7 @@ const formatSong = (item: any) => {
 .artist-tool-group {
   border: 1px solid color-mix(in srgb, var(--qqm-border) 70%, transparent);
   border-radius: 10px;
-  background: color-mix(in srgb, #ffffff 92%, var(--qqm-primary, #22c55e) 3%);
+  background: var(--qqm-surface, #ffffff);
   padding: 3px;
 }
 
@@ -978,7 +985,7 @@ const formatSong = (item: any) => {
 
 .artist-tab-list {
   border: 1px solid color-mix(in srgb, var(--qqm-border) 72%, transparent);
-  background: color-mix(in srgb, #ffffff 94%, var(--qqm-primary, #22c55e) 3%);
+  background: var(--qqm-surface, #ffffff);
 }
 
 .dark .action-bar {
@@ -1087,8 +1094,19 @@ const formatSong = (item: any) => {
 }
 
 .artist-cover-surface {
-  border: 1px solid var(--qqm-border);
+  border: 1px solid color-mix(in srgb, var(--qqm-border) 78%, #ffffff 22%);
   background: var(--qqm-surface-2, var(--qqm-surface));
+}
+
+.song-list {
+  overflow: hidden;
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  border-radius: 10px;
+  background: var(--qqm-surface, #ffffff);
+}
+
+.song-item-container + .song-item-container {
+  border-top: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
 }
 
 /* Hover Effects */

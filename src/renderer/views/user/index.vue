@@ -458,7 +458,7 @@ const currentLoginType = computed(() => userStore.loginType);
   .left {
     max-width: 600px;
     @apply flex-1 rounded-lg overflow-hidden relative bg-no-repeat h-full;
-    @apply bg-white dark:bg-black;
+    background-color: var(--qqm-surface, #ffffff);
     border: 1px solid var(--qqm-border);
     box-shadow: none;
 
@@ -466,17 +466,15 @@ const currentLoginType = computed(() => userStore.loginType);
       @apply p-4 w-full z-10 flex flex-col h-full;
       background: linear-gradient(
         180deg,
-        rgba(255, 255, 255, 0.92) 0%,
-        rgba(255, 255, 255, 0.84) 45%,
-        rgba(255, 255, 255, 0.96) 100%
+        color-mix(in srgb, var(--qqm-surface, #fff) 92%, transparent),
+        var(--qqm-surface, #fff)
       );
 
       :global(.dark) & {
         background: linear-gradient(
           180deg,
-          rgba(0, 0, 0, 0.76) 0%,
-          rgba(0, 0, 0, 0.66) 45%,
-          rgba(0, 0, 0, 0.82) 100%
+          color-mix(in srgb, var(--qqm-surface, #050505) 90%, transparent),
+          var(--qqm-surface, #050505)
         );
       }
     }
@@ -531,8 +529,8 @@ const currentLoginType = computed(() => userStore.loginType);
           color 180ms var(--qqm-ease);
 
         &:hover {
-          background: color-mix(in srgb, var(--qqm-surface-muted) 72%, transparent);
-          border-color: rgba(30, 207, 115, 0.14);
+          background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+          border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, var(--qqm-border));
         }
       }
 
@@ -566,11 +564,11 @@ const currentLoginType = computed(() => userStore.loginType);
   &-item {
     @apply flex items-center px-2 py-2 rounded-lg cursor-pointer w-full;
     @apply transition-colors duration-200;
-    @apply hover:bg-primary/5 dark:hover:bg-primary/10;
     border: 1px solid transparent;
 
     &:hover {
-      border-color: rgba(30, 207, 115, 0.14);
+      border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, var(--qqm-border));
+      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
     }
 
     &-img {
