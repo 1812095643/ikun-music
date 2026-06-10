@@ -27,22 +27,22 @@
                   <!-- Radio Cover -->
                   <div class="radio-cover-wrapper relative group">
                     <div
-                      class="cover-glow absolute -inset-2 rounded-2xl bg-gradient-to-br from-primary/30 via-primary/10 to-transparent blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      class="cover-glow absolute -inset-1 rounded-xl bg-primary/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     />
                     <div
-                      class="cover-container relative w-48 h-48 md:w-56 md:h-56 rounded-2xl overflow-hidden shadow-2xl ring-4 ring-white/50 dark:ring-neutral-800/50"
+                      class="cover-container relative w-48 h-48 md:w-56 md:h-56 rounded-xl overflow-hidden shadow-md ring-1 ring-black/5 dark:ring-white/10"
                     >
                       <img
                         :src="getImgUrl(currentRadio.picUrl, '500y500')"
                         :alt="currentRadio.name"
-                        class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       />
                       <!-- Play overlay on cover -->
                       <div
                         class="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/30 transition-all duration-300"
                       >
                         <div
-                          class="play-icon w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 shadow-xl cursor-pointer hover:scale-110 active:scale-95"
+                          class="play-icon w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
                           @click="handlePlayAll"
                         >
                           <i class="iconfont icon-playfill text-2xl text-neutral-900 ml-1" />
@@ -109,7 +109,7 @@
                 <div class="flex items-center gap-3">
                   <!-- Play All Button -->
                   <button
-                    class="play-all-btn flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-primary/25"
+                    class="play-all-btn flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-sm shadow-primary/20"
                     @click="handlePlayAll"
                   >
                     <i class="iconfont icon-playfill text-lg" />
@@ -118,7 +118,7 @@
 
                   <!-- Subscribe Button -->
                   <button
-                    class="subscribe-btn flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm"
+                    class="subscribe-btn flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-sm"
                     :class="
                       isSubscribed
                         ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200'

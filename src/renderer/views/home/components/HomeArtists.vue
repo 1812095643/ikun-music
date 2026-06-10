@@ -56,11 +56,11 @@
 
       <!-- Scroll Indicators (Optional visual feedback) -->
       <div
-        class="scroll-fade-left pointer-events-none absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white dark:from-black to-transparent opacity-0 transition-opacity"
+        class="scroll-fade-left pointer-events-none absolute left-0 top-0 bottom-0 w-12 bg-[linear-gradient(to_right,var(--artist-fade-bg),transparent)] opacity-0 transition-opacity"
         :class="{ 'opacity-100': showLeftFade }"
       />
       <div
-        class="scroll-fade-right pointer-events-none absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white dark:from-black to-transparent opacity-0 transition-opacity"
+        class="scroll-fade-right pointer-events-none absolute right-0 top-0 bottom-0 w-12 bg-[linear-gradient(to_left,var(--artist-fade-bg),transparent)] opacity-0 transition-opacity"
         :class="{ 'opacity-100': showRightFade }"
       />
     </div>
@@ -141,6 +141,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.home-artists {
+  --artist-fade-bg: rgb(255 255 255);
+}
+
+:global(.dark) .home-artists {
+  --artist-fade-bg: rgb(0 0 0);
+}
+
 /* 优化水平滚动 */
 .artists-scroll {
   /* Hide scrollbar while maintaining functionality */

@@ -46,7 +46,7 @@
         @click.self="showCloseModal = false"
       >
         <div
-          class="relative w-[360px] transform overflow-hidden rounded-2xl bg-white p-6 shadow-2xl transition-all dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+          class="relative w-[360px] transform overflow-hidden rounded-xl bg-white/95 p-6 shadow-md backdrop-blur-xl transition-all dark:bg-neutral-900/95 border border-neutral-200 dark:border-neutral-800"
         >
           <!-- Close Icon -->
           <button
@@ -106,7 +106,7 @@
               {{ t('comp.titleBar.exitApp') }}
             </button>
             <button
-              class="rounded-full bg-green-500 px-6 py-2 text-sm font-medium text-white hover:bg-green-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 transition-colors shadow-lg shadow-green-500/20"
+              class="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-colors shadow-sm shadow-primary/20"
               @click="handleAction('minimize')"
             >
               {{ t('comp.titleBar.minimizeToTray') }}

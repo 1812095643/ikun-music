@@ -272,7 +272,7 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .history-recommend-page {
-  @apply h-full bg-light-100 dark:bg-dark-100 px-4 mr-2 rounded-2xl;
+  @apply h-full bg-light-100 dark:bg-dark-100 px-4 mr-2 rounded-xl;
 }
 
 .music {
@@ -333,7 +333,7 @@ onMounted(() => {
 }
 
 .double-item {
-  @apply w-full mb-2 bg-light-200 bg-opacity-30 dark:bg-dark-200 dark:bg-opacity-20 rounded-3xl;
+  @apply w-full mb-2 bg-light-200 bg-opacity-30 dark:bg-dark-200 dark:bg-opacity-20 rounded-xl;
 }
 
 .empty-state {

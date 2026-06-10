@@ -31,7 +31,7 @@ const goToDetail = () => {
       <img
         :src="getImgUrl(radio?.picUrl || program?.coverUrl || '', '400y400')"
         :alt="radio?.name || ''"
-        class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         loading="lazy"
       />
       <!-- Hover overlay -->

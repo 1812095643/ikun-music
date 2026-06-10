@@ -223,7 +223,7 @@
               class="flex flex-col items-center justify-center py-6 text-center h-full"
             >
               <div
-                class="w-12 h-12 bg-violet-100 dark:bg-violet-500/20 text-violet-500 rounded-xl flex items-center justify-center mb-3"
+                class="w-12 h-12 bg-primary/10 dark:bg-primary/20 text-primary rounded-xl flex items-center justify-center mb-3"
               >
                 <i class="ri-plug-fill text-2xl"></i>
               </div>
@@ -237,7 +237,7 @@
 
               <button
                 @click="importPlugin"
-                class="px-5 py-2 bg-violet-500 hover:bg-violet-600 text-white text-sm font-medium rounded-xl transition-colors flex items-center gap-2 shadow-lg shadow-violet-500/20"
+                class="px-5 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2 shadow-sm shadow-primary/20"
               >
                 <i class="ri-upload-line"></i>
                 {{ t('settings.playback.customApi.importConfig') }}
@@ -273,7 +273,7 @@
           {{ t('common.cancel') }}
         </button>
         <button
-          class="px-4 py-2 text-xs font-medium text-white bg-emerald-500 hover:bg-emerald-600 rounded-lg shadow-lg shadow-emerald-500/20 transition-all active:scale-95"
+          class="px-4 py-2 text-xs font-medium text-white bg-primary hover:bg-primary/90 rounded-lg shadow-sm shadow-primary/20 transition-all active:scale-95"
           @click="handleConfirm"
         >
           {{ t('common.confirm') }}

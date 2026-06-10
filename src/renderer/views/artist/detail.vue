@@ -65,22 +65,22 @@
                 <!-- Artist Avatar -->
                 <div class="artist-avatar-wrapper relative group">
                   <div
-                    class="avatar-glow absolute -inset-2 rounded-full bg-gradient-to-br from-primary/30 via-primary/10 to-transparent blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    class="avatar-glow absolute -inset-1 rounded-full bg-primary/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   />
                   <div
-                    class="avatar-container relative w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden shadow-2xl ring-4 ring-white/50 dark:ring-neutral-800/50"
+                    class="avatar-container relative w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden shadow-md ring-1 ring-black/5 dark:ring-white/10"
                   >
                     <img
                       :src="getImgUrl(artistInfo.cover || artistInfo.picUrl, '500y500')"
                       :alt="artistInfo.name"
-                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     />
                     <!-- Play overlay on avatar -->
                     <div
                       class="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-all duration-300"
                     >
                       <div
-                        class="play-icon w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 shadow-xl cursor-pointer hover:scale-110 active:scale-95"
+                        class="play-icon w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
                         @click="handlePlayAll"
                       >
                         <i class="iconfont icon-playfill text-2xl text-neutral-900 ml-1" />
@@ -143,7 +143,7 @@
               <div class="flex items-center gap-2 md:gap-3">
                 <!-- Play All Button -->
                 <button
-                  class="play-all-btn flex items-center gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-full bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-primary/25"
+                  class="play-all-btn flex items-center gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-sm shadow-primary/20"
                   @click="handlePlayAll"
                 >
                   <i class="iconfont icon-playfill text-lg" />
@@ -152,7 +152,7 @@
 
                 <!-- Add to Playlist Button -->
                 <button
-                  class="add-btn flex items-center justify-center w-10 h-10 md:w-auto md:h-auto md:px-4 md:py-2.5 rounded-full md:rounded-full bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-medium text-sm transition-all duration-200 hover:scale-105 active:scale-95"
+                  class="add-btn flex items-center justify-center w-10 h-10 md:w-auto md:h-auto md:px-4 md:py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-medium text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
                   @click="addToPlaylist"
                 >
                   <i class="iconfont icon-add text-lg" />
@@ -165,7 +165,7 @@
                 <!-- Search Toggle -->
                 <button
                   v-if="activeTab === 'songs'"
-                  class="action-btn w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95"
+                  class="action-btn w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
                   :class="
                     isSearchVisible
                       ? 'bg-primary/10 dark:bg-primary/20 text-primary'
@@ -179,7 +179,7 @@
                 <!-- Layout Toggle (Desktop only) -->
                 <button
                   v-if="activeTab === 'songs' && !isMobile"
-                  class="action-btn w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-200 hover:scale-105 active:scale-95"
+                  class="action-btn w-10 h-10 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
                   :title="
                     isCompactLayout
                       ? t('comp.musicList.switchToNormal')
@@ -314,12 +314,12 @@
                 >
                   <!-- Cover -->
                   <div
-                    class="album-cover relative aspect-square overflow-hidden rounded-2xl shadow-lg"
+                    class="album-cover relative aspect-square overflow-hidden rounded-xl shadow-sm"
                   >
                     <img
                       :src="getImgUrl(album.picUrl, '500y500')"
                       :alt="album.name"
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       loading="lazy"
                     />
                     <!-- Play Overlay -->
@@ -1049,7 +1049,7 @@ const formatSong = (item: any) => {
 }
 
 .album-card:hover .album-cover {
-  @apply shadow-2xl shadow-primary/10;
+  @apply shadow-md shadow-primary/10;
 }
 
 /* Mobile Optimizations */

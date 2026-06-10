@@ -67,7 +67,7 @@
     </setting-section>
 
     <div
-      class="mt-6 p-4 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-gray-800"
+      class="mt-6 p-4 rounded-xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-gray-800"
     >
       <div class="text-sm font-medium text-gray-500 mb-3">支持正版</div>
       <div class="text-base text-gray-900 dark:text-white mb-4">

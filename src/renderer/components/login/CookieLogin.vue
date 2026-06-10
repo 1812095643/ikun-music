@@ -150,7 +150,7 @@ onBeforeUnmount(() => {
 .phone-page {
   @apply bg-light dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90;
   width: 250px;
-  @apply rounded-2xl overflow-hidden;
+  @apply rounded-xl overflow-hidden;
   padding: 0;
   border: none;
 }

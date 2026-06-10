@@ -15,7 +15,7 @@
       <!-- Loading State -->
       <template v-if="loading && page === 0">
         <div v-for="i in 15" :key="`loading-${i}`" class="space-y-3">
-          <div class="aspect-square skeleton-shimmer rounded-2xl" />
+          <div class="aspect-square skeleton-shimmer rounded-xl" />
           <div class="h-4 w-3/4 skeleton-shimmer rounded-lg" />
           <div class="h-3 w-1/2 skeleton-shimmer rounded-lg" />
         </div>
@@ -32,12 +32,12 @@
         >
           <!-- Cover Image -->
           <div
-            class="relative aspect-square overflow-hidden rounded-2xl shadow-md group-hover:shadow-xl transition-all duration-500"
+            class="relative aspect-square overflow-hidden rounded-xl shadow-sm group-hover:shadow-md transition-all duration-300"
           >
             <img
               :src="getImgUrl(album.picUrl, '400y400')"
               :alt="album.name"
-              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               loading="lazy"
               crossorigin="anonymous"
             />

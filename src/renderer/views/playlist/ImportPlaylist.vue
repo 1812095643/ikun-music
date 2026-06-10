@@ -32,7 +32,7 @@
         <!-- 自定义 Tab 切换 -->
         <div class="flex justify-center mb-8">
           <div
-            class="bg-white dark:bg-white/5 p-1.5 rounded-2xl shadow-sm border border-gray-100 dark:border-white/10 flex gap-1 relative"
+            class="bg-white dark:bg-white/5 p-1.5 rounded-xl shadow-sm border border-gray-100 dark:border-white/10 flex gap-1 relative"
           >
             <div
               v-for="tab in tabs"
@@ -62,7 +62,7 @@
           <!-- 左侧：输入区域 -->
           <div class="lg:col-span-2 space-y-6">
             <div
-              class="bg-white dark:bg-neutral-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden p-1 transition-all duration-300"
+              class="bg-white dark:bg-neutral-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-none overflow-hidden p-1 transition-all duration-300"
             >
               <!-- 链接导入内容 -->
               <div v-if="currentTab === 'link'" class="p-6 space-y-6 animate-fade-in">
@@ -71,7 +71,7 @@
                     <input
                       v-model="link.value"
                       :placeholder="t('comp.playlist.import.linkPlaceholder')"
-                      class="w-full bg-gray-50 dark:bg-white/5 border-2 border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-2xl px-5 py-4 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400"
+                      class="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-lg px-5 py-4 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400"
                     />
                     <button
                       v-if="linkInputs.length > 1"
@@ -83,7 +83,7 @@
                   </div>
 
                   <button
-                    class="w-full py-3 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700 text-gray-500 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 flex items-center justify-center gap-2 font-medium"
+                    class="w-full py-3 rounded-lg border border-dashed border-gray-200 dark:border-gray-700 text-gray-500 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 flex items-center justify-center gap-2 font-medium"
                     @click="addLinkRow"
                   >
                     <i class="ri-add-line text-lg"></i>
@@ -98,7 +98,7 @@
                   v-model="textInput"
                   :placeholder="t('comp.playlist.import.textPlaceholder')"
                   rows="12"
-                  class="w-full bg-gray-50 dark:bg-white/5 border-2 border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-2xl px-5 py-4 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400 font-mono text-sm resize-none"
+                  class="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-lg px-5 py-4 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400 font-mono text-sm resize-none"
                 ></textarea>
                 <div class="flex items-center gap-2 text-xs text-gray-400 px-2">
                   <i class="ri-information-line"></i>
@@ -153,7 +153,7 @@
 
             <!-- 帮助提示 (根据 Tab 变化) -->
             <div
-              class="bg-blue-50/50 dark:bg-blue-900/10 rounded-2xl p-5 border border-blue-100 dark:border-blue-900/20"
+              class="bg-primary/5 dark:bg-primary/10 rounded-xl p-5 border border-primary/10 dark:border-primary/15"
             >
               <div class="flex gap-3">
                 <div class="mt-0.5 text-blue-500">
@@ -179,7 +179,7 @@
           <div class="space-y-6">
             <!-- 选项卡片 -->
             <div
-              class="bg-white dark:bg-neutral-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none p-6"
+              class="bg-white dark:bg-neutral-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-none p-6"
             >
               <h3 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <i class="ri-settings-4-line text-primary"></i>
@@ -189,7 +189,7 @@
               <div class="space-y-4">
                 <!-- 导入到星标歌单开关 -->
                 <div
-                  class="flex items-center justify-between p-4 rounded-2xl cursor-pointer transition-all border-2"
+                  class="flex items-center justify-between p-4 rounded-lg cursor-pointer transition-all border"
                   :class="
                     importToStarPlaylist
                       ? 'bg-primary/5 border-primary/50'
@@ -232,14 +232,14 @@
                   <input
                     v-model="playlistName"
                     :placeholder="t('comp.playlist.import.playlistNamePlaceholder')"
-                    class="w-full bg-gray-50 dark:bg-white/5 border-2 border-transparent focus:border-primary/50 rounded-2xl pl-11 pr-4 py-3.5 outline-none transition-all text-sm text-gray-900 dark:text-white"
+                    class="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary/50 rounded-lg pl-11 pr-4 py-3.5 outline-none transition-all text-sm text-gray-900 dark:text-white"
                   />
                 </div>
               </div>
 
               <!-- 主操作按钮 -->
               <button
-                class="w-full mt-6 py-4 rounded-2xl bg-primary text-white font-bold text-lg shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-300 flex items-center justify-center gap-2"
+                class="w-full mt-6 py-3.5 rounded-lg bg-primary text-white font-bold text-base shadow-sm shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-300 flex items-center justify-center gap-2"
                 :disabled="isImportDisabled"
                 @click="handleImport"
               >
@@ -256,7 +256,7 @@
             <!-- 状态反馈 -->
             <div v-if="taskId" class="animate-fade-in-up">
               <div
-                class="bg-white dark:bg-neutral-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none p-6"
+                class="bg-white dark:bg-neutral-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-none p-6"
               >
                 <div class="flex items-center justify-between mb-4">
                   <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">

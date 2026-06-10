@@ -98,7 +98,7 @@
         </div>
         <div v-if="recommendLoading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           <div v-for="i in 10" :key="`skeleton-${i}`" class="space-y-3">
-            <div class="aspect-square skeleton-shimmer rounded-2xl" />
+            <div class="aspect-square skeleton-shimmer rounded-xl" />
             <div class="h-4 w-3/4 skeleton-shimmer rounded-lg" />
           </div>
         </div>
@@ -118,7 +118,7 @@
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
         <template v-if="categoryLoading && categoryPage === 0">
           <div v-for="i in 15" :key="`loading-${i}`" class="space-y-3">
-            <div class="aspect-square skeleton-shimmer rounded-2xl" />
+            <div class="aspect-square skeleton-shimmer rounded-xl" />
             <div class="h-4 w-3/4 skeleton-shimmer rounded-lg" />
           </div>
         </template>

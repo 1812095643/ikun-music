@@ -125,7 +125,7 @@ defineExpose({
 
   .uid-page {
     @apply bg-light dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90;
-    @apply rounded-2xl overflow-hidden;
+    @apply rounded-xl overflow-hidden;
   }
 
   .uid-input {

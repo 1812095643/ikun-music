@@ -6,9 +6,7 @@
         <section class="hero-section relative overflow-hidden rounded-tl-2xl">
           <!-- 背景模糊效果 -->
           <div class="hero-bg absolute inset-0 -top-20">
-            <div
-              class="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 blur-3xl opacity-50 dark:opacity-30"
-            ></div>
+            <div class="absolute inset-0 bg-primary/10 blur-2xl opacity-30 dark:opacity-20"></div>
             <div
               class="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white dark:via-black/80 dark:to-black"
             ></div>

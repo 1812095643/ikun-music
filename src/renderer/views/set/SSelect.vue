@@ -32,7 +32,7 @@
     >
       <div
         v-if="isOpen"
-        class="absolute z-50 mt-1.5 w-full min-w-[160px] overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-900"
+        class="absolute z-50 mt-1.5 w-full min-w-[160px] overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm dark:border-neutral-700 dark:bg-neutral-900"
         :class="dropdownPosition === 'top' ? 'bottom-full mb-1.5 mt-0' : ''"
       >
         <div class="max-h-[240px] overflow-y-auto py-1">

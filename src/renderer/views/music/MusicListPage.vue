@@ -25,14 +25,14 @@
                 <!-- Playlist Cover -->
                 <div class="cover-wrapper relative group">
                   <div
-                    class="cover-glow absolute -inset-2 rounded-2xl bg-gradient-to-br from-primary/30 via-primary/10 to-transparent blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    class="cover-glow absolute -inset-1 rounded-xl bg-primary/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   ></div>
                   <div
-                    class="cover-container relative w-48 h-48 md:w-64 md:h-64 rounded-2xl overflow-hidden shadow-2xl ring-4 ring-white/50 dark:ring-neutral-800/50"
+                    class="cover-container relative w-48 h-48 md:w-64 md:h-64 rounded-xl overflow-hidden shadow-md ring-1 ring-black/5 dark:ring-white/10"
                   >
                     <n-image
                       :src="getImgUrl(getCoverImgUrl, '500y500')"
-                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       preview-disabled
                     />
                     <!-- Play overlay on cover -->
@@ -44,7 +44,7 @@
                       <button
                         v-if="!isMobile"
                         type="button"
-                        class="play-icon w-16 h-16 rounded-full bg-white/90 flex items-center justify-center opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 shadow-xl hover:scale-110 active:scale-95 pointer-events-auto"
+                        class="play-icon w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md hover:-translate-y-0.5 active:translate-y-0 pointer-events-auto"
                         @click.stop="handlePlayAll"
                       >
                         <i class="ri-play-fill text-3xl text-neutral-900 ml-1" />
@@ -121,7 +121,7 @@
             <div class="flex items-center gap-3">
               <!-- Play All Button -->
               <button
-                class="play-all-btn flex items-center gap-1.5 md:gap-2 px-3.5 md:px-6 py-1.5 md:py-2.5 rounded-full bg-primary hover:bg-primary/90 text-white font-semibold text-xs md:text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-primary/25"
+                class="play-all-btn flex items-center gap-1.5 md:gap-2 px-3.5 md:px-5 py-1.5 md:py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-xs md:text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-sm shadow-primary/20"
                 @click="handlePlayAll"
               >
                 <i class="ri-play-circle-line text-base md:text-lg" />
@@ -131,7 +131,7 @@
               <!-- Collect Button -->
               <button
                 v-if="canCollect"
-                class="action-btn-pill flex items-center gap-1.5 md:gap-2 px-3.5 md:px-6 py-1.5 md:py-2.5 rounded-full font-semibold text-xs md:text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm border"
+                class="action-btn-pill flex items-center gap-1.5 md:gap-2 px-3.5 md:px-5 py-1.5 md:py-2.5 rounded-lg font-semibold text-xs md:text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-sm border"
                 :class="
                   isCollected
                     ? 'bg-neutral-100 dark:bg-neutral-800 text-red-500 border-neutral-200 dark:border-neutral-700'

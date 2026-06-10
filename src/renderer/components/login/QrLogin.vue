@@ -225,13 +225,13 @@ onUnmounted(() => {
 }
 
 .qr-img {
-  @apply w-full h-full rounded-2xl transition-all duration-300;
+  @apply w-full h-full rounded-xl transition-all duration-300;
   object-fit: cover;
 }
 
 .expired-overlay {
   @apply absolute inset-0 flex flex-col items-center justify-center;
-  @apply bg-black bg-opacity-50 rounded-2xl;
+  @apply bg-black bg-opacity-50 rounded-xl;
 
   .expired-text {
     @apply text-white text-sm mb-3;
@@ -244,7 +244,7 @@ onUnmounted(() => {
 
 .scanned-overlay {
   @apply absolute inset-0 flex flex-col items-center justify-center;
-  @apply bg-green-500 bg-opacity-80 rounded-2xl;
+  @apply bg-primary bg-opacity-80 rounded-xl;
 
   .scanned-icon {
     @apply text-white text-4xl font-bold mb-2;
