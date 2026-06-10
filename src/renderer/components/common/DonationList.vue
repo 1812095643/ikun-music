@@ -19,7 +19,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 max-w-3xl mx-auto">
       <!-- 支付宝 -->
       <div
-        class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-black border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-primary/10"
+        class="pay-card group relative overflow-hidden rounded-lg border border-primary/15 p-6 flex flex-col items-center transition-colors"
       >
         <div
           class="absolute -right-4 -top-4 w-24 h-24 rounded-lg bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
@@ -33,7 +33,7 @@
 
       <!-- 微信支付 -->
       <div
-        class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-black border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-primary/10"
+        class="pay-card group relative overflow-hidden rounded-lg border border-primary/15 p-6 flex flex-col items-center transition-colors"
       >
         <div
           class="absolute -right-4 -top-4 w-24 h-24 rounded-lg bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
@@ -237,5 +237,14 @@ onActivated(() => fetchDonors());
 
 .donation-name-link {
   border-bottom: 1px dashed var(--qqm-border);
+}
+
+.pay-card {
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 94%, transparent);
+}
+
+.pay-card:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

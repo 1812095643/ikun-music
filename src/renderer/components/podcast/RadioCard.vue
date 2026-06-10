@@ -38,7 +38,7 @@ const goToDetail = () => {
         class="absolute inset-0 bg-transparent group-hover:bg-black/18 transition-colors duration-200 flex items-center justify-center"
       >
         <div
-          class="w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          class="radio-play-icon w-10 h-10 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
         >
           <i class="ri-play-fill text-2xl text-neutral-900 ml-0.5"></i>
         </div>
@@ -86,5 +86,15 @@ const goToDetail = () => {
 
 .group:hover .radio-card-cover {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+}
+
+.radio-play-icon {
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 68%, #fff 32%);
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 90%, transparent);
+  color: var(--qqm-text, #1f2329);
+}
+
+.radio-play-icon:hover {
+  color: var(--qqm-primary, #22c55e);
 }
 </style>

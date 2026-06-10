@@ -576,7 +576,10 @@ const setMusicFull = () => {
 
 // 播放列表样式
 .playlist-container {
-  @apply fixed left-0 right-0 bg-white dark:bg-black overflow-hidden;
+  @apply fixed left-0 right-0 overflow-hidden;
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 92%, transparent);
+  backdrop-filter: blur(14px) saturate(1.08);
   top: 64px;
   height: 330px;
   max-height: 330px;
