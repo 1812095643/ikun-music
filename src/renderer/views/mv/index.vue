@@ -28,7 +28,7 @@
         >
           <!-- Cover Image -->
           <div
-            class="relative aspect-video overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 transition-colors duration-200 dark:border-neutral-800 dark:bg-neutral-900"
+            class="mv-cover relative aspect-video overflow-hidden rounded-lg transition-colors duration-200"
           >
             <img
               :src="getImgUrl(item.cover, '400y225')"
@@ -42,7 +42,7 @@
               class="absolute inset-0 bg-transparent group-hover:bg-black/15 transition-colors duration-200 flex items-center justify-center"
             >
               <div
-                class="play-icon w-10 h-10 rounded-lg bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 ring-1 ring-black/5"
+                class="play-icon flex h-10 w-10 items-center justify-center rounded-full bg-white/95 opacity-0 ring-1 ring-black/5 transition-opacity duration-200 group-hover:opacity-100"
               >
                 <i class="ri-play-fill text-2xl text-neutral-900 ml-1"></i>
               </div>
@@ -50,7 +50,7 @@
 
             <!-- Play Count Badge -->
             <div
-              class="absolute top-3 right-3 px-2 py-1 rounded-md bg-neutral-950/70 text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              class="absolute right-3 top-3 flex items-center gap-1 rounded-md bg-neutral-950/60 px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
             >
               <i class="ri-play-fill"></i>
               {{ formatNumber(item.playCount) }}
@@ -251,15 +251,16 @@ const isPrevDisabled = computed(() => currentIndex.value === 0);
   border-radius: 10px;
   transition: color 160ms var(--qqm-ease);
 
-  > div:first-child {
+  .mv-cover {
     border: 1px solid var(--qqm-border);
+    background: var(--qqm-surface-2);
     box-shadow: none;
   }
 
   &:hover {
-    > div:first-child {
-      border-color: rgba(30, 207, 115, 0.18);
-      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, transparent);
+    .mv-cover {
+      border-color: color-mix(in srgb, var(--qqm-primary) 16%, var(--qqm-border));
+      background: color-mix(in srgb, var(--qqm-primary-soft) 20%, var(--qqm-surface-2));
     }
 
     h3 {

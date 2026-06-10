@@ -466,7 +466,7 @@ onMounted(() => {
 
     .heatmap-container {
       @apply rounded-lg p-6;
-      background: color-mix(in srgb, var(--qqm-surface) 96%, transparent);
+      background: var(--qqm-surface);
       border: 1px solid var(--qqm-border);
       box-shadow: none;
       .custom-heatmap {
@@ -482,7 +482,7 @@ onMounted(() => {
 
         .stat-card {
           @apply flex items-start gap-4 p-4 rounded-lg;
-          background: color-mix(in srgb, var(--qqm-surface) 98%, transparent);
+          background: var(--qqm-surface);
           border: 1px solid var(--qqm-border);
           @apply transition-colors duration-200;
 
@@ -494,9 +494,10 @@ onMounted(() => {
           .stat-icon {
             @apply flex items-center justify-center;
             @apply w-12 h-12 rounded-lg;
-            background: var(--qqm-primary);
-            @apply text-white text-2xl;
-            border: 1px solid color-mix(in srgb, #fff 42%, transparent);
+            background: color-mix(in srgb, var(--qqm-primary-soft) 48%, transparent);
+            color: var(--qqm-primary);
+            @apply text-2xl;
+            border: 1px solid color-mix(in srgb, var(--qqm-primary) 16%, transparent);
 
             .iconfont {
               @apply text-2xl;
@@ -505,7 +506,7 @@ onMounted(() => {
 
           &:nth-child(2) .stat-icon,
           &:nth-child(3) .stat-icon {
-            background: var(--qqm-primary);
+            background: color-mix(in srgb, var(--qqm-primary-soft) 48%, transparent);
           }
 
           .stat-content {

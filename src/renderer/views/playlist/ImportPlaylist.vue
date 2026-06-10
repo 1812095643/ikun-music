@@ -28,9 +28,7 @@
       <div class="w-full max-w-5xl mx-auto p-6 pb-24">
         <!-- 自定义 Tab 切换 -->
         <div class="flex justify-center mb-8">
-          <div
-            class="bg-white dark:bg-black p-1.5 rounded-lg border border-neutral-100 dark:border-neutral-800 flex gap-1 relative"
-          >
+          <div class="import-tabs relative flex gap-1 rounded-lg p-1.5">
             <div
               v-for="tab in tabs"
               :key="tab.id"
@@ -48,7 +46,7 @@
 
             <!-- 滑动背景 -->
             <div
-              class="absolute top-1.5 bottom-1.5 bg-primary rounded-lg transition-colors duration-200 ease-out"
+              class="absolute bottom-1.5 top-1.5 rounded-md bg-primary transition-colors duration-200 ease-out"
               :style="tabIndicatorStyle"
             ></div>
           </div>
@@ -59,7 +57,7 @@
           <!-- 左侧：输入区域 -->
           <div class="lg:col-span-2 space-y-6">
             <div
-              class="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-100 dark:border-neutral-800 overflow-hidden p-1 transition-colors duration-200"
+              class="import-main-card overflow-hidden rounded-lg p-1 transition-colors duration-200"
             >
               <!-- 链接导入内容 -->
               <div v-if="currentTab === 'link'" class="p-6 space-y-6">
@@ -68,7 +66,7 @@
                     <input
                       v-model="link.value"
                       :placeholder="t('comp.playlist.import.linkPlaceholder')"
-                      class="w-full bg-white dark:bg-black border border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-lg px-5 py-4 outline-none transition-colors duration-200 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400"
+                      class="import-field w-full rounded-lg px-5 py-4 text-neutral-900 outline-none transition-colors duration-200 placeholder-neutral-400 dark:text-neutral-100"
                     />
                     <button
                       v-if="linkInputs.length > 1"
@@ -95,7 +93,7 @@
                   v-model="textInput"
                   :placeholder="t('comp.playlist.import.textPlaceholder')"
                   rows="12"
-                  class="w-full bg-white dark:bg-black border border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-lg px-5 py-4 outline-none transition-colors duration-200 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 font-mono text-sm resize-none"
+                  class="import-field w-full resize-none rounded-lg px-5 py-4 font-mono text-sm text-neutral-900 outline-none transition-colors duration-200 placeholder-neutral-400 dark:text-neutral-100"
                 ></textarea>
                 <div class="flex items-center gap-2 text-xs text-neutral-400 px-2">
                   <i class="ri-information-line"></i>
@@ -117,17 +115,17 @@
                     <input
                       v-model="item.name"
                       :placeholder="t('comp.playlist.import.songNamePlaceholder')"
-                      class="flex-1 bg-white dark:bg-black border-transparent focus:border-primary/50 rounded-lg px-4 py-2.5 outline-none text-sm transition-colors border-2"
+                      class="import-field flex-1 rounded-lg px-4 py-2.5 text-sm outline-none transition-colors"
                     />
                     <input
                       v-model="item.artist"
                       :placeholder="t('comp.playlist.import.artistNamePlaceholder')"
-                      class="flex-1 bg-white dark:bg-black border-transparent focus:border-primary/50 rounded-lg px-4 py-2.5 outline-none text-sm transition-colors border-2"
+                      class="import-field flex-1 rounded-lg px-4 py-2.5 text-sm outline-none transition-colors"
                     />
                     <input
                       v-model="item.album"
                       :placeholder="t('comp.playlist.import.albumNamePlaceholder')"
-                      class="flex-1 bg-white dark:bg-black border-transparent focus:border-primary/50 rounded-lg px-4 py-2.5 outline-none text-sm transition-colors border-2"
+                      class="import-field flex-1 rounded-lg px-4 py-2.5 text-sm outline-none transition-colors"
                     />
                     <button
                       v-if="localMetadata.length > 1"
@@ -149,9 +147,7 @@
             </div>
 
             <!-- 帮助提示 (根据 Tab 变化) -->
-            <div
-              class="bg-primary/5 dark:bg-primary/10 rounded-lg p-5 border border-primary/10 dark:border-primary/15"
-            >
+            <div class="import-tip-card rounded-lg p-5">
               <div class="flex gap-3">
                 <div class="mt-0.5 text-primary">
                   <i class="ri-lightbulb-flash-line text-lg"></i>
@@ -175,9 +171,7 @@
           <!-- 右侧：选项与操作 -->
           <div class="space-y-6">
             <!-- 选项卡片 -->
-            <div
-              class="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-100 dark:border-neutral-800 p-6"
-            >
+            <div class="import-side-card rounded-lg p-6">
               <h3
                 class="font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2"
               >
@@ -188,17 +182,13 @@
               <div class="space-y-4">
                 <!-- 导入到星标歌单开关 -->
                 <div
-                  class="flex items-center justify-between p-4 rounded-lg cursor-pointer transition-colors border"
-                  :class="
-                    importToStarPlaylist
-                      ? 'bg-primary/5 border-primary/50'
-                      : 'bg-white dark:bg-black border-transparent hover:bg-primary/5 dark:hover:bg-primary/10'
-                  "
+                  class="import-option-row flex cursor-pointer items-center justify-between rounded-lg p-4 transition-colors"
+                  :class="importToStarPlaylist ? 'is-active' : ''"
                   @click="importToStarPlaylist = !importToStarPlaylist"
                 >
                   <div class="flex items-center gap-3">
                     <div
-                      class="w-10 h-10 rounded-lg bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 flex items-center justify-center text-lg"
+                      class="import-option-icon flex h-10 w-10 items-center justify-center rounded-lg text-lg"
                       :class="importToStarPlaylist ? 'text-primary' : 'text-neutral-400'"
                     >
                       <i class="ri-heart-3-fill" v-if="importToStarPlaylist"></i>
@@ -231,7 +221,7 @@
                   <input
                     v-model="playlistName"
                     :placeholder="t('comp.playlist.import.playlistNamePlaceholder')"
-                    class="w-full bg-white dark:bg-black border border-transparent focus:border-primary/50 rounded-lg pl-11 pr-4 py-3.5 outline-none transition-colors text-sm text-neutral-900 dark:text-neutral-100"
+                    class="import-field w-full rounded-lg py-3.5 pl-11 pr-4 text-sm text-neutral-900 outline-none transition-colors dark:text-neutral-100"
                   />
                 </div>
               </div>
@@ -254,9 +244,7 @@
 
             <!-- 状态反馈 -->
             <div v-if="taskId">
-              <div
-                class="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-100 dark:border-neutral-800 p-6"
-              >
+              <div class="import-status-card rounded-lg p-6">
                 <div class="flex items-center justify-between mb-4">
                   <h3
                     class="font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2"
@@ -277,7 +265,7 @@
                           taskStatus === 'processing' ||
                           taskStatus === 'pending' ||
                           taskStatus === 'success',
-                        'bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300':
+                        'bg-[var(--qqm-surface-2)] text-neutral-500 dark:text-neutral-300':
                           taskStatus === 'failed'
                       }"
                     >
@@ -501,3 +489,43 @@ onUnmounted(() => {
   if (statusCheckInterval.value) clearInterval(statusCheckInterval.value);
 });
 </script>
+
+<style scoped lang="scss">
+.import-tabs,
+.import-main-card,
+.import-side-card,
+.import-status-card {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.import-tip-card {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary) 14%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary-soft) 24%, var(--qqm-surface));
+}
+
+.import-field {
+  border: 1px solid transparent;
+  background: var(--qqm-surface-2);
+}
+
+.import-field:focus {
+  border-color: color-mix(in srgb, var(--qqm-primary) 36%, transparent);
+  background: var(--qqm-surface);
+}
+.import-option-row {
+  border: 1px solid transparent;
+  background: var(--qqm-surface-2);
+}
+
+.import-option-row:hover,
+.import-option-row.is-active {
+  border-color: color-mix(in srgb, var(--qqm-primary) 24%, transparent);
+  background: color-mix(in srgb, var(--qqm-primary-soft) 28%, var(--qqm-surface));
+}
+
+.import-option-icon {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+</style>
