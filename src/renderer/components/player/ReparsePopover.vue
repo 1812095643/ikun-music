@@ -13,13 +13,13 @@
         <template #trigger>
           <i
             class="iconfont ri-refresh-line"
-            :class="{ 'text-green-500': isReparse, 'animate-spin': isReparsing }"
+            :class="{ 'text-primary': isReparse, 'animate-spin': isReparsing }"
           ></i>
         </template>
         {{ t('player.playBar.reparse') }}
       </n-tooltip>
     </template>
-    <div class="reparse-popover bg-light-100 dark:bg-dark-100 p-4 rounded-xl max-w-60">
+    <div class="reparse-popover bg-light-100 dark:bg-dark-100 p-4 rounded-lg max-w-60">
       <div class="text-base font-medium mb-2">{{ t('player.reparse.title') }}</div>
       <div class="text-sm opacity-70 mb-3">{{ t('player.reparse.desc') }}</div>
       <div class="mb-3 max-h-80 overflow-y-auto">
@@ -33,13 +33,13 @@
             <div
               v-for="source in group.sources"
               :key="source.id"
-              class="source-button flex items-center p-2 rounded-lg transition-all duration-200"
+              class="source-button flex items-center p-2 rounded-lg transition-colors duration-200"
               :class="[
                 source.available
                   ? 'cursor-pointer bg-light-200 dark:bg-dark-200 hover:bg-light-300 dark:hover:bg-dark-300'
                   : 'opacity-40 cursor-not-allowed bg-light-200 dark:bg-dark-200',
                 {
-                  'bg-green-50 dark:bg-green-900/20 text-green-500': isCurrentSource(source.id),
+                  'bg-primary/10 dark:bg-primary/15 text-primary': isCurrentSource(source.id),
                   'opacity-50 cursor-not-allowed': isReparsing && source.available
                 }
               ]"
@@ -313,7 +313,7 @@ watch(
 
 <style lang="scss" scoped>
 .music-source-popover {
-  @apply w-64 rounded-xl overflow-hidden;
+  @apply w-64 rounded-lg overflow-hidden;
 }
 
 @keyframes spin {

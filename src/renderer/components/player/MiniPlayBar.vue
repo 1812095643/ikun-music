@@ -21,7 +21,7 @@
           <span
             v-for="(artists, artistsindex) in artistList"
             :key="artistsindex"
-            class="cursor-pointer hover:text-green-500"
+            class="cursor-pointer hover:text-primary"
             @click.stop="handleArtistClick(artists.id)"
           >
             {{ artists.name }}{{ artistsindex < artistList.length - 1 ? ' / ' : '' }}
@@ -329,7 +329,7 @@ const setMusicFull = () => {
 
 <style lang="scss" scoped>
 .mini-play-bar {
-  @apply w-full flex flex-col bg-light-200 dark:bg-dark-200 shadow-md bg-opacity-60 backdrop-blur dark:bg-opacity-60;
+  @apply w-full flex flex-col bg-light-200 dark:bg-dark-200 shadow-sm bg-opacity-60 backdrop-blur dark:bg-opacity-60;
   height: 64px;
   border-radius: 8px;
   position: relative;
@@ -439,7 +439,7 @@ const setMusicFull = () => {
 }
 
 .control-button {
-  @apply flex items-center justify-center rounded-full transition-all duration-200 border-0 bg-transparent cursor-pointer text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200;
+  @apply flex items-center justify-center rounded-full transition-colors duration-200 border-0 bg-transparent cursor-pointer text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200;
   width: 32px;
   height: 32px;
 
@@ -448,9 +448,10 @@ const setMusicFull = () => {
   }
 
   &.play {
-    @apply bg-primary text-white;
+    background-color: var(--qqm-primary, #22c55e);
+    color: white;
     &:hover {
-      @apply bg-green-800;
+      background-color: var(--qqm-primary, #22c55e);
     }
   }
 
@@ -464,7 +465,7 @@ const setMusicFull = () => {
 }
 
 .function-button {
-  @apply flex items-center justify-center rounded-full transition-all duration-200 border-0 bg-transparent cursor-pointer text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200;
+  @apply flex items-center justify-center rounded-full transition-colors duration-200 border-0 bg-transparent cursor-pointer text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200;
   width: 32px;
   height: 32px;
 
@@ -479,7 +480,7 @@ const setMusicFull = () => {
 }
 
 .close-button {
-  @apply flex items-center justify-center rounded-full transition-all duration-200 border-0 bg-transparent cursor-pointer ml-2;
+  @apply flex items-center justify-center rounded-full transition-colors duration-200 border-0 bg-transparent cursor-pointer ml-2;
   width: 32px;
   height: 32px;
   color: var(--text-color-2, #666);
@@ -524,7 +525,7 @@ const setMusicFull = () => {
 }
 
 .volume-slider-wrapper {
-  @apply p-2 py-4 rounded-xl backdrop-blur;
+  @apply p-2 py-4 rounded-lg backdrop-blur;
   background: color-mix(in srgb, var(--qqm-surface, #fff) 82%, transparent);
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
   box-shadow: 0 8px 20px rgba(20, 24, 31, 0.08);
@@ -558,12 +559,12 @@ const setMusicFull = () => {
     }
 
     .n-slider-rail {
-      @apply overflow-hidden transition-all duration-200;
+      @apply overflow-hidden transition-colors duration-200;
       @apply bg-gray-500 dark:bg-dark-300 bg-opacity-10 !important;
     }
 
     .n-slider-handle {
-      @apply transition-all duration-200;
+      @apply transition-colors duration-200;
       opacity: 0;
     }
 

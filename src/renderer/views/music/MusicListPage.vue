@@ -9,7 +9,7 @@
             <!-- Background Image with Blur -->
             <div class="hero-bg absolute inset-0 -top-20">
               <div
-                class="absolute inset-0 bg-cover bg-center scale-105 blur-3xl opacity-40 dark:opacity-30"
+                class="absolute inset-0 bg-cover bg-center opacity-10 dark:opacity-10"
                 :style="{
                   backgroundImage: `url(${getImgUrl(getCoverImgUrl, '800y800')})`
                 }"
@@ -25,26 +25,26 @@
                 <!-- Playlist Cover -->
                 <div class="cover-wrapper relative group">
                   <div
-                    class="cover-glow absolute -inset-1 rounded-xl bg-primary/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    class="cover-glow absolute -inset-px rounded-lg bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   ></div>
                   <div
-                    class="cover-container relative w-48 h-48 md:w-64 md:h-64 rounded-xl overflow-hidden shadow-md ring-1 ring-black/5 dark:ring-white/10"
+                    class="cover-container relative w-48 h-48 md:w-64 md:h-64 rounded-lg overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10"
                   >
                     <n-image
                       :src="getImgUrl(getCoverImgUrl, '500y500')"
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      class="w-full h-full object-cover"
                       preview-disabled
                     />
                     <!-- Play overlay on cover -->
                     <div
-                      class="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/30 transition-all duration-300"
+                      class="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/25 transition-colors duration-200"
                       :class="isMobile ? 'pointer-events-none' : 'cursor-pointer'"
                       @click="!isMobile && handlePlayAll()"
                     >
                       <button
                         v-if="!isMobile"
                         type="button"
-                        class="play-icon w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md hover:-translate-y-0.5 active:translate-y-0 pointer-events-auto"
+                        class="play-icon w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-auto"
                         @click.stop="handlePlayAll"
                       >
                         <i class="ri-play-fill text-3xl text-neutral-900 ml-1" />
@@ -121,7 +121,7 @@
             <div class="flex items-center gap-3">
               <!-- Play All Button -->
               <button
-                class="play-all-btn flex items-center gap-1.5 md:gap-2 px-3.5 md:px-5 py-1.5 md:py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-xs md:text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-sm shadow-primary/20"
+                class="play-all-btn flex items-center gap-1.5 md:gap-2 px-3.5 md:px-5 py-1.5 md:py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-xs md:text-sm transition-colors duration-200"
                 @click="handlePlayAll"
               >
                 <i class="ri-play-circle-line text-base md:text-lg" />
@@ -131,7 +131,7 @@
               <!-- Collect Button -->
               <button
                 v-if="canCollect"
-                class="action-btn-pill flex items-center gap-1.5 md:gap-2 px-3.5 md:px-5 py-1.5 md:py-2.5 rounded-lg font-semibold text-xs md:text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-sm border"
+                class="action-btn-pill flex items-center gap-1.5 md:gap-2 px-3.5 md:px-5 py-1.5 md:py-2.5 rounded-lg font-semibold text-xs md:text-sm transition-colors duration-200 border"
                 :class="
                   isCollected
                     ? 'bg-neutral-100 dark:bg-neutral-800 text-red-500 border-neutral-200 dark:border-neutral-700'
@@ -156,7 +156,7 @@
 
               <button
                 v-if="!isSelecting && isElectron"
-                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
+                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
                 @click="startSelect"
               >
                 <i class="ri-checkbox-multiple-line text-lg" />
@@ -174,7 +174,7 @@
                   {{ t('common.selectAll') }}
                 </n-checkbox>
                 <button
-                  class="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-all"
+                  class="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors"
                   :disabled="selectedSongs.length === 0 || isDownloading"
                   @click="handleBatchDownload"
                 >
@@ -182,7 +182,7 @@
                   {{ t('favorite.download', { count: selectedSongs.length }) }}
                 </button>
                 <button
-                  class="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-all"
+                  class="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors"
                   :disabled="selectedSongs.length === 0"
                   @click="handleAddToPlaylist"
                 >
@@ -208,7 +208,7 @@
                   round
                   clearable
                   size="small"
-                  class="w-48 focus:w-64 transition-all duration-300 !bg-neutral-100 dark:!bg-neutral-900 border-none"
+                  class="w-48 focus:w-64 transition-[width] duration-300 !bg-neutral-100 dark:!bg-neutral-900 border-none"
                 >
                   <template #prefix>
                     <i class="ri-search-line text-neutral-400"></i>
@@ -219,7 +219,7 @@
               <!-- Locate Current Song -->
               <button
                 v-if="currentPlayingIndex >= 0"
-                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
+                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
                 :title="t('comp.musicList.locateCurrent', '定位当前播放')"
                 @click="scrollToCurrentSong"
               >
@@ -229,7 +229,7 @@
               <!-- Layout Toggle -->
               <button
                 v-if="!isMobile"
-                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
+                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
                 @click="toggleLayout"
               >
                 <i :class="isCompactLayout ? 'ri-list-check-2' : 'ri-grid-line'" class="text-lg" />
@@ -894,16 +894,18 @@ onMounted(checkCollectionStatus);
 }
 
 .action-btn-pill {
-  @apply transition-all border-neutral-200 dark:border-neutral-800;
+  @apply transition-colors border-neutral-200 dark:border-neutral-800;
   &:hover:not(:disabled) {
-    @apply border-primary/30 bg-primary/5;
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 30%, transparent);
+    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, transparent);
   }
 }
 
 .action-btn-icon {
-  @apply transition-all;
+  @apply transition-colors;
   &:hover {
-    @apply text-primary bg-primary/10;
+    color: var(--qqm-primary, #22c55e);
+    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
     transform: translateY(-1px);
   }
 }

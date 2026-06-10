@@ -272,7 +272,7 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .history-recommend-page {
-  @apply h-full bg-light-100 dark:bg-dark-100 px-4 mr-2 rounded-xl;
+  @apply h-full bg-light-100 dark:bg-dark-100 px-4 mr-2 rounded-lg;
 }
 
 .music {
@@ -313,7 +313,7 @@ onMounted(() => {
 
   &.hover-green:hover {
     .icon {
-      @apply text-green-500;
+      color: var(--qqm-primary, #22c55e);
     }
   }
 }
@@ -333,7 +333,7 @@ onMounted(() => {
 }
 
 .double-item {
-  @apply w-full mb-2 bg-light-200 bg-opacity-30 dark:bg-dark-200 dark:bg-opacity-20 rounded-xl;
+  @apply w-full mb-2 bg-light-200 bg-opacity-30 dark:bg-dark-200 dark:bg-opacity-20 rounded-lg;
 }
 
 .empty-state {
@@ -349,17 +349,18 @@ onMounted(() => {
 }
 
 :deep(.n-tabs-rail) {
-  @apply rounded-xl overflow-hidden !important;
+  @apply rounded-lg overflow-hidden !important;
   .n-tabs-capsule {
-    @apply rounded-xl !important;
+    @apply rounded-lg !important;
   }
 }
 
 .date-tabs-wrapper {
   :deep(.n-tabs-rail) {
-    @apply rounded-xl overflow-hidden bg-white dark:bg-dark-300 !important;
+    @apply rounded-lg overflow-hidden bg-white dark:bg-dark-300 !important;
     .n-tabs-capsule {
-      @apply rounded-xl bg-green-500 dark:bg-green-600 !important;
+      @apply rounded-lg !important;
+      background-color: var(--qqm-primary, #22c55e) !important;
     }
     .n-tabs-tab--active {
       @apply text-white !important;

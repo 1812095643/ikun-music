@@ -245,7 +245,7 @@ onUnmounted(() => {
 
     // 定时状态卡片
     .timer-status {
-      @apply flex flex-col items-center justify-center p-8 mb-5 w-full rounded-xl;
+      @apply flex flex-col items-center justify-center p-8 mb-5 w-full rounded-lg;
       background: color-mix(in srgb, var(--qqm-surface-muted, #f2f4f5) 72%, transparent);
       border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
       box-shadow: 0 8px 20px rgba(20, 24, 31, 0.06);
@@ -256,7 +256,8 @@ onUnmounted(() => {
 
       // 定时值显示
       .timer-value {
-        @apply text-4xl font-semibold mb-2 text-green-500;
+        @apply text-4xl font-semibold mb-2;
+        color: var(--qqm-primary, #22c55e);
 
         &.countdown-timer {
           font-variant-numeric: tabular-nums;
@@ -272,7 +273,7 @@ onUnmounted(() => {
 
     // 取消按钮
     .cancel-timer-btn {
-      @apply w-full py-3 text-base rounded-lg transition-all duration-200;
+      @apply w-full py-3 text-base rounded-lg transition-colors duration-200;
 
       &:hover {
         transform: translateY(-1px);
@@ -307,7 +308,7 @@ onUnmounted(() => {
         // 选项按钮共享样式
         .time-option-btn,
         .songs-option-btn {
-          @apply px-4 py-2 rounded-lg text-gray-800 dark:text-gray-200 transition-all duration-200;
+          @apply px-4 py-2 rounded-lg text-gray-800 dark:text-gray-200 transition-colors duration-200;
           background: color-mix(in srgb, var(--qqm-surface-muted, #f2f4f5) 70%, transparent);
           border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
           box-shadow: 0 4px 12px rgba(20, 24, 31, 0.04);
@@ -336,7 +337,7 @@ onUnmounted(() => {
           // 设置按钮
           .custom-time-btn,
           .custom-songs-btn {
-            @apply py-2 px-4 rounded-lg transition-all duration-200;
+            @apply py-2 px-4 rounded-lg transition-colors duration-200;
           }
         }
       }
@@ -347,7 +348,7 @@ onUnmounted(() => {
       @apply mt-2;
 
       .playlist-end-btn {
-        @apply py-3 text-base rounded-lg transition-all duration-200;
+        @apply py-3 text-base rounded-lg transition-colors duration-200;
       }
     }
   }

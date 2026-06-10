@@ -97,7 +97,7 @@
             {{ t(`settings.basic.fontPreview.${preview.key}`) }}
           </div>
           <div
-            class="text-lg text-gray-900 dark:text-gray-100 p-3 rounded-xl bg-gray-50 dark:bg-black/20"
+            class="text-lg text-gray-900 dark:text-gray-100 p-3 rounded-lg bg-gray-50 dark:bg-black/20"
           >
             {{ t(`settings.basic.fontPreview.${preview.key}Text`) }}
           </div>

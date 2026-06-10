@@ -17,7 +17,7 @@
         :placeholder="placeholder"
         :disabled="disabled"
         inputmode="decimal"
-        class="w-full rounded-[10px] border border-neutral-200 bg-neutral-50 py-1.5 pl-3 text-sm text-neutral-900 transition-all duration-200 outline-none placeholder:text-neutral-400 focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:bg-neutral-900"
+        class="w-full rounded-lg border border-neutral-200 bg-neutral-50 py-1.5 pl-3 text-sm text-neutral-900 transition-colors duration-200 outline-none placeholder:text-neutral-400 focus:border-primary focus:bg-white disabled:opacity-50 disabled:cursor-not-allowed dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:bg-neutral-900"
         :class="[type === 'number' && !suffix ? 'text-center pr-3' : '', suffix ? 'pr-10' : 'pr-3']"
         @input="handleInput"
         @blur="handleBlur"

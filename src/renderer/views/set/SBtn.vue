@@ -1,7 +1,7 @@
 <template>
   <button
     :disabled="disabled || loading"
-    class="inline-flex items-center justify-center gap-1.5 rounded-[10px] px-3.5 py-1.5 text-sm font-medium transition-all duration-200 select-none disabled:opacity-50 disabled:cursor-not-allowed active:translate-y-0"
+    class="inline-flex items-center justify-center gap-1.5 rounded-lg px-3.5 py-1.5 text-sm font-medium transition-colors duration-200 select-none disabled:opacity-50 disabled:cursor-not-allowed active:translate-y-0"
     :class="variantClass"
     @click="$emit('click', $event)"
   >
@@ -33,7 +33,7 @@ defineEmits<{ click: [event: MouseEvent] }>();
 const variantClass = computed(() => {
   switch (props.variant) {
     case 'primary':
-      return 'bg-primary text-white hover:bg-primary/85 shadow-sm shadow-primary/20';
+      return 'bg-primary text-white hover:bg-primary/85';
     case 'danger':
       return 'bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-950/60';
     case 'ghost':

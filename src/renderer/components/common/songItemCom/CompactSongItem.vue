@@ -17,7 +17,7 @@
       <div
         v-if="index !== undefined"
         class="song-item-index"
-        :class="{ 'text-green-500': isPlaying }"
+        :class="{ 'text-primary': isPlaying }"
       >
         {{ index + 1 }}
       </div>
@@ -35,11 +35,7 @@
       <div class="song-item-content-compact">
         <div class="song-item-content-compact-wrapper">
           <div class="song-item-content-compact-title">
-            <n-ellipsis
-              class="text-ellipsis"
-              line-clamp="1"
-              :class="{ 'text-green-500': isPlaying }"
-            >
+            <n-ellipsis class="text-ellipsis" line-clamp="1" :class="{ 'text-primary': isPlaying }">
               {{ item.name }}
             </n-ellipsis>
           </div>
@@ -47,7 +43,7 @@
             <n-ellipsis line-clamp="1">
               <template v-for="(artist, index) in artists" :key="index">
                 <span
-                  class="cursor-pointer hover:text-green-500"
+                  class="cursor-pointer hover:text-primary"
                   @click.stop="onArtistClick(artist.id)"
                   >{{ artist.name }}</span
                 >
@@ -82,7 +78,7 @@
         <div
           class="song-item-operating-play animate__animated"
           :class="{
-            'bg-green-600': isPlaying,
+            'bg-primary': isPlaying,
             animate__flipInY: playLoading,
             'opacity-0': !isHovering && !isPlaying
           }"
@@ -178,7 +174,7 @@ const formatDuration = (ms: number): string => {
 
 <style lang="scss" scoped>
 .compact-song-item {
-  @apply rounded-xl p-2 h-12 mb-1 border-b dark:border-gray-800 border-gray-100;
+  @apply rounded-lg p-2 h-12 mb-1 border-b dark:border-gray-800 border-gray-100;
 
   &:hover {
     @apply bg-gray-50 dark:bg-gray-700;
@@ -233,8 +229,10 @@ const formatDuration = (ms: number): string => {
       @apply w-7 h-7 flex items-center justify-center cursor-pointer rounded-full bg-gray-300 dark:bg-gray-800 border dark:border-gray-700 border-gray-200 text-gray-900 dark:text-white;
 
       &:hover,
-      &.bg-green-600 {
-        @apply bg-green-500 border-green-500 text-white;
+      &.bg-primary {
+        background-color: var(--qqm-primary, #22c55e);
+        border-color: var(--qqm-primary, #22c55e);
+        color: white;
       }
 
       .iconfont {
@@ -257,7 +255,10 @@ const formatDuration = (ms: number): string => {
       @apply cursor-pointer flex items-center justify-center px-2;
 
       .iconfont {
-        @apply text-xl transition text-gray-500 dark:text-gray-400 hover:text-green-500;
+        @apply text-xl transition text-gray-500 dark:text-gray-400;
+        &:hover {
+          color: var(--qqm-primary, #22c55e);
+        }
       }
     }
 

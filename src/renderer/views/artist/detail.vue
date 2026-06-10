@@ -68,19 +68,19 @@
                     class="avatar-glow absolute -inset-1 rounded-full bg-primary/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   />
                   <div
-                    class="avatar-container relative w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden shadow-md ring-1 ring-black/5 dark:ring-white/10"
+                    class="avatar-container relative w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10"
                   >
                     <img
                       :src="getImgUrl(artistInfo.cover || artistInfo.picUrl, '500y500')"
                       :alt="artistInfo.name"
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      class="w-full h-full object-cover"
                     />
                     <!-- Play overlay on avatar -->
                     <div
-                      class="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-all duration-300"
+                      class="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/25 transition-colors duration-200"
                     >
                       <div
-                        class="play-icon w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                        class="play-icon w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
                         @click="handlePlayAll"
                       >
                         <i class="iconfont icon-playfill text-2xl text-neutral-900 ml-1" />
@@ -143,7 +143,7 @@
               <div class="flex items-center gap-2 md:gap-3">
                 <!-- Play All Button -->
                 <button
-                  class="play-all-btn flex items-center gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-sm shadow-primary/20"
+                  class="play-all-btn flex items-center gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-colors duration-200"
                   @click="handlePlayAll"
                 >
                   <i class="iconfont icon-playfill text-lg" />
@@ -152,7 +152,7 @@
 
                 <!-- Add to Playlist Button -->
                 <button
-                  class="add-btn flex items-center justify-center w-10 h-10 md:w-auto md:h-auto md:px-4 md:py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-medium text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                  class="add-btn flex items-center justify-center w-10 h-10 md:w-auto md:h-auto md:px-4 md:py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-medium text-sm transition-colors duration-200"
                   @click="addToPlaylist"
                 >
                   <i class="iconfont icon-add text-lg" />
@@ -165,7 +165,7 @@
                 <!-- Search Toggle -->
                 <button
                   v-if="activeTab === 'songs'"
-                  class="action-btn w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                  class="action-btn w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-200"
                   :class="
                     isSearchVisible
                       ? 'bg-primary/10 dark:bg-primary/20 text-primary'
@@ -179,7 +179,7 @@
                 <!-- Layout Toggle (Desktop only) -->
                 <button
                   v-if="activeTab === 'songs' && !isMobile"
-                  class="action-btn w-10 h-10 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                  class="action-btn w-10 h-10 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors duration-200"
                   :title="
                     isCompactLayout
                       ? t('comp.musicList.switchToNormal')
@@ -226,7 +226,7 @@
               <button
                 v-for="tab in tabs"
                 :key="tab.value"
-                class="tab-item relative px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200"
+                class="tab-item relative px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm font-medium transition-colors duration-200"
                 :class="
                   activeTab === tab.value
                     ? 'text-neutral-900 dark:text-white'
@@ -319,15 +319,15 @@
                     <img
                       :src="getImgUrl(album.picUrl, '500y500')"
                       :alt="album.name"
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      class="w-full h-full object-cover"
                       loading="lazy"
                     />
                     <!-- Play Overlay -->
                     <div
-                      class="play-overlay absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/20 group-hover:opacity-100 transition-all duration-300"
+                      class="play-overlay absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/20 group-hover:opacity-100 transition-opacity duration-200"
                     >
                       <div
-                        class="play-icon w-12 h-12 rounded-full bg-white/90 flex items-center justify-center translate-y-1 group-hover:translate-y-0 transition-transform duration-300 shadow-md"
+                        class="play-icon w-12 h-12 rounded-full bg-white/90 flex items-center justify-center transition-opacity duration-200"
                       >
                         <i class="iconfont icon-playfill text-xl text-neutral-900 ml-0.5" />
                       </div>
@@ -1053,7 +1053,7 @@ const formatSong = (item: any) => {
 }
 
 .album-card:hover .album-cover {
-  @apply shadow-md shadow-primary/10;
+  @apply shadow-sm;
 }
 
 /* Mobile Optimizations */

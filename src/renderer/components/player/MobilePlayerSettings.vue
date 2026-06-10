@@ -11,7 +11,7 @@
 
         <!-- 弹窗内容 - 磨砂玻璃效果 -->
         <div
-          class="mobile-player-settings-panel relative w-full max-w-lg bg-gray-900/70 backdrop-blur-2xl rounded-t-xl overflow-hidden max-h-[85vh] flex flex-col border-t border-white/10 shadow-md shadow-black/10"
+          class="mobile-player-settings-panel relative w-full max-w-lg bg-gray-900/70 backdrop-blur-xl rounded-t-lg overflow-hidden max-h-[85vh] flex flex-col border-t border-white/10 shadow-sm shadow-black/10"
         >
           <!-- 顶部拖拽条 -->
           <div class="flex justify-center pt-3 pb-2 flex-shrink-0">
@@ -52,7 +52,7 @@
                   class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                   :class="
                     playbackRate === option
-                      ? 'bg-green-500 text-white'
+                      ? 'bg-primary text-white'
                       : 'bg-white/10 text-white/70 hover:bg-white/15'
                   "
                 >
@@ -77,7 +77,7 @@
 
               <!-- 已激活状态 -->
               <div v-if="hasTimerActive" class="space-y-3">
-                <div class="p-4 rounded-xl bg-green-500/15 border border-green-500/30">
+                <div class="p-4 rounded-lg bg-primary/15 border border-primary/30">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                       <i class="ri-timer-line text-green-400 text-xl"></i>
@@ -140,7 +140,7 @@
                     <button
                       @click="setCustomTimeTimer"
                       :disabled="!customMinutes || Number(customMinutes) < 1"
-                      class="px-4 py-2 rounded-lg text-sm font-medium bg-green-500 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                      class="px-4 py-2 rounded-lg text-sm font-medium bg-primary text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {{ t('player.sleepTimer.set') }}
                     </button>

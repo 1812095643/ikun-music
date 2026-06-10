@@ -429,12 +429,12 @@ onMounted(() => {
     user-select: none;
 
     .progress-track {
-      @apply absolute inset-0 rounded-full transition-all duration-150;
+      @apply absolute inset-0 rounded-full transition-colors duration-150;
       background-color: var(--track-color);
     }
 
     .progress-fill {
-      @apply absolute top-0 left-0 h-full rounded-full transition-all duration-150;
+      @apply absolute top-0 left-0 h-full rounded-full transition-[width] duration-150;
       background: linear-gradient(90deg, var(--fill-color), var(--fill-color-light));
       box-shadow: 0 0 8px var(--fill-color-transparent);
     }
@@ -487,7 +487,7 @@ onMounted(() => {
 }
 
 .control-btn {
-  @apply flex items-center justify-center rounded-full outline-none border-0 transition-all duration-200;
+  @apply flex items-center justify-center rounded-full outline-none border-0 transition-colors duration-200;
   color: var(--text-color);
   background: transparent;
   width: 32px;
@@ -591,6 +591,6 @@ onMounted(() => {
 }
 
 .intelligence-active {
-  @apply text-green-500;
+  color: var(--qqm-primary, #22c55e);
 }
 </style>

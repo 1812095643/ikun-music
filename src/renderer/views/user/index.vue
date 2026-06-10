@@ -537,7 +537,6 @@ const currentLoginType = computed(() => userStore.loginType);
         &:hover {
           background: color-mix(in srgb, var(--qqm-surface-muted) 72%, transparent);
           border-color: rgba(30, 207, 115, 0.14);
-          transform: translateY(-1px);
         }
       }
 
@@ -558,7 +557,7 @@ const currentLoginType = computed(() => userStore.loginType);
 }
 
 .play-list {
-  @apply mt-4 py-4 px-2 rounded-xl flex-1 overflow-hidden;
+  @apply mt-4 py-4 px-2 rounded-lg flex-1 overflow-hidden;
   background: color-mix(in srgb, var(--qqm-surface) 68%, transparent);
   border: 1px solid rgba(255, 255, 255, 0.55);
   box-shadow: var(--qqm-shadow);
@@ -571,13 +570,12 @@ const currentLoginType = computed(() => userStore.loginType);
 
   &-item {
     @apply flex items-center px-2 py-2 rounded-lg cursor-pointer w-full;
-    @apply transition-all duration-200;
+    @apply transition-colors duration-200;
     @apply hover:bg-light-200 dark:hover:bg-dark-200;
     border: 1px solid transparent;
 
     &:hover {
       border-color: rgba(30, 207, 115, 0.14);
-      transform: translateY(-1px);
     }
 
     &-img {
@@ -596,8 +594,10 @@ const currentLoginType = computed(() => userStore.loginType);
 
       .playlist-creator-tag {
         @apply inline-flex items-center justify-center px-2 rounded-md text-xs;
-        @apply bg-light-300 text-primary dark:bg-dark-300 dark:text-white;
-        @apply border border-primary/20 dark:border-primary/30;
+        @apply bg-light-300 dark:bg-dark-300 dark:text-white;
+        color: var(--qqm-primary, #22c55e);
+        @apply border;
+        border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
         height: 18px;
         font-size: 10px;
         font-weight: 500;
@@ -614,7 +614,8 @@ const currentLoginType = computed(() => userStore.loginType);
 }
 
 .login-type {
-  @apply text-sm text-green-500 dark:text-green-400;
+  @apply text-sm;
+  color: var(--qqm-primary, #22c55e);
 }
 
 .mobile {

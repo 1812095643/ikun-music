@@ -32,12 +32,12 @@
         >
           <!-- Cover Image -->
           <div
-            class="relative aspect-square overflow-hidden rounded-xl shadow-sm group-hover:shadow-md transition-all duration-300"
+            class="relative aspect-square overflow-hidden rounded-lg shadow-sm transition-colors duration-200"
           >
             <img
               :src="getImgUrl(album.picUrl, '400y400')"
               :alt="album.name"
-              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              class="w-full h-full object-cover"
               loading="lazy"
               crossorigin="anonymous"
             />
@@ -47,7 +47,7 @@
               class="absolute inset-0 bg-transparent group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center"
             >
               <div
-                class="play-icon w-12 h-12 rounded-full bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md"
+                class="play-icon w-12 h-12 rounded-full bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                 @click.stop="playAlbum(album)"
               >
                 <i class="ri-play-fill text-2xl text-neutral-900 ml-1"></i>

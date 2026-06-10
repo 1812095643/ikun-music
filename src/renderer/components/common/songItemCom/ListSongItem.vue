@@ -40,7 +40,7 @@
           <n-ellipsis
             class="song-item-content-title text-ellipsis"
             line-clamp="1"
-            :class="{ 'text-green-500': isPlaying }"
+            :class="{ 'text-primary': isPlaying }"
           >
             {{ item.name }}
           </n-ellipsis>
@@ -48,7 +48,7 @@
           <n-ellipsis class="song-item-content-name text-ellipsis" line-clamp="1">
             <template v-for="(artist, index) in artists" :key="index">
               <span
-                class="cursor-pointer hover:text-green-500"
+                class="cursor-pointer hover:text-primary"
                 @click.stop="onArtistClick(artist.id)"
                 >{{ artist.name }}</span
               >
@@ -71,7 +71,7 @@
         </div>
         <div
           class="song-item-operating-list-play bg-gray-300 dark:bg-gray-800 animate__animated"
-          :class="{ 'bg-green-600': isPlaying, animate__flipInY: playLoading }"
+          :class="{ 'bg-primary': isPlaying, animate__flipInY: playLoading }"
           @click="onPlayMusic"
         >
           <i v-if="isPlaying && play" class="iconfont icon-stop"></i>
@@ -143,7 +143,7 @@ const onPlayMusic = () => {
 <style lang="scss" scoped>
 .list-song-item {
   padding: 0.5rem; /* p-2 */
-  border-radius: 0.75rem; /* rounded-xl */
+  border-radius: 0.5rem;
   margin-bottom: 0.5rem; /* mb-2 */
   border-width: 1px;
   border-color: rgb(229 231 235); /* border-gray-200 */
@@ -155,7 +155,7 @@ const onPlayMusic = () => {
   .song-item-img {
     width: 2.5rem; /* w-10 */
     height: 2.5rem; /* h-10 */
-    border-radius: 0.75rem; /* rounded-xl */
+    border-radius: 0.5rem;
     margin-right: 0.75rem; /* mr-3 */
   }
 
@@ -238,7 +238,7 @@ const onPlayMusic = () => {
         font-size: 1rem; /* text-base */
       }
 
-      &.bg-green-600 {
+      &.bg-primary {
         background-color: var(--qqm-primary, rgb(34 197 94));
         color: white;
       }

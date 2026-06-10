@@ -215,7 +215,8 @@ const selectSpeed = (speed: number) => {
 
 <style lang="scss" scoped>
 .sleep-timer-countdown {
-  @apply fixed top-0 left-1/2 transform -translate-x-1/2 py-1 px-3 rounded-b-lg bg-green-500 text-white text-sm flex items-center;
+  @apply fixed top-0 left-1/2 transform -translate-x-1/2 py-1 px-3 rounded-b-lg text-white text-sm flex items-center;
+  background-color: var(--qqm-primary, #22c55e);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   z-index: 9998;
   min-width: 80px;
@@ -245,7 +246,9 @@ const selectSpeed = (speed: number) => {
 
   .iconfont {
     @apply text-2xl transition;
-    @apply hover:text-green-500;
+    &:hover {
+      color: var(--qqm-primary, #22c55e);
+    }
   }
 
   .active-indicator {
@@ -253,7 +256,8 @@ const selectSpeed = (speed: number) => {
 
     .timer-badge,
     .speed-badge {
-      @apply flex items-center justify-center text-xs bg-green-500 text-white rounded-full;
+      @apply flex items-center justify-center text-xs text-white rounded-full;
+      background-color: var(--qqm-primary, #22c55e);
       height: 16px;
       min-width: 16px;
       padding: 0 3px;
@@ -274,7 +278,7 @@ const selectSpeed = (speed: number) => {
 .eq-modal-content,
 .timer-modal-content,
 .speed-modal-content {
-  @apply p-6 rounded-xl filter backdrop-blur-sm;
+  @apply p-6 rounded-lg filter backdrop-blur-sm;
   background: color-mix(in srgb, var(--qqm-surface, #fff) 82%, transparent);
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
   box-shadow: 0 12px 28px rgba(20, 24, 31, 0.1);
@@ -301,22 +305,29 @@ const selectSpeed = (speed: number) => {
     @apply mt-4;
   }
   .speed-option {
-    @apply py-2 px-4 rounded-lg cursor-pointer transition-all;
+    @apply py-2 px-4 rounded-lg cursor-pointer transition-colors;
     @apply bg-gray-100 dark:bg-gray-800;
-    @apply hover:bg-green-100 dark:hover:bg-green-900;
+    &:hover {
+      background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
+    }
   }
   .speed-option.active {
-    @apply bg-green-500 text-white;
+    background-color: var(--qqm-primary, #22c55e);
+    color: white;
   }
 }
 
 .active-option-mark {
-  @apply ml-2 text-xs bg-green-500 text-white py-0.5 px-1.5 rounded-full;
+  @apply ml-2 text-xs text-white py-0.5 px-1.5 rounded-full;
+  background-color: var(--qqm-primary, #22c55e);
   font-weight: 500;
 }
 
 .modal-close {
-  @apply absolute top-4 right-4 cursor-pointer hover:text-green-500;
+  @apply absolute top-4 right-4 cursor-pointer;
+  &:hover {
+    color: var(--qqm-primary, #22c55e);
+  }
   i {
     @apply text-2xl;
   }

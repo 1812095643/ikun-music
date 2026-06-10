@@ -61,19 +61,19 @@
                 <!-- Avatar -->
                 <div class="relative mx-auto w-fit">
                   <div
-                    class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden shadow-sm ring-1 ring-neutral-100 dark:ring-neutral-800 group-hover:ring-primary/30 transition-all duration-300"
+                    class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden shadow-sm ring-1 ring-neutral-100 dark:ring-neutral-800 group-hover:ring-primary/30 transition-colors duration-200"
                   >
                     <img
                       :src="getImgUrl(item.avatarUrl, '100y100')"
                       :alt="item.nickname"
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      class="w-full h-full object-cover"
                       loading="lazy"
                     />
                   </div>
                   <!-- Artist Badge -->
                   <div
                     v-if="isArtist(item)"
-                    class="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-white dark:bg-neutral-800 flex items-center justify-center shadow-md"
+                    class="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-white dark:bg-neutral-800 flex items-center justify-center shadow-sm"
                   >
                     <i class="ri-verified-badge-fill text-primary text-sm" />
                   </div>
@@ -106,7 +106,7 @@
             <!-- Load More Button -->
             <div v-else-if="hasMoreFollowers" class="flex justify-center py-8">
               <button
-                class="px-6 py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-sm font-medium text-neutral-700 dark:text-neutral-200 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+                class="px-6 py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-sm font-medium text-neutral-700 dark:text-neutral-200 transition-colors duration-200"
                 @click="loadMoreFollowers"
               >
                 {{ t('user.follower.loadMore') }}

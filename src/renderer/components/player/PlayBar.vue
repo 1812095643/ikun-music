@@ -74,7 +74,7 @@
           <span
             v-for="(artists, artistsindex) in artistList"
             :key="artistsindex"
-            class="cursor-pointer hover:text-green-500"
+            class="cursor-pointer hover:text-primary"
             @click="handleArtistClick(artists.id)"
           >
             {{ artists.name }}{{ artistsindex < artistList.length - 1 ? ' / ' : '' }}
@@ -131,7 +131,7 @@
         <template #trigger>
           <i
             class="iconfont ri-netease-cloud-music-line"
-            :class="{ 'text-green-500': isLyricWindowOpen, 'disabled-icon': !playMusic?.id }"
+            :class="{ 'text-primary': isLyricWindowOpen, 'disabled-icon': !playMusic?.id }"
             @click="playMusic?.id && openLyricWindow()"
           ></i>
         </template>
@@ -150,7 +150,7 @@
       <n-tooltip trigger="hover" :z-index="9999999">
         <template #trigger>
           <i
-            class="iconfont icon-list text-2xl hover:text-green-500 transition-colors cursor-pointer"
+            class="iconfont icon-list text-2xl hover:text-primary transition-colors cursor-pointer"
             @click="openPlayListDrawer"
           ></i>
         </template>
@@ -479,7 +479,7 @@ const openPlayListDrawer = () => {
   }
 
   .volume-slider {
-    @apply absolute opacity-0 invisible transition-all duration-300 bottom-[34px] left-1/2 -translate-x-1/2 h-[168px] px-2 py-4 rounded-lg;
+    @apply absolute opacity-0 invisible transition-opacity duration-200 bottom-[34px] left-1/2 -translate-x-1/2 h-[168px] px-2 py-4 rounded-lg;
     background: var(--qqm-surface, #ffffff);
     border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
     box-shadow: var(--qqm-shadow, 0 8px 20px rgba(20, 24, 31, 0.06));
@@ -537,7 +537,7 @@ const openPlayListDrawer = () => {
   &-list {
     height: 50vh;
     width: 300px;
-    @apply relative rounded-xl overflow-hidden py-2;
+    @apply relative rounded-lg overflow-hidden py-2;
     border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
     box-shadow: var(--qqm-shadow, 0 8px 20px rgba(20, 24, 31, 0.06));
     &-back {
@@ -553,7 +553,7 @@ const openPlayListDrawer = () => {
 
 .mobile {
   .music-play-bar {
-    @apply px-4 bottom-[56px] transition-all duration-300;
+    @apply px-4 bottom-[56px] transition-opacity duration-200;
   }
   .music-time {
     display: none;
@@ -618,7 +618,7 @@ const openPlayListDrawer = () => {
     }
 
     .n-slider-rail {
-      @apply overflow-hidden transition-all duration-200;
+      @apply overflow-hidden transition-colors duration-200;
       background: rgba(20, 24, 31, 0.1) !important;
     }
 
@@ -627,7 +627,7 @@ const openPlayListDrawer = () => {
     }
 
     .n-slider-handle {
-      @apply transition-all duration-200;
+      @apply transition-colors duration-200;
       opacity: 0;
     }
 
@@ -685,7 +685,7 @@ const openPlayListDrawer = () => {
 }
 
 .intelligence-active {
-  @apply text-green-500 hover:text-green-600 !important;
+  color: var(--qqm-primary, #22c55e) !important;
 }
 
 .disabled-icon {
@@ -719,7 +719,7 @@ const openPlayListDrawer = () => {
 }
 
 .music-eq {
-  @apply p-4 rounded-xl;
+  @apply p-4 rounded-lg;
   backdrop-filter: blur(20px);
   background: color-mix(in srgb, var(--qqm-surface, #fff) 72%, transparent);
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
@@ -781,7 +781,9 @@ const openPlayListDrawer = () => {
 }
 
 .playback-rate-badge {
-  @apply ml-2 px-1.5 h-4 flex items-center text-xs rounded bg-green-500 bg-opacity-15 text-green-600 dark:text-green-400;
+  @apply ml-2 px-1.5 h-4 flex items-center text-xs rounded;
+  background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 15%, transparent);
+  color: var(--qqm-primary, #22c55e);
   font-weight: 500;
   vertical-align: 1px;
 }

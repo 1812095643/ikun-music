@@ -216,7 +216,7 @@ watch(
           }
 
           .n-slider-handle {
-            @apply transition-all duration-200;
+            @apply transition-colors duration-200;
             opacity: 0;
             box-shadow: 0 0 4px rgba(255, 255, 255, 0.7);
           }
@@ -242,7 +242,7 @@ watch(
       @apply flex items-center justify-center cursor-pointer transition;
 
       i {
-        @apply text-white transition-all;
+        @apply text-white transition-colors;
       }
 
       &.like i {
@@ -275,7 +275,7 @@ watch(
 
   // Mini模式样式
   .mobile-mini-controls {
-    @apply flex items-center justify-between pr-4 mx-3 h-12 rounded-xl;
+    @apply flex items-center justify-between pr-4 mx-3 h-12 rounded-lg;
     background: color-mix(in srgb, var(--qqm-surface, #fff) 78%, transparent);
     border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
     box-shadow: 0 8px 20px rgba(20, 24, 31, 0.08);
@@ -312,14 +312,17 @@ watch(
           @apply bg-gray-100 dark:bg-gray-800;
 
           .iconfont {
-            @apply text-xl text-green-500 transition hover:text-green-600;
+            @apply text-xl transition-colors;
+            color: var(--qqm-primary, #22c55e);
           }
         }
       }
 
       .mini-list-icon {
         @apply text-xl p-1 transition cursor-pointer;
-        @apply hover:text-green-500;
+        &:hover {
+          color: var(--qqm-primary, #22c55e);
+        }
       }
     }
   }

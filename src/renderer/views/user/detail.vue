@@ -63,12 +63,12 @@
                     class="absolute -inset-1 rounded-full bg-primary/10 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   />
                   <div
-                    class="relative w-28 h-28 md:w-40 md:h-40 rounded-full overflow-hidden shadow-md ring-2 ring-white/60 dark:ring-neutral-800/60"
+                    class="relative w-28 h-28 md:w-40 md:h-40 rounded-full overflow-hidden shadow-sm ring-1 ring-white/60 dark:ring-neutral-800/60"
                   >
                     <img
                       :src="getImgUrl(userDetail.profile.avatarUrl, '300y300')"
                       :alt="userDetail.profile.nickname"
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      class="w-full h-full object-cover"
                     />
                   </div>
                 </div>
@@ -142,12 +142,12 @@
           <!-- Tab Navigation -->
           <section class="page-padding-x pt-4 md:pt-6">
             <div
-              class="relative flex gap-1 p-1 bg-neutral-100 dark:bg-neutral-800/50 rounded-xl w-fit"
+              class="relative flex gap-1 p-1 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg w-fit"
             >
               <button
                 v-for="tab in tabs"
                 :key="tab.value"
-                class="relative px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200"
+                class="relative px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm font-medium transition-colors duration-200"
                 :class="
                   activeTab === tab.value
                     ? 'text-neutral-900 dark:text-white'
@@ -189,12 +189,12 @@
                   @click="openPlaylist(item)"
                 >
                   <!-- Cover -->
-                  <div class="relative aspect-square overflow-hidden rounded-xl shadow-sm">
+                  <div class="relative aspect-square overflow-hidden rounded-lg shadow-sm">
                     <n-image
                       :src="getImgUrl(item.coverImgUrl, '300y300')"
                       lazy
                       preview-disabled
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      class="w-full h-full object-cover"
                     />
                     <!-- Play Count Overlay -->
                     <div
@@ -205,10 +205,10 @@
                     </div>
                     <!-- Play Overlay -->
                     <div
-                      class="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/20 group-hover:opacity-100 transition-all duration-300"
+                      class="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/20 group-hover:opacity-100 transition-opacity duration-200"
                     >
                       <div
-                        class="w-11 h-11 rounded-full bg-white/90 flex items-center justify-center translate-y-1 group-hover:translate-y-0 transition-transform duration-300 shadow-md"
+                        class="w-11 h-11 rounded-full bg-white/90 flex items-center justify-center transition-opacity duration-200"
                       >
                         <i class="ri-play-fill text-xl text-neutral-900 ml-0.5" />
                       </div>

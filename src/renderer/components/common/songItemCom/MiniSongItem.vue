@@ -37,7 +37,7 @@
     <template #content>
       <div class="song-item-content">
         <div class="song-item-content-title">
-          <n-ellipsis class="text-ellipsis" line-clamp="1" :class="{ 'text-green-500': isPlaying }">
+          <n-ellipsis class="text-ellipsis" line-clamp="1" :class="{ 'text-primary': isPlaying }">
             {{ item.name }}
           </n-ellipsis>
         </div>
@@ -45,7 +45,7 @@
           <n-ellipsis class="text-ellipsis" line-clamp="1">
             <template v-for="(artist, index) in artists" :key="index">
               <span
-                class="cursor-pointer hover:text-green-500"
+                class="cursor-pointer hover:text-primary"
                 @click.stop="onArtistClick(artist.id)"
                 >{{ artist.name }}</span
               >
@@ -68,7 +68,7 @@
         </div>
         <div
           class="song-item-operating-play bg-gray-300 dark:bg-gray-800 animate__animated"
-          :class="{ 'bg-green-600': isPlaying, animate__flipInY: playLoading }"
+          :class="{ 'bg-primary': isPlaying, animate__flipInY: playLoading }"
           @click="onPlayMusic"
         >
           <i v-if="isPlaying && play" class="iconfont icon-stop"></i>
@@ -140,7 +140,7 @@ const onPlayMusic = () => {
 <style lang="scss" scoped>
 .mini-song-item {
   padding: 0.5rem; /* p-2 */
-  border-radius: 0.75rem; /* rounded-xl */
+  border-radius: 0.5rem;
 
   &:hover {
     background-color: rgb(249 250 251); /* bg-gray-50 */
@@ -150,7 +150,7 @@ const onPlayMusic = () => {
     width: 2.5rem; /* w-10 */
     height: 2.5rem; /* h-10 */
     margin-right: 0.5rem; /* mr-2 */
-    border-radius: 0.75rem; /* rounded-xl */
+    border-radius: 0.5rem;
   }
 
   .song-item-content {
@@ -219,7 +219,7 @@ const onPlayMusic = () => {
       color: rgb(17 24 39); /* text-gray-900 */
 
       &:hover,
-      &.bg-green-600 {
+      &.bg-primary {
         background-color: var(--qqm-primary, rgb(34 197 94));
         border-color: var(--qqm-primary, rgb(34 197 94));
         color: white;

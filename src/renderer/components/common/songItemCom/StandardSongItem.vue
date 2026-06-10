@@ -37,18 +37,15 @@
     <template #content>
       <div class="song-item-content">
         <div class="song-item-content-title">
-          <n-ellipsis
-            class="text-ellipsis"
-            line-clamp="1"
-            :class="{ 'text-green-500': isPlaying }"
-            >{{ item.name }}</n-ellipsis
-          >
+          <n-ellipsis class="text-ellipsis" line-clamp="1" :class="{ 'text-primary': isPlaying }">{{
+            item.name
+          }}</n-ellipsis>
         </div>
         <div class="song-item-content-name">
           <n-ellipsis class="text-ellipsis" line-clamp="1">
             <template v-for="(artist, index) in artists" :key="index">
               <span
-                class="cursor-pointer hover:text-green-500"
+                class="cursor-pointer hover:text-primary"
                 @click.stop="onArtistClick(artist.id)"
                 >{{ artist.name }}</span
               >
@@ -79,7 +76,7 @@
         </n-tooltip>
         <div
           class="song-item-operating-play bg-gray-300 dark:bg-gray-800 animate__animated"
-          :class="{ 'bg-green-600': isPlaying, animate__flipInY: playLoading }"
+          :class="{ 'bg-primary': isPlaying, animate__flipInY: playLoading }"
           @click="onPlayMusic"
         >
           <i v-if="isPlaying && play" class="iconfont icon-stop"></i>
@@ -175,7 +172,7 @@ const onPlayNext = () => {
   }
 
   .song-item-operating {
-    @apply flex items-center rounded-[10px] ml-4 border dark:border-gray-700 border-gray-200 bg-light dark:bg-black;
+    @apply flex items-center rounded-lg ml-4 border dark:border-gray-700 border-gray-200 bg-light dark:bg-black;
 
     .iconfont {
       @apply text-xl;
@@ -186,14 +183,17 @@ const onPlayNext = () => {
     }
 
     &-like {
-      @apply mr-2 cursor-pointer ml-4 transition-all;
+      @apply mr-2 cursor-pointer ml-4 transition-colors;
     }
 
     &-next {
-      @apply mr-2 cursor-pointer transition-all;
+      @apply mr-2 cursor-pointer transition-colors;
 
       .iconfont {
-        @apply text-xl transition text-gray-500 dark:text-gray-400 hover:text-green-500;
+        @apply text-xl transition text-gray-500 dark:text-gray-400;
+        &:hover {
+          color: var(--qqm-primary, #22c55e);
+        }
       }
     }
 
@@ -206,8 +206,10 @@ const onPlayNext = () => {
              border dark:border-gray-700 border-gray-200 text-gray-900 dark:text-white;
 
       &:hover,
-      &.bg-green-600 {
-        @apply bg-primary border-primary text-white;
+      &.bg-primary {
+        background-color: var(--qqm-primary, #22c55e);
+        border-color: var(--qqm-primary, #22c55e);
+        color: white;
       }
     }
   }
