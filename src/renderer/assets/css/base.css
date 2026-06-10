@@ -549,3 +549,87 @@ body {
   width: 19px !important;
   height: 19px !important;
 }
+
+/* 首页卡片最终精修：靠近 QQ 音乐的清爽封面流，弱化厚重卡片阴影与过度圆角。 */
+.home-polished-card,
+.home-list-card {
+  background: transparent !important;
+  border-radius: 10px !important;
+  box-shadow: none !important;
+  transition:
+    transform 180ms var(--qqm-ease),
+    color 180ms var(--qqm-ease);
+}
+
+.home-polished-card:hover,
+.home-list-card:hover {
+  transform: translateY(-2px);
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.home-polished-cover,
+.home-list-card > div:first-child {
+  border-radius: 10px !important;
+  border: 1px solid var(--qqm-border);
+  box-shadow: 0 6px 16px rgba(20, 24, 31, 0.07) !important;
+  background: var(--qqm-surface-muted);
+}
+
+.home-polished-card:hover .home-polished-cover,
+.home-list-card:hover > div:first-child {
+  box-shadow: 0 10px 24px rgba(20, 24, 31, 0.11) !important;
+}
+
+.home-polished-overlay {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.2));
+}
+
+.home-polished-play,
+.home-list-card button,
+.home-list-card [role='button'] {
+  color: #ffffff !important;
+  background: var(--qqm-primary) !important;
+  box-shadow: 0 8px 18px rgba(30, 207, 115, 0.24) !important;
+}
+
+.home-polished-extra {
+  background: rgba(18, 22, 28, 0.58) !important;
+  backdrop-filter: blur(10px);
+}
+
+.home-polished-title,
+.home-list-card h3 {
+  color: var(--qqm-text) !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+  font-weight: 600 !important;
+}
+
+.home-polished-card:hover .home-polished-title,
+.home-list-card:hover h3 {
+  color: var(--qqm-primary-strong) !important;
+}
+
+.home-polished-subtitle,
+.home-list-card p {
+  color: var(--qqm-muted) !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+}
+
+.playlist-section,
+.artists-section,
+.album-section,
+.new-songs-section,
+.private-content-section {
+  border-top-color: rgba(20, 24, 31, 0.06) !important;
+}
+
+.dark .playlist-section,
+.dark .artists-section,
+.dark .album-section,
+.dark .new-songs-section,
+.dark .private-content-section {
+  border-top-color: rgba(255, 255, 255, 0.07) !important;
+}
