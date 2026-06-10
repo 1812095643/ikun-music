@@ -202,12 +202,13 @@ const handleLoginError = (error: string) => {
 .login-page::before {
   content: '';
   position: absolute;
-  inset: 8% 12% auto auto;
-  width: 360px;
-  height: 260px;
-  border-radius: 999px;
-  background: radial-gradient(circle, rgba(34, 197, 94, 0.14), transparent 68%);
+  inset: 0;
   pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, transparent),
+    transparent 34%
+  );
 }
 
 .login-title {
@@ -227,18 +228,14 @@ const handleLoginError = (error: string) => {
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--qqm-border) 78%, transparent);
   border-radius: 12px;
-  background:
-    linear-gradient(135deg, rgba(34, 197, 94, 0.055), transparent 42%),
-    color-mix(in srgb, #ffffff 96%, var(--qqm-primary, #22c55e) 4%);
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 96%, var(--qqm-primary, #22c55e) 4%);
   box-shadow: none;
   animation-duration: 0.35s;
 
   .bg {
     position: absolute;
     inset: 0;
-    background:
-      linear-gradient(90deg, transparent 0%, rgba(34, 197, 94, 0.055) 100%),
-      radial-gradient(circle at 82% 22%, rgba(34, 197, 94, 0.16), transparent 32%);
+    background: linear-gradient(90deg, transparent 0%, rgba(34, 197, 94, 0.045) 100%);
     opacity: 1;
   }
 
@@ -338,9 +335,7 @@ const handleLoginError = (error: string) => {
 
   .phone-login {
     border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, transparent);
-    background:
-      linear-gradient(135deg, rgba(34, 197, 94, 0.08), transparent 42%),
-      color-mix(in srgb, #050505 92%, var(--qqm-primary, #22c55e) 8%);
+    background: color-mix(in srgb, #050505 92%, var(--qqm-primary, #22c55e) 8%);
 
     .content {
       .login-tabs {

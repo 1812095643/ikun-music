@@ -1277,20 +1277,8 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
     &::before {
       content: '';
       @apply absolute top-0 left-0 w-full h-full rounded-full z-10;
-      background: radial-gradient(
-        circle at center,
-        transparent 38%,
-        rgba(0, 0, 0, 0.15) 38%,
-        rgba(0, 0, 0, 0.15) 39%,
-        rgba(255, 255, 255, 0.1) 39%,
-        rgba(255, 255, 255, 0.1) 39.5%,
-        rgba(0, 0, 0, 0.08) 39.5%,
-        rgba(0, 0, 0, 0.08) 40.5%,
-        rgba(0, 0, 0, 0.2) 40.5%,
-        rgba(0, 0, 0, 0.2) 41.5%,
-        rgba(0, 0, 0, 0.6) 41.5%,
-        rgba(0, 0, 0, 0.6) 100%
-      );
+      border: 1px solid color-mix(in srgb, var(--highlight-color, #22c55e) 16%, transparent);
+      background: color-mix(in srgb, var(--bg-color, #ffffff) 72%, transparent);
       pointer-events: none;
       animation: spin 20s linear infinite;
       animation-play-state: running;
@@ -1298,7 +1286,8 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
     &::after {
       content: '';
-      @apply absolute w-6 h-6 rounded-full bg-neutral-950 z-20;
+      @apply absolute w-5 h-5 rounded-full z-20;
+      background: color-mix(in srgb, var(--highlight-color, #22c55e) 18%, #ffffff);
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -1313,7 +1302,8 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
     }
 
     .img-wrapper {
-      @apply rounded-full overflow-hidden border-solid border-black z-0;
+      @apply rounded-full overflow-hidden z-0;
+      border: 1px solid color-mix(in srgb, var(--highlight-color, #22c55e) 12%, transparent);
       position: absolute;
       top: 50%;
       left: 50%;
@@ -1322,18 +1312,13 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
       &::after {
         content: '';
         @apply absolute top-0 left-0 w-full h-full rounded-full z-[2];
-        background: linear-gradient(
-          135deg,
-          rgba(255, 255, 255, 0.05) 0%,
-          rgba(255, 255, 255, 0) 50%,
-          rgba(0, 0, 0, 0.05) 100%
-        );
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 56%);
         pointer-events: none;
       }
     }
 
     .cover-image {
-      @apply w-full h-full rounded-full border-[2px] border-neutral-950;
+      @apply w-full h-full rounded-full;
       animation: spin 20s linear infinite;
       animation-play-state: running;
     }

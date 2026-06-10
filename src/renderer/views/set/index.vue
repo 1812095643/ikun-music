@@ -187,13 +187,11 @@ onMounted(() => {
 
 .settings-header {
   border-bottom: 1px solid var(--qqm-border);
-  background:
-    radial-gradient(
-      circle at 82% 0%,
-      color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, transparent),
-      transparent 28%
-    ),
-    var(--qqm-bg);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, var(--qqm-bg)),
+    var(--qqm-bg)
+  );
 }
 
 .settings-tabs {

@@ -876,17 +876,11 @@ onMounted(checkCollectionStatus);
   border: 1px solid var(--qqm-border);
   border-right: 0;
   border-left: 0;
-  background:
-    radial-gradient(
-      circle at 84% 18%,
-      color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, transparent),
-      transparent 30%
-    ),
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, var(--qqm-bg)),
-      var(--qqm-bg)
-    );
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, var(--qqm-bg)),
+    var(--qqm-bg)
+  );
 }
 
 .cover-container {
@@ -930,9 +924,11 @@ onMounted(checkCollectionStatus);
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background:
-    radial-gradient(circle at 35% 25%, rgba(34, 197, 94, 0.14), transparent 34%),
-    linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(255, 255, 255, 0.94));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, #ffffff),
+    #ffffff
+  );
   color: color-mix(in srgb, var(--qqm-primary, #22c55e) 72%, #111827 28%);
 }
 
@@ -948,9 +944,11 @@ onMounted(checkCollectionStatus);
 }
 
 .dark .cover-empty-state {
-  background:
-    radial-gradient(circle at 35% 25%, rgba(34, 197, 94, 0.16), transparent 34%),
-    linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(10, 10, 10, 0.95));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, #101010),
+    #101010
+  );
   color: color-mix(in srgb, var(--qqm-primary, #22c55e) 80%, #f5f5f5 20%);
 }
 
