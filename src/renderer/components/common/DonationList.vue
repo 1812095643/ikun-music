@@ -19,7 +19,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 max-w-3xl mx-auto">
       <!-- 支付宝 -->
       <div
-        class="pay-card group relative overflow-hidden rounded-xl bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-all hover:bg-white dark:hover:bg-neutral-900"
+        class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
           class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/15 transition-colors"
@@ -27,7 +27,7 @@
         <img
           :src="alipay"
           alt="Alipay"
-          class="w-52 h-52 rounded-xl shadow-sm mb-4 transition-transform duration-300 group-hover:-translate-y-0.5"
+          class="w-52 h-52 rounded-lg shadow-sm mb-4 transition-transform duration-300 group-"
         />
         <div class="flex items-center gap-2 text-primary font-bold text-lg">
           <i class="ri-alipay-fill text-2xl"></i>
@@ -37,7 +37,7 @@
 
       <!-- 微信支付 -->
       <div
-        class="pay-card group relative overflow-hidden rounded-xl bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-all hover:bg-white dark:hover:bg-neutral-900"
+        class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
           class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/15 transition-colors"
@@ -45,7 +45,7 @@
         <img
           :src="wechat"
           alt="WeChat"
-          class="w-52 h-52 rounded-xl shadow-sm mb-4 transition-transform duration-300 group-hover:-translate-y-0.5"
+          class="w-52 h-52 rounded-lg shadow-sm mb-4 transition-transform duration-300 group-"
         />
         <div class="flex items-center gap-2 text-primary font-bold text-lg">
           <i class="ri-wechat-pay-fill text-2xl"></i>
@@ -76,7 +76,7 @@
           :style="index < FIRST_BATCH ? { animationDelay: `${index * 10}ms` } : undefined"
         >
           <div
-            class="h-full bg-white dark:bg-neutral-800/50 border border-gray-100 dark:border-gray-800 rounded-xl p-3 flex gap-3 hover:border-primary/30 hover:shadow-md hover:bg-white dark:hover:bg-neutral-800 transition-all duration-300"
+            class="h-full bg-white dark:bg-neutral-800/50 border border-gray-100 dark:border-gray-800 rounded-lg p-3 flex gap-3 hover:border-primary/30 hover:shadow-sm hover:bg-white dark:hover:bg-neutral-800 transition-opacity duration-200"
           >
             <!-- 头像 -->
             <div class="relative flex-shrink-0">
@@ -149,7 +149,7 @@ const FIRST_BATCH = 16;
 const AVATAR_COLORS = [
   'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
-  'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
+  'bg-primary/15 text-primary dark:bg-green-900/30 dark:text-green-400',
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
   'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',

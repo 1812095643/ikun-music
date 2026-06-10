@@ -13,8 +13,8 @@
         <Transition :name="isMobile ? 'slide-up' : 'scale-fade'">
           <div
             v-if="show"
-            class="responsive-modal-card relative z-10 w-full bg-white dark:bg-[#1c1c1e] shadow-md overflow-hidden flex flex-col max-h-[85vh]"
-            :class="[isMobile ? 'rounded-t-xl pb-safe' : 'md:max-w-[720px] md:rounded-xl']"
+            class="responsive-modal-card relative z-10 w-full bg-white dark:bg-[#1c1c1e] shadow-sm overflow-hidden flex flex-col max-h-[85vh]"
+            :class="[isMobile ? 'rounded-t-xl pb-safe' : 'md:max-w-[720px] md:rounded-lg']"
             @click.stop
           >
             <!-- Header -->

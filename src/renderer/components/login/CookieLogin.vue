@@ -150,7 +150,7 @@ onBeforeUnmount(() => {
 .phone-page {
   @apply bg-light dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90;
   width: 250px;
-  @apply rounded-xl overflow-hidden;
+  @apply rounded-lg overflow-hidden;
   padding: 0;
   border: none;
 }
@@ -201,14 +201,16 @@ onBeforeUnmount(() => {
 .btn-login {
   width: 250px;
   height: 40px;
-  @apply mt-10 text-white rounded-xl;
-  @apply bg-green-600 hover:bg-green-700 transition-colors;
+  @apply mt-10 text-white rounded-lg;
+  @apply transition-colors;
+  background-color: var(--qqm-primary, #22c55e);
 }
 
 .btn-auto-cookie {
   width: 250px;
   height: 40px;
-  @apply mt-4 text-white rounded-xl;
-  @apply bg-primary hover:bg-primary/90 transition-colors;
+  @apply mt-4 text-white rounded-lg;
+  @apply transition-colors;
+  background-color: var(--qqm-primary, #22c55e);
 }
 </style>

@@ -225,13 +225,13 @@ onUnmounted(() => {
 }
 
 .qr-img {
-  @apply w-full h-full rounded-xl transition-all duration-300;
+  @apply w-full h-full rounded-lg transition-colors duration-200;
   object-fit: cover;
 }
 
 .expired-overlay {
   @apply absolute inset-0 flex flex-col items-center justify-center;
-  @apply bg-black bg-opacity-50 rounded-xl;
+  @apply bg-black bg-opacity-50 rounded-lg;
 
   .expired-text {
     @apply text-white text-sm mb-3;
@@ -244,7 +244,8 @@ onUnmounted(() => {
 
 .scanned-overlay {
   @apply absolute inset-0 flex flex-col items-center justify-center;
-  @apply bg-primary bg-opacity-80 rounded-xl;
+  @apply rounded-lg;
+  background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 80%, transparent);
 
   .scanned-icon {
     @apply text-white text-4xl font-bold mb-2;
@@ -259,11 +260,11 @@ onUnmounted(() => {
   @apply mt-4 text-white text-xs transition-colors duration-300;
 
   &.expired {
-    @apply text-primary;
+    color: var(--qqm-primary, #22c55e);
   }
 
   &.scanned {
-    @apply text-green-400;
+    color: var(--qqm-primary, #22c55e);
   }
 }
 

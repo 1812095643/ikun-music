@@ -29,7 +29,7 @@
         <p class="text-xs text-gray-400">
           {{ t('comp.installApp.downloadProblem') }}
           <a
-            class="text-green-500"
+            class="text-primary"
             target="_blank"
             href="https://github.com/algerkong/AlgerMusicPlayer/releases"
             >GitHub</a
@@ -90,7 +90,7 @@ const handleInstall = async (): Promise<void> => {
     .modal-header {
       @apply flex items-center mb-6;
       .app-icon {
-        @apply w-20 h-20 mr-4 rounded-xl overflow-hidden;
+        @apply w-20 h-20 mr-4 rounded-lg overflow-hidden;
         img {
           @apply w-full h-full object-cover;
         }
@@ -117,9 +117,10 @@ const handleInstall = async (): Promise<void> => {
         }
       }
       .install-btn {
-        @apply bg-green-600 border-none;
+        @apply border-none;
+        background-color: var(--qqm-primary, #22c55e);
         &:hover {
-          @apply bg-green-500;
+          background-color: var(--qqm-primary, #22c55e);
         }
       }
     }

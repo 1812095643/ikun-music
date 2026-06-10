@@ -16,7 +16,7 @@
         <div class="artist-cover">
           <n-image
             :src="getImgUrl(artistInfo?.avatar, '300y300')"
-            class="w-48 h-48 rounded-xl object-cover"
+            class="w-48 h-48 rounded-lg object-cover"
             preview-disabled
           />
         </div>
@@ -288,7 +288,10 @@ defineExpose({
   @apply h-full bg-light dark:bg-dark px-6 overflow-hidden flex flex-col;
 
   .close-btn {
-    @apply absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-green-500 text-2xl cursor-pointer p-2;
+    @apply absolute top-4 right-4 text-gray-500 dark:text-gray-400 text-2xl cursor-pointer p-2;
+    &:hover {
+      color: var(--qqm-primary, #22c55e);
+    }
   }
 
   .artist-header {

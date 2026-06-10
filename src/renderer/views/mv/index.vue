@@ -13,7 +13,7 @@
       <!-- MV Grid -->
       <div v-if="initLoading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         <div v-for="i in 12" :key="i" class="space-y-3">
-          <div class="aspect-video skeleton-shimmer rounded-xl" />
+          <div class="aspect-video skeleton-shimmer rounded-lg" />
           <div class="h-4 w-3/4 skeleton-shimmer rounded-lg" />
           <div class="h-3 w-1/2 skeleton-shimmer rounded-lg" />
         </div>
@@ -29,12 +29,12 @@
         >
           <!-- Cover Image -->
           <div
-            class="relative aspect-video overflow-hidden rounded-xl shadow-sm transition-all duration-300"
+            class="relative aspect-video overflow-hidden rounded-lg shadow-sm transition-opacity duration-200"
           >
             <img
               :src="getImgUrl(item.cover, '400y225')"
               :alt="item.name"
-              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              class="w-full h-full object-cover transition-transform duration-500"
               loading="lazy"
             />
 
@@ -43,7 +43,7 @@
               class="absolute inset-0 bg-transparent group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center"
             >
               <div
-                class="play-icon w-11 h-11 rounded-full bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md"
+                class="play-icon w-11 h-11 rounded-full bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-opacity duration-200 shadow-sm"
               >
                 <i class="ri-play-fill text-2xl text-neutral-900 ml-1"></i>
               </div>

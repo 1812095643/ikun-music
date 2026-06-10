@@ -119,13 +119,14 @@ defineExpose({
   }
 
   .warning-text {
-    @apply mt-2 text-primary text-xs text-center max-w-xs;
+    @apply mt-2 text-xs text-center max-w-xs;
+    color: var(--qqm-primary, #22c55e);
     line-height: 1.4;
   }
 
   .uid-page {
     @apply bg-light dark:bg-gray-800 bg-opacity-90 dark:bg-opacity-90;
-    @apply rounded-xl overflow-hidden;
+    @apply rounded-lg overflow-hidden;
   }
 
   .uid-input {
@@ -136,15 +137,16 @@ defineExpose({
     @apply placeholder-gray-500 dark:placeholder-gray-400;
 
     &:focus {
-      @apply border-green-500;
+      border-color: var(--qqm-primary, #22c55e);
     }
   }
 
   .btn-login {
     width: 250px;
     height: 40px;
-    @apply mt-10 text-white rounded-xl;
-    @apply bg-green-600 hover:bg-green-700 transition-colors;
+    @apply mt-10 text-white rounded-lg;
+    @apply transition-colors;
+    background-color: var(--qqm-primary, #22c55e);
   }
 }
 </style>

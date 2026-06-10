@@ -47,7 +47,7 @@
 
             <!-- 创建歌单表单 -->
             <div
-              class="overflow-hidden transition-all duration-300 ease-in-out"
+              class="overflow-hidden transition-opacity duration-200 ease-in-out"
               :class="isCreating ? 'mt-4 max-h-[200px] opacity-100' : 'max-h-0 opacity-0'"
             >
               <div class="flex flex-col gap-4 px-1">

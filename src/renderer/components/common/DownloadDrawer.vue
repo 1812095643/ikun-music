@@ -101,7 +101,7 @@ onMounted(() => {
     @apply bg-white/80 dark:bg-gray-800/80 shadow-sm backdrop-blur-sm;
     @apply hover:bg-light dark:hover:bg-dark-200;
     @apply text-gray-600 dark:text-gray-300;
-    @apply transition-all duration-300;
+    @apply transition-opacity duration-200;
     @apply w-10 h-10;
     border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
 

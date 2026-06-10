@@ -107,7 +107,7 @@ defineExpose({
 
 .shortcut-toast-enter-active,
 .shortcut-toast-leave-active {
-  @apply transition-all duration-300;
+  @apply transition-opacity duration-200;
 }
 
 .shortcut-toast-enter-from,

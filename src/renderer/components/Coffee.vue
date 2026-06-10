@@ -5,7 +5,7 @@
         <slot>
           <n-button
             quaternary
-            class="inline-flex items-center gap-2 px-4 py-2 transition-all duration-300 hover:-translate-y-0.5"
+            class="inline-flex items-center gap-2 px-4 py-2 transition-opacity duration-200"
           >
             {{ t('comp.coffee.title') }}
           </n-button>
@@ -42,7 +42,7 @@
 
         <div class="mt-4">
           <p
-            class="text-sm text-gray-700 dark:text-gray-200 text-center cursor-pointer hover:text-green-500"
+            class="text-sm text-gray-700 dark:text-gray-200 text-center cursor-pointer hover:text-primary"
             @click="copyText"
           >
             {{ t('comp.coffee.groupText') }}
@@ -51,7 +51,7 @@
         <div class="mt-4">
           <!-- 赞赏列表地址 -->
           <p
-            class="text-sm text-green-600 dark:text-gray-200 text-center cursor-pointer hover:text-green-500"
+            class="text-sm text-primary dark:text-gray-200 text-center cursor-pointer hover:text-primary"
             @click="toDonateList"
           >
             {{ t('comp.coffee.donateList') }}

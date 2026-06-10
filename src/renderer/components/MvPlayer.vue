@@ -60,12 +60,7 @@
         class="absolute inset-0 flex items-center justify-center bg-black/50 z-30 cursor-pointer"
         @click="togglePlay"
       >
-        <n-button
-          quaternary
-          circle
-          size="large"
-          class="!text-white hover:!text-green-500 scale-150"
-        >
+        <n-button quaternary circle size="large" class="!text-white hover:!text-primary scale-125">
           <template #icon>
             <n-icon size="48"><i class="ri-play-circle-line"></i></n-icon>
           </template>
@@ -74,7 +69,7 @@
 
       <!-- Top Bar (Title & Close) -->
       <div
-        class="absolute top-0 left-0 right-0 p-4 z-[9999999] transition-all duration-300 bg-gradient-to-b from-black/80 to-transparent pointer-events-auto"
+        class="absolute top-0 left-0 right-0 p-4 z-[9999999] transition-opacity duration-200 bg-gradient-to-b from-black/80 to-transparent pointer-events-auto"
         :class="{ '-translate-y-full opacity-0': !showControls }"
         style="-webkit-app-region: drag"
         @click.stop
@@ -110,7 +105,7 @@
 
       <!-- Bottom Controls -->
       <div
-        class="absolute bottom-0 left-0 right-0 z-40 transition-all duration-300 bg-gradient-to-t from-black/90 via-black/60 to-transparent pb-6 pt-12 px-4 md:px-6"
+        class="absolute bottom-0 left-0 right-0 z-40 transition-opacity duration-200 bg-gradient-to-t from-black/90 via-black/60 to-transparent pb-6 pt-12 px-4 md:px-6"
         :class="{ 'translate-y-full opacity-0': !showControls }"
         @click.stop
       >
@@ -129,7 +124,7 @@
           >
             <template #thumb>
               <div
-                class="w-3 h-3 bg-white rounded-full shadow-md opacity-0 group-hover/slider:opacity-100 transition-opacity duration-200"
+                class="w-3 h-3 bg-white rounded-full shadow-sm opacity-0 group-hover/slider:opacity-100 transition-opacity duration-200"
               ></div>
             </template>
           </n-slider>
@@ -234,7 +229,7 @@
                 </template>
               </n-button>
               <div
-                class="w-0 overflow-hidden group-hover/volume:w-24 transition-all duration-300 ease-in-out ml-2"
+                class="w-0 overflow-hidden group-hover/volume:w-24 transition-opacity duration-200 ease-in-out ml-2"
               >
                 <n-slider
                   v-model:value="volume"
@@ -274,9 +269,9 @@
       >
         <div
           v-if="showModeHint"
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/70 backdrop-blur px-6 py-4 rounded-xl flex flex-col items-center gap-2 pointer-events-none z-50"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/70 backdrop-blur px-6 py-4 rounded-lg flex flex-col items-center gap-2 pointer-events-none z-50"
         >
-          <n-icon size="32" class="text-green-500">
+          <n-icon size="32" class="text-primary">
             <i :class="playMode === 'single' ? 'ri-repeat-one-line' : 'ri-play-list-line'"></i>
           </n-icon>
           <span class="text-white text-sm font-medium">
