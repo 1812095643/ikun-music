@@ -92,7 +92,7 @@
               {{ currentMv?.name }}
             </div>
 
-            <div v-if="currentMv?.artistName" class="text-gray-300 text-sm truncate">
+            <div v-if="currentMv?.artistName" class="text-neutral-300 text-sm truncate">
               - {{ currentMv.artistName }}
             </div>
           </div>
@@ -142,7 +142,7 @@
           <!-- Left: Play/Pause/Nav (Desktop) -->
           <div class="flex items-center gap-2 md:gap-4">
             <!-- Mobile: Only Time -->
-            <div v-if="isMobile" class="text-xs text-gray-300 font-mono">
+            <div v-if="isMobile" class="text-xs text-neutral-300 font-mono">
               {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
             </div>
 
@@ -185,7 +185,7 @@
                 ></template>
               </n-button>
 
-              <div class="text-xs text-gray-300 font-mono ml-2">
+              <div class="text-xs text-neutral-300 font-mono ml-2">
                 {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
               </div>
             </template>

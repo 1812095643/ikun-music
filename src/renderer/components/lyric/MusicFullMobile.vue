@@ -1298,7 +1298,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
     &::after {
       content: '';
-      @apply absolute w-6 h-6 rounded-full bg-gray-900 z-20;
+      @apply absolute w-6 h-6 rounded-full bg-neutral-950 z-20;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -1333,7 +1333,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
     }
 
     .cover-image {
-      @apply w-full h-full rounded-full border-[2px] border-gray-900;
+      @apply w-full h-full rounded-full border-[2px] border-neutral-950;
       animation: spin 20s linear infinite;
       animation-play-state: running;
     }
@@ -1519,7 +1519,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
       // 封面样式
       .cover-container {
-        @apply relative mb-6 transition-colors duration-200 border-gray-900 z-[9995];
+        @apply relative mb-6 transition-colors duration-200 border-neutral-950 z-[9995];
 
         &.style-changing {
           animation: styleChange 0.5s ease;
