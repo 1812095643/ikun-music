@@ -127,7 +127,7 @@
             <div class="relative flex h-full items-center gap-4 p-5">
               <!-- Album Cover -->
               <div
-                class="fm-cover relative aspect-square flex-shrink-0 overflow-hidden rounded-lg border border-white/50 dark:border-white/10"
+                class="fm-cover qqm-fm-cover relative aspect-square flex-shrink-0 overflow-hidden rounded-lg"
               >
                 <img
                   v-if="fmCurrentCover"
@@ -135,7 +135,7 @@
                   alt=""
                   class="h-full w-full object-cover"
                 />
-                <div v-else class="flex h-full w-full items-center justify-center bg-white/10">
+                <div v-else class="qqm-fm-empty flex h-full w-full items-center justify-center">
                   <i class="ri-radio-fill text-3xl text-white/40" />
                 </div>
                 <!-- Playing equalizer overlay on cover -->
@@ -226,13 +226,13 @@
                 <div class="col-span-2 row-span-2 flex h-full items-center px-5">
                   <div class="flex items-center gap-3">
                     <div
-                      class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                      class="hero-empty-icon flex h-10 w-10 items-center justify-center rounded-lg text-primary"
                     >
                       <i class="ri-play-list-2-line text-xl" />
                     </div>
                     <div class="space-y-2">
-                      <div class="h-1.5 w-28 rounded-full bg-primary/15" />
-                      <div class="h-1.5 w-40 rounded-full bg-primary/10" />
+                      <div class="hero-empty-line-strong h-1.5 w-28 rounded-full" />
+                      <div class="hero-empty-line h-1.5 w-40 rounded-full" />
                     </div>
                   </div>
                 </div>
@@ -256,7 +256,7 @@
                   'inline-flex w-fit items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold',
                   hotPlaylists.length > 0
                     ? 'hero-playlist-count text-white'
-                    : 'bg-primary/10 text-primary'
+                    : 'hero-empty-badge text-primary'
                 ]"
               >
                 <i class="ri-play-list-2-line" />
@@ -288,7 +288,7 @@
                     'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-colors duration-200',
                     hotPlaylists.length > 0
                       ? 'hero-glass-action text-white'
-                      : 'bg-primary/10 text-primary hover:bg-primary/15'
+                      : 'hero-empty-action text-primary'
                   ]"
                 >
                   <i class="ri-arrow-right-s-line text-xl" />
@@ -852,5 +852,37 @@ onActivated(() => {
 .hero-playlist-count {
   background: color-mix(in srgb, #0f172a 38%, transparent);
   backdrop-filter: blur(8px) saturate(1.06);
+}
+
+.qqm-fm-cover {
+  border: 1px solid color-mix(in srgb, #ffffff 42%, transparent);
+}
+
+.dark .qqm-fm-cover {
+  border-color: color-mix(in srgb, #ffffff 12%, transparent);
+}
+
+.qqm-fm-empty {
+  background: color-mix(in srgb, #ffffff 10%, transparent);
+}
+
+.hero-empty-icon,
+.hero-empty-badge,
+.hero-empty-action {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.hero-empty-action:hover {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 9%, var(--qqm-surface));
+}
+
+.hero-empty-line,
+.hero-empty-line-strong {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, var(--qqm-surface));
+}
+
+.hero-empty-line-strong {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 15%, var(--qqm-surface));
 }
 </style>

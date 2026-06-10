@@ -14,7 +14,7 @@
             class="setting-tab-button py-1.5 px-3.5 mr-2 inline-block rounded-lg border cursor-pointer transition-colors duration-200 text-sm font-medium select-none"
             :class="
               currentSection === section.id
-                ? 'border-primary/25 bg-primary/10 text-primary'
+                ? 'settings-tab-active text-primary'
                 : 'settings-nav-item text-neutral-600 hover:text-primary dark:text-neutral-400 dark:hover:text-primary'
             "
             @click="currentSection = section.id"
@@ -235,5 +235,10 @@ onMounted(() => {
 .settings-content :deep(.setting-item .text-\[15px\]) {
   color: var(--qqm-text);
   font-weight: 600;
+}
+
+.settings-tab-active {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

@@ -25,7 +25,7 @@
             </h2>
             <button
               @click="close"
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-500 hover:bg-primary/5 hover:text-primary dark:text-neutral-400 dark:hover:bg-primary/10"
+              class="mobile-setting-icon-button w-8 h-8 rounded-lg flex items-center justify-center text-neutral-500 dark:text-neutral-400"
             >
               <i class="ri-close-line text-xl"></i>
             </button>
@@ -119,7 +119,7 @@
                     >
                       <button
                         @click="decreaseMinutes"
-                        class="w-10 h-10 flex items-center justify-center text-neutral-500 hover:bg-primary/5 hover:text-primary active:bg-primary/10 dark:text-neutral-400"
+                        class="mobile-setting-step-button w-10 h-10 flex items-center justify-center text-neutral-500 dark:text-neutral-400"
                       >
                         <i class="ri-subtract-line text-lg"></i>
                       </button>
@@ -134,7 +134,7 @@
                       />
                       <button
                         @click="increaseMinutes"
-                        class="w-10 h-10 flex items-center justify-center text-neutral-500 hover:bg-primary/5 hover:text-primary active:bg-primary/10 dark:text-neutral-400"
+                        class="mobile-setting-step-button w-10 h-10 flex items-center justify-center text-neutral-500 dark:text-neutral-400"
                       >
                         <i class="ri-add-line text-lg"></i>
                       </button>
@@ -390,6 +390,13 @@ onUnmounted(() => {
 
 .mobile-timer-active {
   border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 20%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.mobile-setting-icon-button:hover,
+.mobile-setting-step-button:hover,
+.mobile-setting-step-button:active {
+  color: var(--qqm-primary, #22c55e);
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

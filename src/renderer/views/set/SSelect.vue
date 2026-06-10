@@ -38,7 +38,7 @@
             class="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm transition-colors"
             :class="
               opt.value === modelValue
-                ? 'bg-primary/10 text-primary font-medium'
+                ? 's-select-option-active text-primary font-medium'
                 : 'text-neutral-700 hover:text-primary dark:text-neutral-300'
             "
             @click="select(opt.value)"
@@ -123,3 +123,8 @@ const onClickOutside = (e: MouseEvent) => {
 onMounted(() => document.addEventListener('click', onClickOutside));
 onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
 </script>
+<style scoped>
+.s-select-option-active {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface, #ffffff));
+}
+</style>

@@ -10,7 +10,7 @@
             class="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-2 flex items-center gap-3"
           >
             <div
-              class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary"
+              class="import-header-icon w-10 h-10 rounded-lg flex items-center justify-center text-primary"
             >
               <i class="ri-import-fill text-xl"></i>
             </div>
@@ -70,7 +70,7 @@
                     />
                     <button
                       v-if="linkInputs.length > 1"
-                      class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/5 dark:hover:text-primary dark:hover:bg-primary/10 transition-colors opacity-0 group-hover:opacity-100"
+                      class="import-row-button absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 transition-colors opacity-0 group-hover:opacity-100"
                       @click="removeLinkRow(index)"
                     >
                       <i class="ri-delete-bin-line"></i>
@@ -129,14 +129,14 @@
                     />
                     <button
                       v-if="localMetadata.length > 1"
-                      class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/5 dark:hover:text-primary dark:hover:bg-primary/10 transition-colors opacity-0 group-hover:opacity-100"
+                      class="import-row-button w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 transition-colors opacity-0 group-hover:opacity-100"
                       @click="removeMetadataRow(index)"
                     >
                       <i class="ri-delete-bin-line"></i>
                     </button>
                   </div>
                   <button
-                    class="ml-9 px-4 py-2 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 transition-colors flex items-center gap-1"
+                    class="import-add-button ml-9 px-4 py-2 rounded-lg text-sm font-medium text-primary transition-colors flex items-center gap-1"
                     @click="addMetadataRow"
                   >
                     <i class="ri-add-line"></i>
@@ -261,7 +261,7 @@
                     <div
                       class="w-10 h-10 rounded-lg flex items-center justify-center text-2xl transition-colors"
                       :class="{
-                        'bg-primary/10 text-primary':
+                        'import-status-active text-primary':
                           taskStatus === 'processing' ||
                           taskStatus === 'pending' ||
                           taskStatus === 'success',
@@ -553,6 +553,18 @@ onUnmounted(() => {
 
 .import-success-panel {
   border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 20%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.import-header-icon,
+.import-status-active {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.import-row-button:hover,
+.import-add-button:hover {
+  color: var(--qqm-primary, #22c55e);
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

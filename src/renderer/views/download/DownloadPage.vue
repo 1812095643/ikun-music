@@ -27,7 +27,7 @@
               </p>
             </div>
             <div
-              class="hidden md:flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary"
+              class="download-header-icon hidden md:flex h-10 w-10 items-center justify-center rounded-lg text-primary"
             >
               <i class="ri-download-cloud-2-line text-xl" />
             </div>
@@ -45,7 +45,7 @@
                 class="px-5 py-1.5 rounded-md text-sm font-medium transition-colors"
                 :class="
                   tabName === tab
-                    ? 'bg-primary/10 text-primary'
+                    ? 'download-tab-active text-primary'
                     : 'text-neutral-500 hover:text-primary dark:text-neutral-400 dark:hover:text-primary'
                 "
                 @click="tabName = tab"
@@ -202,7 +202,7 @@
                     <n-tooltip trigger="hover">
                       <template #trigger>
                         <button
-                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/10 transition-colors"
+                          class="download-icon-button w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 transition-colors"
                           @click="copyPath(item.path)"
                         >
                           <i class="ri-file-copy-line" />
@@ -213,7 +213,7 @@
                     <n-tooltip trigger="hover">
                       <template #trigger>
                         <button
-                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/10 transition-colors"
+                          class="download-icon-button w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 transition-colors"
                           @click="openDirectory(item.path)"
                         >
                           <i class="ri-folder-open-line" />
@@ -1190,5 +1190,16 @@ onMounted(() => {
 
 .download-progress-track {
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, var(--qqm-border));
+}
+
+.download-header-icon,
+.download-tab-active {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.download-icon-button:hover {
+  color: var(--qqm-primary, #22c55e);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

@@ -34,7 +34,7 @@
           </div>
 
           <button
-            class="h-9 px-4 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-white text-xs font-medium transition-colors duration-200 flex items-center gap-1.5"
+            class="favorite-select-button h-9 px-4 rounded-lg text-primary text-xs font-medium transition-colors duration-200 flex items-center gap-1.5"
             @click="startSelect"
           >
             <i class="ri-checkbox-multiple-line text-sm"></i>
@@ -90,8 +90,8 @@
             :key="song.id"
             :item="song"
             :favorite="false"
-            class="rounded-lg hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
-            :class="{ '!bg-primary/10': selectedSongs.includes(song.id as number) }"
+            class="favorite-song-row rounded-lg transition-colors"
+            :class="{ 'favorite-song-selected': selectedSongs.includes(song.id as number) }"
             :selectable="isSelecting"
             :selected="selectedSongs.includes(song.id as number)"
             @play="handlePlay"
@@ -430,5 +430,20 @@ const handleSelectAll = (checked: boolean) => {
 .favorite-tab-active {
   border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface, #fff));
+}
+
+.favorite-select-button {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.favorite-select-button:hover {
+  color: #ffffff;
+  background: var(--qqm-primary, #22c55e);
+}
+
+.favorite-song-row:hover,
+.favorite-song-selected {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

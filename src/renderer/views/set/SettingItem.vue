@@ -6,7 +6,7 @@
       { 'max-md:flex-col max-md:items-start max-md:gap-3': !inline },
       // 可点击样式
       {
-        'cursor-pointer active:bg-primary/10 active:dark:bg-primary/15': clickable
+        'setting-item-clickable cursor-pointer': clickable
       },
       customClass
     ]"
@@ -78,3 +78,8 @@ const handleClick = (event: MouseEvent) => {
   }
 };
 </script>
+<style scoped>
+.setting-item-clickable:active {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface, #ffffff));
+}
+</style>

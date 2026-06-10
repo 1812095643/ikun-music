@@ -25,7 +25,7 @@
                 {{ title }}
               </h3>
               <button
-                class="p-1 -mr-1 rounded-lg text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
+                class="responsive-modal-close p-1 -mr-1 rounded-lg text-neutral-400 transition-colors"
                 @click="close"
               >
                 <i class="ri-close-line text-lg"></i>
@@ -152,5 +152,10 @@ watch(show, (val) => {
 .responsive-modal-footer {
   border-top: 1px solid var(--qqm-border);
   background: var(--qqm-surface);
+}
+
+.responsive-modal-close:hover {
+  color: var(--qqm-primary, #22c55e);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface, #ffffff));
 }
 </style>

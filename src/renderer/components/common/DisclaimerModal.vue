@@ -17,9 +17,7 @@
 
           <div class="px-6 py-6">
             <div class="space-y-4 text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
-              <div
-                class="p-4 rounded-lg bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/15"
-              >
+              <div class="disclaimer-tip-card p-4 rounded-lg">
                 <div class="flex items-start gap-3">
                   <i class="ri-alert-line text-primary text-xl flex-shrink-0 mt-0.5"></i>
                   <p class="text-neutral-700 dark:text-neutral-300">
@@ -31,7 +29,7 @@
               <div class="space-y-3">
                 <div class="flex items-start gap-3">
                   <div
-                    class="w-6 h-6 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center flex-shrink-0"
+                    class="disclaimer-tip-icon w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0"
                   >
                     <i class="ri-book-2-line text-primary text-sm"></i>
                   </div>
@@ -40,7 +38,7 @@
 
                 <div class="flex items-start gap-3">
                   <div
-                    class="w-6 h-6 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center flex-shrink-0"
+                    class="disclaimer-tip-icon w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0"
                   >
                     <i class="ri-time-line text-primary text-sm"></i>
                   </div>
@@ -49,7 +47,7 @@
 
                 <div class="flex items-start gap-3">
                   <div
-                    class="w-6 h-6 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center flex-shrink-0"
+                    class="disclaimer-tip-icon w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0"
                   >
                     <i class="ri-shield-check-line text-primary text-sm"></i>
                   </div>
@@ -174,7 +172,7 @@
             </h3>
             <button
               @click="closeQRCode"
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
+              class="qrcode-close-button w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 transition-colors"
             >
               <i class="ri-close-line text-xl"></i>
             </button>
@@ -340,5 +338,16 @@ onMounted(() => {
 .qrcode-surface {
   border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 76%, transparent);
   background: color-mix(in srgb, var(--qqm-surface, #ffffff) 94%, transparent);
+}
+
+.disclaimer-tip-card,
+.disclaimer-tip-icon {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.qrcode-close-button:hover {
+  color: var(--qqm-primary, #22c55e);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

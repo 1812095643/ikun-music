@@ -74,7 +74,7 @@
                   <!-- Badge -->
                   <div class="mb-2 md:mb-3" v-if="isArtist(userDetail.profile)">
                     <span
-                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
+                      class="user-artist-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-primary text-xs font-semibold uppercase tracking-wider"
                     >
                       <i class="ri-verified-badge-fill text-sm" />
                       {{ t('user.detail.artist') }}
@@ -153,7 +153,7 @@
                 <Transition name="tab-indicator">
                   <div
                     v-if="activeTab === tab.value"
-                    class="absolute inset-0 rounded-md border border-primary/10 bg-white dark:border-white/10 dark:bg-white/10"
+                    class="user-tab-indicator absolute inset-0 rounded-md"
                   />
                 </Transition>
               </button>
@@ -528,5 +528,11 @@ button:focus-visible {
 
 .user-stat-hover:hover {
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, transparent);
+}
+
+.user-artist-badge,
+.user-tab-indicator {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

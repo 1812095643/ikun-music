@@ -25,7 +25,7 @@
                 class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 whitespace-nowrap"
                 :class="
                   searchType === type.key
-                    ? 'bg-primary/10 text-primary'
+                    ? 'search-tab-active text-primary'
                     : 'search-tab-surface text-neutral-600 dark:text-neutral-400 hover:text-primary'
                 "
                 @click="handleTypeChange(type.key)"
@@ -600,5 +600,10 @@ watch(
 
 .qqm-subtle-button:hover:not(:disabled) {
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 9%, var(--qqm-surface));
+}
+
+.search-tab-active {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

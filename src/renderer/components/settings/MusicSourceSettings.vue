@@ -174,7 +174,7 @@
                   </div>
 
                   <button
-                    class="p-1.5 text-neutral-400 hover:text-primary hover:bg-primary/5 dark:hover:text-primary dark:hover:bg-primary/10 rounded-lg transition-colors"
+                    class="music-source-icon-button p-1.5 text-neutral-400 rounded-lg transition-colors"
                     @click="removeLxApi(api.id)"
                   >
                     <i class="ri-delete-bin-line text-sm"></i>
@@ -220,7 +220,7 @@
               class="flex flex-col items-center justify-center py-6 text-center h-full"
             >
               <div
-                class="w-12 h-12 bg-primary/10 dark:bg-primary/20 text-primary rounded-lg flex items-center justify-center mb-3"
+                class="music-source-empty-icon w-12 h-12 text-primary rounded-lg flex items-center justify-center mb-3"
               >
                 <i class="ri-plug-fill text-2xl"></i>
               </div>
@@ -264,7 +264,7 @@
     <template #footer>
       <div class="flex justify-end gap-2">
         <button
-          class="px-4 py-2 text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:bg-primary/5 dark:hover:bg-primary/10 hover:text-primary rounded-lg transition-colors"
+          class="music-source-cancel px-4 py-2 text-xs font-medium text-neutral-600 dark:text-neutral-300 rounded-lg transition-colors"
           @click="handleCancel"
         >
           {{ t('common.cancel') }}
@@ -786,5 +786,16 @@ watch(
 .music-source-current {
   border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.music-source-icon-button:hover,
+.music-source-cancel:hover {
+  color: var(--qqm-primary, #22c55e);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.music-source-empty-icon {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

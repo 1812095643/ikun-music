@@ -74,7 +74,7 @@
             <div
               v-for="item in displayList"
               :key="item.id"
-              class="group flex items-center justify-between rounded-lg hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors p-1"
+              class="history-song-row group flex items-center justify-between rounded-lg transition-colors p-1"
             >
               <song-item
                 class="flex-1 !bg-transparent hover:!bg-transparent"
@@ -107,7 +107,7 @@
               :item="item"
               :show-count="currentTab === 'local'"
               :show-delete="currentTab === 'local'"
-              class="rounded-lg hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
+              class="history-card-row rounded-lg transition-colors"
               @click="handlePlaylistClick(item)"
               @delete="handleDelPlaylist(item)"
             />
@@ -121,7 +121,7 @@
               :item="item"
               :show-count="currentTab === 'local'"
               :show-delete="currentTab === 'local'"
-              class="rounded-lg hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
+              class="history-card-row rounded-lg transition-colors"
               @click="handleAlbumClick(item)"
               @delete="handleDelAlbum(item)"
             />
@@ -166,7 +166,7 @@
               <div
                 v-for="item in displayList"
                 :key="item.id"
-                class="group flex items-center justify-between rounded-lg hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors p-1"
+                class="history-song-row group flex items-center justify-between rounded-lg transition-colors p-1"
               >
                 <song-item
                   class="flex-1 !bg-transparent hover:!bg-transparent"
@@ -186,7 +186,7 @@
               <div
                 v-for="item in displayList"
                 :key="item.id"
-                class="group flex items-center justify-between rounded-lg hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
+                class="history-song-row group flex items-center justify-between rounded-lg transition-colors"
               >
                 <playlist-item
                   class="flex-1 !bg-transparent hover:!bg-transparent"
@@ -730,5 +730,10 @@ const handleNavigateToHeatmap = () => {
   border: 1px solid var(--qqm-border);
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
   color: var(--qqm-primary, #22c55e);
+}
+
+.history-song-row:hover,
+.history-card-row:hover {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>
