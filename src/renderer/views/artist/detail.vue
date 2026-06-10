@@ -87,7 +87,7 @@
                 <div class="artist-info flex-1 text-center md:text-left">
                   <div class="artist-badge mb-2 md:mb-3">
                     <span
-                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
+                      class="artist-type-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-primary text-xs font-semibold uppercase tracking-wider"
                     >
                       <i class="iconfont icon-verified text-sm" />
                       Artist
@@ -1185,5 +1185,10 @@ input:focus-visible {
 
 .play-icon:hover {
   color: var(--qqm-primary, #22c55e);
+}
+
+.artist-type-badge {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

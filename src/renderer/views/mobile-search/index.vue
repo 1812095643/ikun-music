@@ -361,7 +361,9 @@ onMounted(() => {
 .suggestion-item {
   @apply flex items-center gap-3 rounded-lg px-2 py-3;
   @apply text-neutral-700 dark:text-neutral-200;
-  @apply active:bg-primary/5 dark:active:bg-primary/10;
+  &:active {
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+  }
 
   i {
     @apply text-neutral-400;
@@ -377,7 +379,10 @@ onMounted(() => {
   border: 1px solid var(--qqm-border);
   background: var(--qqm-surface);
   @apply text-neutral-600 dark:text-neutral-300;
-  @apply active:bg-primary/5 active:text-primary dark:active:bg-primary/10;
+  &:active {
+    color: var(--qqm-primary, #22c55e);
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+  }
 }
 
 .hot-list {
@@ -386,7 +391,9 @@ onMounted(() => {
 
 .hot-item {
   @apply flex items-center gap-3 px-1 py-3;
-  @apply active:bg-primary/5 dark:active:bg-primary/10;
+  &:active {
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+  }
 }
 
 .search-section {

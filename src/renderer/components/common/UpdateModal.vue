@@ -25,7 +25,7 @@
             </span>
             <span
               v-if="showNewBadge"
-              class="inline-flex items-center rounded-lg bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary dark:bg-primary/20"
+              class="update-new-badge inline-flex items-center rounded-lg px-2.5 py-0.5 text-xs font-semibold text-primary"
             >
               NEW
             </span>
@@ -57,7 +57,7 @@
 
       <div
         v-if="showErrorCard"
-        class="mb-6 rounded-lg border border-primary/10 bg-primary/5 p-4 text-sm text-neutral-700 dark:border-primary/15 dark:bg-primary/10 dark:text-neutral-300"
+        class="update-error-card mb-6 rounded-lg p-4 text-sm text-neutral-700 dark:text-neutral-300"
       >
         <div class="mb-1 font-semibold">{{ t('comp.update.autoUpdateFailed') }}</div>
         <div>{{ errorText }}</div>
@@ -414,5 +414,11 @@ onUnmounted(() => {
   color: var(--qqm-primary, #22c55e);
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.update-new-badge,
+.update-error-card {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="home-song-card group flex cursor-pointer items-center gap-3 md:gap-4 rounded-lg p-2 md:p-2.5 transition-colors duration-200 hover:bg-primary/5 dark:hover:bg-primary/10"
+    class="home-song-card group flex cursor-pointer items-center gap-3 md:gap-4 rounded-lg p-2 md:p-2.5 transition-colors duration-200"
     @click="onPlayMusic"
     @contextmenu.prevent="onMenuClick"
   >
@@ -153,5 +153,9 @@ const onMenuClick = (event: MouseEvent) => handleMenuClick(event);
 
 .home-song-overlay {
   background: color-mix(in srgb, #0f172a 20%, transparent);
+}
+
+.home-song-card:hover {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface, #ffffff));
 }
 </style>

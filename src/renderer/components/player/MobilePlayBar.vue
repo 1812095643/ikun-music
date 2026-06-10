@@ -297,7 +297,8 @@ watch(
 
         &.play {
           @apply w-9 h-9 rounded-lg flex items-center justify-center mr-2;
-          @apply bg-primary/10 dark:bg-primary/15;
+          border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+          background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 
           .iconfont {
             @apply text-xl transition-colors;

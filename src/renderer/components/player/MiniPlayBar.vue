@@ -443,7 +443,7 @@ const setMusicFull = () => {
   height: 32px;
 
   &:hover {
-    @apply bg-primary/5 dark:bg-primary/10;
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
   }
 
   &.play {
@@ -469,7 +469,7 @@ const setMusicFull = () => {
   height: 32px;
 
   &:hover {
-    @apply bg-primary/5 dark:bg-primary/10;
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
     color: var(--qqm-primary, #22c55e);
   }
 

@@ -22,7 +22,7 @@
         class="pay-card group relative overflow-hidden rounded-lg border border-primary/15 p-6 flex flex-col items-center transition-colors"
       >
         <div
-          class="absolute -right-4 -top-4 w-24 h-24 rounded-lg bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
+          class="donation-card-glow absolute -right-4 -top-4 w-24 h-24 rounded-lg transition-colors duration-200"
         ></div>
         <img :src="alipay" alt="Alipay" class="donation-qr-surface w-52 h-52 rounded-lg mb-4" />
         <div class="flex items-center gap-2 text-primary font-bold text-lg">
@@ -36,7 +36,7 @@
         class="pay-card group relative overflow-hidden rounded-lg border border-primary/15 p-6 flex flex-col items-center transition-colors"
       >
         <div
-          class="absolute -right-4 -top-4 w-24 h-24 rounded-lg bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
+          class="donation-card-glow absolute -right-4 -top-4 w-24 h-24 rounded-lg transition-colors duration-200"
         ></div>
         <img :src="wechat" alt="WeChat" class="donation-qr-surface w-52 h-52 rounded-lg mb-4" />
         <div class="flex items-center gap-2 text-primary font-bold text-lg">
@@ -91,7 +91,9 @@
                 <span class="font-bold text-neutral-900 dark:text-neutral-100 truncate text-sm">
                   {{ donor.name }}
                 </span>
-                <span class="rounded bg-primary/5 px-1.5 py-0.5 font-mono text-xs text-primary/80">
+                <span
+                  class="donation-amount-badge rounded px-1.5 py-0.5 font-mono text-xs text-primary/80"
+                >
                   ¥{{ donor.amount }}
                 </span>
               </div>
@@ -135,14 +137,14 @@ const PAGE_SIZE = 40;
 const FIRST_BATCH = 16;
 
 const AVATAR_COLORS = [
-  'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
-  'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
-  'bg-primary/15 text-primary dark:bg-primary/20 dark:text-primary',
-  'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
-  'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
+  'donation-primary-badge text-primary',
+  'donation-primary-badge text-primary',
+  'donation-primary-badge text-primary',
+  'donation-primary-badge text-primary',
+  'donation-primary-badge text-primary',
   'donation-badge-surface text-neutral-600 dark:text-neutral-300',
   'donation-badge-surface text-neutral-600 dark:text-neutral-300',
-  'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary'
+  'donation-primary-badge text-primary'
 ];
 
 const allDonors = ref<Donor[]>([]);
@@ -246,5 +248,19 @@ onActivated(() => fetchDonors());
 .pay-card:hover {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.donation-card-glow {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, transparent);
+}
+
+.group:hover .donation-card-glow {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 9%, transparent);
+}
+
+.donation-amount-badge,
+.donation-primary-badge {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

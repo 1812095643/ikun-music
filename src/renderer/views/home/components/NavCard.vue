@@ -100,9 +100,9 @@ const aspectClass = computed(() => {
 
 const colorClasses = computed(() => ({
   bg: 'qqm-nav-card-surface',
-  activeBg: 'bg-primary/5 dark:bg-primary/10',
-  iconBg: 'bg-primary/10 dark:bg-primary/15',
-  activeIconBg: 'bg-primary/15 dark:bg-primary/20',
+  activeBg: 'qqm-nav-card-active',
+  iconBg: 'qqm-nav-card-icon',
+  activeIconBg: 'qqm-nav-card-icon-active',
   iconColor: 'text-primary',
   title: 'text-neutral-900 dark:text-neutral-50',
   subtitle: 'text-neutral-500 dark:text-neutral-400',
@@ -139,5 +139,16 @@ const colorClasses = computed(() => ({
 .nav-card:hover .qqm-nav-card-surface {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 20%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.qqm-nav-card-active,
+.qqm-nav-card-icon,
+.qqm-nav-card-icon-active {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.qqm-nav-card-icon-active {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface));
 }
 </style>

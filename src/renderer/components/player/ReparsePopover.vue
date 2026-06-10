@@ -328,7 +328,7 @@ watch(
 
 .source-button {
   &:hover:not(.opacity-50):not(.opacity-40) {
-    @apply bg-primary/5 dark:bg-primary/10;
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
   }
 }
 

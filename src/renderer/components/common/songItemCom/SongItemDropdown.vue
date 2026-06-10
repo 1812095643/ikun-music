@@ -246,7 +246,7 @@ const handleSelect = (key: string | number) => {
     @apply h-9 text-sm;
 
     &:hover {
-      @apply bg-primary/5 dark:bg-primary/10;
+      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
     }
 
     .n-dropdown-option-body {
