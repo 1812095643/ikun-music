@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="set-page h-full w-full bg-white dark:bg-black transition-colors duration-200 flex flex-col"
-  >
+  <div class="set-page h-full w-full transition-colors duration-200 flex flex-col">
     <!-- 顶部导航区 -->
     <div class="settings-header flex-shrink-0 z-10 page-padding pt-6 pb-3">
       <h1 class="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white mb-6">

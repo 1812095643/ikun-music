@@ -62,7 +62,7 @@
             class="play-overlay absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 opacity-0 transition-colors duration-200 group-hover:bg-black/10 group-hover:opacity-100"
           >
             <div
-              class="play-button flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-lg bg-white transition-colors duration-200"
+              class="play-button flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-lg transition-colors duration-200"
             >
               <i class="iconfont icon-playfill text-lg md:text-2xl text-neutral-900 ml-0.5" />
             </div>
@@ -208,5 +208,15 @@ const playAll = async () => {
 .qqm-home-cover {
   border: 1px solid var(--qqm-border);
   background: var(--qqm-surface-2, var(--qqm-surface));
+}
+
+.play-button {
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 68%, #fff 32%);
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 90%, transparent);
+  color: var(--qqm-text, #1f2329);
+}
+
+.play-button:hover {
+  color: var(--qqm-primary, #22c55e);
 }
 </style>

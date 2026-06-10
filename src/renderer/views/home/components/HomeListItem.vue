@@ -41,7 +41,7 @@
 
           <!-- Play Button -->
           <button
-            class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] bg-white text-neutral-900 ring-1 ring-black/5 transition-opacity duration-200 ease-out"
+            class="home-list-play flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] transition-opacity duration-200 ease-out"
             @click.stop="$emit('play')"
           >
             <i class="ri-play-fill ml-0.5 text-lg" />
@@ -210,5 +210,15 @@ const extractColor = async () => {
 .home-list-card:hover .home-list-cover {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.home-list-play {
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 68%, #fff 32%);
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 90%, transparent);
+  color: var(--qqm-text, #1f2329);
+}
+
+.home-list-play:hover {
+  color: var(--qqm-primary, #22c55e);
 }
 </style>

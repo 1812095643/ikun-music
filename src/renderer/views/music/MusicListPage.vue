@@ -1,5 +1,5 @@
 <template>
-  <div class="music-list-page h-full w-full bg-white dark:bg-black transition-colors duration-200">
+  <div class="music-list-page h-full w-full transition-colors duration-200">
     <n-scrollbar ref="scrollbarRef" class="h-full" @scroll="handleScroll">
       <div class="music-list-content pb-32">
         <!-- Hero Section 和 Action Bar -->
@@ -14,7 +14,7 @@
                   backgroundImage: `url(${getImgUrl(getCoverImgUrl, '800y800')})`
                 }"
               ></div>
-              <div class="absolute inset-0 bg-white/99 dark:bg-black/99"></div>
+              <div class="absolute inset-0 music-hero-mask"></div>
             </div>
 
             <!-- Hero Content -->
@@ -47,7 +47,7 @@
                       <button
                         v-if="!isMobile"
                         type="button"
-                        class="play-icon w-11 h-11 rounded-full bg-white/96 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-auto"
+                        class="play-icon w-11 h-11 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-auto"
                         @click.stop="handlePlayAll"
                       >
                         <i class="ri-play-fill text-3xl text-neutral-900 ml-1" />
@@ -1077,5 +1077,9 @@ onMounted(checkCollectionStatus);
   .action-bar {
     @apply py-2;
   }
+}
+
+.music-hero-mask {
+  background: color-mix(in srgb, var(--qqm-bg, #f7f8fa) 98%, transparent);
 }
 </style>

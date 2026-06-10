@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full bg-white transition-colors duration-200 dark:bg-black">
+  <div class="sticky-tab-page h-full w-full transition-colors duration-200">
     <n-scrollbar ref="scrollbarRef" class="h-full" :size="100" @scroll="handleScroll">
       <div class="w-full pb-32">
         <!-- Page Header (scrolls away) -->
@@ -91,5 +91,9 @@ defineExpose({ scrollbarRef, scrollTo });
 
 .sticky-tabs--active {
   border-bottom: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+}
+
+.sticky-tab-page {
+  background: var(--qqm-bg, #f7f8fa);
 }
 </style>

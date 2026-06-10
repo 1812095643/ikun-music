@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full bg-white dark:bg-black transition-colors duration-200">
+  <div class="user-detail-page h-full w-full transition-colors duration-200">
     <n-scrollbar class="h-full">
       <div class="w-full pb-32">
         <!-- Loading State -->
@@ -47,7 +47,7 @@
                   backgroundImage: `url(${getImgUrl(userDetail.profile.backgroundUrl)})`
                 }"
               />
-              <div class="absolute inset-0 bg-white/98 dark:bg-black/98" />
+              <div class="absolute inset-0 user-detail-hero-mask" />
             </div>
 
             <!-- Hero Content -->
@@ -200,7 +200,7 @@
                       class="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-opacity duration-200 group-hover:bg-black/12 group-hover:opacity-100"
                     >
                       <div
-                        class="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 transition-opacity duration-200"
+                        class="user-detail-play flex h-9 w-9 items-center justify-center rounded-lg transition-opacity duration-200"
                       >
                         <i class="ri-play-fill text-xl text-neutral-900 ml-0.5" />
                       </div>
@@ -506,5 +506,23 @@ button:focus-visible {
   box-shadow: none;
   outline: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 32%, transparent);
   outline-offset: 2px;
+}
+
+.user-detail-page {
+  background: var(--qqm-bg, #f7f8fa);
+}
+
+.user-detail-hero-mask {
+  background: color-mix(in srgb, var(--qqm-bg, #f7f8fa) 98%, transparent);
+}
+
+.user-detail-play {
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 68%, #fff 32%);
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 90%, transparent);
+  color: var(--qqm-text, #1f2329);
+}
+
+.user-detail-play:hover {
+  color: var(--qqm-primary, #22c55e);
 }
 </style>

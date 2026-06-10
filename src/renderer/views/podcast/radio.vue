@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="radio-detail-page h-full w-full bg-white dark:bg-black transition-colors duration-200"
-  >
+  <div class="radio-detail-page h-full w-full transition-colors duration-200">
     <n-scrollbar class="h-full" @scroll="handleScroll">
       <div class="radio-detail-content w-full pb-32">
         <n-spin :show="isLoading && !currentRadio">
@@ -38,7 +36,7 @@
                         class="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/20 transition-colors duration-200"
                       >
                         <div
-                          class="play-icon w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+                          class="play-icon w-10 h-10 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
                           @click="handlePlayAll"
                         >
                           <i class="iconfont icon-playfill text-2xl text-neutral-900 ml-1" />

@@ -23,7 +23,7 @@
               class="px-3 h-full rounded-md text-xs font-medium transition-colors duration-200 flex items-center gap-1"
               :class="
                 isDescending === isDesc
-                  ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 ring-1 ring-black/5 dark:ring-white/10'
+                  ? 'favorite-tab-active text-neutral-900 dark:text-neutral-100'
                   : 'text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary'
               "
               @click="toggleSort(isDesc)"
@@ -425,5 +425,10 @@ const handleSelectAll = (checked: boolean) => {
 .favorite-tag:hover {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface));
+}
+
+.favorite-tab-active {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface, #fff));
 }
 </style>

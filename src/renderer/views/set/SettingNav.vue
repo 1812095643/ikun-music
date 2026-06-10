@@ -1,5 +1,5 @@
 <template>
-  <div class="setting-nav-surface w-32 h-full flex-shrink-0 bg-white dark:bg-black">
+  <div class="setting-nav-surface w-32 h-full flex-shrink-0">
     <div
       v-for="section in sections"
       :key="section.id"
