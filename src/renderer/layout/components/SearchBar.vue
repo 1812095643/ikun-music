@@ -16,7 +16,7 @@
           :class="isTabActive(tab.path) ? 'tab-btn--on' : 'tab-btn--off'"
           @click="router.push(tab.path)"
         >
-          <i :class="tab.icon" />
+          <span class="tab-icon" v-html="getTabIcon(tab.path)" />
           <span>{{ tab.label }}</span>
         </button>
       </div>
@@ -55,7 +55,7 @@
               ref="inputRef"
               v-model="searchValue"
               class="search-input"
-              :placeholder="hotSearchKeyword"
+              :placeholder="cleanHotSearchKeyword"
               @input="handleInput(searchValue)"
               @keydown="handleKeydown"
               @focus="handleFocus"
@@ -272,27 +272,41 @@ const goBack = () => router.back();
 // ── Tabs ──────────────────────────────────────────────
 const tabs = computed(() => {
   const items = [
-    { key: 'home', label: t('comp.home'), path: '/', icon: 'ri-home-4-fill' },
-    { key: 'playlist', label: t('comp.list'), path: '/list', icon: 'ri-play-list-2-fill' },
-    { key: 'album', label: t('comp.newAlbum.title'), path: '/album', icon: 'ri-album-fill' },
+    { key: 'home', label: t('comp.home'), path: '/' },
+    { key: 'playlist', label: t('comp.list'), path: '/list' },
+    { key: 'album', label: t('comp.newAlbum.title'), path: '/album' },
     {
       key: 'charts',
       label: t('comp.toplist'),
-      path: '/toplist',
-      icon: 'ri-bar-chart-grouped-fill'
+      path: '/toplist'
     },
-    { key: 'mv', label: t('comp.mv'), path: '/mv', icon: 'ri-movie-2-fill' },
+    { key: 'mv', label: t('comp.mv'), path: '/mv' },
     {
       key: 'localMusic',
       label: t('comp.localMusic'),
       path: '/local-music',
-      icon: 'ri-folder-music-fill',
       electronOnly: true
     }
   ];
   return items.filter((tab) => !tab.electronOnly || isElectron);
 });
 const isTabActive = (path: string) => route.path === path;
+
+const tabIcons: Record<string, string> = {
+  '/': '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 10.8 12 4.6l7.5 6.2v7.7A1.5 1.5 0 0 1 18 20h-3.8v-5.4H9.8V20H6a1.5 1.5 0 0 1-1.5-1.5v-7.7Z"/></svg>',
+  '/list':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6h12M6 11h12M6 16h7M17 15v4l3-2v-4l-3 2Z"/></svg>',
+  '/album':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.8a7.2 7.2 0 1 0 0 14.4 7.2 7.2 0 0 0 0-14.4Zm0 4.8a2.4 2.4 0 1 1 0 4.8 2.4 2.4 0 0 1 0-4.8Z"/></svg>',
+  '/toplist':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18V10m7 8V6m7 12v-5"/></svg>',
+  '/mv':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h10.5A2.5 2.5 0 0 1 18 10.5v3A2.5 2.5 0 0 1 15.5 16H5V8Zm13 3 3-1.8v5.6L18 13"/></svg>',
+  '/local-music':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 8h6l1.5 2h7.5v7.5A1.5 1.5 0 0 1 18 19H6a1.5 1.5 0 0 1-1.5-1.5V8Z"/></svg>'
+};
+
+const getTabIcon = (tabPath: string) => tabIcons[tabPath] || tabIcons['/'];
 
 // Sliding pill
 const tabsTrackRef = ref<HTMLElement | null>(null);
@@ -330,9 +344,12 @@ const handleBlur = () => {
 };
 
 // ── Search logic ──────────────────────────────────────
+const stripEmoji = (value: string) =>
+  value.replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '').trim();
 const hotSearchKeyword = ref(t('comp.searchBar.searchPlaceholder'));
 const hotSearchValue = ref('');
 const searchValue = ref('');
+const cleanHotSearchKeyword = computed(() => stripEmoji(hotSearchKeyword.value));
 
 watch(
   () => searchStore.searchValue,
@@ -427,7 +444,9 @@ const handleKeydown = (e: KeyboardEvent) => {
 // ── User / misc ───────────────────────────────────────
 const loadHotSearch = async () => {
   const { data } = await getSearchKeyword();
-  hotSearchKeyword.value = data.data.showKeyword;
+  hotSearchKeyword.value = stripEmoji(
+    data.data.showKeyword || t('comp.searchBar.searchPlaceholder')
+  );
   hotSearchValue.value = data.data.realkeyword;
 };
 const loadPage = async () => {

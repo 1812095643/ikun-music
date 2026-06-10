@@ -15,12 +15,16 @@
             placement="bottom"
           >
             <template #trigger>
-              <router-link class="app-menu-item-link" :to="item.path">
-                <i
-                  class="iconfont app-menu-item-icon"
-                  :style="iconStyle(index)"
-                  :class="item.meta.icon"
-                ></i>
+              <router-link
+                class="app-menu-item-link"
+                :to="item.path"
+                :aria-label="t(item.meta.title)"
+              >
+                <span
+                  class="app-menu-item-icon"
+                  :class="{ 'app-menu-item-icon--active': isChecked(index) }"
+                  v-html="getMenuIcon(item.path)"
+                />
                 <span
                   v-if="settingsStore.setData.isMenuExpanded"
                   class="app-menu-item-text ml-3"
@@ -81,12 +85,32 @@ const isChecked = (index: number) => {
   return path.value === props.menus[index].path;
 };
 
-const iconStyle = (index: number) => {
-  const style = {
-    fontSize: props.size,
-    color: isChecked(index) ? props.selectColor : props.color
-  };
-  return style;
+const menuIcons: Record<string, string> = {
+  '/': '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.8 12 4l8 6.8v7.7a1.5 1.5 0 0 1-1.5 1.5h-4.2v-5.7H9.7V20H5.5A1.5 1.5 0 0 1 4 18.5v-7.7Z"/></svg>',
+  '/search':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18.5 18.5-4-4m2-4.6a6.6 6.6 0 1 1-13.2 0 6.6 6.6 0 0 1 13.2 0Z"/></svg>',
+  '/list':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5.5h12M6 10.5h12M6 15.5h7.5M17 15v4l3-1.9V13l-3 2Z"/></svg>',
+  '/album':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15Zm0 4.8a2.7 2.7 0 1 1 0 5.4 2.7 2.7 0 0 1 0-5.4Z"/></svg>',
+  '/toplist':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18V9.5m7 8.5V5.5m7 12.5v-6.5"/></svg>',
+  '/mv':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7.5h10.5A2.5 2.5 0 0 1 18 10v4a2.5 2.5 0 0 1-2.5 2.5H5V7.5Zm13 3 3-2v7l-3-2"/></svg>',
+  '/podcast':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14.5a3 3 0 0 0 3-3V8a3 3 0 0 0-6 0v3.5a3 3 0 0 0 3 3Zm-6-3a6 6 0 0 0 12 0M12 17.5V21"/></svg>',
+  '/history':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v6l4 2M4.8 8.2A8 8 0 1 1 4 12"/></svg>',
+  '/local-music':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7.5h6l1.7 2H19.5v8a1.5 1.5 0 0 1-1.5 1.5H6a1.5 1.5 0 0 1-1.5-1.5v-10Z"/></svg>',
+  '/user':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 7a7 7 0 0 1 14 0"/></svg>',
+  '/set':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Zm7.2-3.2a7 7 0 0 0-.1-1.1l2-1.5-2-3.4-2.4 1a7.6 7.6 0 0 0-1.9-1.1L14.5 3h-5l-.4 2.9A7.6 7.6 0 0 0 7.2 7l-2.4-1-2 3.4 2 1.5a7 7 0 0 0 0 2.2l-2 1.5 2 3.4 2.4-1a7.6 7.6 0 0 0 1.9 1.1l.4 2.9h5l.4-2.9a7.6 7.6 0 0 0 1.9-1.1l2.4 1 2-3.4-2-1.5c.1-.4.1-.7.1-1.1Z"/></svg>'
+};
+
+const getMenuIcon = (menuPath: string) => {
+  return menuIcons[menuPath] || menuIcons['/'];
 };
 
 const toggleMenu = () => {
@@ -98,74 +122,140 @@ const toggleMenu = () => {
 
 <style lang="scss" scoped>
 .app-menu {
-  @apply flex-col items-center justify-center transition-all duration-300 w-[100px] px-1;
+  width: 56px;
+  height: 100%;
+  padding: 8px 6px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: width 0.22s ease;
+}
+
+.app-menu-header {
+  width: 100%;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.app-menu-logo {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.app-menu-logo img {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
 }
 
 .app-menu-list {
-  max-height: calc(100vh - 120px); /* 为header预留空间，防止菜单项被遮挡 */
+  width: 100%;
+  max-height: calc(100vh - 70px);
   overflow-y: auto;
   overflow-x: hidden;
-  /* 自定义滚动条样式 - 默认隐藏，悬停时显示 */
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-  padding-bottom: 20px;
-  transition: scrollbar-color 0.3s ease;
+  scrollbar-width: none;
+}
 
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: transparent;
-    border-radius: 2px;
-    transition: background-color 0.3s ease;
-  }
-
-  /* 悬停时显示滚动条 */
-  &:hover {
-    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
-
-    &::-webkit-scrollbar-thumb {
-      background-color: rgba(156, 163, 175, 0.5);
-
-      &:hover {
-        background-color: rgba(156, 163, 175, 0.7);
-      }
-    }
-  }
+.app-menu-list::-webkit-scrollbar {
+  display: none;
 }
 
 .app-menu-expanded {
-  @apply w-[160px];
-
-  .app-menu-item {
-    @apply hover:bg-gray-100 dark:hover:bg-gray-800 rounded mr-4;
-  }
+  width: 154px;
 }
 
-.app-menu-item-link,
-.app-menu-header {
-  @apply flex items-center w-[200px] overflow-hidden ml-2 px-5;
-}
-
-.app-menu-header {
-  @apply ml-1;
+.app-menu-item {
+  width: 100%;
+  margin: 2px 0;
 }
 
 .app-menu-item-link {
-  @apply mb-6 mt-6;
+  position: relative;
+  width: 100%;
+  height: 38px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: #8b929c;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.app-menu-expanded .app-menu-item-link {
+  justify-content: flex-start;
+  padding: 0 14px;
+}
+
+.app-menu-item-link:hover {
+  background: rgba(24, 28, 34, 0.04);
+  color: #1f242b;
+}
+
+.app-menu-item-link.router-link-active {
+  background: rgba(30, 207, 115, 0.1);
+  color: #13c76b;
+}
+
+.app-menu-item-link.router-link-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11px;
+  bottom: 11px;
+  width: 2px;
+  border-radius: 0 3px 3px 0;
+  background: #1ecf73;
 }
 
 .app-menu-item-icon {
-  @apply transition-all duration-200 text-gray-500 dark:text-gray-400;
+  width: 19px;
+  height: 19px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+}
 
-  &:hover {
-    @apply text-green-500 scale-105 !important;
-  }
+.app-menu-item-icon :deep(svg) {
+  width: 19px;
+  height: 19px;
+  display: block;
+}
+
+.app-menu-item-icon :deep(path) {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.app-menu-item-icon--active :deep(path) {
+  stroke-width: 1.9;
+}
+
+.app-menu-item-text {
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+:global(.dark) .app-menu-item-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f4f7f8;
 }
 
 .mobile {
@@ -184,17 +274,15 @@ const toggleMenu = () => {
 
     &-list {
       @apply flex justify-between px-4;
-      max-height: none !important; /* 移动端不限制高度 */
-      overflow: visible !important; /* 移动端不需要滚动 */
+      max-height: none !important;
+      overflow: visible !important;
     }
 
-    &-item {
-      &-link {
-        @apply my-2 w-auto px-2;
-        width: auto !important;
-        margin-top: 8px;
-        margin-bottom: 8px;
-      }
+    &-item-link {
+      width: auto !important;
+      margin-top: 8px;
+      margin-bottom: 8px;
+      padding: 0 8px;
     }
 
     &-expanded {

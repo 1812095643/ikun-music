@@ -18,3 +18,510 @@ body {
 .settings-slider .n-slider-mark {
   font-size: 10px !important;
 }
+
+/* QQ 音乐设计基线：清爽白底、绿色主色、细线分隔、紧凑信息密度；不使用大圆角、emoji 与多层嵌套卡片。 */
+:root {
+  --qqm-primary: #1ecf73;
+  --qqm-primary-strong: #0dbd62;
+  --qqm-primary-soft: rgba(30, 207, 115, 0.1);
+  --qqm-bg: #f7f8fa;
+  --qqm-surface: #ffffff;
+  --qqm-surface-muted: #f2f4f5;
+  --qqm-border: rgba(20, 24, 31, 0.08);
+  --qqm-text: #151922;
+  --qqm-muted: #6f7580;
+  --qqm-shadow: 0 8px 20px rgba(20, 24, 31, 0.06);
+  --qqm-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dark {
+  --qqm-bg: #111315;
+  --qqm-surface: #181b1f;
+  --qqm-surface-muted: #20242a;
+  --qqm-border: rgba(255, 255, 255, 0.08);
+  --qqm-text: #f4f7f8;
+  --qqm-muted: #a1a8b2;
+  --qqm-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+.layout-page,
+.home-container {
+  color: var(--qqm-text);
+  background: var(--qqm-bg) !important;
+}
+
+.layout-main {
+  background: var(--qqm-bg);
+}
+
+.menu {
+  background: var(--qqm-surface) !important;
+  border-right: 1px solid var(--qqm-border);
+}
+
+.app-menu-header {
+  margin-bottom: 10px;
+}
+
+.app-menu-item-link {
+  position: relative;
+  min-height: 46px;
+  border-radius: 10px;
+  color: var(--qqm-muted);
+  transition:
+    background-color 180ms var(--qqm-ease),
+    color 180ms var(--qqm-ease),
+    transform 180ms var(--qqm-ease);
+}
+
+.app-menu-item-link:hover {
+  color: var(--qqm-text);
+  background: var(--qqm-surface-muted);
+}
+
+.app-menu-item-link.router-link-active {
+  color: var(--qqm-primary-strong);
+  background: var(--qqm-primary-soft);
+}
+
+.app-menu-item-link.router-link-active::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  width: 3px;
+  height: 20px;
+  border-radius: 2px;
+  background: var(--qqm-primary);
+  transform: translateY(-50%);
+}
+
+.app-menu-item-icon:hover,
+.app-menu-item-link.router-link-active .app-menu-item-icon {
+  color: var(--qqm-primary) !important;
+}
+
+.search-bar {
+  margin: 8px 18px 0 14px;
+  padding: 10px 12px 12px !important;
+  border-bottom: 1px solid var(--qqm-border);
+  background: var(--qqm-bg);
+}
+
+.tabs-track,
+.search-inner,
+.action-btn,
+.user-btn {
+  border: 1px solid var(--qqm-border) !important;
+  box-shadow: none !important;
+}
+
+.tabs-track {
+  background: var(--qqm-surface) !important;
+  border-radius: 18px !important;
+}
+
+.tab-slider-bg {
+  background: var(--qqm-primary-soft) !important;
+  border: 1px solid rgba(30, 207, 115, 0.16);
+  box-shadow: none !important;
+}
+
+.tab-btn--on {
+  color: var(--qqm-primary-strong) !important;
+}
+
+.search-inner,
+.action-btn,
+.user-btn {
+  background: var(--qqm-surface) !important;
+  border-radius: 18px !important;
+}
+
+.search-inner--focus {
+  border-color: rgba(30, 207, 115, 0.32) !important;
+  box-shadow: 0 0 0 3px rgba(30, 207, 115, 0.08) !important;
+}
+
+.home-content {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding-top: 18px;
+}
+
+.content-sections {
+  gap: 30px !important;
+}
+
+.hero-section {
+  margin-bottom: 28px !important;
+}
+
+.hero-grid {
+  gap: 16px !important;
+}
+
+.daily-card,
+.fm-card {
+  border-radius: 10px !important;
+  border: 1px solid var(--qqm-border);
+  box-shadow: 0 8px 18px rgba(20, 24, 31, 0.08) !important;
+}
+
+.daily-card:hover,
+.fm-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(20, 24, 31, 0.1) !important;
+}
+
+.playlist-section,
+.artists-section,
+.album-section,
+.new-songs-section,
+.private-content-section {
+  padding-top: 2px;
+  border-top: 1px solid var(--qqm-border);
+}
+
+.playlist-section > div:first-child,
+.artists-section > div:first-child,
+.album-section > div:first-child,
+.new-songs-section > div:first-child,
+.private-content-section > div:first-child {
+  margin-bottom: 20px !important;
+}
+
+.playlist-section h2,
+.artists-section h2,
+.album-section h2,
+.new-songs-section h2,
+.private-content-section h2 {
+  color: var(--qqm-text) !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em;
+}
+
+.playlist-section h2 + div,
+.artists-section h2 + div,
+.album-section h2 + div,
+.new-songs-section h2 + div,
+.private-content-section h2 + div {
+  width: 18px !important;
+  height: 3px !important;
+  border-radius: 2px !important;
+  background: var(--qqm-primary) !important;
+}
+
+.home-list-card {
+  border-radius: 10px;
+  transition:
+    transform 180ms var(--qqm-ease),
+    color 180ms var(--qqm-ease);
+}
+
+.home-list-card:hover {
+  transform: translateY(-2px);
+}
+
+.home-list-card > div:first-child {
+  border-radius: 10px !important;
+  box-shadow: none !important;
+}
+
+.home-list-card:hover > div:first-child {
+  box-shadow: 0 12px 24px rgba(20, 24, 31, 0.12) !important;
+}
+
+.home-list-card h3 {
+  color: var(--qqm-text) !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
+.home-list-card:hover h3 {
+  color: var(--qqm-primary-strong) !important;
+}
+
+.home-list-card p {
+  color: var(--qqm-muted) !important;
+  font-size: 13px !important;
+}
+
+.home-song-card {
+  border-radius: 10px !important;
+  border: 1px solid transparent;
+}
+
+.home-song-card:hover {
+  border-color: var(--qqm-border);
+  background: var(--qqm-surface) !important;
+  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.07);
+}
+
+.home-song-card .cover {
+  border-radius: 8px !important;
+}
+
+.artists-section .artist-avatar {
+  border-radius: 50% !important;
+  border: 1px solid var(--qqm-border);
+  box-shadow: none !important;
+}
+
+.artists-section .artist-item:hover .artist-avatar {
+  box-shadow: 0 10px 22px rgba(20, 24, 31, 0.1) !important;
+}
+
+.artists-section .artist-name {
+  color: var(--qqm-text) !important;
+}
+
+.artists-section .artist-item:hover .artist-name {
+  color: var(--qqm-primary-strong) !important;
+}
+
+.music-play-bar {
+  left: 100px !important;
+  right: 18px !important;
+  bottom: 16px !important;
+  width: auto !important;
+  min-height: 78px;
+  border: 1px solid var(--qqm-border) !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 94%, transparent) !important;
+  box-shadow: 0 12px 32px rgba(20, 24, 31, 0.12) !important;
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+.play-bar-img,
+.play-bar-img-wrapper {
+  border-radius: 10px !important;
+}
+
+.music-buttons-play {
+  color: #ffffff !important;
+  background: var(--qqm-primary) !important;
+  box-shadow: 0 8px 18px rgba(30, 207, 115, 0.24);
+}
+
+.music-buttons-prev:hover,
+.music-buttons-next:hover,
+.audio-button .iconfont:hover,
+.home-song-card .artist-name span:hover {
+  color: var(--qqm-primary-strong) !important;
+}
+
+.n-scrollbar-rail__scrollbar {
+  background: rgba(30, 207, 115, 0.5) !important;
+}
+
+@media (max-width: 900px) {
+  .search-bar {
+    margin: 6px 10px 0;
+    padding: 8px 8px 10px !important;
+  }
+
+  .home-content {
+    padding-top: 12px;
+  }
+
+  .music-play-bar {
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 12px !important;
+    border-radius: 10px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .daily-card,
+  .fm-card,
+  .home-list-card,
+  .home-song-card,
+  .app-menu-item-link {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
+}
+
+/* QQ 音乐顶栏与侧栏精修：窄侧栏、扁平导航、轻量搜索，避免卡片化和臃肿按钮。 */
+.menu {
+  width: 72px !important;
+  min-width: 72px !important;
+  background: var(--qqm-surface) !important;
+  box-shadow: none !important;
+}
+
+.search-bar {
+  height: 56px;
+  margin: 0 !important;
+  padding: 0 22px !important;
+  border-bottom: 1px solid var(--qqm-border);
+  background: var(--qqm-bg) !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+}
+
+.tabs-track {
+  height: 34px;
+  padding: 2px !important;
+  border: 1px solid var(--qqm-border) !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tab-btn {
+  height: 28px !important;
+  padding: 0 12px !important;
+  border-radius: 6px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+.tab-slider-bg {
+  border: none !important;
+  border-radius: 6px !important;
+  background: var(--qqm-primary-soft) !important;
+  box-shadow: none !important;
+}
+
+.search-wrap--idle {
+  width: 240px !important;
+}
+
+.search-inner {
+  height: 34px !important;
+  border-radius: 8px !important;
+  background: var(--qqm-surface) !important;
+  border: 1px solid var(--qqm-border) !important;
+  box-shadow: none !important;
+}
+
+.search-input {
+  font-size: 13px !important;
+}
+
+.action-btn,
+.user-btn {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 8px !important;
+  background: var(--qqm-surface) !important;
+  border: 1px solid var(--qqm-border) !important;
+  box-shadow: none !important;
+}
+
+.user-btn {
+  width: auto !important;
+  min-width: 48px;
+  padding: 0 10px !important;
+}
+
+.main-content {
+  background: var(--qqm-bg);
+}
+
+.home-content {
+  padding-top: 14px !important;
+}
+
+.music-play-bar {
+  left: 82px !important;
+  right: 14px !important;
+}
+
+@media (max-width: 900px) {
+  .menu {
+    width: 100vw !important;
+    min-width: 0 !important;
+  }
+
+  .search-bar {
+    height: 52px;
+    padding: 0 12px !important;
+  }
+
+  .search-wrap--idle {
+    width: 180px !important;
+  }
+}
+
+/* 侧栏 SVG 版本最终覆盖：避免旧 iconfont 规则影响线性 SVG。 */
+.app-menu-item-icon,
+.app-menu-item-icon:hover,
+.app-menu-item-link.router-link-active .app-menu-item-icon {
+  color: currentColor !important;
+  transform: none !important;
+}
+
+.app-menu-item-icon svg,
+.app-menu-item-icon path {
+  pointer-events: none;
+}
+
+/* 顶部导航 SVG 全局穿透：v-html 注入的 svg 不受 scoped 深度选择器稳定控制。 */
+.tab-icon {
+  width: 14px !important;
+  height: 14px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+}
+
+.tab-icon svg {
+  width: 14px !important;
+  height: 14px !important;
+  display: block !important;
+}
+
+.tab-icon path {
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.9 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+/* 侧栏宽度再压缩：目标是工具栏级导航，而不是卡片侧栏。 */
+.menu {
+  width: 56px !important;
+  min-width: 56px !important;
+}
+
+.app-menu {
+  width: 56px !important;
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+}
+
+.app-menu-item-link {
+  height: 38px !important;
+  border-radius: 8px !important;
+}
+
+.app-menu-item-link.router-link-active::before {
+  width: 2px !important;
+  top: 11px !important;
+  bottom: 11px !important;
+}
+
+.app-menu-item-icon,
+.app-menu-item-icon svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.music-play-bar {
+  left: 66px !important;
+}
+
+/* 侧栏窄版最终图标尺寸：保持 56px 窄栏，同时提升可辨识度。 */
+.app-menu-item-icon,
+.app-menu-item-icon svg {
+  width: 19px !important;
+  height: 19px !important;
+}
