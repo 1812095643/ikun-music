@@ -131,12 +131,10 @@
           </section>
 
           <!-- Action Bar -->
-          <section
-            class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5 bg-white/98 dark:bg-black/98 border-b border-neutral-100 dark:border-neutral-800"
-          >
-            <div class="flex items-center justify-between gap-3">
+          <section class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5">
+            <div class="artist-action-row flex items-center justify-between gap-3">
               <!-- Left Actions -->
-              <div class="flex items-center gap-2 md:gap-3">
+              <div class="artist-primary-actions flex items-center gap-2 md:gap-3">
                 <!-- Play All Button -->
                 <button
                   class="play-all-btn flex items-center gap-2 px-4 md:px-5 py-2 md:py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-colors duration-200"
@@ -148,7 +146,7 @@
 
                 <!-- Add to Playlist Button -->
                 <button
-                  class="add-btn flex items-center justify-center w-10 h-10 md:w-auto md:h-auto md:px-4 md:py-2.5 rounded-md bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 hover:bg-primary/5 dark:hover:bg-primary/10 hover:border-primary/20 text-neutral-700 dark:text-neutral-200 font-medium text-sm transition-colors duration-200"
+                  class="add-btn artist-secondary-button flex items-center justify-center w-10 h-10 md:w-auto md:h-auto md:px-4 md:py-2.5 rounded-md font-medium text-sm transition-colors duration-200"
                   @click="addToPlaylist"
                 >
                   <i class="iconfont icon-add text-lg" />
@@ -157,16 +155,12 @@
               </div>
 
               <!-- Right Actions -->
-              <div class="flex items-center gap-2">
+              <div class="artist-tool-group flex items-center gap-1">
                 <!-- Search Toggle -->
                 <button
                   v-if="activeTab === 'songs'"
-                  class="action-btn w-10 h-10 rounded-md flex items-center justify-center border border-transparent transition-colors duration-200"
-                  :class="
-                    isSearchVisible
-                      ? 'bg-primary/10 dark:bg-primary/20 text-primary'
-                      : 'bg-white dark:bg-black border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 hover:border-primary/20'
-                  "
+                  class="action-btn artist-tool-button w-10 h-10 rounded-md flex items-center justify-center transition-colors duration-200"
+                  :class="isSearchVisible ? 'artist-tool-button-active' : ''"
                   @click="isSearchVisible ? closeSearch() : showSearch()"
                 >
                   <i class="iconfont" :class="isSearchVisible ? 'icon-close' : 'icon-search'" />
@@ -175,7 +169,7 @@
                 <!-- Layout Toggle (Desktop only) -->
                 <button
                   v-if="activeTab === 'songs' && !isMobile"
-                  class="action-btn w-10 h-10 rounded-md flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 hover:border-primary/20 transition-colors duration-200"
+                  class="action-btn artist-tool-button w-10 h-10 rounded-md flex items-center justify-center transition-colors duration-200"
                   :title="
                     isCompactLayout
                       ? t('comp.musicList.switchToNormal')
@@ -192,7 +186,7 @@
             <Transition name="search-slide">
               <div v-if="isSearchVisible && activeTab === 'songs'" class="search-container mt-3">
                 <div
-                  class="relative flex items-center bg-white dark:bg-black rounded-md overflow-hidden border border-neutral-100 dark:border-neutral-800"
+                  class="artist-search-box relative flex items-center overflow-hidden rounded-md"
                 >
                   <i class="iconfont icon-search text-neutral-400 dark:text-neutral-500 ml-4" />
                   <input
@@ -216,9 +210,7 @@
 
           <!-- Tab Navigation -->
           <section class="tab-nav page-padding-x pt-4 md:pt-6">
-            <div
-              class="tab-list relative flex gap-1 p-1 bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 rounded-md w-fit"
-            >
+            <div class="tab-list artist-tab-list relative flex w-fit gap-1 rounded-md p-1">
               <button
                 v-for="tab in tabs"
                 :key="tab.value"
@@ -943,9 +935,79 @@ const formatSong = (item: any) => {
 
 /* Action Bar Sticky Behavior */
 .action-bar {
+  border-bottom: 1px solid color-mix(in srgb, var(--qqm-border) 70%, transparent);
+  background: color-mix(in srgb, #ffffff 98%, var(--qqm-primary, #22c55e) 2%);
   transition:
-    background-color 0.3s,
-    border-color 0.2s;
+    background-color 180ms var(--qqm-ease, ease),
+    border-color 180ms var(--qqm-ease, ease);
+}
+
+.artist-action-row {
+  min-height: 44px;
+}
+
+.artist-secondary-button,
+.artist-tool-button {
+  border: 1px solid color-mix(in srgb, var(--qqm-border) 72%, transparent);
+  background: rgba(255, 255, 255, 0.9);
+  color: #525252;
+}
+
+.artist-secondary-button:hover,
+.artist-tool-button:hover,
+.artist-tool-button-active {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
+  background: color-mix(in srgb, #ffffff 90%, var(--qqm-primary, #22c55e) 10%);
+  color: var(--qqm-primary, #22c55e);
+}
+
+.artist-tool-group {
+  border: 1px solid color-mix(in srgb, var(--qqm-border) 70%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, #ffffff 92%, var(--qqm-primary, #22c55e) 3%);
+  padding: 3px;
+}
+
+.artist-tool-group .artist-tool-button {
+  border-color: transparent;
+  background: transparent;
+}
+
+.artist-search-box {
+  border: 1px solid color-mix(in srgb, var(--qqm-border) 72%, transparent);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.artist-tab-list {
+  border: 1px solid color-mix(in srgb, var(--qqm-border) 72%, transparent);
+  background: color-mix(in srgb, #ffffff 94%, var(--qqm-primary, #22c55e) 3%);
+}
+
+.dark .action-bar {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, transparent);
+  background: color-mix(in srgb, #050505 96%, var(--qqm-primary, #22c55e) 4%);
+}
+
+.dark .artist-secondary-button,
+.dark .artist-tool-button {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, transparent);
+  background: rgba(10, 10, 10, 0.9);
+  color: #d4d4d4;
+}
+
+.dark .artist-secondary-button:hover,
+.dark .artist-tool-button:hover,
+.dark .artist-tool-button-active {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
+  background: color-mix(in srgb, #050505 86%, var(--qqm-primary, #22c55e) 14%);
+  color: var(--qqm-primary, #22c55e);
+}
+
+.dark .artist-tool-group,
+.dark .artist-search-box,
+.dark .artist-tab-list {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, transparent);
+  background: color-mix(in srgb, #050505 90%, var(--qqm-primary, #22c55e) 8%);
 }
 
 /* Tab Indicator Animation */
