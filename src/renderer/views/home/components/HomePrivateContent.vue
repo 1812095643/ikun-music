@@ -15,12 +15,7 @@
       v-if="loading"
       class="grid grid-cols-1 gap-4 md:gap-5 lg:gap-6 md:grid-cols-2 lg:grid-cols-3"
     >
-      <div
-        v-for="i in 3"
-        :key="i"
-        class="skeleton-shimmer rounded-2xl md:rounded-3xl"
-        style="aspect-ratio: 16/9"
-      />
+      <div v-for="i in 3" :key="i" class="skeleton-shimmer rounded-xl" style="aspect-ratio: 16/9" />
     </div>
 
     <!-- Private Content Grid -->
@@ -31,7 +26,7 @@
       <div
         v-for="(content, index) in contentList"
         :key="content.id"
-        class="content-item animate-item group relative flex flex-col cursor-pointer overflow-hidden rounded-2xl md:rounded-3xl bg-neutral-50 dark:bg-neutral-900"
+        class="content-item animate-item group relative flex flex-col cursor-pointer overflow-hidden rounded-xl bg-neutral-50 dark:bg-neutral-900"
         :style="{ animationDelay: calculateAnimationDelay(index, 0.1) }"
         @click="handleContentClick(content)"
       >
@@ -39,19 +34,17 @@
         <div class="cover-wrapper relative" style="aspect-ratio: 16/9">
           <img
             :src="getImgUrl(content.picUrl, '640y360')"
-            class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
             loading="lazy"
             :alt="content.name"
           />
 
           <!-- Gradient Overlay -->
-          <div
-            class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"
-          />
+          <div class="absolute inset-0 bg-black/35" />
 
           <!-- Exclusive Badge -->
           <div
-            class="exclusive-badge absolute top-4 left-4 flex items-center gap-1.5 rounded-full bg-purple-600 px-3 py-1.5 text-xs font-bold text-white shadow-lg"
+            class="exclusive-badge absolute top-4 left-4 flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-white shadow-sm"
           >
             <i class="iconfont icon-vip text-sm" />
             <span>独家</span>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-80 rounded-2xl bg-black/30 backdrop-blur-3xl border border-white/10 shadow-2xl overflow-hidden"
+    class="w-80 rounded-xl bg-black/30 backdrop-blur-3xl border border-white/10 shadow-md overflow-hidden"
   >
     <!-- 标题栏 -->
     <div class="px-6 py-4 border-b border-white/5">
@@ -19,7 +19,7 @@
           :class="[
             'flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200',
             activeTab === tab.key
-              ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30'
+              ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20'
               : 'hover:bg-white/5'
           ]"
           :style="activeTab !== tab.key ? 'color: rgba(255, 255, 255, 0.7);' : ''"

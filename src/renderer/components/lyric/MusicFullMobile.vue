@@ -1961,7 +1961,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
     }
 
     .back-button {
-      @apply absolute top-4 left-1/2 -translate-x-1/2 w-10 h-10 flex items-center justify-center bg-black bg-opacity-30 rounded-2xl;
+      @apply absolute top-4 left-1/2 -translate-x-1/2 w-10 h-10 flex items-center justify-center bg-black bg-opacity-30 rounded-xl;
 
       i {
         @apply text-4xl;
@@ -2006,7 +2006,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 .cover-container {
   // 方形封面样式
   &.square-style {
-    @apply w-[85%] shadow-2xl shadow-black/50 rounded-xl overflow-hidden mt-8 aspect-square;
+    @apply w-[85%] shadow-md shadow-black/30 rounded-xl overflow-hidden mt-8 aspect-square;
 
     .cover-image {
       @apply w-full h-full;
@@ -2039,7 +2039,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
     }
 
     .cover-image {
-      @apply w-full h-auto shadow-lg;
+      @apply w-full h-auto shadow-sm;
 
       &.full-blend {
         mix-blend-mode: luminosity;
@@ -2050,7 +2050,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
 .is-dark {
   .square-style {
-    @apply shadow-2xl shadow-black/50;
+    @apply shadow-md shadow-black/30;
   }
 }
 </style>

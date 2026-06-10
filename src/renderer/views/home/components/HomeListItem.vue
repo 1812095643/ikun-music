@@ -11,7 +11,7 @@
       <img
         ref="coverRef"
         :src="getImgUrl(cover, '512y512')"
-        class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+        class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
         loading="lazy"
         :alt="title"
         crossorigin="anonymous"
@@ -47,7 +47,7 @@
 
           <!-- Play Button -->
           <button
-            class="flex h-11 w-11 flex-shrink-0 translate-y-2 items-center justify-center rounded-[10px] bg-white text-neutral-900 shadow-md transition-all duration-500 ease-out hover:scale-105 group-hover:translate-y-0 active:scale-95"
+            class="flex h-11 w-11 flex-shrink-0 translate-y-2 items-center justify-center rounded-[10px] bg-white text-neutral-900 shadow-sm transition-all duration-500 ease-out hover:-translate-y-0.5 group-hover:translate-y-0 active:scale-95"
             @click.stop="$emit('play')"
           >
             <i class="ri-play-fill ml-0.5 text-lg" />

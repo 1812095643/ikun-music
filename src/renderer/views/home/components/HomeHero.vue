@@ -6,8 +6,8 @@
         <div v-for="i in 6" :key="i" class="h-9 w-20 flex-shrink-0 skeleton-shimmer rounded-full" />
       </div>
       <div class="hero-grid grid gap-3">
-        <div class="skeleton-shimmer rounded-2xl" style="height: 160px" />
-        <div class="skeleton-shimmer rounded-2xl" style="height: 160px" />
+        <div class="skeleton-shimmer rounded-xl" style="height: 160px" />
+        <div class="skeleton-shimmer rounded-xl" style="height: 160px" />
       </div>
     </div>
 
@@ -39,7 +39,7 @@
         <div class="hero-card" :style="{ animationDelay: '0.12s' }">
           <!-- Card -->
           <div
-            class="daily-card group relative cursor-pointer overflow-hidden rounded-2xl shadow-sm transition-all duration-300 ease-out hover:shadow-xl"
+            class="daily-card group relative cursor-pointer overflow-hidden rounded-xl shadow-sm transition-all duration-300 ease-out hover:shadow-md"
             :style="{ background: dailyCardBg }"
             @click="showDayRecommend"
           >
@@ -49,12 +49,12 @@
               ref="dailyCoverRef"
               :src="getImgUrl(dayRecommendCover, '512y512')"
               alt=""
-              class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               crossorigin="anonymous"
               @load="extractDailyColor"
             />
             <!-- Gradient Overlay -->
-            <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/20" />
+            <div class="absolute inset-0 bg-black/45" />
 
             <!-- Content -->
             <div class="relative flex h-full flex-col justify-between p-5 md:p-6">
@@ -94,7 +94,7 @@
                   </div>
                 </div>
                 <button
-                  class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white/90 text-neutral-900 shadow-lg transition-all duration-300 hover:scale-110 hover:bg-white active:scale-95"
+                  class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white/90 text-neutral-900 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-white active:scale-95"
                   @click.stop="playDayRecommend"
                 >
                   <i class="ri-play-fill ml-0.5 text-xl" />
@@ -107,7 +107,7 @@
         <!-- ===== 已登录: 私人FM (Right Card) ===== -->
         <div v-if="isLoggedIn" class="hero-card" :style="{ animationDelay: '0.22s' }">
           <div
-            class="fm-card group relative cursor-pointer overflow-hidden rounded-2xl shadow-sm transition-all duration-300 ease-out hover:shadow-xl"
+            class="fm-card group relative cursor-pointer overflow-hidden rounded-xl shadow-sm transition-all duration-300 ease-out hover:shadow-md"
             :style="{ background: fmCardBg }"
             @click="handleFmPlay"
           >
@@ -122,13 +122,13 @@
               crossorigin="anonymous"
               @load="extractFmColor"
             />
-            <div class="absolute inset-0 bg-gradient-to-br from-black/10 to-black/30" />
+            <div class="absolute inset-0 bg-black/25" />
 
             <!-- Content -->
             <div class="relative flex h-full items-center gap-4 p-5">
               <!-- Album Cover -->
               <div
-                class="fm-cover relative aspect-square flex-shrink-0 overflow-hidden rounded-xl shadow-lg transition-transform duration-500 group-hover:scale-[1.03]"
+                class="fm-cover relative aspect-square flex-shrink-0 overflow-hidden rounded-xl shadow-sm transition-transform duration-500 group-hover:-translate-y-0.5"
               >
                 <img
                   v-if="fmCurrentCover"
@@ -171,7 +171,7 @@
                       <i class="ri-thumb-down-line text-lg" />
                     </button>
                     <button
-                      class="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white transition-all duration-300 hover:scale-110 hover:bg-white/30 active:scale-95"
+                      class="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/30 active:scale-95"
                       @click.stop="handleFmPlay"
                     >
                       <i
@@ -207,7 +207,7 @@
           @click="router.push('/list')"
         >
           <div
-            class="fm-card relative overflow-hidden rounded-2xl bg-neutral-100 shadow-sm transition-all duration-300 ease-out group-hover:shadow-xl dark:bg-neutral-800"
+            class="fm-card relative overflow-hidden rounded-xl bg-neutral-100 shadow-sm transition-all duration-300 ease-out group-hover:shadow-md dark:bg-neutral-800"
           >
             <!-- 2x2 Cover Grid -->
             <div class="absolute inset-0 grid grid-cols-2 grid-rows-2">
@@ -220,7 +220,7 @@
                   <img
                     :src="getImgUrl(pl.picUrl, '256y256')"
                     alt=""
-                    class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                   />
                 </div>
               </template>
@@ -254,7 +254,7 @@
                   </p>
                 </div>
                 <div
-                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-white/30"
+                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/30"
                 >
                   <i class="ri-arrow-right-s-line text-xl" />
                 </div>

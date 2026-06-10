@@ -34,7 +34,7 @@
       <div class="flex items-start justify-between">
         <!-- Icon -->
         <div
-          class="icon-wrapper flex items-center justify-center h-10 w-10 md:h-11 md:w-11 rounded-[10px] transition-all duration-300 group-hover:scale-105"
+          class="icon-wrapper flex items-center justify-center h-10 w-10 md:h-11 md:w-11 rounded-[10px] transition-all duration-300 group-hover:-translate-y-0.5"
           :class="[colorClasses.iconBg, active ? colorClasses.activeIconBg : '']"
         >
           <i

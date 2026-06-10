@@ -20,7 +20,7 @@
     <!-- Loading Skeleton -->
     <div v-if="loading" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
       <div v-for="i in displayCount" :key="i" class="space-y-3">
-        <div class="aspect-square skeleton-shimmer rounded-2xl" />
+        <div class="aspect-square skeleton-shimmer rounded-xl" />
         <div class="h-4 w-3/4 skeleton-shimmer rounded-lg" />
         <div class="h-3 w-1/2 skeleton-shimmer rounded-lg" />
       </div>
