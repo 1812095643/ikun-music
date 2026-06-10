@@ -1,5 +1,5 @@
 <template>
-  <div class="toplist-page h-full w-full bg-white dark:bg-black transition-colors duration-200">
+  <div class="toplist-page h-full w-full transition-colors duration-200">
     <n-scrollbar class="h-full">
       <div class="toplist-content w-full pb-32 pt-6 page-padding">
         <!-- Hero Section -->
@@ -49,7 +49,7 @@
                   class="absolute inset-0 bg-transparent group-hover:bg-black/15 transition-colors duration-200 flex items-center justify-center"
                 >
                   <div
-                    class="play-icon w-10 h-10 rounded-lg bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 ring-1 ring-black/5"
+                    class="play-icon w-10 h-10 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   >
                     <i class="ri-play-fill text-2xl text-neutral-900 ml-1"></i>
                   </div>
@@ -143,11 +143,15 @@ onMounted(() => {
 <style lang="scss" scoped>
 .toplist-page {
   position: relative;
+  background: var(--qqm-bg, #f7f8fa);
 }
 
 .toplist-card {
   border-radius: 10px;
-  transition: color 160ms var(--qqm-ease);
+  padding: 6px;
+  transition:
+    background-color 160ms var(--qqm-ease),
+    color 160ms var(--qqm-ease);
 
   > div:first-child {
     border: 1px solid var(--qqm-border);
@@ -155,6 +159,8 @@ onMounted(() => {
   }
 
   &:hover {
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, var(--qqm-surface, #fff));
+
     > div:first-child {
       border-color: rgba(30, 207, 115, 0.18);
       background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, transparent);

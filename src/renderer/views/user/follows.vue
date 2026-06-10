@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="user-follows-page h-full w-full bg-white dark:bg-black transition-colors duration-200"
-  >
+  <div class="user-follows-page h-full w-full transition-colors duration-200">
     <n-scrollbar class="h-full">
       <div class="w-full pb-32">
         <!-- Loading State -->
@@ -313,7 +311,7 @@ watch(
   height: 46px;
   place-items: center;
   border: 1px solid var(--qqm-border);
-  border-radius: 50%;
+  border-radius: 14px;
   background: color-mix(in srgb, var(--qqm-primary-soft) 34%, transparent);
   color: var(--qqm-primary);
   font-size: 23px;

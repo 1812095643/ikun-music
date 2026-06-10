@@ -44,7 +44,7 @@
               class="absolute inset-0 bg-transparent group-hover:bg-black/15 transition-colors duration-200 flex items-center justify-center"
             >
               <div
-                class="play-icon w-10 h-10 rounded-lg bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 ring-1 ring-black/5"
+                class="play-icon w-10 h-10 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
               >
                 <i class="ri-play-fill text-2xl text-neutral-900 ml-1"></i>
               </div>
@@ -209,7 +209,10 @@ watch(
 <style lang="scss" scoped>
 .list-card {
   border-radius: 10px;
-  transition: color 160ms var(--qqm-ease);
+  padding: 6px;
+  transition:
+    background-color 160ms var(--qqm-ease),
+    color 160ms var(--qqm-ease);
 
   > div:first-child {
     border: 1px solid var(--qqm-border);
@@ -217,6 +220,8 @@ watch(
   }
 
   &:hover {
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, var(--qqm-surface, #fff));
+
     > div:first-child {
       border-color: rgba(30, 207, 115, 0.18);
       background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, transparent);
@@ -231,6 +236,16 @@ watch(
 .list-cover-surface {
   border: 1px solid var(--qqm-border);
   background: var(--qqm-surface-2, var(--qqm-surface));
+}
+
+.play-icon {
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 68%, #fff 32%);
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 90%, transparent);
+  color: var(--qqm-text, #1f2329);
+}
+
+.play-icon:hover {
+  color: var(--qqm-primary, #22c55e);
 }
 
 .list-card:hover .list-cover-surface {
