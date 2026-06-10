@@ -13,7 +13,7 @@
           class="flex-1 py-1 text-xs font-medium rounded-md transition-colors duration-200"
           :class="[
             activeTab === tab.key
-              ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-white shadow-sm'
+              ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-white ring-1 ring-neutral-200 dark:ring-white/10'
               : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
           ]"
           @click="activeTab = tab.key"
@@ -237,7 +237,7 @@
 
               <button
                 @click="importPlugin"
-                class="px-5 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2 shadow-sm shadow-primary/20"
+                class="px-5 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
               >
                 <i class="ri-upload-line"></i>
                 {{ t('settings.playback.customApi.importConfig') }}

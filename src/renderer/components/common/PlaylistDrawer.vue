@@ -102,10 +102,9 @@
           <!-- 歌单列表 -->
           <div class="flex flex-col gap-1.5 pb-32">
             <div
-              v-for="(playlist, index) in playlists"
+              v-for="playlist in playlists"
               :key="playlist.id"
               class="group flex cursor-pointer items-center gap-3.5 rounded-lg p-2.5 transition-colors duration-200 hover:bg-primary/5 dark:hover:bg-primary/10"
-              :style="{ animationDelay: `${index * 0.03}s` }"
               @click="handleAddToPlaylist(playlist)"
             >
               <!-- 封面 -->

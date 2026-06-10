@@ -1,11 +1,7 @@
 <template>
   <div class="history-page h-full flex flex-col">
     <!-- Header Section -->
-    <div
-      class="flex flex-col gap-4 px-6 pt-4 pb-2 flex-shrink-0"
-      :class="setAnimationClass('animate__fadeInRight')"
-      v-if="!isMobile"
-    >
+    <div class="flex flex-col gap-4 px-6 pt-4 pb-2 flex-shrink-0" v-if="!isMobile">
       <div class="flex items-center justify-between">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ t('history.title') }}</h2>
 
@@ -29,7 +25,7 @@
             class="px-4 h-7 rounded-md text-xs font-medium cursor-pointer transition-colors duration-200 flex items-center justify-center whitespace-nowrap"
             :class="
               currentCategory === tab
-                ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm'
+                ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white ring-1 ring-neutral-200 dark:ring-neutral-700'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
             "
             @click="handleCategoryChange(tab as any)"
@@ -47,7 +43,7 @@
             class="px-3 h-7 rounded-md text-xs font-medium transition-colors duration-200"
             :class="
               currentTab === 'local'
-                ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm'
+                ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white ring-1 ring-neutral-200 dark:ring-neutral-700'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
             "
             @click="handleTabChange('local')"
@@ -58,7 +54,7 @@
             class="px-3 h-7 rounded-md text-xs font-medium transition-colors duration-200"
             :class="
               currentTab === 'cloud'
-                ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm'
+                ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white ring-1 ring-neutral-200 dark:ring-neutral-700'
                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
             "
             @click="handleTabChange('cloud')"
@@ -70,17 +66,15 @@
     </div>
 
     <!-- List Content -->
-    <div class="flex-grow min-h-0 px-2 mt-2" :class="setAnimationClass('animate__fadeInUp')">
+    <div class="flex-grow min-h-0 px-2 mt-2">
       <n-scrollbar ref="scrollbarRef" class="h-full pr-4" :size="100" @scroll="handleScroll">
         <div class="pb-24 space-y-1">
           <!-- 歌曲列表 -->
           <template v-if="currentCategory === 'songs'">
             <div
-              v-for="(item, index) in displayList"
+              v-for="item in displayList"
               :key="item.id"
               class="group flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors p-1"
-              :class="setAnimationClass('animate__fadeInUp')"
-              :style="setAnimationDelay(index, 30)"
             >
               <song-item
                 class="flex-1 !bg-transparent hover:!bg-transparent"
@@ -108,14 +102,12 @@
           <!-- 歌单列表 -->
           <template v-if="currentCategory === 'playlists'">
             <playlist-item
-              v-for="(item, index) in displayList"
+              v-for="item in displayList"
               :key="item.id"
               :item="item"
               :show-count="currentTab === 'local'"
               :show-delete="currentTab === 'local'"
               class="rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-              :class="setAnimationClass('animate__fadeInUp')"
-              :style="setAnimationDelay(index, 30)"
               @click="handlePlaylistClick(item)"
               @delete="handleDelPlaylist(item)"
             />
@@ -124,14 +116,12 @@
           <!-- 专辑列表 -->
           <template v-if="currentCategory === 'albums'">
             <album-item
-              v-for="(item, index) in displayList"
+              v-for="item in displayList"
               :key="item.id"
               :item="item"
               :show-count="currentTab === 'local'"
               :show-delete="currentTab === 'local'"
               class="rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-              :class="setAnimationClass('animate__fadeInUp')"
-              :style="setAnimationDelay(index, 30)"
               @click="handleAlbumClick(item)"
               @delete="handleDelAlbum(item)"
             />
@@ -147,7 +137,7 @@
                   class="px-3 h-6 rounded-md text-xs font-medium transition-colors duration-200"
                   :class="
                     currentPodcastSubTab === 'episodes'
-                      ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm'
+                      ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white ring-1 ring-neutral-200 dark:ring-neutral-700'
                       : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                   "
                   @click="
@@ -161,7 +151,7 @@
                   class="px-3 h-6 rounded-md text-xs font-medium transition-colors duration-200"
                   :class="
                     currentPodcastSubTab === 'radios'
-                      ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white shadow-sm'
+                      ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white ring-1 ring-neutral-200 dark:ring-neutral-700'
                       : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                   "
                   @click="
@@ -176,11 +166,9 @@
 
             <div v-if="currentPodcastSubTab === 'episodes'">
               <div
-                v-for="(item, index) in displayList"
+                v-for="item in displayList"
                 :key="item.id"
                 class="group flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors p-1"
-                :class="setAnimationClass('animate__fadeInUp')"
-                :style="setAnimationDelay(index, 30)"
               >
                 <song-item
                   class="flex-1 !bg-transparent hover:!bg-transparent"
@@ -198,11 +186,9 @@
 
             <div v-else>
               <div
-                v-for="(item, index) in displayList"
+                v-for="item in displayList"
                 :key="item.id"
                 class="group flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-                :class="setAnimationClass('animate__fadeInUp')"
-                :style="setAnimationDelay(index, 30)"
               >
                 <playlist-item
                   class="flex-1 !bg-transparent hover:!bg-transparent"
@@ -266,7 +252,7 @@ import { usePlayerStore } from '@/store/modules/player';
 import { usePlayHistoryStore } from '@/store/modules/playHistory';
 import { useUserStore } from '@/store/modules/user';
 import type { SongResult } from '@/types/music';
-import { isMobile, setAnimationClass, setAnimationDelay } from '@/utils';
+import { isMobile } from '@/utils';
 import { mapDjProgramToSongResult } from '@/utils/podcastUtils';
 
 // 扩展历史记录类型以包含 playTime

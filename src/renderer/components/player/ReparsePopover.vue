@@ -331,7 +331,7 @@ watch(
 
 .source-button {
   &:hover:not(.opacity-50):not(.opacity-40) {
-    @apply transform -translate-y-0.5 shadow-sm;
+    @apply bg-primary/5 dark:bg-primary/10;
   }
 }
 
