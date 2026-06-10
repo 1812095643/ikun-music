@@ -438,12 +438,12 @@ const setMusicFull = () => {
 }
 
 .control-button {
-  @apply flex items-center justify-center rounded-full transition-colors duration-200 border-0 bg-transparent cursor-pointer text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200;
+  @apply flex items-center justify-center rounded-lg transition-colors duration-200 border-0 bg-transparent cursor-pointer text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary;
   width: 32px;
   height: 32px;
 
   &:hover {
-    @apply bg-gray-100 dark:bg-dark-300;
+    @apply bg-primary/5 dark:bg-primary/10;
   }
 
   &.play {
@@ -464,13 +464,13 @@ const setMusicFull = () => {
 }
 
 .function-button {
-  @apply flex items-center justify-center rounded-full transition-colors duration-200 border-0 bg-transparent cursor-pointer text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200;
+  @apply flex items-center justify-center rounded-lg transition-colors duration-200 border-0 bg-transparent cursor-pointer text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary;
   width: 32px;
   height: 32px;
 
   &:hover {
-    @apply bg-gray-100 dark:bg-dark-300;
-    color: var(--text-color-1, #000);
+    @apply bg-primary/5 dark:bg-primary/10;
+    color: var(--qqm-primary, #22c55e);
   }
 
   .iconfont {
@@ -479,14 +479,14 @@ const setMusicFull = () => {
 }
 
 .close-button {
-  @apply flex items-center justify-center rounded-full transition-colors duration-200 border-0 bg-transparent cursor-pointer ml-2;
+  @apply flex items-center justify-center rounded-lg transition-colors duration-200 border-0 bg-transparent cursor-pointer ml-2;
   width: 32px;
   height: 32px;
   color: var(--text-color-2, #666);
 
   &:hover {
-    @apply bg-gray-100 dark:bg-dark-300;
-    color: var(--text-color-1, #000);
+    @apply bg-neutral-100 dark:bg-neutral-900;
+    color: var(--qqm-primary, #22c55e);
   }
 }
 
@@ -558,7 +558,7 @@ const setMusicFull = () => {
 
     .n-slider-rail {
       @apply overflow-hidden transition-colors duration-200;
-      @apply bg-gray-500 dark:bg-dark-300 bg-opacity-10 !important;
+      @apply bg-neutral-200 dark:bg-neutral-800 !important;
     }
 
     .n-slider-handle {
@@ -576,7 +576,7 @@ const setMusicFull = () => {
 
 // 播放列表样式
 .playlist-container {
-  @apply fixed left-0 right-0 bg-white dark:bg-dark-100 overflow-hidden;
+  @apply fixed left-0 right-0 bg-white dark:bg-black overflow-hidden;
   top: 64px;
   height: 330px;
   max-height: 330px;
@@ -592,7 +592,7 @@ const setMusicFull = () => {
   @apply px-2 py-1;
 
   .delete-btn {
-    @apply p-2 rounded-full transition-colors duration-200 cursor-pointer;
+    @apply p-2 rounded-lg transition-colors duration-200 cursor-pointer;
     @apply hover:bg-neutral-100 dark:hover:bg-white/10;
 
     .iconfont {

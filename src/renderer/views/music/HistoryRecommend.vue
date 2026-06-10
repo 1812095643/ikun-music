@@ -305,7 +305,7 @@ onMounted(() => {
 }
 
 .action-button {
-  @apply w-8 h-8 rounded-full flex items-center justify-center cursor-pointer hover:bg-light-300 dark:hover:bg-dark-300 transition-colors text-gray-500 dark:text-gray-400;
+  @apply w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors text-gray-500 dark:text-gray-400;
 
   .icon {
     @apply text-lg;
@@ -357,7 +357,7 @@ onMounted(() => {
 
 .date-tabs-wrapper {
   :deep(.n-tabs-rail) {
-    @apply rounded-lg overflow-hidden bg-white dark:bg-dark-300 !important;
+    @apply rounded-lg overflow-hidden bg-white dark:bg-black !important;
     .n-tabs-capsule {
       @apply rounded-lg !important;
       background-color: var(--qqm-primary, #22c55e) !important;
@@ -370,7 +370,7 @@ onMounted(() => {
 
 .layout-toggle {
   .toggle-button {
-    @apply w-8 h-8 rounded-full flex items-center justify-center cursor-pointer hover:bg-light-300 dark:hover:bg-dark-300 transition-colors;
+    @apply w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors;
 
     .icon {
       @apply text-lg text-gray-500 dark:text-gray-400 transition-colors;

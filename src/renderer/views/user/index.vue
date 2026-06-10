@@ -40,9 +40,9 @@
             <div
               v-for="i in 10"
               :key="i"
-              class="flex items-center gap-4 rounded-lg bg-light-100 p-2 dark:bg-dark-100"
+              class="flex items-center gap-4 rounded-lg bg-neutral-50 p-2 dark:bg-neutral-900"
             >
-              <div class="h-10 w-10 skeleton-shimmer rounded-full flex-shrink-0" />
+              <div class="h-10 w-10 skeleton-shimmer rounded-lg flex-shrink-0" />
               <div class="h-10 w-10 skeleton-shimmer rounded-lg flex-shrink-0" />
               <div class="flex flex-1 flex-col gap-2">
                 <div class="h-4 w-1/3 skeleton-shimmer rounded-lg" />
@@ -67,7 +67,7 @@
             }}</span>
           </div>
           <div class="user-info">
-            <n-avatar round :size="50" :src="getImgUrl(user.avatarUrl, '50y50')" />
+            <n-avatar :round="false" :size="50" :src="getImgUrl(user.avatarUrl, '50y50')" />
             <div class="user-info-list">
               <div class="user-info-item">
                 <div class="label">{{ userDetail.profile.followeds }}</div>
@@ -557,7 +557,7 @@ const currentLoginType = computed(() => userStore.loginType);
   &-item {
     @apply flex items-center px-2 py-2 rounded-lg cursor-pointer w-full;
     @apply transition-colors duration-200;
-    @apply hover:bg-light-200 dark:hover:bg-dark-200;
+    @apply hover:bg-primary/5 dark:hover:bg-primary/10;
     border: 1px solid transparent;
 
     &:hover {
@@ -565,7 +565,7 @@ const currentLoginType = computed(() => userStore.loginType);
     }
 
     &-img {
-      @apply flex items-center justify-center rounded-lg text-[32px] w-[56px] h-[56px] bg-light-300 dark:bg-dark-300;
+      @apply flex items-center justify-center rounded-lg text-[32px] w-[56px] h-[56px] bg-neutral-100 dark:bg-neutral-900;
       .iconfont {
         @apply text-[32px];
       }
@@ -580,7 +580,7 @@ const currentLoginType = computed(() => userStore.loginType);
 
       .playlist-creator-tag {
         @apply inline-flex items-center justify-center px-2 rounded-md text-xs;
-        @apply bg-light-300 dark:bg-dark-300 dark:text-white;
+        @apply bg-primary/10 dark:bg-primary/15;
         color: var(--qqm-primary, #22c55e);
         @apply border;
         border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
