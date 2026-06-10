@@ -9,7 +9,9 @@
               <p class="text-xs font-semibold uppercase tracking-wider text-primary">
                 {{ t('localMusic.title') }}
               </p>
-              <h1 class="mt-2 text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+              <h1
+                class="mt-2 text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100"
+              >
                 {{ t('localMusic.title') }}
               </h1>
               <p class="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
@@ -58,7 +60,7 @@
 
               <!-- 扫描按钮 -->
               <button
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100/80 dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:hover:border-primary/25 dark:hover:bg-primary/10 transition-colors"
                 :disabled="localMusicStore.scanning"
                 @click="handleScan"
               >
@@ -70,7 +72,7 @@
 
               <!-- 添加文件夹按钮 -->
               <button
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100/80 dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:hover:border-primary/25 dark:hover:bg-primary/10 transition-colors"
                 @click="handleAddFolder"
               >
                 <i class="ri-folder-add-line text-lg" />
@@ -79,7 +81,7 @@
               <!-- 文件夹管理按钮 -->
               <button
                 v-if="localMusicStore.folderPaths.length > 0"
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100/80 dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:hover:border-primary/25 dark:hover:bg-primary/10 transition-colors"
                 @click="showFolderManager = true"
               >
                 <i class="ri-folder-settings-line text-lg" />
@@ -95,7 +97,7 @@
           >
             <n-spin size="small" />
             <div>
-              <p class="text-sm font-medium text-neutral-900 dark:text-white">
+              <p class="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                 {{ t('localMusic.scanning') }}
               </p>
               <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
@@ -153,7 +155,7 @@
           <div
             v-for="folder in localMusicStore.folderPaths"
             :key="folder"
-            class="flex items-center justify-between p-3 rounded-lg bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800"
+            class="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800"
           >
             <div class="flex items-center gap-3 min-w-0 flex-1">
               <i class="ri-folder-line text-lg text-primary flex-shrink-0" />
@@ -162,7 +164,7 @@
               }}</span>
             </div>
             <button
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 transition-colors flex-shrink-0 ml-2"
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/5 dark:hover:text-primary dark:hover:bg-primary/10 transition-colors flex-shrink-0 ml-2"
               @click="handleRemoveFolder(folder)"
             >
               <i class="ri-delete-bin-line" />

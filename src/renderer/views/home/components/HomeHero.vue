@@ -22,7 +22,7 @@
           :class="[
             item.active
               ? 'bg-primary text-white'
-              : 'bg-neutral-100/60 text-neutral-500 hover:bg-neutral-200/80 dark:bg-white/[0.04] dark:text-neutral-400 dark:hover:bg-white/[0.07]'
+              : 'border border-neutral-100 bg-white text-neutral-500 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:border-neutral-800 dark:bg-black dark:text-neutral-400 dark:hover:border-primary/25 dark:hover:bg-primary/10'
           ]"
           @click="item.action"
         >
@@ -205,7 +205,7 @@
           @click="router.push('/list')"
         >
           <div
-            class="fm-card relative overflow-hidden rounded-lg border border-neutral-100 bg-neutral-100 transition-colors duration-200 ease-out dark:border-neutral-800 dark:bg-neutral-800"
+            class="fm-card relative overflow-hidden rounded-lg border border-neutral-100 bg-white transition-colors duration-200 ease-out hover:border-primary/20 hover:bg-primary/5 dark:border-neutral-800 dark:bg-black dark:hover:border-primary/25 dark:hover:bg-primary/10"
           >
             <!-- 2x2 Cover Grid -->
             <div class="absolute inset-0 grid grid-cols-2 grid-rows-2">
@@ -259,7 +259,7 @@
                     :class="
                       hotPlaylists.length > 0
                         ? 'text-lg font-bold text-white'
-                        : 'text-lg font-bold text-neutral-900 dark:text-white'
+                        : 'text-lg font-bold text-neutral-900 dark:text-neutral-100'
                     "
                   >
                     {{ t('comp.homeHero.hotPlaylists') }}
