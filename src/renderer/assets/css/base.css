@@ -1821,3 +1821,121 @@ body {
   background: rgba(24, 27, 31, 0.76) !important;
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.26) !important;
 }
+
+/* 播放沉浸页收口：保持 QQ 音乐的轻透层次，避免全屏页控件过厚过圆。 */
+#drawer-target,
+#mobile-drawer-target {
+  color: var(--qqm-text) !important;
+}
+
+#drawer-target .control-btn,
+#mobile-drawer-target .control-btn,
+#mobile-drawer-target .favorite-icon,
+#mobile-drawer-target .function-button,
+.mini-play-bar .control-button,
+.mini-play-bar .function-button,
+.mini-play-bar .close-button,
+.play-bar .control-btn {
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  border-radius: 10px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 42%, transparent) !important;
+  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.08) !important;
+  backdrop-filter: blur(14px) saturate(1.08);
+}
+
+#drawer-target .control-btn:hover,
+#mobile-drawer-target .control-btn:hover,
+#mobile-drawer-target .favorite-icon:hover,
+.mini-play-bar .control-button:hover,
+.mini-play-bar .function-button:hover,
+.play-bar .control-btn:hover {
+  color: var(--qqm-primary-strong) !important;
+  border-color: rgba(30, 207, 115, 0.22) !important;
+  background: var(--qqm-primary-soft) !important;
+}
+
+#drawer-target .img-container,
+#drawer-target .music-img,
+#mobile-drawer-target .cover-container,
+#mobile-drawer-target .img-wrapper,
+.mini-play-bar .album-cover,
+.play-bar .cover,
+.play-bar .album-cover {
+  border: 1px solid rgba(255, 255, 255, 0.48) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 16px 36px rgba(20, 24, 31, 0.14) !important;
+  overflow: hidden;
+}
+
+#drawer-target .music-info,
+#drawer-target .music-lrc,
+#mobile-drawer-target .lyrics-container,
+#mobile-drawer-target .landscape-progress-container,
+.mini-play-bar .playlist-container,
+.mini-play-bar .mini-bar-container {
+  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 32%, transparent) !important;
+  box-shadow: 0 12px 30px rgba(20, 24, 31, 0.08) !important;
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+#drawer-target .music-lrc-text,
+#mobile-drawer-target .lyric-line {
+  border-radius: 9px !important;
+  transition:
+    color 180ms var(--qqm-ease),
+    background-color 180ms var(--qqm-ease),
+    transform 180ms var(--qqm-ease) !important;
+}
+
+#drawer-target .music-lrc-text.now-text,
+#mobile-drawer-target .lyric-line.active,
+#mobile-drawer-target .lyric-line.current {
+  color: var(--qqm-primary-strong) !important;
+  background: rgba(30, 207, 115, 0.08) !important;
+}
+
+.mobile-player-settings .absolute.inset-0 {
+  background: rgba(17, 19, 21, 0.34) !important;
+  backdrop-filter: blur(8px) saturate(1.06);
+}
+
+.mobile-player-settings-panel {
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px 12px 0 0 !important;
+  background: color-mix(in srgb, #151922 78%, transparent) !important;
+  box-shadow: 0 -18px 44px rgba(0, 0, 0, 0.26) !important;
+}
+
+.mobile-player-settings-panel button,
+.mobile-player-settings-panel [class*='rounded-full'],
+.mobile-player-settings-panel [class*='rounded-2xl'] {
+  border-radius: 9px !important;
+}
+
+.mobile-player-settings-panel .bg-green-500,
+.mobile-player-settings-panel [class*='text-green'] {
+  color: var(--qqm-primary) !important;
+}
+
+.mobile-player-settings-panel button.bg-green-500,
+.mobile-player-settings-panel [class*='bg-green-500'] {
+  color: #fff !important;
+  background: var(--qqm-primary) !important;
+}
+
+.dark #drawer-target .control-btn,
+.dark #mobile-drawer-target .control-btn,
+.dark #mobile-drawer-target .favorite-icon,
+.dark .mini-play-bar .control-button,
+.dark .mini-play-bar .function-button,
+.dark .play-bar .control-btn,
+.dark #drawer-target .music-info,
+.dark #drawer-target .music-lrc,
+.dark #mobile-drawer-target .lyrics-container,
+.dark .mini-play-bar .playlist-container,
+.dark .mini-play-bar .mini-bar-container {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(24, 27, 31, 0.48) !important;
+}

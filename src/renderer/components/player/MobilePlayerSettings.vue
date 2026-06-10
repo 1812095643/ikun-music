@@ -3,7 +3,7 @@
     <Transition name="settings-drawer">
       <div
         v-if="visible"
-        class="fixed inset-0 z-[99999] flex items-end justify-center"
+        class="mobile-player-settings fixed inset-0 z-[99999] flex items-end justify-center"
         @click.self="close"
       >
         <!-- 遮罩层 -->
@@ -11,7 +11,7 @@
 
         <!-- 弹窗内容 - 磨砂玻璃效果 -->
         <div
-          class="relative w-full max-w-lg bg-gray-900/70 backdrop-blur-2xl rounded-t-3xl overflow-hidden max-h-[85vh] flex flex-col border-t border-white/10 shadow-2xl"
+          class="mobile-player-settings-panel relative w-full max-w-lg bg-gray-900/70 backdrop-blur-2xl rounded-t-3xl overflow-hidden max-h-[85vh] flex flex-col border-t border-white/10 shadow-2xl"
         >
           <!-- 顶部拖拽条 -->
           <div class="flex justify-center pt-3 pb-2 flex-shrink-0">
