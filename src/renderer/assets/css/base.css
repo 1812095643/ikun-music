@@ -1626,3 +1626,140 @@ body {
   border-color: rgba(30, 207, 115, 0.18) !important;
   background: rgba(255, 255, 255, 0.06) !important;
 }
+
+/* 浮层与登录页 QQ 音乐收口：统一 9-12px 圆角，降低厚阴影与暗黑重卡片感。 */
+.login-page,
+.playlist-drawer,
+.artist-drawer,
+.download-drawer-trigger,
+.sleep-timer-countdown {
+  color: var(--qqm-text) !important;
+}
+
+.login-page {
+  background:
+    radial-gradient(circle at 72% 12%, rgba(30, 207, 115, 0.1), transparent 30%), var(--qqm-bg) !important;
+}
+
+.login-page .phone-login,
+.login-page .phone,
+.login-page .login-tabs {
+  border: 1px solid rgba(255, 255, 255, 0.56) !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 62%, transparent) !important;
+  box-shadow: 0 14px 32px rgba(20, 24, 31, 0.08) !important;
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+.login-page .phone-login {
+  overflow: hidden;
+}
+
+.login-page .login-title,
+.login-page .text {
+  color: var(--qqm-text) !important;
+}
+
+.login-page .tab-item,
+.login-page .phone-input,
+.login-page .btn-login {
+  border-radius: 9px !important;
+}
+
+.login-page .tab-item.active,
+.login-page .btn-login {
+  background: var(--qqm-primary) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(30, 207, 115, 0.2) !important;
+}
+
+.n-drawer .n-drawer-content,
+.n-modal,
+.n-popover,
+.eq-modal-content,
+.timer-modal-content,
+.speed-modal-content {
+  border: 1px solid rgba(255, 255, 255, 0.54) !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 86%, transparent) !important;
+  box-shadow: 0 18px 44px rgba(20, 24, 31, 0.14) !important;
+  backdrop-filter: blur(20px) saturate(1.1);
+}
+
+.playlist-drawer .n-drawer-content,
+.artist-drawer,
+.download-drawer-trigger .n-button {
+  background: color-mix(in srgb, var(--qqm-surface) 82%, transparent) !important;
+}
+
+.playlist-drawer [class*='rounded-2xl'],
+.playlist-drawer [class*='rounded-xl'],
+.artist-drawer [class*='rounded-2xl'],
+.artist-drawer .artist-cover img,
+.artist-drawer .search-item,
+.download-drawer-trigger .n-button,
+.eq-modal-content [class*='rounded-full'],
+.timer-modal-content [class*='rounded-full'],
+.speed-modal-content [class*='rounded-full'],
+.mobile-player-settings [class*='rounded-2xl'],
+.mobile-player-settings [class*='rounded-full'] {
+  border-radius: 9px !important;
+}
+
+.playlist-drawer [class*='shadow-lg'],
+.playlist-drawer [class*='shadow-xl'],
+.artist-drawer [class*='shadow-lg'],
+.artist-drawer [class*='shadow-xl'],
+.download-drawer-trigger .n-button {
+  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.07) !important;
+}
+
+.playlist-drawer .group:hover,
+.artist-drawer .song-item:hover,
+.artist-drawer .search-item:hover {
+  background: color-mix(in srgb, var(--qqm-surface) 70%, transparent) !important;
+  border-color: rgba(30, 207, 115, 0.14) !important;
+}
+
+.eq-modal-content,
+.timer-modal-content,
+.speed-modal-content {
+  color: var(--qqm-text) !important;
+}
+
+.eq-modal-content .modal-close,
+.timer-modal-content .modal-close,
+.speed-modal-content .modal-close,
+.speed-option,
+.active-option-mark {
+  border-radius: 9px !important;
+}
+
+.speed-option.active,
+.active-option-mark {
+  background: var(--qqm-primary) !important;
+  color: #fff !important;
+}
+
+.mobile-player-settings > div:last-child,
+[class*='rounded-t-3xl'] {
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
+  background: color-mix(in srgb, #151922 78%, transparent) !important;
+  box-shadow: 0 -18px 44px rgba(0, 0, 0, 0.26) !important;
+  backdrop-filter: blur(22px) saturate(1.1);
+}
+
+.dark .login-page .phone-login,
+.dark .login-page .phone,
+.dark .login-page .login-tabs,
+.dark .n-drawer .n-drawer-content,
+.dark .n-modal,
+.dark .n-popover,
+.dark .eq-modal-content,
+.dark .timer-modal-content,
+.dark .speed-modal-content {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(24, 27, 31, 0.76) !important;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.26) !important;
+}
