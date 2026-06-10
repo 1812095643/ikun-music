@@ -61,7 +61,7 @@
       <!-- Play Count (for playlists) -->
       <div
         v-if="playCount"
-        class="absolute right-3 top-3 flex items-center gap-1.5 rounded-md bg-neutral-950/70 px-2.5 py-1 text-[11px] font-semibold text-white"
+        class="qqm-cover-badge absolute right-3 top-3 flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold text-white"
       >
         <i class="ri-play-fill text-[10px]" />
         <span>{{ formatNumber(playCount) }}</span>
@@ -220,5 +220,11 @@ const extractColor = async () => {
 
 .home-list-play:hover {
   color: var(--qqm-primary, #22c55e);
+}
+
+.qqm-cover-badge {
+  border: 1px solid color-mix(in srgb, #ffffff 14%, transparent);
+  background: color-mix(in srgb, #0f172a 42%, transparent);
+  backdrop-filter: blur(8px) saturate(1.06);
 }
 </style>

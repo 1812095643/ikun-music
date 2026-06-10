@@ -50,7 +50,7 @@
 
             <!-- Play Count Badge -->
             <div
-              class="absolute right-3 top-3 flex items-center gap-1 rounded-md bg-neutral-950/60 px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+              class="qqm-cover-badge absolute right-3 top-3 flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
             >
               <i class="ri-play-fill"></i>
               {{ formatNumber(item.playCount) }}
@@ -290,5 +290,11 @@ const isPrevDisabled = computed(() => currentIndex.value === 0);
 
 .play-icon:hover {
   color: var(--qqm-primary, #22c55e);
+}
+
+.qqm-cover-badge {
+  border: 1px solid color-mix(in srgb, #ffffff 14%, transparent);
+  background: color-mix(in srgb, #0f172a 42%, transparent);
+  backdrop-filter: blur(8px) saturate(1.06);
 }
 </style>

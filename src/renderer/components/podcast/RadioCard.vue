@@ -53,7 +53,7 @@ const goToDetail = () => {
       <!-- Episode count badge -->
       <div
         v-if="radio?.programCount && !program"
-        class="absolute top-2 right-2 px-2 py-1 rounded-md bg-neutral-950/55 text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        class="qqm-cover-badge absolute top-2 right-2 px-2 py-1 rounded-md text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
       >
         <i class="ri-mic-fill"></i>
         {{ radio.programCount }}
@@ -105,5 +105,11 @@ const goToDetail = () => {
     color-mix(in srgb, #0f172a 46%, transparent) 100%
   );
   backdrop-filter: blur(4px) saturate(1.04);
+}
+
+.qqm-cover-badge {
+  border: 1px solid color-mix(in srgb, #ffffff 14%, transparent);
+  background: color-mix(in srgb, #0f172a 42%, transparent);
+  backdrop-filter: blur(8px) saturate(1.06);
 }
 </style>

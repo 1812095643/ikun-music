@@ -137,7 +137,7 @@
                 class="action-btn-pill flex items-center gap-1.5 md:gap-2 px-3.5 md:px-4 py-1.5 md:py-2 rounded-lg font-semibold text-xs md:text-sm transition-colors duration-200 border"
                 :class="
                   isCollected
-                    ? 'bg-primary/10 dark:bg-primary/15 text-primary border-primary/20 dark:border-primary/25'
+                    ? 'music-list-collected text-primary'
                     : 'text-neutral-600 dark:text-neutral-400'
                 "
                 @click="toggleCollect"
@@ -1107,5 +1107,10 @@ onMounted(checkCollectionStatus);
 
 .qqm-subtle-button:hover:not(:disabled) {
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 9%, var(--qqm-surface));
+}
+
+.music-list-collected {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

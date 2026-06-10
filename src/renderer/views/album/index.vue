@@ -56,7 +56,7 @@
             <!-- Album Size Badge -->
             <div
               v-if="album.size"
-              class="absolute top-3 left-3 px-2 py-1 rounded-md bg-neutral-950/70 text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              class="qqm-cover-badge absolute top-3 left-3 px-2 py-1 rounded-md text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             >
               <i class="ri-music-2-fill"></i>
               {{ album.size }} {{ t('comp.playlistDrawer.count') }}
@@ -296,5 +296,11 @@ watch(
 
 .play-icon:hover {
   color: var(--qqm-primary, #22c55e);
+}
+
+.qqm-cover-badge {
+  border: 1px solid color-mix(in srgb, #ffffff 14%, transparent);
+  background: color-mix(in srgb, #0f172a 42%, transparent);
+  backdrop-filter: blur(8px) saturate(1.06);
 }
 </style>

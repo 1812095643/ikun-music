@@ -33,7 +33,7 @@
                       />
                       <!-- Play overlay on cover -->
                       <div
-                        class="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/20 transition-colors duration-200"
+                        class="podcast-cover-overlay absolute inset-0 flex items-center justify-center transition-colors duration-200"
                       >
                         <div
                           class="play-icon w-10 h-10 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
@@ -399,5 +399,13 @@ button {
     color-mix(in srgb, var(--qqm-primary, #22c55e) 92%, white),
     var(--qqm-primary-strong, #16a34a)
   );
+}
+
+.podcast-cover-overlay {
+  background: transparent;
+}
+
+.group:hover .podcast-cover-overlay {
+  background: color-mix(in srgb, #0f172a 20%, transparent);
 }
 </style>

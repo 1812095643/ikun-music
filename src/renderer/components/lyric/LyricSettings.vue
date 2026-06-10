@@ -1,7 +1,7 @@
 <template>
-  <div class="w-80 rounded-lg bg-neutral-950/88 border border-white/10 overflow-hidden">
+  <div class="lyric-settings-panel w-80 rounded-lg overflow-hidden">
     <!-- 标题栏 -->
-    <div class="px-6 py-4 border-b border-white/5">
+    <div class="lyric-settings-header px-6 py-4">
       <h2 class="text-lg font-semibold tracking-tight text-white/90">
         {{ t('settings.lyricSettings.title') }}
       </h2>
@@ -9,16 +9,17 @@
 
     <!-- 标签页导航 -->
     <div class="px-4 pt-3 pb-2">
-      <div class="flex gap-1 p-1 bg-black/20 rounded-lg">
+      <div class="lyric-settings-tabs flex gap-1 p-1 rounded-lg">
         <button
           v-for="tab in tabs"
           :key="tab.key"
           @click="activeTab = tab.key"
           :class="[
             'flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200',
-            activeTab === tab.key ? 'bg-primary text-white' : 'hover:bg-white/5'
+            activeTab === tab.key
+              ? 'lyric-settings-tab-active text-white'
+              : 'lyric-settings-tab-idle'
           ]"
-          :style="activeTab !== tab.key ? 'color: rgba(255, 255, 255, 0.7);' : ''"
         >
           {{ tab.label }}
         </button>
@@ -254,7 +255,7 @@
           <button
             v-if="config.gradientColors.colors.length < 5"
             @click="addGradientColor"
-            class="w-full py-2 px-4 rounded-lg bg-primary/15 hover:bg-primary/25 transition-colors text-sm font-medium flex items-center justify-center gap-2 text-white/90"
+            class="lyric-settings-action w-full py-2 px-4 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2 text-white/90"
           >
             <i class="ri-add-line"></i>
             {{ t('settings.lyricSettings.background.addColor') }}
@@ -289,14 +290,14 @@
           />
           <button
             @click="fileInput?.click()"
-            class="w-full py-2 px-4 rounded-lg bg-primary/15 hover:bg-primary/25 transition-colors text-sm font-medium flex items-center justify-center gap-2 text-white/90"
+            class="lyric-settings-action w-full py-2 px-4 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2 text-white/90"
           >
             <i class="ri-image-add-line"></i>
             {{ t('settings.lyricSettings.background.imageUpload') }}
           </button>
 
           <div v-if="config.backgroundImage" class="space-y-3">
-            <div class="relative rounded-lg overflow-hidden border border-white/10">
+            <div class="lyric-image-preview relative rounded-lg overflow-hidden">
               <img
                 :src="config.backgroundImage"
                 class="w-full max-h-40 object-cover"
@@ -363,7 +364,7 @@
             v-model="config.customCss"
             :placeholder="t('settings.lyricSettings.background.customCssPlaceholder')"
             rows="4"
-            class="w-full px-3 py-2 bg-black/20 border border-white/10 rounded-lg text-sm focus:outline-none focus:border-primary font-mono text-white/90"
+            class="lyric-custom-css-input w-full px-3 py-2 rounded-lg text-sm focus:outline-none font-mono text-white/90"
           ></textarea>
           <p class="text-xs text-white/50">
             {{ t('settings.lyricSettings.background.customCssHelp') }}
@@ -495,25 +496,71 @@ defineExpose({
 </script>
 
 <style scoped>
+.lyric-settings-panel {
+  border: 1px solid color-mix(in srgb, #ffffff 10%, transparent);
+  background: color-mix(in srgb, #0f172a 82%, var(--qqm-primary, #22c55e) 4%);
+  backdrop-filter: blur(16px) saturate(1.08);
+}
+
+.lyric-settings-header {
+  border-bottom: 1px solid color-mix(in srgb, #ffffff 8%, transparent);
+}
+
+.lyric-settings-tabs {
+  border: 1px solid color-mix(in srgb, #ffffff 8%, transparent);
+  background: color-mix(in srgb, #020617 22%, transparent);
+}
+
+.lyric-settings-tab-active {
+  background: linear-gradient(
+    180deg,
+    var(--qqm-primary, #22c55e),
+    var(--qqm-primary-strong, #16a34a)
+  );
+}
+
+.lyric-settings-tab-idle {
+  color: color-mix(in srgb, #ffffff 72%, var(--qqm-primary, #22c55e) 4%);
+}
+
+.lyric-settings-tab-idle:hover {
+  color: #ffffff;
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, transparent);
+}
+
+.lyric-settings-action,
+.lyric-custom-css-input {
+  border: 1px solid color-mix(in srgb, #ffffff 12%, transparent);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, transparent);
+}
+
+.lyric-settings-action:hover {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, transparent);
+}
+
+.lyric-custom-css-input:focus {
+  border-color: var(--qqm-primary, #22c55e);
+}
+
 /* 设置项 */
 .setting-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, #ffffff 7%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 10%, transparent);
   border-radius: 12px;
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
     color 0.2s ease;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.9);
+  color: color-mix(in srgb, #ffffff 90%, var(--qqm-primary, #22c55e) 3%);
 }
 
 .setting-item:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, transparent);
 }
 
 /* 切换开关 */
@@ -521,7 +568,7 @@ defineExpose({
   appearance: none;
   width: 44px;
   height: 24px;
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, #ffffff 12%, transparent);
   border-radius: 12px;
   position: relative;
   cursor: pointer;
@@ -551,8 +598,8 @@ defineExpose({
 /* 滑块组 */
 .slider-group {
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, #ffffff 7%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 10%, transparent);
   border-radius: 12px;
 }
 
@@ -562,7 +609,7 @@ defineExpose({
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, #ffffff 82%, var(--qqm-primary, #22c55e) 4%);
   opacity: 0.8;
   margin-bottom: 8px;
 }
@@ -570,7 +617,7 @@ defineExpose({
 .slider-primary {
   width: 100%;
   height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, #ffffff 12%, transparent);
   border-radius: 2px;
   outline: none;
   appearance: none;
@@ -601,15 +648,15 @@ defineExpose({
   justify-content: space-between;
   margin-top: 8px;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, #ffffff 82%, var(--qqm-primary, #22c55e) 4%);
   opacity: 0.5;
 }
 
 /* 单选框组 */
 .radio-group {
   padding: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: color-mix(in srgb, #ffffff 5%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 8%, transparent);
   border-radius: 12px;
 }
 
@@ -619,7 +666,7 @@ defineExpose({
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, #ffffff 82%, var(--qqm-primary, #22c55e) 4%);
   opacity: 0.7;
   margin-bottom: 12px;
 }
@@ -634,11 +681,11 @@ defineExpose({
     background 0.2s ease,
     color 0.2s ease;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, #ffffff 82%, var(--qqm-primary, #22c55e) 4%);
 }
 
 .radio-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: color-mix(in srgb, #ffffff 7%, transparent);
 }
 
 /* 紧凑版单选项（用于横向布局） */
@@ -654,14 +701,14 @@ defineExpose({
     border-color 0.2s ease,
     color 0.2s ease;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: color-mix(in srgb, #ffffff 82%, var(--qqm-primary, #22c55e) 4%);
+  background: color-mix(in srgb, #ffffff 5%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 8%, transparent);
 }
 
 .radio-item-compact:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, #ffffff 10%, transparent);
+  border-color: color-mix(in srgb, #ffffff 14%, transparent);
 }
 
 .radio-input {
@@ -696,8 +743,8 @@ defineExpose({
 /* 颜色选择器 */
 .color-picker-group {
   padding: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: color-mix(in srgb, #ffffff 5%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 8%, transparent);
   border-radius: 12px;
 }
 
@@ -707,7 +754,7 @@ defineExpose({
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, #ffffff 82%, var(--qqm-primary, #22c55e) 4%);
   opacity: 0.7;
   margin-bottom: 12px;
 }
@@ -726,7 +773,7 @@ defineExpose({
 }
 
 .color-picker::-webkit-color-swatch {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid color-mix(in srgb, #ffffff 12%, transparent);
   border-radius: 8px;
 }
 
@@ -745,15 +792,15 @@ defineExpose({
 }
 
 .color-picker-small::-webkit-color-swatch {
-  border: 2px solid rgba(255, 255, 255, 0.15);
+  border: 2px solid color-mix(in srgb, #ffffff 18%, transparent);
   border-radius: 12px;
 }
 
 /* 下拉选择 */
 .select-group {
   padding: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: color-mix(in srgb, #ffffff 5%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 8%, transparent);
   border-radius: 12px;
 }
 
@@ -763,7 +810,7 @@ defineExpose({
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, #ffffff 82%, var(--qqm-primary, #22c55e) 4%);
   opacity: 0.7;
   margin-bottom: 12px;
 }
@@ -771,10 +818,10 @@ defineExpose({
 .select-input {
   width: 100%;
   padding: 10px 12px;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, #0f172a 18%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 12%, transparent);
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in srgb, #ffffff 82%, var(--qqm-primary, #22c55e) 4%);
   font-size: 14px;
   cursor: pointer;
   outline: none;
@@ -795,12 +842,12 @@ defineExpose({
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: color-mix(in srgb, #ffffff 22%, transparent);
   border-radius: 3px;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: color-mix(in srgb, #ffffff 30%, transparent);
 }
 
 .lyric-floating-action {
@@ -810,5 +857,9 @@ defineExpose({
 
 .lyric-floating-action:hover {
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface));
+}
+
+.lyric-image-preview {
+  border: 1px solid color-mix(in srgb, #ffffff 12%, transparent);
 }
 </style>
