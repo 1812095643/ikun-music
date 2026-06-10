@@ -30,11 +30,11 @@
         >
           <!-- Artist Avatar -->
           <div
-            class="artist-avatar relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 overflow-hidden rounded-lg border border-neutral-100 bg-neutral-100 transition-colors duration-200 group-hover:border-primary/30 dark:border-neutral-800 dark:bg-neutral-800"
+            class="artist-avatar relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 overflow-hidden rounded-lg border border-neutral-100 bg-white transition-colors duration-200 group-hover:border-primary/30 dark:border-neutral-800 dark:bg-black"
           >
             <img
               :src="getImgUrl(item.picUrl, '300y300')"
-              class="h-full w-full object-cover grayscale-[0.08] transition-colors duration-200 group-hover:grayscale-0"
+              class="h-full w-full object-cover transition-colors duration-200"
               loading="lazy"
               :alt="item.name"
             />

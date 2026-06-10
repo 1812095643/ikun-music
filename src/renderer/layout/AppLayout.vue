@@ -145,7 +145,7 @@ provide('openPlaylistDrawer', openPlaylistDrawer);
 }
 
 .layout-main {
-  @apply w-full h-full relative text-gray-900 dark:text-white;
+  @apply w-full h-full relative text-neutral-900 dark:text-neutral-100;
 }
 
 .layout-main-page {
