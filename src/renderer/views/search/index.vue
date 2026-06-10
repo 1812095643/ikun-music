@@ -23,7 +23,7 @@
               <div
                 v-for="(item, index) in hotSearchData?.data"
                 :key="index"
-                class="hot-search-card group flex items-center gap-4 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-200"
+                class="hot-search-card group flex cursor-pointer items-center gap-4 rounded-lg px-3 py-2.5 transition-colors duration-200"
                 @click="handleSearch(item.searchWord)"
               >
                 <span
@@ -43,7 +43,11 @@
                   </p>
                 </div>
                 <div v-if="item.iconUrl" class="flex-shrink-0">
-                  <img :src="item.iconUrl" class="h-4 object-contain opacity-80" />
+                  <img
+                    :src="item.iconUrl"
+                    class="h-4 object-contain opacity-80"
+                    @error="hideBrokenIcon"
+                  />
                 </div>
               </div>
             </div>
@@ -66,7 +70,7 @@
               <div
                 v-for="(item, index) in searchHistory"
                 :key="index"
-                class="group relative flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-neutral-100/80 dark:bg-neutral-900/80 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors cursor-pointer"
+                class="search-history-chip group relative flex cursor-pointer items-center gap-2 rounded-lg px-3.5 py-1.5 text-sm transition-colors"
                 @click="handleSearch(item.keyword, item.type)"
               >
                 <span>{{ item.keyword }}</span>
@@ -101,6 +105,11 @@ const router = useRouter();
 const searchStore = useSearchStore();
 
 const searchHistory = ref<Array<{ keyword: string; type: number }>>([]);
+
+const hideBrokenIcon = (event: Event) => {
+  const image = event.target as HTMLImageElement;
+  image.style.display = 'none';
+};
 
 // 从 localStorage 加载搜索历史
 const loadSearchHistory = () => {
@@ -170,16 +179,40 @@ onMounted(() => {
 }
 
 .hot-search-card {
-  border-bottom: 1px solid var(--qqm-border);
+  position: relative;
+  border: 1px solid transparent;
   background: transparent !important;
 
-  &:hover {
-    background: color-mix(in srgb, var(--qqm-primary-soft) 42%, transparent) !important;
-    transform: translateX(2px);
+  &::after {
+    position: absolute;
+    right: 12px;
+    bottom: -2px;
+    left: 52px;
+    height: 1px;
+    background: var(--qqm-border);
+    content: '';
+    opacity: 0.72;
+  }
 
-    .hot-search-item-count {
-      @apply text-primary;
+  &:hover {
+    border-color: color-mix(in srgb, var(--qqm-primary) 12%, transparent);
+    background: color-mix(in srgb, var(--qqm-primary-soft) 24%, transparent) !important;
+
+    &::after {
+      opacity: 0;
     }
   }
+}
+
+.search-history-chip {
+  border: 1px solid var(--qqm-border);
+  background: color-mix(in srgb, var(--qqm-surface-2) 76%, transparent);
+  color: var(--qqm-text-secondary);
+}
+
+.search-history-chip:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary) 18%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary-soft) 30%, var(--qqm-surface-2));
+  color: var(--qqm-primary);
 }
 </style>

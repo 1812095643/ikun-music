@@ -22,16 +22,12 @@
           <!-- 创建新歌单 -->
           <div class="flex flex-col">
             <button
-              class="flex items-center gap-4 rounded-lg p-3 transition-colors duration-200"
-              :class="
-                isCreating
-                  ? 'bg-neutral-100 dark:bg-neutral-800'
-                  : 'bg-neutral-50 hover:bg-neutral-100 dark:bg-neutral-800/50 dark:hover:bg-neutral-800'
-              "
+              class="playlist-create-trigger flex items-center gap-4 rounded-lg p-3 transition-colors duration-200"
+              :class="isCreating ? 'is-active' : ''"
               @click="toggleCreateForm"
             >
               <div
-                class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white transition-transform duration-200 ease-out"
+                class="playlist-create-icon flex h-10 w-10 items-center justify-center rounded-lg text-white transition-transform duration-200 ease-out"
                 :class="{ 'rotate-45': isCreating }"
               >
                 <i class="iconfont text-xl" :class="isCreating ? 'ri-close-line' : 'ri-add-line'" />
@@ -104,12 +100,12 @@
             <div
               v-for="playlist in playlists"
               :key="playlist.id"
-              class="group flex cursor-pointer items-center gap-3.5 rounded-lg p-2.5 transition-colors duration-200 hover:bg-primary/5 dark:hover:bg-primary/10"
+              class="playlist-drawer-row group flex cursor-pointer items-center gap-3.5 rounded-lg p-2.5 transition-colors duration-200"
               @click="handleAddToPlaylist(playlist)"
             >
               <!-- 封面 -->
               <div
-                class="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800"
+                class="playlist-drawer-cover relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg"
               >
                 <n-image
                   :src="getImgUrl(playlist.coverImgUrl || playlist.picUrl, '100y100')"
@@ -131,7 +127,7 @@
 
               <!-- 添加按钮 -->
               <div
-                class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-neutral-300 transition-colors duration-200 group-hover:bg-primary/10 group-hover:text-primary dark:text-neutral-600 dark:group-hover:text-primary"
+                class="playlist-drawer-add flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-colors duration-200"
               >
                 <i class="iconfont ri-add-line text-xl" />
               </div>
@@ -299,5 +295,43 @@ watch(
 :deep(.n-drawer-content) {
   border-left: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
   box-shadow: none;
+}
+
+.playlist-create-trigger {
+  border: 1px solid var(--qqm-border);
+  background: color-mix(in srgb, var(--qqm-surface-2) 82%, transparent);
+}
+
+.playlist-create-trigger:hover,
+.playlist-create-trigger.is-active {
+  border-color: color-mix(in srgb, var(--qqm-primary) 18%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary-soft) 28%, var(--qqm-surface-2));
+}
+
+.playlist-create-icon {
+  background: var(--qqm-primary);
+}
+
+.playlist-drawer-row {
+  border: 1px solid transparent;
+}
+
+.playlist-drawer-row:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary) 14%, transparent);
+  background: color-mix(in srgb, var(--qqm-primary-soft) 24%, transparent);
+}
+
+.playlist-drawer-cover {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-2);
+}
+
+.playlist-drawer-add {
+  color: var(--qqm-text-muted);
+}
+
+.playlist-drawer-row:hover .playlist-drawer-add {
+  background: color-mix(in srgb, var(--qqm-primary-soft) 42%, transparent);
+  color: var(--qqm-primary);
 }
 </style>

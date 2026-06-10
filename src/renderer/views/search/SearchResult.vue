@@ -57,12 +57,12 @@
               <!-- Batch Actions -->
               <div
                 v-if="isElectron"
-                class="h-8 w-[1px] bg-neutral-200 dark:bg-neutral-800 mx-1 hidden md:block"
+                class="mx-1 hidden h-8 w-[1px] bg-[var(--qqm-border)] md:block"
               ></div>
 
               <button
                 v-if="!isSelecting && isElectron"
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:hover:border-primary/25 dark:hover:bg-primary/10 transition-colors"
+                class="action-btn-icon flex h-9 w-9 items-center justify-center rounded-lg transition-colors"
                 @click="startSelect"
               >
                 <i class="ri-checkbox-multiple-line text-lg" />
@@ -98,7 +98,7 @@
               <!-- Layout Toggle -->
               <button
                 v-if="!isMobile"
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:hover:border-primary/25 dark:hover:bg-primary/10 transition-colors"
+                class="action-btn-icon flex h-9 w-9 items-center justify-center rounded-lg transition-colors"
                 @click="toggleLayout"
               >
                 <i :class="isCompactLayout ? 'ri-list-check-2' : 'ri-grid-line'" class="text-lg" />
@@ -477,6 +477,18 @@ watch(
 <style lang="scss" scoped>
 .search-result-page {
   position: relative;
+}
+
+.action-btn-icon {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+  color: var(--qqm-text-secondary);
+}
+
+.action-btn-icon:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary) 18%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary-soft) 28%, var(--qqm-surface));
+  color: var(--qqm-primary);
 }
 
 .search-empty-state {
