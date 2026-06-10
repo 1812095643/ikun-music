@@ -11,7 +11,7 @@
               <template #checked><i class="ri-smartphone-line"></i></template>
               <template #unchecked><i class="ri-settings-line"></i></template>
             </n-switch>
-            <span class="text-sm text-gray-500 max-md:hidden">
+            <span class="text-sm text-neutral-500 max-md:hidden">
               {{
                 setData.autoTheme ? t('settings.basic.autoTheme') : t('settings.basic.manualTheme')
               }}
@@ -88,16 +88,16 @@
       v-if="isElectron && selectedFonts.length > 0"
       class="p-4 border-b border-neutral-100 dark:border-neutral-800"
     >
-      <div class="text-base font-bold mb-4 text-gray-900 dark:text-white">
+      <div class="text-base font-bold mb-4 text-neutral-900 dark:text-neutral-100">
         {{ t('settings.basic.fontPreview.title') }}
       </div>
       <div class="space-y-4" :style="{ fontFamily: setData.fontFamily }">
         <div v-for="preview in fontPreviews" :key="preview.key" class="flex flex-col gap-2">
-          <div class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+          <div class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase">
             {{ t(`settings.basic.fontPreview.${preview.key}`) }}
           </div>
           <div
-            class="text-lg text-gray-900 dark:text-gray-100 p-3 rounded-lg bg-neutral-50 dark:bg-neutral-900"
+            class="text-lg text-neutral-900 dark:text-neutral-100 p-3 rounded-lg bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800"
           >
             {{ t(`settings.basic.fontPreview.${preview.key}Text`) }}
           </div>
@@ -107,11 +107,11 @@
 
     <setting-item :title="t('settings.basic.tokenManagement')">
       <template #description>
-        <div class="text-sm text-gray-500 mb-2">
+        <div class="text-sm text-neutral-500 mb-2">
           {{ t('settings.basic.tokenStatus') }}:
           {{ currentToken ? t('settings.basic.tokenSet') : t('settings.basic.tokenNotSet') }}
         </div>
-        <div v-if="currentToken" class="text-xs text-gray-400 mb-2 font-mono break-all">
+        <div v-if="currentToken" class="text-xs text-neutral-400 mb-2 font-mono break-all">
           {{ currentToken.substring(0, 50) }}...
         </div>
       </template>
@@ -139,7 +139,9 @@
       </template>
       <template #action>
         <div class="flex items-center gap-2">
-          <span v-if="!isMobile" class="text-sm text-gray-400">{{ setData.animationSpeed }}x</span>
+          <span v-if="!isMobile" class="text-sm text-neutral-400"
+            >{{ setData.animationSpeed }}x</span
+          >
           <div class="w-40 max-md:w-auto flex justify-end">
             <n-slider
               v-if="!isMobile"
@@ -167,7 +169,7 @@
 
     <setting-item v-if="isElectron" :title="t('settings.basic.gpuAcceleration')">
       <template #description>
-        <div class="text-sm text-gray-500 mb-2">
+        <div class="text-sm text-neutral-500 mb-2">
           {{ t('settings.basic.gpuAccelerationDesc') }}
         </div>
         <div v-if="gpuAccelerationChanged" class="text-xs text-primary">

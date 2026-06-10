@@ -6,7 +6,9 @@
     <div class="flex-shrink-0 z-10 page-padding pt-8 pb-4 relative">
       <div class="max-w-5xl mx-auto w-full flex items-end justify-between">
         <div>
-          <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
+          <h2
+            class="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-2 flex items-center gap-3"
+          >
             <div
               class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary"
             >
@@ -14,7 +16,7 @@
             </div>
             {{ t('comp.playlist.import.title') }}
           </h2>
-          <p class="text-base text-gray-500 dark:text-gray-400 ml-13">
+          <p class="text-base text-neutral-500 dark:text-neutral-400 ml-13">
             {{ t('comp.playlist.import.description') }}
           </p>
         </div>
@@ -27,7 +29,7 @@
         <!-- 自定义 Tab 切换 -->
         <div class="flex justify-center mb-8">
           <div
-            class="bg-white dark:bg-white/5 p-1.5 rounded-lg border border-neutral-100 dark:border-neutral-800 flex gap-1 relative"
+            class="bg-white dark:bg-black p-1.5 rounded-lg border border-neutral-100 dark:border-neutral-800 flex gap-1 relative"
           >
             <div
               v-for="tab in tabs"
@@ -36,7 +38,7 @@
               :class="
                 currentTab === tab.id
                   ? 'text-white'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                  : 'text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary'
               "
               @click="currentTab = tab.id"
             >
@@ -66,11 +68,11 @@
                     <input
                       v-model="link.value"
                       :placeholder="t('comp.playlist.import.linkPlaceholder')"
-                      class="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-lg px-5 py-4 outline-none transition-colors duration-200 text-gray-900 dark:text-white placeholder-gray-400"
+                      class="w-full bg-white dark:bg-black border border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-lg px-5 py-4 outline-none transition-colors duration-200 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400"
                     />
                     <button
                       v-if="linkInputs.length > 1"
-                      class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 transition-colors opacity-0 group-hover:opacity-100"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/5 dark:hover:text-primary dark:hover:bg-primary/10 transition-colors opacity-0 group-hover:opacity-100"
                       @click="removeLinkRow(index)"
                     >
                       <i class="ri-delete-bin-line"></i>
@@ -78,7 +80,7 @@
                   </div>
 
                   <button
-                    class="w-full py-3 rounded-lg border border-dashed border-gray-200 dark:border-gray-700 text-gray-500 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-colors duration-200 flex items-center justify-center gap-2 font-medium"
+                    class="w-full py-3 rounded-lg border border-dashed border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-colors duration-200 flex items-center justify-center gap-2 font-medium"
                     @click="addLinkRow"
                   >
                     <i class="ri-add-line text-lg"></i>
@@ -93,9 +95,9 @@
                   v-model="textInput"
                   :placeholder="t('comp.playlist.import.textPlaceholder')"
                   rows="12"
-                  class="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-lg px-5 py-4 outline-none transition-colors duration-200 text-gray-900 dark:text-white placeholder-gray-400 font-mono text-sm resize-none"
+                  class="w-full bg-white dark:bg-black border border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-lg px-5 py-4 outline-none transition-colors duration-200 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 font-mono text-sm resize-none"
                 ></textarea>
-                <div class="flex items-center gap-2 text-xs text-gray-400 px-2">
+                <div class="flex items-center gap-2 text-xs text-neutral-400 px-2">
                   <i class="ri-information-line"></i>
                   {{ t('comp.playlist.import.textFormat') }}
                 </div>
@@ -109,27 +111,27 @@
                     :key="index"
                     class="flex gap-3 items-center group"
                   >
-                    <div class="w-6 text-center text-xs text-gray-300 font-mono">
+                    <div class="w-6 text-center text-xs text-neutral-300 font-mono">
                       {{ index + 1 }}
                     </div>
                     <input
                       v-model="item.name"
                       :placeholder="t('comp.playlist.import.songNamePlaceholder')"
-                      class="flex-1 bg-gray-50 dark:bg-white/5 border-transparent focus:border-primary/50 rounded-lg px-4 py-2.5 outline-none text-sm transition-colors border-2"
+                      class="flex-1 bg-white dark:bg-black border-transparent focus:border-primary/50 rounded-lg px-4 py-2.5 outline-none text-sm transition-colors border-2"
                     />
                     <input
                       v-model="item.artist"
                       :placeholder="t('comp.playlist.import.artistNamePlaceholder')"
-                      class="flex-1 bg-gray-50 dark:bg-white/5 border-transparent focus:border-primary/50 rounded-lg px-4 py-2.5 outline-none text-sm transition-colors border-2"
+                      class="flex-1 bg-white dark:bg-black border-transparent focus:border-primary/50 rounded-lg px-4 py-2.5 outline-none text-sm transition-colors border-2"
                     />
                     <input
                       v-model="item.album"
                       :placeholder="t('comp.playlist.import.albumNamePlaceholder')"
-                      class="flex-1 bg-gray-50 dark:bg-white/5 border-transparent focus:border-primary/50 rounded-lg px-4 py-2.5 outline-none text-sm transition-colors border-2"
+                      class="flex-1 bg-white dark:bg-black border-transparent focus:border-primary/50 rounded-lg px-4 py-2.5 outline-none text-sm transition-colors border-2"
                     />
                     <button
                       v-if="localMetadata.length > 1"
-                      class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 transition-colors opacity-0 group-hover:opacity-100"
+                      class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/5 dark:hover:text-primary dark:hover:bg-primary/10 transition-colors opacity-0 group-hover:opacity-100"
                       @click="removeMetadataRow(index)"
                     >
                       <i class="ri-delete-bin-line"></i>
@@ -154,8 +156,8 @@
                 <div class="mt-0.5 text-primary">
                   <i class="ri-lightbulb-flash-line text-lg"></i>
                 </div>
-                <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                  <div class="font-medium text-gray-900 dark:text-gray-200 mb-1">
+                <div class="text-sm text-neutral-600 dark:text-neutral-400 space-y-1">
+                  <div class="font-medium text-neutral-900 dark:text-neutral-200 mb-1">
                     {{ t('comp.playlist.import.linkTips') }}
                   </div>
                   <ul class="list-disc list-inside opacity-80 space-y-1">
@@ -176,7 +178,9 @@
             <div
               class="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-100 dark:border-neutral-800 p-6"
             >
-              <h3 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <h3
+                class="font-bold text-neutral-900 dark:text-neutral-100 mb-4 flex items-center gap-2"
+              >
                 <i class="ri-settings-4-line text-primary"></i>
                 {{ t('comp.playlist.import.options') }}
               </h3>
@@ -188,14 +192,14 @@
                   :class="
                     importToStarPlaylist
                       ? 'bg-primary/5 border-primary/50'
-                      : 'bg-neutral-50 dark:bg-neutral-900 border-transparent hover:bg-primary/5 dark:hover:bg-primary/10'
+                      : 'bg-white dark:bg-black border-transparent hover:bg-primary/5 dark:hover:bg-primary/10'
                   "
                   @click="importToStarPlaylist = !importToStarPlaylist"
                 >
                   <div class="flex items-center gap-3">
                     <div
-                      class="w-10 h-10 rounded-lg bg-white dark:bg-white/10 flex items-center justify-center text-lg"
-                      :class="importToStarPlaylist ? 'text-primary' : 'text-gray-400'"
+                      class="w-10 h-10 rounded-lg bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 flex items-center justify-center text-lg"
+                      :class="importToStarPlaylist ? 'text-primary' : 'text-neutral-400'"
                     >
                       <i class="ri-heart-3-fill" v-if="importToStarPlaylist"></i>
                       <i class="ri-heart-3-line" v-else></i>
@@ -222,12 +226,12 @@
                   :class="{ 'opacity-50 pointer-events-none': importToStarPlaylist }"
                 >
                   <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <i class="ri-play-list-line text-gray-400"></i>
+                    <i class="ri-play-list-line text-neutral-400"></i>
                   </div>
                   <input
                     v-model="playlistName"
                     :placeholder="t('comp.playlist.import.playlistNamePlaceholder')"
-                    class="w-full bg-neutral-50 dark:bg-neutral-900 border border-transparent focus:border-primary/50 rounded-lg pl-11 pr-4 py-3.5 outline-none transition-colors text-sm text-gray-900 dark:text-white"
+                    class="w-full bg-white dark:bg-black border border-transparent focus:border-primary/50 rounded-lg pl-11 pr-4 py-3.5 outline-none transition-colors text-sm text-neutral-900 dark:text-neutral-100"
                   />
                 </div>
               </div>
@@ -254,7 +258,9 @@
                 class="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-100 dark:border-neutral-800 p-6"
               >
                 <div class="flex items-center justify-between mb-4">
-                  <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <h3
+                    class="font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2"
+                  >
                     {{ t('comp.playlist.import.importStatus') }}
                   </h3>
                   <button class="text-xs text-primary hover:underline" @click="refreshStatus">
@@ -283,10 +289,10 @@
                       <i class="ri-close-line" v-else-if="taskStatus === 'failed'"></i>
                     </div>
                     <div>
-                      <div class="font-bold text-lg text-gray-900 dark:text-white">
+                      <div class="font-bold text-lg text-neutral-900 dark:text-neutral-100">
                         {{ getStatusText(taskStatus) }}
                       </div>
-                      <div class="text-xs text-gray-400 font-mono">{{ taskId }}</div>
+                      <div class="text-xs text-neutral-400 font-mono">{{ taskId }}</div>
                     </div>
                   </div>
 
@@ -300,7 +306,7 @@
 
                   <div
                     v-if="taskStatus === 'failed'"
-                    class="rounded-lg border border-neutral-100 bg-neutral-50 p-3 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900/70 dark:text-neutral-300"
+                    class="rounded-lg border border-neutral-100 bg-neutral-50 p-3 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-black dark:text-neutral-300"
                   >
                     {{ failReason }}
                   </div>

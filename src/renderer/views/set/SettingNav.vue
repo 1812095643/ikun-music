@@ -9,7 +9,7 @@
       :class="[
         currentSection === section.id
           ? 'text-primary bg-primary/10 dark:bg-primary/15 !border-primary font-medium'
-          : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-primary hover:dark:text-white hover:bg-primary/5 hover:dark:bg-primary/10 hover:border-primary/30'
+          : 'text-neutral-600 dark:text-neutral-400 border-transparent hover:text-primary hover:dark:text-primary hover:bg-primary/5 hover:dark:bg-primary/10 hover:border-primary/30'
       ]"
       @click="handleClick(section.id)"
     >

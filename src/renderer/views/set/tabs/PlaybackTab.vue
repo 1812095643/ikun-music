@@ -22,11 +22,11 @@
             <span>{{ t('settings.playback.musicUnblockEnableDesc') }}</span>
           </div>
           <div v-if="setData.enableMusicUnblock" class="mt-2 text-sm">
-            <span class="text-gray-500">{{ t('settings.playback.selectedMusicSources') }}</span>
-            <span v-if="musicSources.length > 0" class="text-gray-400">{{
+            <span class="text-neutral-500">{{ t('settings.playback.selectedMusicSources') }}</span>
+            <span v-if="musicSources.length > 0" class="text-neutral-400">{{
               musicSources.join(', ')
             }}</span>
-            <span v-else class="text-gray-400 text-xs">{{
+            <span v-else class="text-neutral-400 text-xs">{{
               t('settings.playback.noMusicSources')
             }}</span>
           </div>
@@ -67,10 +67,10 @@
     </setting-section>
 
     <div
-      class="mt-6 p-4 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800"
+      class="mt-6 p-4 rounded-lg bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800"
     >
-      <div class="text-sm font-medium text-gray-500 mb-3">支持正版</div>
-      <div class="text-base text-gray-900 dark:text-white mb-4">
+      <div class="text-sm font-medium text-neutral-500 mb-3">支持正版</div>
+      <div class="text-base text-neutral-900 dark:text-neutral-100 mb-4">
         大家还是需要支持正版，本软件只做开源探讨。各大音乐会员购买链接：
       </div>
       <div class="flex gap-3 flex-wrap">

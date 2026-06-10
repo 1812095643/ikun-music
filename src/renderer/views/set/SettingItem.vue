@@ -1,6 +1,6 @@
 <template>
   <div
-    class="setting-item flex items-center justify-between px-4 py-3.5 transition-colors bg-transparent text-gray-900 dark:text-white border-b border-neutral-100 dark:border-neutral-800 last:border-b-0 hover:bg-primary/5 hover:dark:bg-primary/10"
+    class="setting-item flex items-center justify-between px-4 py-3.5 transition-colors bg-transparent text-neutral-900 dark:text-neutral-100 border-b border-neutral-100 dark:border-neutral-800 last:border-b-0 hover:bg-primary/5 hover:dark:bg-primary/10"
     :class="[
       // 移动端垂直布局
       { 'max-md:flex-col max-md:items-start max-md:gap-3': !inline },
@@ -19,7 +19,7 @@
       </div>
       <div
         v-if="description || $slots.description"
-        class="text-sm text-gray-500 dark:text-gray-400 leading-normal"
+        class="text-sm text-neutral-500 dark:text-neutral-400 leading-normal"
       >
         <slot name="description">{{ description }}</slot>
       </div>

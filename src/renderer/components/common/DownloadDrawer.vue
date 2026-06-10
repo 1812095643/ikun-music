@@ -100,7 +100,7 @@ onMounted(() => {
   .n-button {
     @apply bg-white dark:bg-black;
     @apply hover:bg-primary/5 dark:hover:bg-primary/10 hover:text-primary;
-    @apply text-gray-600 dark:text-gray-300;
+    @apply text-neutral-600 dark:text-neutral-300;
     @apply transition-opacity duration-200;
     @apply w-10 h-10;
     border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));

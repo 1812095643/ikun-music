@@ -19,13 +19,13 @@
           >
             <!-- Header -->
             <div
-              class="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-white/5 shrink-0"
+              class="flex items-center justify-between px-4 py-3 border-b border-neutral-100 dark:border-neutral-800 shrink-0"
             >
-              <h3 class="text-[15px] font-semibold text-gray-900 dark:text-white truncate">
+              <h3 class="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100 truncate">
                 {{ title }}
               </h3>
               <button
-                class="p-1 -mr-1 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                class="p-1 -mr-1 rounded-lg text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
                 @click="close"
               >
                 <i class="ri-close-line text-lg"></i>
@@ -40,7 +40,7 @@
             <!-- Footer -->
             <div
               v-if="$slots.footer"
-              class="px-4 py-3 border-t border-gray-100 dark:border-white/5 shrink-0 bg-gray-50 dark:bg-white/5"
+              class="px-4 py-3 border-t border-neutral-100 dark:border-neutral-800 shrink-0 bg-white dark:bg-black"
             >
               <slot name="footer"></slot>
             </div>

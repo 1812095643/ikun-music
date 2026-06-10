@@ -2,7 +2,7 @@
   <div class="donation-section">
     <!-- 头部引导区 -->
     <div class="my-8 text-center">
-      <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
+      <p class="text-neutral-500 dark:text-neutral-400 max-w-2xl mx-auto">
         {{ t('donation.description') }}
       </p>
       <div class="mt-4 flex justify-center">
@@ -19,7 +19,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 max-w-3xl mx-auto">
       <!-- 支付宝 -->
       <div
-        class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-neutral-900"
+        class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-black border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-primary/10"
       >
         <div
           class="absolute -right-4 -top-4 w-24 h-24 rounded-lg bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
@@ -37,7 +37,7 @@
 
       <!-- 微信支付 -->
       <div
-        class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-neutral-900"
+        class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-black border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-primary/10"
       >
         <div
           class="absolute -right-4 -top-4 w-24 h-24 rounded-lg bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
@@ -57,7 +57,9 @@
     <!-- 捐赠者列表 -->
     <div class="donors-list px-4">
       <div class="flex items-center justify-between mb-4 px-1">
-        <h4 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <h4
+          class="text-lg font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2"
+        >
           <i class="ri-user-heart-line text-primary"></i>
           {{ t('donation.title') }}
         </h4>
@@ -94,7 +96,7 @@
             <!-- 信息 -->
             <div class="flex-1 min-w-0 flex flex-col justify-center">
               <div class="flex justify-between items-center">
-                <span class="font-bold text-gray-900 dark:text-gray-100 truncate text-sm">
+                <span class="font-bold text-neutral-900 dark:text-neutral-100 truncate text-sm">
                   {{ donor.name }}
                 </span>
                 <span class="rounded bg-primary/5 px-1.5 py-0.5 font-mono text-xs text-primary/80">
@@ -111,7 +113,7 @@
                 >
                   "{{ donor.message }}"
                 </div>
-                <div v-else class="text-xs text-gray-400 dark:text-gray-600">
+                <div v-else class="text-xs text-neutral-400 dark:text-neutral-600">
                   {{ donor.date }}
                 </div>
               </div>
