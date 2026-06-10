@@ -1404,3 +1404,225 @@ body {
   background: rgba(24, 27, 31, 0.58) !important;
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22) !important;
 }
+
+/* 剩余功能页 QQ 音乐风格收口：MV、播客、歌单导入、热力图与关注列表统一清爽玻璃质感。 */
+.mv-page,
+.podcast-page,
+.radio-detail-page,
+.playlist-import-page,
+.heatmap-page,
+.history-recommend-page,
+.user-follows-page,
+.user-followers-page,
+.mobile-search-page,
+.mobile-search-result {
+  color: var(--qqm-text) !important;
+  background:
+    radial-gradient(circle at 86% 7%, rgba(30, 207, 115, 0.1), transparent 28%), var(--qqm-bg) !important;
+}
+
+.mv-page .sticky-tab-page,
+.mv-page-shell,
+.podcast-page,
+.playlist-import-page > .flex-shrink-0,
+.user-follows-page section:first-of-type,
+.user-followers-page section:first-of-type,
+.heatmap-header,
+.history-recommend-page .music-header {
+  border-bottom-color: transparent !important;
+  background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+.mv-page .mv-card,
+.podcast-page .radio-card,
+.podcast-page [class*='rounded-xl'][class*='bg-neutral'],
+.user-follows-page .user-card,
+.user-followers-page .user-card {
+  padding: 8px !important;
+  border: 1px solid transparent !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  transition:
+    background-color 180ms var(--qqm-ease),
+    border-color 180ms var(--qqm-ease),
+    box-shadow 180ms var(--qqm-ease),
+    transform 180ms var(--qqm-ease) !important;
+}
+
+.mv-page .mv-card:hover,
+.podcast-page .radio-card:hover,
+.podcast-page [class*='rounded-xl'][class*='bg-neutral']:hover,
+.user-follows-page .user-card:hover,
+.user-followers-page .user-card:hover {
+  border-color: rgba(30, 207, 115, 0.16) !important;
+  background: color-mix(in srgb, var(--qqm-surface) 66%, transparent) !important;
+  box-shadow: 0 12px 28px rgba(20, 24, 31, 0.07) !important;
+  transform: translateY(-1px);
+}
+
+.mv-page .mv-card [class*='aspect-video'],
+.podcast-page .radio-card [class*='aspect-square'],
+.podcast-page img,
+.radio-detail-page .cover-container,
+.user-follows-page .user-card [class*='rounded-full'],
+.user-followers-page .user-card [class*='rounded-full'] {
+  border: 1px solid rgba(255, 255, 255, 0.58) !important;
+  box-shadow: 0 10px 24px rgba(20, 24, 31, 0.075) !important;
+}
+
+.mv-page .mv-card [class*='aspect-video'],
+.podcast-page .radio-card [class*='aspect-square'],
+.radio-detail-page .cover-container {
+  border-radius: 10px !important;
+}
+
+.mv-page .play-icon,
+.podcast-page .play-icon,
+.radio-detail-page .play-button {
+  width: 42px !important;
+  height: 42px !important;
+  border: 1px solid rgba(255, 255, 255, 0.72) !important;
+  color: var(--qqm-primary-strong) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  box-shadow: 0 8px 18px rgba(20, 24, 31, 0.18) !important;
+  backdrop-filter: blur(12px) saturate(1.12);
+}
+
+.playlist-import-page > .absolute:first-child {
+  background: radial-gradient(
+    circle at 14% 0%,
+    rgba(30, 207, 115, 0.13),
+    transparent 38%
+  ) !important;
+}
+
+.playlist-import-page [class*='rounded-3xl'],
+.playlist-import-page [class*='rounded-2xl'],
+.heatmap-container,
+.heatmap-wrapper,
+.heatmap-page .stat-card,
+.history-recommend-page .music-list-content,
+.history-recommend-page .date-tabs-wrapper {
+  border: 1px solid rgba(255, 255, 255, 0.54) !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
+  box-shadow: 0 12px 30px rgba(20, 24, 31, 0.055) !important;
+  backdrop-filter: blur(16px) saturate(1.08);
+}
+
+.playlist-import-page input,
+.playlist-import-page textarea,
+.playlist-import-page button,
+.mobile-search-page .search-input-wrapper,
+.mobile-search-page .type-tag,
+.mobile-search-page .suggestion-item,
+.mobile-search-page .history-tag,
+.mobile-search-page .hot-item,
+.mobile-search-result .type-tag,
+.mobile-search-result .result-list,
+.mobile-search-result .action-btn {
+  border-radius: 9px !important;
+}
+
+.playlist-import-page input,
+.playlist-import-page textarea,
+.mobile-search-page .search-input-wrapper {
+  border-color: var(--qqm-border) !important;
+  background: color-mix(in srgb, var(--qqm-surface) 78%, transparent) !important;
+}
+
+.heatmap-page .stat-card,
+.heatmap-container,
+.history-recommend-page .music-list-content {
+  overflow: hidden;
+}
+
+.heatmap-page .stat-icon,
+.playlist-import-page h2 > div,
+.mobile-search-page .header-back,
+.mobile-search-result .header-back,
+.mobile-search-result .action-btn {
+  border: 1px solid var(--qqm-border) !important;
+  border-radius: 9px !important;
+  background: var(--qqm-primary-soft) !important;
+  color: var(--qqm-primary-strong) !important;
+}
+
+.mobile-search-page .search-section,
+.mobile-search-result .result-content,
+.mobile-search-result .empty-state,
+.mobile-search-result .loading-state {
+  margin: 12px 14px !important;
+  border: 1px solid rgba(255, 255, 255, 0.52) !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
+  box-shadow: 0 10px 26px rgba(20, 24, 31, 0.045) !important;
+  backdrop-filter: blur(14px) saturate(1.06);
+}
+
+.dark .mv-page .mv-card:hover,
+.dark .podcast-page .radio-card:hover,
+.dark .podcast-page [class*='rounded-xl'][class*='bg-neutral']:hover,
+.dark .user-follows-page .user-card:hover,
+.dark .user-followers-page .user-card:hover {
+  border-color: rgba(30, 207, 115, 0.18) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark .playlist-import-page [class*='rounded-3xl'],
+.dark .playlist-import-page [class*='rounded-2xl'],
+.dark .heatmap-container,
+.dark .heatmap-wrapper,
+.dark .heatmap-page .stat-card,
+.dark .history-recommend-page .music-list-content,
+.dark .history-recommend-page .date-tabs-wrapper,
+.dark .mobile-search-page .search-section,
+.dark .mobile-search-result .result-content,
+.dark .mobile-search-result .empty-state,
+.dark .mobile-search-result .loading-state {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(24, 27, 31, 0.58) !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22) !important;
+}
+
+/* 播客页组件未暴露稳定卡片类名，按 StickyTabPage 内容结构补齐卡片质感。 */
+.podcast-page .grid > .group.cursor-pointer.animate-item {
+  padding: 8px !important;
+  border: 1px solid transparent !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  transition:
+    background-color 180ms var(--qqm-ease),
+    border-color 180ms var(--qqm-ease),
+    box-shadow 180ms var(--qqm-ease),
+    transform 180ms var(--qqm-ease) !important;
+}
+
+.podcast-page .grid > .group.cursor-pointer.animate-item:hover {
+  border-color: rgba(30, 207, 115, 0.16) !important;
+  background: color-mix(in srgb, var(--qqm-surface) 66%, transparent) !important;
+  box-shadow: 0 12px 28px rgba(20, 24, 31, 0.07) !important;
+  transform: translateY(-1px);
+}
+
+.podcast-page .grid > .group.cursor-pointer.animate-item [class*='aspect-square'] {
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.58) !important;
+  box-shadow: 0 10px 24px rgba(20, 24, 31, 0.075) !important;
+}
+
+.podcast-page .grid > .group.cursor-pointer.animate-item [class*='w-12'][class*='h-12'] {
+  width: 42px !important;
+  height: 42px !important;
+  border: 1px solid rgba(255, 255, 255, 0.72) !important;
+  color: var(--qqm-primary-strong) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  box-shadow: 0 8px 18px rgba(20, 24, 31, 0.18) !important;
+  backdrop-filter: blur(12px) saturate(1.12);
+}
+
+.dark .podcast-page .grid > .group.cursor-pointer.animate-item:hover {
+  border-color: rgba(30, 207, 115, 0.18) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}

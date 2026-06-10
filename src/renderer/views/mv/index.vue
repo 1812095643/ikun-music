@@ -1,7 +1,8 @@
 <template>
-  <div class="h-full w-full">
+  <div class="mv-page h-full w-full">
     <sticky-tab-page
       ref="pageRef"
+      class="mv-page-shell"
       title="MV"
       :description="t('comp.pages.mv.desc')"
       :model-value="selectedCategory"
@@ -80,9 +81,7 @@
           </span>
         </div>
         <div v-if="!hasMore && !initLoading" class="text-center">
-          <span
-            class="text-xs text-neutral-400 font-medium tracking-widest uppercase opacity-50"
-          >
+          <span class="text-xs text-neutral-400 font-medium tracking-widest uppercase opacity-50">
             {{ t('comp.pages.mv.noMore') }}
           </span>
         </div>
