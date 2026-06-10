@@ -4,10 +4,10 @@
     <div class="flex items-center justify-between px-6 py-4 flex-shrink-0">
       <div class="flex items-center gap-4">
         <div>
-          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+          <h2 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             {{ t('favorite.title') }}
           </h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
             {{ t('favorite.count', { count: favoriteList.length }) }}
           </p>
         </div>
@@ -17,7 +17,7 @@
         <template v-if="!isSelecting">
           <!-- Sort Controls -->
           <div
-            class="flex items-center bg-white dark:bg-neutral-900 rounded-lg p-1 h-9 border border-gray-100 dark:border-neutral-800"
+            class="flex items-center bg-white dark:bg-neutral-900 rounded-lg p-1 h-9 border border-neutral-100 dark:border-neutral-800"
           >
             <button
               v-for="isDesc in [true, false]"
@@ -25,8 +25,8 @@
               class="px-3 h-full rounded-md text-xs font-medium transition-colors duration-200 flex items-center gap-1"
               :class="
                 isDescending === isDesc
-                  ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white ring-1 ring-black/5 dark:ring-white/10'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-neutral-100 ring-1 ring-black/5 dark:ring-white/10'
+                  : 'text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary'
               "
               @click="toggleSort(isDesc)"
             >
@@ -47,7 +47,7 @@
         <!-- Selection Controls -->
         <div
           v-else
-          class="flex items-center gap-3 bg-white dark:bg-neutral-900 rounded-lg px-4 py-1.5 border border-gray-100 dark:border-neutral-800 h-9"
+          class="flex items-center gap-3 bg-white dark:bg-neutral-900 rounded-lg px-4 py-1.5 border border-neutral-100 dark:border-neutral-800 h-9"
         >
           <n-checkbox
             :checked="isAllSelected"
@@ -57,7 +57,7 @@
           >
             <span class="text-xs">{{ t('common.selectAll') }}</span>
           </n-checkbox>
-          <div class="h-3 w-px bg-gray-200 dark:bg-neutral-700 mx-1"></div>
+          <div class="h-3 w-px bg-neutral-200 dark:bg-neutral-700 mx-1"></div>
           <div class="flex items-center gap-2">
             <button
               class="h-6 px-3 rounded-md bg-primary text-white text-xs font-medium hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
@@ -68,7 +68,7 @@
               {{ t('favorite.download', { count: selectedSongs.length }) }}
             </button>
             <button
-              class="h-6 px-3 rounded-md bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 text-xs font-medium hover:bg-gray-200 dark:hover:bg-neutral-600 transition-colors"
+              class="h-6 px-3 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 text-xs font-medium hover:bg-primary/10 dark:hover:bg-primary/15 hover:text-primary transition-colors"
               @click="cancelSelect"
             >
               {{ t('common.cancel') }}
@@ -83,12 +83,12 @@
       <n-scrollbar ref="scrollbarRef" class="h-full pr-4" @scroll="handleScroll">
         <div
           v-if="favoriteList.length === 0"
-          class="h-full flex flex-col items-center justify-center text-gray-400"
+          class="h-full flex flex-col items-center justify-center text-neutral-400"
         >
           <div
-            class="w-20 h-20 rounded-lg bg-gray-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
+            class="w-20 h-20 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
           >
-            <i class="ri-heart-line text-4xl text-gray-300 dark:text-gray-600"></i>
+            <i class="ri-heart-line text-4xl text-neutral-300 dark:text-neutral-600"></i>
           </div>
           <p>{{ t('favorite.emptyTip') }}</p>
         </div>
@@ -99,7 +99,7 @@
             :key="song.id"
             :item="song"
             :favorite="false"
-            class="rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+            class="rounded-lg hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
             :class="{ '!bg-primary/10': selectedSongs.includes(song.id as number) }"
             :selectable="isSelecting"
             :selected="selectedSongs.includes(song.id as number)"
@@ -116,15 +116,18 @@
           <!-- Loading Skeletons -->
           <div v-if="loading" class="space-y-2 pt-2">
             <div v-for="i in 5" :key="i" class="flex items-center gap-4 rounded-lg p-2">
-              <div class="h-12 w-12 rounded-lg bg-gray-200 dark:bg-neutral-800"></div>
+              <div class="h-12 w-12 rounded-lg bg-neutral-200 dark:bg-neutral-800"></div>
               <div class="flex-1 space-y-2">
-                <div class="h-4 w-1/3 rounded bg-gray-200 dark:bg-neutral-800"></div>
-                <div class="h-3 w-1/4 rounded bg-gray-200 dark:bg-neutral-800"></div>
+                <div class="h-4 w-1/3 rounded bg-neutral-200 dark:bg-neutral-800"></div>
+                <div class="h-3 w-1/4 rounded bg-neutral-200 dark:bg-neutral-800"></div>
               </div>
             </div>
           </div>
 
-          <div v-if="noMore" class="text-center py-8 text-sm text-gray-400 dark:text-gray-500">
+          <div
+            v-if="noMore"
+            class="text-center py-8 text-sm text-neutral-400 dark:text-neutral-500"
+          >
             {{ t('common.noMore') }}
           </div>
         </div>

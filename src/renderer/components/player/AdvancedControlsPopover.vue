@@ -256,7 +256,7 @@ const selectSpeed = (speed: number) => {
 
     .timer-badge,
     .speed-badge {
-      @apply flex items-center justify-center text-xs text-white rounded-full;
+      @apply flex items-center justify-center text-xs text-white rounded-md;
       background-color: var(--qqm-primary, #22c55e);
       height: 16px;
       min-width: 16px;
@@ -318,7 +318,7 @@ const selectSpeed = (speed: number) => {
 }
 
 .active-option-mark {
-  @apply ml-2 text-xs text-white py-0.5 px-1.5 rounded-full;
+  @apply ml-2 text-xs text-white py-0.5 px-1.5 rounded-md;
   background-color: var(--qqm-primary, #22c55e);
   font-weight: 500;
 }

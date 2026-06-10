@@ -7,7 +7,7 @@
         <!-- Loading State -->
         <div v-if="loading" class="artist-content">
           <!-- Hero Skeleton -->
-          <div class="hero-section relative h-[400px] overflow-hidden rounded-tl-lg">
+          <div class="hero-section relative h-[400px] overflow-hidden rounded-tl-md">
             <div class="hero-bg absolute inset-0 -top-20">
               <div class="absolute inset-0 skeleton-shimmer" />
             </div>
@@ -43,16 +43,16 @@
         <!-- Main Content -->
         <div v-else-if="artistInfo" class="artist-content">
           <!-- Hero Section -->
-          <section class="hero-section relative overflow-hidden rounded-tl-lg">
+          <section class="hero-section relative overflow-hidden rounded-tl-md">
             <!-- Background Image with Blur -->
             <div class="hero-bg absolute inset-0 -top-20">
               <div
-                class="absolute inset-0 bg-cover bg-center opacity-[0.05] dark:opacity-[0.06]"
+                class="absolute inset-0 bg-cover bg-center opacity-[0.025] dark:opacity-[0.035]"
                 :style="{
                   backgroundImage: `url(${getImgUrl(artistInfo.cover || artistInfo.picUrl, '800y800')})`
                 }"
               />
-              <div class="absolute inset-0 bg-white/98 dark:bg-black/98" />
+              <div class="absolute inset-0 bg-white/99 dark:bg-black/99" />
             </div>
 
             <!-- Hero Content -->
@@ -97,7 +97,7 @@
                   </div>
                   <h1
                     ref="titleElRef"
-                    class="artist-name text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white tracking-tight"
+                    class="artist-name text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight"
                   >
                     {{ artistInfo.name }}
                   </h1>
@@ -109,7 +109,7 @@
                     <div v-if="artistInfo.musicSize" class="stat-item flex items-center gap-2">
                       <i class="iconfont icon-music text-primary text-lg" />
                       <span class="text-sm font-medium text-neutral-600 dark:text-neutral-300">
-                        <span class="font-bold text-neutral-900 dark:text-white">{{
+                        <span class="font-bold text-neutral-900 dark:text-neutral-100">{{
                           artistInfo.musicSize
                         }}</span>
                         {{ t('artist.hotSongs') }}
@@ -118,7 +118,7 @@
                     <div v-if="artistInfo.albumSize" class="stat-item flex items-center gap-2">
                       <i class="iconfont icon-album text-primary text-lg" />
                       <span class="text-sm font-medium text-neutral-600 dark:text-neutral-300">
-                        <span class="font-bold text-neutral-900 dark:text-white">{{
+                        <span class="font-bold text-neutral-900 dark:text-neutral-100">{{
                           artistInfo.albumSize
                         }}</span>
                         {{ t('artist.albums') }}
@@ -132,7 +132,7 @@
 
           <!-- Action Bar -->
           <section
-            class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5 bg-white/95 dark:bg-black/95 border-b border-neutral-100 dark:border-neutral-800/60"
+            class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5 bg-white/98 dark:bg-black/98 border-b border-neutral-100 dark:border-neutral-800"
           >
             <div class="flex items-center justify-between gap-3">
               <!-- Left Actions -->
@@ -148,7 +148,7 @@
 
                 <!-- Add to Playlist Button -->
                 <button
-                  class="add-btn flex items-center justify-center w-10 h-10 md:w-auto md:h-auto md:px-4 md:py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-900 hover:bg-primary/5 dark:hover:bg-primary/10 text-neutral-700 dark:text-neutral-200 font-medium text-sm transition-colors duration-200"
+                  class="add-btn flex items-center justify-center w-10 h-10 md:w-auto md:h-auto md:px-4 md:py-2.5 rounded-md bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 hover:bg-primary/5 dark:hover:bg-primary/10 hover:border-primary/20 text-neutral-700 dark:text-neutral-200 font-medium text-sm transition-colors duration-200"
                   @click="addToPlaylist"
                 >
                   <i class="iconfont icon-add text-lg" />
@@ -161,11 +161,11 @@
                 <!-- Search Toggle -->
                 <button
                   v-if="activeTab === 'songs'"
-                  class="action-btn w-10 h-10 rounded-lg flex items-center justify-center transition-colors duration-200"
+                  class="action-btn w-10 h-10 rounded-md flex items-center justify-center border border-transparent transition-colors duration-200"
                   :class="
                     isSearchVisible
                       ? 'bg-primary/10 dark:bg-primary/20 text-primary'
-                      : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-300 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10'
+                      : 'bg-white dark:bg-black border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 hover:border-primary/20'
                   "
                   @click="isSearchVisible ? closeSearch() : showSearch()"
                 >
@@ -175,7 +175,7 @@
                 <!-- Layout Toggle (Desktop only) -->
                 <button
                   v-if="activeTab === 'songs' && !isMobile"
-                  class="action-btn w-10 h-10 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-300 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors duration-200"
+                  class="action-btn w-10 h-10 rounded-md flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 hover:border-primary/20 transition-colors duration-200"
                   :title="
                     isCompactLayout
                       ? t('comp.musicList.switchToNormal')
@@ -192,14 +192,14 @@
             <Transition name="search-slide">
               <div v-if="isSearchVisible && activeTab === 'songs'" class="search-container mt-3">
                 <div
-                  class="relative flex items-center bg-neutral-100 dark:bg-neutral-800 rounded-lg overflow-hidden"
+                  class="relative flex items-center bg-white dark:bg-black rounded-md overflow-hidden border border-neutral-100 dark:border-neutral-800"
                 >
                   <i class="iconfont icon-search text-neutral-400 dark:text-neutral-500 ml-4" />
                   <input
                     v-model="searchKeyword"
                     type="text"
                     :placeholder="t('comp.musicList.searchSongs')"
-                    class="flex-1 px-3 py-2.5 bg-transparent text-sm text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-neutral-500 outline-none"
+                    class="flex-1 px-3 py-2.5 bg-transparent text-sm text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 outline-none"
                     @blur="handleSearchBlur"
                   />
                   <button
@@ -217,16 +217,16 @@
           <!-- Tab Navigation -->
           <section class="tab-nav page-padding-x pt-4 md:pt-6">
             <div
-              class="tab-list relative flex gap-1 p-1 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg w-fit"
+              class="tab-list relative flex gap-1 p-1 bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 rounded-md w-fit"
             >
               <button
                 v-for="tab in tabs"
                 :key="tab.value"
-                class="tab-item relative px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm font-medium transition-colors duration-200"
+                class="tab-item relative px-4 md:px-6 py-2 md:py-2.5 rounded-md text-sm font-medium transition-colors duration-200"
                 :class="
                   activeTab === tab.value
-                    ? 'text-neutral-900 dark:text-white'
-                    : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
+                    ? 'text-neutral-900 dark:text-neutral-100'
+                    : 'text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary'
                 "
                 @click="activeTab = tab.value"
               >
@@ -366,7 +366,7 @@
             <div v-show="activeTab === 'about'" class="about-tab">
               <div class="about-content">
                 <h2
-                  class="text-xl md:text-2xl font-bold text-neutral-900 dark:text-white mb-4 md:mb-6"
+                  class="text-xl md:text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4 md:mb-6"
                 >
                   {{ t('artist.description') }}
                 </h2>

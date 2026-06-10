@@ -3,10 +3,12 @@
     <!-- Header Section -->
     <div class="flex flex-col gap-4 px-6 pt-4 pb-2 flex-shrink-0" v-if="!isMobile">
       <div class="flex items-center justify-between">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">{{ t('history.title') }}</h2>
+        <h2 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+          {{ t('history.title') }}
+        </h2>
 
         <button
-          class="h-8 px-3 rounded-lg bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-600 dark:text-gray-300 text-xs font-medium transition-colors flex items-center gap-1.5"
+          class="h-8 px-3 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-primary/10 dark:hover:bg-primary/15 text-neutral-600 dark:text-neutral-300 text-xs font-medium transition-colors flex items-center gap-1.5"
           @click="handleNavigateToHeatmap"
         >
           <i class="ri-calendar-2-line"></i>
@@ -17,7 +19,7 @@
       <div class="flex items-center justify-between gap-4">
         <!-- Category Tabs -->
         <div
-          class="bg-gray-100 dark:bg-neutral-800 p-1 rounded-lg inline-flex h-9 items-center overflow-x-auto no-scrollbar max-w-full"
+          class="bg-neutral-100 dark:bg-neutral-800 p-1 rounded-lg inline-flex h-9 items-center overflow-x-auto no-scrollbar max-w-full"
         >
           <div
             v-for="tab in ['songs', 'playlists', 'albums', 'podcasts']"
@@ -25,8 +27,8 @@
             class="px-4 h-7 rounded-md text-xs font-medium cursor-pointer transition-colors duration-200 flex items-center justify-center whitespace-nowrap"
             :class="
               currentCategory === tab
-                ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white ring-1 ring-neutral-200 dark:ring-neutral-700'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 ring-1 ring-neutral-200 dark:ring-neutral-700'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary'
             "
             @click="handleCategoryChange(tab as any)"
           >
@@ -37,14 +39,14 @@
         <!-- Source Tabs (Local/Cloud) -->
         <div
           v-if="currentCategory !== 'podcasts'"
-          class="flex items-center bg-gray-100 dark:bg-neutral-800 rounded-lg p-1 h-9 flex-shrink-0"
+          class="flex items-center bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1 h-9 flex-shrink-0"
         >
           <button
             class="px-3 h-7 rounded-md text-xs font-medium transition-colors duration-200"
             :class="
               currentTab === 'local'
-                ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white ring-1 ring-neutral-200 dark:ring-neutral-700'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
+                ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 ring-1 ring-neutral-200 dark:ring-neutral-700'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-primary'
             "
             @click="handleTabChange('local')"
           >
@@ -54,8 +56,8 @@
             class="px-3 h-7 rounded-md text-xs font-medium transition-colors duration-200"
             :class="
               currentTab === 'cloud'
-                ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white ring-1 ring-neutral-200 dark:ring-neutral-700'
-                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
+                ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 ring-1 ring-neutral-200 dark:ring-neutral-700'
+                : 'text-neutral-500 dark:text-neutral-400 hover:text-primary'
             "
             @click="handleTabChange('cloud')"
           >
@@ -74,7 +76,7 @@
             <div
               v-for="item in displayList"
               :key="item.id"
-              class="group flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors p-1"
+              class="group flex items-center justify-between rounded-lg hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors p-1"
             >
               <song-item
                 class="flex-1 !bg-transparent hover:!bg-transparent"
@@ -83,13 +85,13 @@
               />
               <template v-if="!isMobile">
                 <div
-                  class="px-4 text-xs text-gray-400 dark:text-gray-600 font-medium min-w-[60px] text-right"
+                  class="px-4 text-xs text-neutral-400 dark:text-neutral-600 font-medium min-w-[60px] text-right"
                   v-show="currentTab === 'local'"
                 >
                   {{ t('history.playCount', { count: item.count }) }}
                 </div>
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
                   v-show="currentTab === 'local'"
                   @click="handleDelMusic(item)"
                 >
@@ -107,7 +109,7 @@
               :item="item"
               :show-count="currentTab === 'local'"
               :show-delete="currentTab === 'local'"
-              class="rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+              class="rounded-lg hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
               @click="handlePlaylistClick(item)"
               @delete="handleDelPlaylist(item)"
             />
@@ -121,7 +123,7 @@
               :item="item"
               :show-count="currentTab === 'local'"
               :show-delete="currentTab === 'local'"
-              class="rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+              class="rounded-lg hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
               @click="handleAlbumClick(item)"
               @delete="handleDelAlbum(item)"
             />
@@ -131,14 +133,14 @@
           <template v-if="currentCategory === 'podcasts'">
             <div class="mb-4 px-2">
               <div
-                class="flex items-center bg-white dark:bg-neutral-900 rounded-lg p-1 w-fit h-8 border border-gray-100 dark:border-neutral-800"
+                class="flex items-center bg-white dark:bg-neutral-900 rounded-lg p-1 w-fit h-8 border border-neutral-100 dark:border-neutral-800"
               >
                 <button
                   class="px-3 h-6 rounded-md text-xs font-medium transition-colors duration-200"
                   :class="
                     currentPodcastSubTab === 'episodes'
-                      ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white ring-1 ring-neutral-200 dark:ring-neutral-700'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                      ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 ring-1 ring-neutral-200 dark:ring-neutral-700'
+                      : 'text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary'
                   "
                   @click="
                     currentPodcastSubTab = 'episodes';
@@ -151,8 +153,8 @@
                   class="px-3 h-6 rounded-md text-xs font-medium transition-colors duration-200"
                   :class="
                     currentPodcastSubTab === 'radios'
-                      ? 'bg-white dark:bg-neutral-800 text-gray-900 dark:text-white ring-1 ring-neutral-200 dark:ring-neutral-700'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                      ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 ring-1 ring-neutral-200 dark:ring-neutral-700'
+                      : 'text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary'
                   "
                   @click="
                     currentPodcastSubTab = 'radios';
@@ -168,7 +170,7 @@
               <div
                 v-for="item in displayList"
                 :key="item.id"
-                class="group flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors p-1"
+                class="group flex items-center justify-between rounded-lg hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors p-1"
               >
                 <song-item
                   class="flex-1 !bg-transparent hover:!bg-transparent"
@@ -176,7 +178,7 @@
                   @play="handlePlayPodcast(item)"
                 />
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
                   @click="handleDelPodcast(item)"
                 >
                   <i class="ri-close-line text-lg"></i>
@@ -188,7 +190,7 @@
               <div
                 v-for="item in displayList"
                 :key="item.id"
-                class="group flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                class="group flex items-center justify-between rounded-lg hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
               >
                 <playlist-item
                   class="flex-1 !bg-transparent hover:!bg-transparent"
@@ -196,7 +198,7 @@
                   @click="handlePodcastRadioClick(item)"
                 />
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 cursor-pointer transition-colors opacity-0 group-hover:opacity-100 mr-2"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 cursor-pointer transition-colors opacity-0 group-hover:opacity-100 mr-2"
                   @click="handleDelPodcastRadio(item)"
                 >
                   <i class="ri-close-line text-lg"></i>
@@ -205,28 +207,31 @@
             </div>
           </template>
 
-          <div v-if="displayList.length === 0 && !loading" class="text-center py-12 text-gray-400">
+          <div
+            v-if="displayList.length === 0 && !loading"
+            class="text-center py-12 text-neutral-400"
+          >
             <div
-              class="w-20 h-20 mx-auto rounded-lg bg-gray-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
+              class="w-20 h-20 mx-auto rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
             >
-              <i class="ri-history-line text-3xl text-gray-300 dark:text-gray-600"></i>
+              <i class="ri-history-line text-3xl text-neutral-300 dark:text-neutral-600"></i>
             </div>
             <p>{{ t('history.noData') }}</p>
           </div>
 
           <div v-if="loading" class="space-y-2 pt-2">
             <div v-for="i in 8" :key="i" class="flex items-center gap-4 rounded-lg p-2">
-              <div class="h-12 w-12 rounded-lg bg-gray-200 dark:bg-neutral-800"></div>
+              <div class="h-12 w-12 rounded-lg bg-neutral-200 dark:bg-neutral-800"></div>
               <div class="flex-1 space-y-2">
-                <div class="h-4 w-1/3 rounded bg-gray-200 dark:bg-neutral-800"></div>
-                <div class="h-3 w-1/4 rounded bg-gray-200 dark:bg-neutral-800"></div>
+                <div class="h-4 w-1/3 rounded bg-neutral-200 dark:bg-neutral-800"></div>
+                <div class="h-3 w-1/4 rounded bg-neutral-200 dark:bg-neutral-800"></div>
               </div>
             </div>
           </div>
 
           <div
             v-if="noMore && displayList.length > 0"
-            class="text-center py-8 text-sm text-gray-400 dark:text-gray-500"
+            class="text-center py-8 text-sm text-neutral-400 dark:text-neutral-500"
           >
             {{ t('common.noMore') }}
           </div>

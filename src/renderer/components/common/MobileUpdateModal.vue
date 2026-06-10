@@ -7,14 +7,14 @@
       >
         <!-- 弹窗内容 -->
         <div
-          class="w-full max-w-lg overflow-hidden rounded-t-lg border border-neutral-100 bg-white dark:border-neutral-800 dark:bg-neutral-900 update-sheet"
+          class="w-full max-w-lg overflow-hidden rounded-t-md border border-neutral-100 bg-white dark:border-neutral-800 dark:bg-black update-sheet"
         >
           <!-- 顶部装饰条 -->
           <div class="h-1 bg-primary"></div>
 
           <!-- 关闭条 -->
           <div class="flex justify-center pt-3 pb-2">
-            <div class="w-10 h-1 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+            <div class="w-10 h-1 rounded-full bg-neutral-300 dark:bg-neutral-700"></div>
           </div>
 
           <!-- 头部信息 -->
@@ -34,10 +34,10 @@
                     {{ t('comp.update.title') }}
                   </span>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white truncate">
+                <h2 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100 truncate">
                   v{{ updateInfo.latestVersion }}
                 </h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
                   {{ t('comp.update.currentVersion') }}: v{{ updateInfo.currentVersion }}
                 </p>
               </div>
@@ -49,7 +49,7 @@
             class="mx-6 mb-6 max-h-80 overflow-y-auto rounded-lg bg-neutral-50 dark:bg-neutral-800/50"
           >
             <div
-              class="p-5 text-sm text-gray-600 dark:text-gray-300 leading-relaxed"
+              class="p-5 text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed"
               v-html="parsedReleaseNotes"
             ></div>
           </div>

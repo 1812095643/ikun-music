@@ -143,7 +143,7 @@ const onPlayMusic = () => {
   border-radius: 0.5rem;
 
   &:hover {
-    background-color: rgb(249 250 251); /* bg-gray-50 */
+    background-color: rgb(250 250 250); /* bg-neutral-50 */
   }
 
   .song-item-img {
@@ -159,13 +159,13 @@ const onPlayMusic = () => {
     &-title {
       font-size: 0.875rem; /* text-sm */
       line-height: 1.25rem;
-      color: rgb(17 24 39); /* text-gray-900 */
+      color: rgb(23 23 23); /* text-neutral-900 */
     }
 
     &-name {
       font-size: 0.75rem; /* text-xs */
       line-height: 1rem;
-      color: rgb(107 114 128); /* text-gray-500 */
+      color: rgb(115 115 115); /* text-neutral-500 */
     }
   }
 
@@ -176,7 +176,7 @@ const onPlayMusic = () => {
     margin-left: 1rem; /* ml-4 */
     padding-left: 0.5rem; /* pl-2 */
     border-width: 1px;
-    border-color: rgb(229 231 235); /* border-gray-200 */
+    border-color: rgb(229 229 229); /* border-neutral-200 */
     background-color: #fff; /* bg-light fallback */
 
     .iconfont {
@@ -192,7 +192,7 @@ const onPlayMusic = () => {
         font-size: 1rem;
         transition-property: color;
         transition-duration: 0.15s;
-        color: rgb(107 114 128); /* text-gray-500 */
+        color: rgb(115 115 115); /* text-neutral-500 */
 
         &:hover {
           color: rgb(239 68 68);
@@ -215,8 +215,8 @@ const onPlayMusic = () => {
       transition-property: all;
       transition-duration: 0.15s;
       border-width: 1px;
-      border-color: rgb(229 231 235); /* border-gray-200 */
-      color: rgb(17 24 39); /* text-gray-900 */
+      border-color: rgb(229 229 229); /* border-neutral-200 */
+      color: rgb(23 23 23); /* text-neutral-900 */
 
       &:hover,
       &.bg-primary {
@@ -240,16 +240,16 @@ const onPlayMusic = () => {
     }
 
     &-name {
-      color: rgb(156 163 175); /* dark:text-gray-400 */
+      color: rgb(163 163 163); /* dark:text-neutral-400 */
     }
   }
 
   .song-item-operating {
     border-color: rgb(38 38 38);
-    background-color: black; /* dark:bg-black */
+    background-color: rgb(10 10 10); /* dark:bg-neutral-950 */
 
     &-like .icon-likefill {
-      color: rgb(156 163 175); /* dark:text-gray-400 */
+      color: rgb(163 163 163); /* dark:text-neutral-400 */
     }
 
     &-play {

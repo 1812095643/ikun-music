@@ -159,11 +159,11 @@ const onPlayNext = () => {
     @apply flex-1;
 
     &-title {
-      @apply text-base text-gray-900 dark:text-white;
+      @apply text-base text-neutral-900 dark:text-neutral-100;
     }
 
     &-name {
-      @apply text-xs text-gray-500 dark:text-gray-400;
+      @apply text-xs text-neutral-500 dark:text-neutral-400;
     }
   }
 
@@ -175,7 +175,7 @@ const onPlayNext = () => {
     }
 
     .icon-likefill {
-      @apply text-xl transition text-gray-500 dark:text-gray-400 hover:text-neutral-700 dark:hover:text-neutral-200;
+      @apply text-xl transition text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200;
     }
 
     &-like {
@@ -186,7 +186,7 @@ const onPlayNext = () => {
       @apply mr-2 cursor-pointer transition-colors;
 
       .iconfont {
-        @apply text-xl transition text-gray-500 dark:text-gray-400;
+        @apply text-xl transition text-neutral-500 dark:text-neutral-400;
         &:hover {
           color: var(--qqm-primary, #22c55e);
         }
@@ -199,7 +199,7 @@ const onPlayNext = () => {
 
     &-play {
       @apply cursor-pointer rounded-[9px] w-10 h-10 flex justify-center items-center transition
-             border border-neutral-200 dark:border-neutral-800 text-gray-900 dark:text-white;
+             border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100;
 
       &:hover,
       &.bg-primary {

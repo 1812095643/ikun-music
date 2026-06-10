@@ -5,16 +5,16 @@
         <!-- Hero Section 和 Action Bar -->
         <n-spin :show="loading">
           <!-- Hero Section -->
-          <section class="hero-section relative overflow-hidden rounded-tl-lg">
+          <section class="hero-section relative overflow-hidden rounded-tl-md">
             <!-- Background Image with Blur -->
             <div class="hero-bg absolute inset-0 -top-20">
               <div
-                class="absolute inset-0 bg-cover bg-center opacity-[0.04] dark:opacity-[0.05]"
+                class="absolute inset-0 bg-cover bg-center opacity-[0.025] dark:opacity-[0.035]"
                 :style="{
                   backgroundImage: `url(${getImgUrl(getCoverImgUrl, '800y800')})`
                 }"
               ></div>
-              <div class="absolute inset-0 bg-white/98 dark:bg-black/98"></div>
+              <div class="absolute inset-0 bg-white/99 dark:bg-black/99"></div>
             </div>
 
             <!-- Hero Content -->
@@ -62,7 +62,7 @@
                   </div>
                   <h1
                     ref="titleElRef"
-                    class="playlist-name text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white tracking-tight mb-3"
+                    class="playlist-name text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-neutral-100 tracking-tight mb-3"
                   >
                     {{ name }}
                   </h1>
@@ -92,7 +92,7 @@
                         listInfo.creator.nickname
                       }}</span>
                     </div>
-                    <div class="h-1 w-1 rounded-full bg-neutral-300 dark:bg-neutral-700"></div>
+                    <div class="h-3 w-px rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
                     <span class="text-sm text-neutral-500 dark:text-neutral-400">
                       {{ t('player.songNum', { num: total }) }}
                     </span>
@@ -113,7 +113,7 @@
         <!-- Action Bar (Sticky) -->
         <section
           v-if="songList.length > 0"
-          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5 bg-white/95 dark:bg-black/95 border-b border-neutral-100 dark:border-neutral-800/60"
+          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5 bg-white/98 dark:bg-black/98 border-b border-neutral-100 dark:border-neutral-800"
         >
           <div class="flex items-center justify-between gap-4">
             <div class="flex items-center gap-3">

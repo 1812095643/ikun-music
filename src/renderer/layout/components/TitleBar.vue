@@ -18,13 +18,13 @@
         下载桌面版
       </n-button>
       <template v-if="isElectron">
-        <div class="text-gray-600 dark:text-gray-400 hover:text-green-500" @click="miniWindow">
+        <div class="text-neutral-600 dark:text-neutral-400 hover:text-primary" @click="miniWindow">
           <i class="iconfont ri-picture-in-picture-line"></i>
         </div>
-        <div class="text-gray-600 dark:text-gray-400 hover:text-green-500" @click="minimize">
+        <div class="text-neutral-600 dark:text-neutral-400 hover:text-primary" @click="minimize">
           <i class="iconfont icon-minisize"></i>
         </div>
-        <div class="text-gray-600 dark:text-gray-400 hover:text-green-500" @click="handleClose">
+        <div class="text-neutral-600 dark:text-neutral-400 hover:text-primary" @click="handleClose">
           <i class="iconfont icon-close"></i>
         </div>
       </template>
@@ -50,7 +50,7 @@
         >
           <!-- Close Icon -->
           <button
-            class="absolute top-4 right-4 p-1 rounded-full text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 transition-colors focus:outline-none"
+            class="absolute top-4 right-4 p-1 rounded-md text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 transition-colors focus:outline-none"
             @click="showCloseModal = false"
           >
             <i class="ri-close-line text-xl leading-none"></i>

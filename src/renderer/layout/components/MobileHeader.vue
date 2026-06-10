@@ -67,8 +67,8 @@ const openSettings = () => {
 <style lang="scss" scoped>
 .mobile-header {
   @apply flex items-center justify-between px-4 py-3;
-  @apply bg-light dark:bg-black;
-  @apply border-b border-gray-100 dark:border-gray-800;
+  @apply bg-white dark:bg-black;
+  @apply border-b border-neutral-100 dark:border-neutral-800;
   min-height: 56px;
 
   &.safe-area-top {
@@ -93,7 +93,7 @@ const openSettings = () => {
   @apply flex-1 text-center;
 
   span {
-    @apply text-base font-medium text-gray-900 dark:text-white;
+    @apply text-base font-medium text-neutral-900 dark:text-neutral-100;
   }
 }
 
@@ -106,7 +106,7 @@ const openSettings = () => {
 .header-btn {
   @apply flex items-center justify-center;
   @apply w-10 h-10 rounded-lg;
-  @apply text-xl text-gray-600 dark:text-gray-300;
+  @apply text-xl text-neutral-600 dark:text-neutral-300;
   @apply active:bg-primary/5 dark:active:bg-primary/10;
   @apply transition-colors duration-150;
 }

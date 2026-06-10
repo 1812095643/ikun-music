@@ -6,15 +6,15 @@
   >
     <div class="flex flex-col h-full">
       <!-- Tabs Header -->
-      <div class="flex p-0.5 mb-3 bg-gray-100 dark:bg-white/5 rounded-lg shrink-0">
+      <div class="flex p-0.5 mb-3 bg-neutral-100/80 dark:bg-neutral-900/80 rounded-lg shrink-0">
         <button
           v-for="tab in tabs"
           :key="tab.key"
           class="flex-1 py-1 text-xs font-medium rounded-md transition-colors duration-200"
           :class="[
             activeTab === tab.key
-              ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-white ring-1 ring-neutral-200 dark:ring-white/10'
-              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+              ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 ring-1 ring-neutral-200 dark:ring-neutral-700'
+              : 'text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary'
           ]"
           @click="activeTab = tab.key"
         >
@@ -28,7 +28,7 @@
           <div :key="activeTab" class="h-full overflow-y-auto overscroll-contain">
             <!-- Sources Tab -->
             <div v-if="activeTab === 'sources'" class="space-y-3 pb-2">
-              <p class="text-xs text-gray-500 dark:text-gray-400 px-1">
+              <p class="text-xs text-neutral-500 dark:text-neutral-400 px-1">
                 {{ t('settings.playback.musicSourcesDesc') }}
               </p>
 
@@ -40,33 +40,34 @@
                   :class="[
                     isSourceSelected(source.key)
                       ? 'bg-primary/10 dark:bg-primary/15 border-primary/20 dark:border-primary/25'
-                      : 'bg-white dark:bg-white/5 border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/10',
+                      : 'bg-white dark:bg-neutral-950 border-neutral-100 dark:border-neutral-800 hover:bg-primary/5 dark:hover:bg-primary/10 hover:border-primary/20',
                     { 'opacity-60 cursor-not-allowed': !source.available }
                   ]"
                   @click="toggleSource(source.key)"
                 >
                   <div
-                    class="flex items-center justify-center w-8 h-8 rounded-full mr-2.5 transition-colors shrink-0"
+                    class="flex items-center justify-center w-8 h-8 rounded-lg mr-2.5 transition-colors shrink-0"
                     :style="{
                       backgroundColor: isSourceSelected(source.key) ? source.color : 'transparent',
                       color: isSourceSelected(source.key) ? '#fff' : source.color
                     }"
-                    :class="{ 'bg-gray-100 dark:bg-white/10': !isSourceSelected(source.key) }"
+                    :class="{ 'bg-neutral-100 dark:bg-neutral-800': !isSourceSelected(source.key) }"
                   >
                     <i :class="source.icon" class="text-base"></i>
                   </div>
 
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center justify-between">
-                      <span class="font-semibold text-gray-900 dark:text-white text-sm truncate">{{
-                        source.key
-                      }}</span>
+                      <span
+                        class="font-semibold text-neutral-900 dark:text-neutral-100 text-sm truncate"
+                        >{{ source.key }}</span
+                      >
                       <div
                         class="w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ml-1"
                         :class="[
                           isSourceSelected(source.key)
                             ? 'bg-primary border-primary'
-                            : 'border-gray-300 dark:border-gray-600'
+                            : 'border-neutral-300 dark:border-neutral-700'
                         ]"
                       >
                         <i
@@ -78,7 +79,7 @@
                     <!-- lxMusic 子描述 -->
                     <p
                       v-if="source.key === 'lxMusic'"
-                      class="text-[10px] text-gray-500 mt-0.5 truncate"
+                      class="text-[10px] text-neutral-500 mt-0.5 truncate"
                     >
                       {{
                         activeLxApiId && lxMusicScriptInfo
@@ -89,7 +90,7 @@
                     <!-- custom 子描述 -->
                     <p
                       v-else-if="source.key === 'custom'"
-                      class="text-[10px] text-gray-500 mt-0.5 truncate"
+                      class="text-[10px] text-neutral-500 mt-0.5 truncate"
                     >
                       {{
                         settingsStore.setData.customApiPlugin
@@ -105,7 +106,7 @@
             <!-- LX Music Management Tab -->
             <div v-else-if="activeTab === 'lxMusic'" class="space-y-3 pb-2">
               <div class="flex justify-between items-center mb-1">
-                <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400">
+                <h3 class="text-xs font-medium text-neutral-500 dark:text-neutral-400">
                   {{ t('settings.playback.lxMusic.scripts.title') }}
                 </h3>
                 <button
@@ -126,14 +127,14 @@
                   :class="[
                     activeLxApiId === api.id
                       ? 'bg-primary/10 dark:bg-primary/15 border-primary/20 dark:border-primary/25'
-                      : 'bg-white dark:bg-white/5 border-gray-100 dark:border-white/5'
+                      : 'bg-white dark:bg-neutral-950 border-neutral-100 dark:border-neutral-800 hover:bg-primary/5 dark:hover:bg-primary/10'
                   ]"
                 >
                   <div class="relative flex items-center justify-center w-4 h-4 mr-3">
                     <input
                       type="radio"
                       :checked="activeLxApiId === api.id"
-                      class="peer appearance-none w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 checked:border-primary checked:bg-primary transition-colors cursor-pointer"
+                      class="peer appearance-none w-4 h-4 rounded-full border border-neutral-300 dark:border-neutral-700 checked:border-primary checked:bg-primary transition-colors cursor-pointer"
                       @change="setActiveLxApi(api.id)"
                     />
                     <i
@@ -145,7 +146,7 @@
                     <div class="flex items-center gap-2">
                       <span
                         v-if="editingScriptId !== api.id"
-                        class="font-medium text-sm text-gray-900 dark:text-white truncate"
+                        class="font-medium text-sm text-neutral-900 dark:text-neutral-100 truncate"
                       >
                         {{ api.name }}
                       </span>
@@ -160,7 +161,7 @@
 
                       <button
                         v-if="editingScriptId !== api.id"
-                        class="text-gray-400 hover:text-primary transition-colors"
+                        class="text-neutral-400 hover:text-primary transition-colors"
                         @click="startRenaming(api)"
                       >
                         <i class="ri-edit-line text-sm"></i>
@@ -169,7 +170,7 @@
                     <div class="flex items-center gap-2 mt-0.5">
                       <span
                         v-if="api.info.version"
-                        class="text-[10px] text-gray-500 bg-gray-100 dark:bg-white/10 px-1.5 py-0.5 rounded"
+                        class="text-[10px] text-neutral-500 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded"
                       >
                         v{{ api.info.version }}
                       </span>
@@ -177,7 +178,7 @@
                   </div>
 
                   <button
-                    class="p-1.5 text-gray-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 rounded-lg transition-colors"
+                    class="p-1.5 text-neutral-400 hover:text-primary hover:bg-primary/5 dark:hover:text-primary dark:hover:bg-primary/10 rounded-lg transition-colors"
                     @click="removeLxApi(api.id)"
                   >
                     <i class="ri-delete-bin-line text-sm"></i>
@@ -187,21 +188,21 @@
 
               <div
                 v-else
-                class="py-6 text-center text-xs text-gray-400 bg-gray-50 dark:bg-white/5 rounded-lg border border-dashed border-gray-200 dark:border-white/10"
+                class="py-6 text-center text-xs text-neutral-400 bg-neutral-50 dark:bg-neutral-900 rounded-lg border border-dashed border-neutral-200 dark:border-neutral-800"
               >
                 <p>{{ t('settings.playback.lxMusic.scripts.empty') }}</p>
               </div>
 
               <!-- URL Import -->
-              <div class="mt-4 pt-4 border-t border-gray-100 dark:border-white/5">
-                <h4 class="text-xs font-medium mb-2 text-gray-900 dark:text-white">
+              <div class="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
+                <h4 class="text-xs font-medium mb-2 text-neutral-900 dark:text-neutral-100">
                   {{ t('settings.playback.lxMusic.scripts.importOnline') }}
                 </h4>
                 <div class="flex gap-2">
                   <input
                     v-model="lxScriptUrl"
                     :placeholder="t('settings.playback.lxMusic.scripts.urlPlaceholder')"
-                    class="flex-1 px-3 py-1.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-xs focus:outline-none focus:border-primary transition-colors"
+                    class="flex-1 px-3 py-1.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg text-xs focus:outline-none focus:border-primary transition-colors"
                     :disabled="isImportingFromUrl"
                   />
                   <button
@@ -228,10 +229,10 @@
                 <i class="ri-plug-fill text-2xl"></i>
               </div>
 
-              <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-1">
+              <h3 class="text-base font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
                 {{ t('settings.playback.customApi.sectionTitle') }}
               </h3>
-              <p class="text-gray-500 dark:text-gray-400 text-xs mb-4 max-w-xs mx-auto">
+              <p class="text-neutral-500 dark:text-neutral-400 text-xs mb-4 max-w-xs mx-auto">
                 {{ t('settings.playback.lxMusic.scripts.importHint') }}
               </p>
 
@@ -254,7 +255,7 @@
                 >
               </div>
 
-              <div v-else class="mt-4 text-xs text-gray-400">
+              <div v-else class="mt-4 text-xs text-neutral-400">
                 {{ t('settings.playback.customApi.notImported') }}
               </div>
             </div>
@@ -267,7 +268,7 @@
     <template #footer>
       <div class="flex justify-end gap-2">
         <button
-          class="px-4 py-2 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/10 rounded-lg transition-colors"
+          class="px-4 py-2 text-xs font-medium text-neutral-600 dark:text-neutral-300 hover:bg-primary/5 dark:hover:bg-primary/10 hover:text-primary rounded-lg transition-colors"
           @click="handleCancel"
         >
           {{ t('common.cancel') }}
