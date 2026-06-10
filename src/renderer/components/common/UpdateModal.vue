@@ -6,7 +6,7 @@
     :mask-closable="!isChecking"
     :closable="!isChecking"
     class="update-modal"
-    style="width: 800px; max-width: 90vw"
+    style="width: 760px; max-width: 90vw"
   >
     <div class="p-6 pb-4">
       <div class="mb-6 flex items-center">
@@ -37,7 +37,7 @@
 
       <div
         v-if="hasReleaseNotes"
-        class="mb-6 overflow-hidden rounded-lg bg-neutral-50 dark:bg-neutral-800/50"
+        class="mb-6 overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900/70"
       >
         <n-scrollbar style="max-height: 300px">
           <div
@@ -47,7 +47,10 @@
         </n-scrollbar>
       </div>
 
-      <div v-if="showProgressCard" class="mb-6 rounded-lg bg-neutral-50 p-4 dark:bg-neutral-800/50">
+      <div
+        v-if="showProgressCard"
+        class="mb-6 rounded-lg border border-neutral-100 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900/70"
+      >
         <div class="mb-2.5 flex items-center justify-between">
           <span class="text-sm text-neutral-500 dark:text-neutral-400">{{ progressText }}</span>
           <span class="text-sm font-bold text-primary">{{ progressPercent }}%</span>
@@ -273,8 +276,10 @@ onUnmounted(() => {
 
 <style scoped>
 .update-modal :deep(.n-dialog) {
-  border-radius: 1.25rem;
+  border-radius: 10px;
   overflow: hidden;
+  border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+  box-shadow: none;
 }
 
 .update-body :deep(h1) {

@@ -295,4 +295,9 @@ watch(
   padding-bottom: 0 !important;
   padding-top: 0 !important;
 }
+
+:deep(.n-drawer-content) {
+  border-left: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+  box-shadow: none;
+}
 </style>

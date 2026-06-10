@@ -286,6 +286,7 @@ defineExpose({
 <style lang="scss" scoped>
 .artist-drawer {
   @apply h-full bg-light dark:bg-dark px-6 overflow-hidden flex flex-col;
+  border-left: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
 
   .close-btn {
     @apply absolute top-4 right-4 text-gray-500 dark:text-gray-400 text-2xl cursor-pointer p-2;
@@ -295,13 +296,14 @@ defineExpose({
   }
 
   .artist-header {
-    @apply flex gap-6 pt-6;
+    @apply flex gap-6 pt-6 pb-5;
+    border-bottom: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
 
     .artist-info {
       @apply flex-1;
 
       .artist-name {
-        @apply text-4xl font-bold mb-2;
+        @apply text-3xl font-bold mb-2;
       }
 
       .artist-alias {

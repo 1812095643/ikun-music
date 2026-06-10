@@ -3,7 +3,7 @@
     <Transition name="disclaimer-modal">
       <div
         v-if="showDisclaimer"
-        class="disclaimer-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/45"
+        class="disclaimer-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/30"
       >
         <div
           class="disclaimer-modal-card w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
@@ -82,7 +82,7 @@
     <Transition name="donate-modal">
       <div
         v-if="showDonate"
-        class="donate-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/45"
+        class="donate-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/30"
       >
         <div
           class="donate-modal-card w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
@@ -160,7 +160,7 @@
     <Transition name="qrcode-modal">
       <div
         v-if="showQRCode"
-        class="fixed inset-0 z-[9999999] flex items-center justify-center bg-black/55"
+        class="fixed inset-0 z-[9999999] flex items-center justify-center bg-black/35"
         @click.self="closeQRCode"
       >
         <div
@@ -174,7 +174,7 @@
             </h3>
             <button
               @click="closeQRCode"
-              class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <i class="ri-close-line text-xl"></i>
             </button>
@@ -293,7 +293,7 @@ onMounted(() => {
 <style scoped>
 .disclaimer-modal-enter-active,
 .disclaimer-modal-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.18s ease;
 }
 
 .disclaimer-modal-enter-from,
@@ -303,7 +303,7 @@ onMounted(() => {
 
 .donate-modal-enter-active,
 .donate-modal-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.18s ease;
 }
 
 .donate-modal-enter-from,
@@ -313,7 +313,7 @@ onMounted(() => {
 
 .qrcode-modal-enter-active,
 .qrcode-modal-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.18s ease;
 }
 
 .qrcode-modal-enter-from,

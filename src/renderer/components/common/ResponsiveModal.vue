@@ -7,14 +7,14 @@
         @click="handleMaskClick"
       >
         <!-- Overlay -->
-        <div class="absolute inset-0 bg-black/35 transition-opacity"></div>
+        <div class="absolute inset-0 bg-black/25 transition-opacity"></div>
 
         <!-- Content -->
         <Transition :name="isMobile ? 'slide-up' : 'scale-fade'">
           <div
             v-if="show"
             class="responsive-modal-card relative z-10 w-full bg-white dark:bg-[#1c1c1e] border border-neutral-100 dark:border-neutral-800 overflow-hidden flex flex-col max-h-[85vh]"
-            :class="[isMobile ? 'rounded-t-xl pb-safe' : 'md:max-w-[720px] md:rounded-lg']"
+            :class="[isMobile ? 'rounded-t-lg pb-safe' : 'md:max-w-[720px] md:rounded-lg']"
             @click.stop
           >
             <!-- Header -->
@@ -106,7 +106,7 @@ watch(show, (val) => {
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.18s ease;
 }
 
 .fade-enter-from,
@@ -118,8 +118,8 @@ watch(show, (val) => {
 .scale-fade-enter-active,
 .scale-fade-leave-active {
   transition:
-    opacity 0.25s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.18s ease,
+    transform 0.18s ease;
 }
 
 .scale-fade-enter-from,
@@ -131,12 +131,12 @@ watch(show, (val) => {
 /* Mobile Slide Up Transition */
 .slide-up-enter-active,
 .slide-up-leave-active {
-  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: transform 0.18s ease;
 }
 
 .slide-up-enter-from,
 .slide-up-leave-to {
-  transform: translateY(100%);
+  transform: translateY(16px);
 }
 
 .pb-safe {

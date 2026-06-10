@@ -162,7 +162,7 @@
               }}</span>
             </div>
             <button
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-red-500 hover:bg-red-500/10 transition-colors flex-shrink-0 ml-2"
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 transition-colors flex-shrink-0 ml-2"
               @click="handleRemoveFolder(folder)"
             >
               <i class="ri-delete-bin-line" />
@@ -332,5 +332,10 @@ onMounted(async () => {
 
 .song-virtual-list :deep(.n-virtual-list__scroll)::-webkit-scrollbar-track {
   @apply bg-transparent;
+}
+
+:deep(.n-drawer-content) {
+  border-left: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+  box-shadow: none;
 }
 </style>

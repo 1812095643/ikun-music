@@ -89,7 +89,7 @@
                   {{ t('history.playCount', { count: item.count }) }}
                 </div>
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
                   v-show="currentTab === 'local'"
                   @click="handleDelMusic(item)"
                 >
@@ -176,7 +176,7 @@
                   @play="handlePlayPodcast(item)"
                 />
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
                   @click="handleDelPodcast(item)"
                 >
                   <i class="ri-close-line text-lg"></i>
@@ -196,7 +196,7 @@
                   @click="handlePodcastRadioClick(item)"
                 />
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-colors opacity-0 group-hover:opacity-100 mr-2"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 cursor-pointer transition-colors opacity-0 group-hover:opacity-100 mr-2"
                   @click="handleDelPodcastRadio(item)"
                 >
                   <i class="ri-close-line text-lg"></i>

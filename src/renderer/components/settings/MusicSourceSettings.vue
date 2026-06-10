@@ -177,7 +177,7 @@
                   </div>
 
                   <button
-                    class="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+                    class="p-1.5 text-gray-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 rounded-lg transition-colors"
                     @click="removeLxApi(api.id)"
                   >
                     <i class="ri-delete-bin-line text-sm"></i>

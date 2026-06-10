@@ -3,11 +3,11 @@
     <Transition name="update-modal">
       <div
         v-if="showModal"
-        class="fixed inset-0 z-[999999] flex items-end justify-center bg-black/45"
+        class="fixed inset-0 z-[999999] flex items-end justify-center bg-black/30"
       >
         <!-- 弹窗内容 -->
         <div
-          class="w-full max-w-lg bg-white dark:bg-neutral-900 rounded-t-xl overflow-hidden animate-slide-up"
+          class="w-full max-w-lg overflow-hidden rounded-t-lg border border-neutral-100 bg-white dark:border-neutral-800 dark:bg-neutral-900 update-sheet"
         >
           <!-- 顶部装饰条 -->
           <div class="h-1 bg-primary"></div>
@@ -205,7 +205,7 @@ onMounted(() => {
 /* 动画 */
 .update-modal-enter-active,
 .update-modal-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.18s ease;
 }
 
 .update-modal-enter-from,
@@ -213,17 +213,14 @@ onMounted(() => {
   opacity: 0;
 }
 
-.update-modal-enter-active .animate-slide-up,
-.update-modal-leave-active .animate-slide-up {
-  transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+.update-modal-enter-active .update-sheet,
+.update-modal-leave-active .update-sheet {
+  transition: transform 0.18s ease;
 }
 
-.update-modal-enter-from .animate-slide-up {
-  transform: translateY(100%);
-}
-
-.update-modal-leave-to .animate-slide-up {
-  transform: translateY(100%);
+.update-modal-enter-from .update-sheet,
+.update-modal-leave-to .update-sheet {
+  transform: translateY(16px);
 }
 
 /* 更新内容样式 */

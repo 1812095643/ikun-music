@@ -225,7 +225,7 @@
                     <n-tooltip trigger="hover">
                       <template #trigger>
                         <button
-                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-red-500 hover:bg-red-500/10 transition-colors"
+                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 transition-colors"
                           @click="handleDelete(item)"
                         >
                           <i class="ri-delete-bin-line" />
