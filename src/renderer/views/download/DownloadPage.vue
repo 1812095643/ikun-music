@@ -35,14 +35,10 @@
         </section>
 
         <!-- Action Bar (Sticky) -->
-        <section
-          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/98 dark:bg-black/98 border-b border-neutral-100 dark:border-neutral-800"
-        >
+        <section class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4">
           <div class="flex items-center justify-between gap-4">
             <!-- Tabs (Segment Control) -->
-            <div
-              class="flex items-center gap-1 rounded-md border border-neutral-100 bg-white p-1 dark:border-neutral-800 dark:bg-black"
-            >
+            <div class="download-tabs flex items-center gap-1 rounded-md p-1">
               <button
                 v-for="tab in ['downloading', 'downloaded']"
                 :key="tab"
@@ -62,7 +58,7 @@
             <div class="flex items-center gap-3">
               <button
                 v-if="tabName === 'downloaded' && downloadedList.length > 0"
-                class="action-btn-pill flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-colors hover:bg-primary/5 dark:hover:bg-primary/10 text-neutral-500 hover:text-primary dark:hover:text-primary border border-neutral-200 dark:border-neutral-800"
+                class="action-btn-pill flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm text-neutral-500 hover:text-primary dark:hover:text-primary"
                 @click="showClearConfirm = true"
               >
                 <i class="ri-delete-bin-line text-lg" />
@@ -70,14 +66,14 @@
               </button>
 
               <button
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:hover:border-primary/25 dark:hover:bg-primary/10 transition-colors"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center text-neutral-600 dark:text-neutral-400"
                 @click="openDownloadPath"
               >
                 <i class="ri-folder-open-line text-lg" />
               </button>
 
               <button
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:hover:border-primary/25 dark:hover:bg-primary/10 transition-colors"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center text-neutral-600 dark:text-neutral-400"
                 @click="showSettingsDrawer = true"
               >
                 <i class="ri-settings-3-line text-lg" />
@@ -100,7 +96,7 @@
               <div
                 v-for="item in downloadList"
                 :key="item.path"
-                class="downloading-item group p-3 rounded-lg border-b border-neutral-100 dark:border-neutral-800/50 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
+                class="downloading-item group p-3 rounded-lg"
               >
                 <div class="flex items-center gap-4">
                   <n-image
@@ -164,7 +160,7 @@
                 <div
                   v-for="item in downList"
                   :key="item.path"
-                  class="downloaded-item group p-3 rounded-lg flex items-center gap-4 border-b border-neutral-100 dark:border-neutral-800/50 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
+                  class="downloaded-item group p-3 rounded-lg flex items-center gap-4"
                 >
                   <div class="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
                     <img
@@ -194,7 +190,7 @@
                         item.ar?.map((a) => a.name).join(', ')
                       }}</span>
                       <div
-                        class="hidden md:flex items-center gap-1 text-[10px] text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded-md truncate"
+                        class="download-path-chip hidden md:flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md truncate"
                       >
                         <i class="ri-folder-line" />
                         <span class="truncate">{{ shortenPath(item.path) }}</span>
@@ -228,7 +224,7 @@
                     <n-tooltip trigger="hover">
                       <template #trigger>
                         <button
-                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 transition-colors"
+                          class="delete-action w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 transition-colors"
                           @click="handleDelete(item)"
                         >
                           <i class="ri-delete-bin-line" />
@@ -284,7 +280,12 @@
             </h3>
             <p class="text-xs text-neutral-500 mb-4">{{ t('download.settingsPanel.pathDesc') }}</p>
             <div class="space-y-3">
-              <n-input :value="downloadSettings.path" readonly placeholder="Select path..." />
+              <n-input
+                :value="downloadSettings.path"
+                readonly
+                placeholder="Select path..."
+                class="download-setting-input"
+              />
               <div class="flex gap-2">
                 <n-button class="flex-1" @click="selectDownloadPath">{{
                   t('download.settingsPanel.select')
@@ -351,7 +352,11 @@
                   >
                     {{ sep === ' ' ? 'Space' : sep }}
                   </n-button>
-                  <n-input v-model:value="downloadSettings.separator" size="small" class="w-20" />
+                  <n-input
+                    v-model:value="downloadSettings.separator"
+                    size="small"
+                    class="download-setting-input w-20"
+                  />
                 </div>
               </div>
 
@@ -363,7 +368,7 @@
                   <div
                     v-for="(comp, idx) in formatComponents"
                     :key="comp.id"
-                    class="flex items-center justify-between p-2 bg-white dark:bg-black rounded-lg border border-neutral-100 dark:border-neutral-800"
+                    class="format-component-row flex items-center justify-between p-2 rounded-lg"
                   >
                     <span class="text-xs">{{
                       t(`download.settingsPanel.components.${comp.type}`)
@@ -409,9 +414,7 @@
                 </div>
               </div>
 
-              <div
-                class="p-3 bg-white dark:bg-black rounded-lg border border-neutral-100 dark:border-neutral-800 border border-dashed border-neutral-200 dark:border-neutral-800"
-              >
+              <div class="download-preview-card p-3 rounded-lg">
                 <p class="text-[10px] text-neutral-400 mb-1 uppercase font-bold">
                   {{ t('download.settingsPanel.preview') }}
                 </p>
@@ -1086,27 +1089,81 @@ onMounted(() => {
   min-height: 240px;
 }
 
+.action-bar {
+  border-bottom: 1px solid var(--qqm-border);
+  background: color-mix(in srgb, var(--qqm-surface) 94%, transparent);
+}
+
+.download-tabs {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-muted);
+}
+
+.download-path-chip {
+  border: 1px solid var(--qqm-border);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, var(--qqm-surface));
+  color: var(--qqm-text-secondary, #737373);
+}
+
+.delete-action:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.download-setting-input :deep(.n-input-wrapper) {
+  border: 1px solid var(--qqm-border);
+  border-radius: 10px;
+  background: var(--qqm-surface);
+}
+
+.format-component-row,
+.download-preview-card {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.download-preview-card {
+  border-style: dashed;
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, var(--qqm-surface));
+}
+
 .action-btn-pill {
-  @apply transition-colors border-neutral-200 dark:border-neutral-800;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
   &:hover:not(:disabled) {
-    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 30%, transparent);
-    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, transparent);
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 30%, var(--qqm-border));
+    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
   }
 }
 
 .action-btn-icon {
-  @apply transition-colors;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
   &:hover {
     color: var(--qqm-primary, #22c55e);
-    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 28%, var(--qqm-border));
+    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface));
   }
 }
 
 .downloading-item,
 .downloaded-item {
+  border-bottom: 1px solid var(--qqm-border);
   transition:
-    background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, var(--qqm-border));
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+  }
 }
 </style>

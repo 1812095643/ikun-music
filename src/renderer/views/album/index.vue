@@ -31,7 +31,7 @@
         >
           <!-- Cover Image -->
           <div
-            class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 transition-colors duration-200 dark:border-neutral-800 dark:bg-neutral-900"
+            class="album-cover-surface relative aspect-square overflow-hidden rounded-lg transition-colors duration-200"
           >
             <img
               :src="getImgUrl(album.picUrl, '400y400')"
@@ -271,5 +271,15 @@ watch(
       color: var(--qqm-primary-strong) !important;
     }
   }
+}
+
+.album-cover-surface {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-2, var(--qqm-surface));
+}
+
+.album-card:hover .album-cover-surface {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

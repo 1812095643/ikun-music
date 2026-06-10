@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full bg-white dark:bg-neutral-900 transition-colors duration-200">
+  <div class="h-full w-full bg-white dark:bg-black transition-colors duration-200">
     <n-scrollbar class="h-full">
       <div class="w-full pb-32">
         <!-- Loading State -->
@@ -59,7 +59,7 @@
                     class="absolute -inset-px rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   />
                   <div
-                    class="relative w-28 h-28 md:w-40 md:h-40 rounded-lg overflow-hidden border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
+                    class="user-avatar-surface relative w-28 h-28 md:w-40 md:h-40 rounded-lg overflow-hidden"
                   >
                     <img
                       :src="getImgUrl(userDetail.profile.avatarUrl, '300y300')"
@@ -406,6 +406,11 @@ const isArtist = (profile: any) => {
 <style lang="scss" scoped>
 .hero-section {
   min-height: 200px;
+}
+
+.user-avatar-surface {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-2, var(--qqm-surface));
 }
 
 .user-tabs {

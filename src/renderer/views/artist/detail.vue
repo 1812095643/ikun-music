@@ -64,7 +64,7 @@
                     class="avatar-glow absolute -inset-px rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 ring-1 ring-primary/20"
                   />
                   <div
-                    class="avatar-container relative w-36 h-36 md:w-48 md:h-48 rounded-lg overflow-hidden border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
+                    class="avatar-container artist-cover-surface relative w-36 h-36 md:w-48 md:h-48 rounded-lg overflow-hidden"
                   >
                     <img
                       :src="getImgUrl(artistInfo.cover || artistInfo.picUrl, '500y500')"
@@ -300,9 +300,7 @@
                   @click="handleAlbumClick(album)"
                 >
                   <!-- Cover -->
-                  <div
-                    class="album-cover relative aspect-square overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
-                  >
+                  <div class="album-cover relative aspect-square overflow-hidden rounded-lg">
                     <img
                       :src="getImgUrl(album.picUrl, '500y500')"
                       :alt="album.name"
@@ -1088,13 +1086,23 @@ const formatSong = (item: any) => {
   }
 }
 
+.artist-cover-surface {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-2, var(--qqm-surface));
+}
+
 /* Hover Effects */
 .album-cover {
-  transition: border-color 0.2s var(--qqm-ease, ease);
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-2, var(--qqm-surface));
+  transition:
+    border-color 0.2s var(--qqm-ease, ease),
+    background-color 0.2s var(--qqm-ease, ease);
 }
 
 .album-card:hover .album-cover {
-  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 
 /* Mobile Optimizations */

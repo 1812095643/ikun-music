@@ -26,7 +26,7 @@
                     class="cover-glow absolute -inset-px rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   ></div>
                   <div
-                    class="cover-container relative w-48 h-48 md:w-64 md:h-64 rounded-lg overflow-hidden border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
+                    class="cover-container relative w-48 h-48 md:w-64 md:h-64 rounded-lg overflow-hidden"
                   >
                     <n-image
                       v-if="getCoverImgUrl"
@@ -47,7 +47,7 @@
                       <button
                         v-if="!isMobile"
                         type="button"
-                        class="play-icon w-10 h-10 rounded-lg bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-auto ring-1 ring-black/5"
+                        class="play-icon w-11 h-11 rounded-full bg-white/96 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-auto ring-1 ring-black/5"
                         @click.stop="handlePlayAll"
                       >
                         <i class="ri-play-fill text-3xl text-neutral-900 ml-1" />
@@ -118,7 +118,7 @@
         <!-- Action Bar (Sticky) -->
         <section
           v-if="songList.length > 0"
-          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5 bg-white/98 dark:bg-black/98 border-b border-neutral-100 dark:border-neutral-800"
+          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5"
         >
           <div class="flex items-center justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -138,7 +138,7 @@
                 :class="
                   isCollected
                     ? 'bg-primary/10 dark:bg-primary/15 text-primary border-primary/20 dark:border-primary/25'
-                    : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800'
+                    : 'text-neutral-600 dark:text-neutral-400'
                 "
                 @click="toggleCollect"
               >
@@ -154,12 +154,12 @@
               <!-- Batch Actions -->
               <div
                 v-if="filteredSongs.length > 0 && isElectron"
-                class="h-8 w-[1px] bg-neutral-200 dark:bg-neutral-800 mx-1 hidden md:block"
+                class="h-8 w-[1px] bg-[var(--qqm-border)] mx-1 hidden md:block"
               ></div>
 
               <button
                 v-if="!isSelecting && isElectron"
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center text-neutral-600 dark:text-neutral-400"
                 @click="startSelect"
               >
                 <i class="ri-checkbox-multiple-line text-lg" />
@@ -208,7 +208,7 @@
                   round
                   clearable
                   size="small"
-                  class="w-48 focus:w-60 transition-[width] duration-200 !bg-neutral-100 dark:!bg-neutral-900 border-none"
+                  class="music-search-input w-48 focus:w-60 transition-[width] duration-200"
                 >
                   <template #prefix>
                     <i class="ri-search-line text-neutral-400"></i>
@@ -219,7 +219,7 @@
               <!-- Locate Current Song -->
               <button
                 v-if="currentPlayingIndex >= 0"
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center text-neutral-600 dark:text-neutral-400"
                 :title="t('comp.musicList.locateCurrent', '定位当前播放')"
                 @click="scrollToCurrentSong"
               >
@@ -229,7 +229,7 @@
               <!-- Layout Toggle -->
               <button
                 v-if="!isMobile"
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-colors"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center text-neutral-600 dark:text-neutral-400"
                 @click="toggleLayout"
               >
                 <i :class="isCompactLayout ? 'ri-list-check-2' : 'ri-grid-line'" class="text-lg" />
@@ -875,6 +875,34 @@ onMounted(checkCollectionStatus);
   min-height: 300px;
 }
 
+.cover-container {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-muted);
+}
+
+.cover-glow {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent);
+}
+
+.play-icon:hover {
+  color: var(--qqm-primary, #22c55e);
+}
+
+.music-search-input :deep(.n-input-wrapper) {
+  border: 1px solid var(--qqm-border);
+  border-radius: 10px;
+  background: var(--qqm-surface);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.music-search-input:hover :deep(.n-input-wrapper),
+.music-search-input:focus-within :deep(.n-input-wrapper) {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 26%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
 .cover-empty-state {
   display: flex;
   height: 100%;
@@ -908,21 +936,33 @@ onMounted(checkCollectionStatus);
 }
 
 .action-bar {
+  border-bottom: 1px solid var(--qqm-border);
+  background: color-mix(in srgb, var(--qqm-surface) 94%, transparent);
   transition:
     background-color 180ms var(--qqm-ease, ease),
     border-color 180ms var(--qqm-ease, ease);
 }
 
 .action-btn-pill {
-  @apply transition-colors border-neutral-200 dark:border-neutral-800;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+  border-color: var(--qqm-border);
+  background: var(--qqm-surface);
   &:hover:not(:disabled) {
-    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 30%, transparent);
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 30%, var(--qqm-border));
     background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, transparent);
   }
 }
 
 .action-btn-icon {
-  @apply transition-colors;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
   &:hover {
     color: var(--qqm-primary, #22c55e);
     background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
