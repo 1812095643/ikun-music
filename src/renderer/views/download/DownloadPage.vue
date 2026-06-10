@@ -2,52 +2,32 @@
   <div class="download-page h-full w-full bg-white dark:bg-black transition-colors duration-500">
     <n-scrollbar class="h-full">
       <div class="download-content pb-32">
-        <!-- Hero Section -->
-        <section class="hero-section relative overflow-hidden rounded-tl-2xl">
-          <!-- Background with Blur -->
-          <div class="hero-bg absolute inset-0 -top-20">
-            <div class="absolute inset-0 bg-primary/10 blur-2xl opacity-30 dark:opacity-20"></div>
+        <!-- Page Header -->
+        <section class="page-header page-padding-x pt-8 pb-5">
+          <div class="flex items-end justify-between gap-4">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-primary">
+                {{ t('download.title') }}
+              </p>
+              <h1 class="mt-2 text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+                {{
+                  tabName === 'downloading'
+                    ? t('download.tabs.downloading')
+                    : t('download.tabs.downloaded')
+                }}
+              </h1>
+              <p class="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+                {{
+                  tabName === 'downloading'
+                    ? t('download.progress.total', { progress: totalProgress.toFixed(1) })
+                    : t('download.count', { count: downloadedList.length })
+                }}
+              </p>
+            </div>
             <div
-              class="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white dark:via-black/80 dark:to-black"
-            ></div>
-          </div>
-
-          <!-- Hero Content -->
-          <div class="hero-content relative z-10 page-padding-x pt-10 pb-8">
-            <div class="flex flex-col md:flex-row gap-8 items-center md:items-end">
-              <div class="cover-wrapper relative group">
-                <div
-                  class="cover-container relative w-32 h-32 md:w-40 md:h-40 rounded-xl bg-primary/10 flex items-center justify-center shadow-md ring-1 ring-white/50 dark:ring-neutral-800/50"
-                >
-                  <i class="ri-download-cloud-2-line text-6xl text-primary opacity-80" />
-                </div>
-              </div>
-
-              <div class="info-content text-center md:text-left">
-                <div class="badge mb-3">
-                  <span
-                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-[9px] bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
-                  >
-                    {{ t('download.title') }}
-                  </span>
-                </div>
-                <h1
-                  class="text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white tracking-tight"
-                >
-                  {{
-                    tabName === 'downloading'
-                      ? t('download.tabs.downloading')
-                      : t('download.tabs.downloaded')
-                  }}
-                </h1>
-                <p class="mt-4 text-sm md:text-base text-neutral-500 dark:text-neutral-400">
-                  {{
-                    tabName === 'downloading'
-                      ? t('download.progress.total', { progress: totalProgress.toFixed(1) })
-                      : t('download.count', { count: downloadedList.length })
-                  }}
-                </p>
-              </div>
+              class="hidden md:flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary"
+            >
+              <i class="ri-download-cloud-2-line text-xl" />
             </div>
           </div>
         </section>
@@ -58,14 +38,16 @@
         >
           <div class="flex items-center justify-between gap-4">
             <!-- Tabs (Segment Control) -->
-            <div class="flex items-center gap-2 bg-neutral-100 dark:bg-neutral-900 p-1 rounded-xl">
+            <div
+              class="flex items-center gap-1 rounded-lg bg-neutral-100/80 p-1 dark:bg-neutral-900/80"
+            >
               <button
                 v-for="tab in ['downloading', 'downloaded']"
                 :key="tab"
-                class="px-6 py-1.5 rounded-lg text-sm font-medium transition-all"
+                class="px-5 py-1.5 rounded-md text-sm font-medium transition-colors"
                 :class="
                   tabName === tab
-                    ? 'bg-white dark:bg-neutral-800 text-primary shadow-sm'
+                    ? 'bg-white dark:bg-neutral-800 text-primary'
                     : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
                 "
                 @click="tabName = tab"
@@ -78,7 +60,7 @@
             <div class="flex items-center gap-3">
               <button
                 v-if="tabName === 'downloaded' && downloadedList.length > 0"
-                class="action-btn-pill flex items-center gap-2 px-4 py-2 rounded-[9px] font-semibold text-sm transition-all hover:bg-red-50 dark:hover:bg-red-900/10 text-red-500 border border-neutral-200 dark:border-neutral-800"
+                class="action-btn-pill flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-colors hover:bg-red-50 dark:hover:bg-red-900/10 text-red-500 border border-neutral-200 dark:border-neutral-800"
                 @click="showClearConfirm = true"
               >
                 <i class="ri-delete-bin-line text-lg" />
@@ -86,14 +68,14 @@
               </button>
 
               <button
-                class="action-btn-icon w-10 h-10 rounded-[9px] flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100/80 dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
                 @click="openDownloadPath"
               >
                 <i class="ri-folder-open-line text-lg" />
               </button>
 
               <button
-                class="action-btn-icon w-10 h-10 rounded-[9px] flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100/80 dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
                 @click="showSettingsDrawer = true"
               >
                 <i class="ri-settings-3-line text-lg" />
@@ -116,12 +98,12 @@
               <div
                 v-for="item in downloadList"
                 :key="item.path"
-                class="downloading-item group p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-100 dark:border-neutral-800/50 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
+                class="downloading-item group p-3 rounded-lg border-b border-neutral-100 dark:border-neutral-800/50 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
               >
                 <div class="flex items-center gap-4">
                   <n-image
                     :src="getImgUrl(item.songInfo?.picUrl, '100y100')"
-                    class="w-12 h-12 rounded-xl flex-shrink-0"
+                    class="w-12 h-12 rounded-lg flex-shrink-0"
                     preview-disabled
                   />
                   <div class="flex-1 min-w-0">
@@ -180,18 +162,16 @@
                 <div
                   v-for="(item, index) in downList"
                   :key="item.path"
-                  class="downloaded-item group animate-item p-3 rounded-xl flex items-center gap-4 hover:bg-neutral-100 dark:hover:bg-neutral-900 transition-all"
+                  class="downloaded-item group animate-item p-3 rounded-lg flex items-center gap-4 border-b border-neutral-100 dark:border-neutral-800/50 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
                   :style="{ animationDelay: `${index * 0.03}s` }"
                 >
-                  <div
-                    class="relative w-12 h-12 rounded-xl overflow-hidden shadow-sm flex-shrink-0"
-                  >
+                  <div class="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
                     <img
                       :src="getImgUrl(item.picUrl, '100y100')"
                       class="w-full h-full object-cover"
                     />
                     <div
-                      class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-all cursor-pointer"
+                      class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                       @click="handlePlayMusic(item)"
                     >
                       <i class="ri-play-fill text-white text-xl" />
@@ -224,7 +204,7 @@
                     <n-tooltip trigger="hover">
                       <template #trigger>
                         <button
-                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/10 transition-all"
+                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/10 transition-colors"
                           @click="copyPath(item.path)"
                         >
                           <i class="ri-file-copy-line" />
@@ -235,7 +215,7 @@
                     <n-tooltip trigger="hover">
                       <template #trigger>
                         <button
-                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/10 transition-all"
+                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/10 transition-colors"
                           @click="openDirectory(item.path)"
                         >
                           <i class="ri-folder-open-line" />
@@ -246,7 +226,7 @@
                     <n-tooltip trigger="hover">
                       <template #trigger>
                         <button
-                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                          class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-red-500 hover:bg-red-500/10 transition-colors"
                           @click="handleDelete(item)"
                         >
                           <i class="ri-delete-bin-line" />
@@ -428,7 +408,7 @@
               </div>
 
               <div
-                class="p-3 bg-neutral-50 dark:bg-neutral-900 rounded-xl border border-dashed border-neutral-200 dark:border-neutral-800"
+                class="p-3 bg-neutral-50 dark:bg-neutral-900 rounded-lg border border-dashed border-neutral-200 dark:border-neutral-800"
               >
                 <p class="text-[10px] text-neutral-400 mb-1 uppercase font-bold">
                   {{ t('download.settingsPanel.preview') }}

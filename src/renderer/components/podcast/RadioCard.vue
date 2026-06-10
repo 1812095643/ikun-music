@@ -26,20 +26,20 @@ const goToDetail = () => {
   <div class="group cursor-pointer animate-item" :style="{ animationDelay }" @click="goToDetail">
     <!-- Cover -->
     <div
-      class="relative aspect-square overflow-hidden rounded-xl border border-white/60 shadow-sm group-hover:shadow-md transition-all duration-500 dark:border-white/10"
+      class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 transition-colors duration-300 group-hover:border-primary/20 dark:border-neutral-800"
     >
       <img
         :src="getImgUrl(radio?.picUrl || program?.coverUrl || '', '400y400')"
         :alt="radio?.name || ''"
-        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+        class="h-full w-full object-cover"
         loading="lazy"
       />
       <!-- Hover overlay -->
       <div
-        class="absolute inset-0 bg-transparent group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center"
+        class="absolute inset-0 bg-transparent group-hover:bg-black/18 transition-colors duration-300 flex items-center justify-center"
       >
         <div
-          class="w-11 h-11 rounded-[10px] bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md"
+          class="w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 transition-opacity duration-300"
         >
           <i class="ri-play-fill text-2xl text-neutral-900 ml-0.5"></i>
         </div>
@@ -47,14 +47,14 @@ const goToDetail = () => {
       <!-- Recent played badge -->
       <div
         v-if="program"
-        class="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-black/60 to-transparent text-white text-xs truncate"
+        class="absolute bottom-0 left-0 right-0 px-3 py-2 bg-black/45 text-white text-xs truncate"
       >
         {{ program.mainSong?.name || program.name }}
       </div>
       <!-- Episode count badge -->
       <div
         v-if="radio?.programCount && !program"
-        class="absolute top-3 right-3 px-2 py-1 rounded-lg bg-black/40 backdrop-blur-md text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        class="absolute top-2 right-2 px-2 py-1 rounded-md bg-black/40 text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
       >
         <i class="ri-mic-fill"></i>
         {{ radio.programCount }}

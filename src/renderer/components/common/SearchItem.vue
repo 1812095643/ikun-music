@@ -1,16 +1,16 @@
 <template>
   <div
-    class="search-item group cursor-pointer transition-all duration-300"
+    class="search-item group cursor-pointer transition-colors duration-300"
     :class="[item.type === 'mv' ? 'flex flex-col' : 'flex flex-col']"
     @click="handleClick"
   >
     <!-- Image Container -->
     <div
-      class="relative overflow-hidden rounded-xl border border-white/60 shadow-sm transition-all duration-500 group-hover:shadow-md group-hover:-translate-y-0.5 dark:border-white/10"
+      class="relative overflow-hidden rounded-lg border border-neutral-100 transition-colors duration-300 group-hover:border-primary/20 dark:border-neutral-800"
       :class="[item.type === 'mv' ? 'aspect-video' : 'aspect-square']"
     >
       <n-image
-        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+        class="w-full h-full object-cover"
         :src="getImgUrl(item.picUrl, item.type === 'mv' ? '400y225' : '400y400')"
         lazy
         preview-disabled
@@ -19,10 +19,10 @@
       <!-- Play Overlay (for MV) -->
       <div
         v-if="item.type === 'mv'"
-        class="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-300 group-hover:bg-black/30"
+        class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-300 group-hover:bg-black/25"
       >
         <div
-          class="play-icon flex h-11 w-11 items-center justify-center rounded-[10px] bg-white/90 opacity-0 translate-y-1 transition-all duration-300 shadow-md group-hover:opacity-100 group-hover:translate-y-0"
+          class="play-icon flex h-10 w-10 items-center justify-center rounded-lg bg-white/90 opacity-0 translate-y-1 transition-opacity duration-300 group-hover:opacity-100"
         >
           <i class="ri-play-fill text-2xl text-neutral-900 ml-1" />
         </div>
@@ -31,7 +31,7 @@
       <!-- Item Size Badge (for Album) -->
       <div
         v-if="item.type === '专辑' && item.size"
-        class="absolute top-2 right-2 flex items-center gap-1 rounded-lg bg-black/40 px-2 py-1 text-[10px] font-bold text-white backdrop-blur-md opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        class="absolute top-2 right-2 flex items-center gap-1 rounded-md bg-black/40 px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       >
         <i class="ri-music-2-line" />
         <span>{{ item.size }}</span>
