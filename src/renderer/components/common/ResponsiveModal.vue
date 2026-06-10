@@ -7,7 +7,7 @@
         @click="handleMaskClick"
       >
         <!-- Overlay -->
-        <div class="absolute inset-0 bg-black/35 backdrop-blur-sm transition-opacity"></div>
+        <div class="absolute inset-0 bg-black/35 transition-opacity"></div>
 
         <!-- Content -->
         <Transition :name="isMobile ? 'slide-up' : 'scale-fade'">
@@ -40,7 +40,7 @@
             <!-- Footer -->
             <div
               v-if="$slots.footer"
-              class="px-4 py-3 border-t border-gray-100 dark:border-white/5 shrink-0 bg-gray-50/50 dark:bg-white/5 backdrop-blur-md"
+              class="px-4 py-3 border-t border-gray-100 dark:border-white/5 shrink-0 bg-gray-50 dark:bg-white/5"
             >
               <slot name="footer"></slot>
             </div>

@@ -3,7 +3,7 @@
     <Transition name="update-modal">
       <div
         v-if="showModal"
-        class="fixed inset-0 z-[999999] flex items-end justify-center bg-black/50 backdrop-blur-sm"
+        class="fixed inset-0 z-[999999] flex items-end justify-center bg-black/45"
       >
         <!-- 弹窗内容 -->
         <div

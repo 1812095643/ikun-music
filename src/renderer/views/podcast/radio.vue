@@ -342,21 +342,19 @@ onMounted(async () => {
 .action-bar {
   transition:
     background-color 0.3s,
-    box-shadow 0.3s;
+    border-color 0.2s ease;
 }
 
 .animate-item {
-  animation: fadeInUp 0.6s ease-out;
+  animation: fadeInSoft 0.22s ease-out;
 }
 
-@keyframes fadeInUp {
+@keyframes fadeInSoft {
   from {
     opacity: 0;
-    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 

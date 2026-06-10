@@ -3,7 +3,7 @@
     <Transition name="disclaimer-modal">
       <div
         v-if="showDisclaimer"
-        class="disclaimer-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 backdrop-blur-md"
+        class="disclaimer-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/45"
       >
         <div
           class="disclaimer-modal-card w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-sm"
@@ -82,7 +82,7 @@
     <Transition name="donate-modal">
       <div
         v-if="showDonate"
-        class="donate-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/60 backdrop-blur-md"
+        class="donate-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/45"
       >
         <div
           class="donate-modal-card w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-sm"
@@ -160,7 +160,7 @@
     <Transition name="qrcode-modal">
       <div
         v-if="showQRCode"
-        class="fixed inset-0 z-[9999999] flex items-center justify-center bg-black/70 backdrop-blur-md"
+        class="fixed inset-0 z-[9999999] flex items-center justify-center bg-black/55"
         @click.self="closeQRCode"
       >
         <div

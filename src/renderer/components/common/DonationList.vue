@@ -227,17 +227,15 @@ onActivated(() => fetchDonors());
 
 <style scoped>
 .animate-fade-in-up {
-  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation: fadeInSoft 0.22s ease-out backwards;
 }
 
-@keyframes fadeInUp {
+@keyframes fadeInSoft {
   from {
     opacity: 0;
-    transform: translateY(10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 </style>

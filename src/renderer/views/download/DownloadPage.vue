@@ -34,7 +34,7 @@
 
         <!-- Action Bar (Sticky) -->
         <section
-          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-neutral-100 dark:border-neutral-800/50"
+          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/95 dark:bg-black/95 border-b border-neutral-100 dark:border-neutral-800/50"
         >
           <div class="flex items-center justify-between gap-4">
             <!-- Tabs (Segment Control) -->
@@ -1085,17 +1085,15 @@ onMounted(() => {
 }
 
 .animate-item {
-  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation: fadeInSoft 0.22s ease-out backwards;
 }
 
-@keyframes fadeInUp {
+@keyframes fadeInSoft {
   from {
     opacity: 0;
-    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -1112,7 +1110,6 @@ onMounted(() => {
   &:hover {
     color: var(--qqm-primary, #22c55e);
     background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
-    transform: translateY(-1px);
   }
 }
 

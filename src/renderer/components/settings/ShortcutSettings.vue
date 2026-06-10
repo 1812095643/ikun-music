@@ -762,7 +762,7 @@ onUnmounted(() => {
   background: linear-gradient(180deg, #ffffff, #f8fafc);
   margin-bottom: 12px;
   overflow: hidden;
-  box-shadow: 0 12px 24px -22px rgba(15, 23, 42, 0.55);
+  box-shadow: none;
 }
 
 .shortcut-section:last-child {
@@ -823,19 +823,18 @@ onUnmounted(() => {
   background: #ffffff;
   text-align: left;
   transition: all 0.2s ease;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
 .shortcut-recorder:hover,
 .shortcut-recorder:focus-visible {
   border-color: #14b8a6;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.18);
   outline: none;
 }
 
 .shortcut-recorder--recording {
   border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.14);
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
 }
 
 .shortcut-recorder__value {
@@ -888,15 +887,7 @@ onUnmounted(() => {
 :deep(.footer-btn.n-button) {
   border: none;
   font-weight: 600;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    background-color 0.2s ease;
-}
-
-:deep(.toolbar-btn.n-button:hover),
-:deep(.footer-btn.n-button:hover) {
-  transform: translateY(-1px);
+  transition: background-color 0.2s ease;
 }
 
 :deep(.toolbar-btn .n-button__border),
@@ -918,23 +909,19 @@ onUnmounted(() => {
 :deep(.toolbar-btn--danger.n-button) {
   color: #fff;
   background: #ef4444;
-  box-shadow: 0 10px 20px -14px rgba(239, 68, 68, 0.75);
 }
 
 :deep(.toolbar-btn--danger.n-button:hover) {
   background: #dc2626;
-  box-shadow: 0 14px 28px -16px rgba(239, 68, 68, 0.8);
 }
 
 :deep(.toolbar-btn--success.n-button) {
   color: #fff;
   background: #10b981;
-  box-shadow: 0 10px 20px -14px rgba(20, 184, 166, 0.75);
 }
 
 :deep(.toolbar-btn--success.n-button:hover) {
   background: #059669;
-  box-shadow: 0 14px 28px -16px rgba(20, 184, 166, 0.8);
 }
 
 :deep(.footer-btn--cancel.n-button) {
@@ -949,12 +936,10 @@ onUnmounted(() => {
 :deep(.footer-btn--primary.n-button) {
   color: #fff;
   background: #059669;
-  box-shadow: 0 14px 24px -18px rgba(5, 150, 105, 0.9);
 }
 
 :deep(.footer-btn--primary.n-button:hover) {
   background: #047857;
-  box-shadow: 0 20px 30px -18px rgba(5, 150, 105, 0.9);
 }
 
 :deep(.footer-btn--primary.n-button.n-button--disabled) {
