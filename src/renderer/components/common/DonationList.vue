@@ -19,17 +19,17 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 max-w-3xl mx-auto">
       <!-- 支付宝 -->
       <div
-        class="pay-card group relative overflow-hidden rounded-xl bg-white/70 dark:bg-neutral-900/60 border border-[#00A0E9]/20 p-6 flex flex-col items-center transition-all hover:bg-white dark:hover:bg-neutral-900"
+        class="pay-card group relative overflow-hidden rounded-xl bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-all hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
-          class="absolute -right-4 -top-4 w-24 h-24 bg-[#00A0E9]/10 rounded-full blur-2xl group-hover:bg-[#00A0E9]/20 transition-colors"
+          class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/15 transition-colors"
         ></div>
         <img
           :src="alipay"
           alt="Alipay"
           class="w-52 h-52 rounded-xl shadow-sm mb-4 transition-transform duration-300 group-hover:-translate-y-0.5"
         />
-        <div class="flex items-center gap-2 text-[#00A0E9] font-bold text-lg">
+        <div class="flex items-center gap-2 text-primary font-bold text-lg">
           <i class="ri-alipay-fill text-2xl"></i>
           {{ t('common.alipay') }}
         </div>
@@ -37,17 +37,17 @@
 
       <!-- 微信支付 -->
       <div
-        class="pay-card group relative overflow-hidden rounded-xl bg-white/70 dark:bg-neutral-900/60 border border-[#09BB07]/20 p-6 flex flex-col items-center transition-all hover:bg-white dark:hover:bg-neutral-900"
+        class="pay-card group relative overflow-hidden rounded-xl bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-all hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
-          class="absolute -right-4 -top-4 w-24 h-24 bg-[#09BB07]/10 rounded-full blur-2xl group-hover:bg-[#09BB07]/20 transition-colors"
+          class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/15 transition-colors"
         ></div>
         <img
           :src="wechat"
           alt="WeChat"
           class="w-52 h-52 rounded-xl shadow-sm mb-4 transition-transform duration-300 group-hover:-translate-y-0.5"
         />
-        <div class="flex items-center gap-2 text-[#09BB07] font-bold text-lg">
+        <div class="flex items-center gap-2 text-primary font-bold text-lg">
           <i class="ri-wechat-pay-fill text-2xl"></i>
           {{ t('common.wechat') }}
         </div>
@@ -90,7 +90,7 @@
                 v-if="index < 3"
                 class="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-[10px] text-white border border-white dark:border-gray-800"
                 :class="[
-                  index === 0 ? 'bg-yellow-400' : index === 1 ? 'bg-gray-400' : 'bg-orange-400'
+                  index === 0 ? 'bg-primary' : index === 1 ? 'bg-neutral-400' : 'bg-primary/80'
                 ]"
               >
                 <i class="ri-trophy-fill"></i>
@@ -148,13 +148,13 @@ const FIRST_BATCH = 16;
 
 const AVATAR_COLORS = [
   'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
-  'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+  'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
   'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
-  'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
+  'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
   'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
-  'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400',
+  'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
   'bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400',
-  'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400'
+  'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary'
 ];
 
 const allDonors = ref<Donor[]>([]);

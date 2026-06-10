@@ -132,12 +132,10 @@
                 @click="openDonateLink('alipay')"
                 class="flex flex-col items-center gap-2 p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
               >
-                <div class="w-12 h-12 rounded-xl bg-blue-500 flex items-center justify-center">
+                <div class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
                   <i class="ri-alipay-fill text-2xl text-white"></i>
                 </div>
-                <span class="text-sm font-medium text-blue-700 dark:text-blue-300">{{
-                  t('comp.donate.alipay')
-                }}</span>
+                <span class="text-sm font-medium text-primary">{{ t('comp.donate.alipay') }}</span>
               </button>
             </div>
           </div>

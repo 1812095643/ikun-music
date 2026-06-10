@@ -119,7 +119,7 @@ defineExpose({
   }
 
   .warning-text {
-    @apply mt-2 text-orange-400 text-xs text-center max-w-xs;
+    @apply mt-2 text-primary text-xs text-center max-w-xs;
     line-height: 1.4;
   }
 

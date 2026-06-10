@@ -764,7 +764,9 @@ defineExpose({
 
   .left-side {
     @apply flex flex-col items-center justify-center h-full;
-    transition: all 0.3s ease;
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
 
     &.only-cover {
       @apply col-span-2;
@@ -865,7 +867,10 @@ defineExpose({
       @apply text-2xl cursor-pointer font-bold px-4 py-3;
       font-family: var(--current-font-family);
       font-weight: var(--lyric-font-weight, bold) !important;
-      transition: all 0.3s ease;
+      transition:
+        opacity 0.3s ease,
+        color 0.3s ease,
+        transform 0.3s ease;
       background-color: transparent;
       font-size: var(--lyric-font-size, 22px) !important;
       letter-spacing: var(--lyric-letter-spacing, 0) !important;
@@ -875,7 +880,7 @@ defineExpose({
 
       &.now-text {
         opacity: 1;
-        transform: scale(1.05);
+        transform: translateX(2px);
       }
 
       &.no-scroll-tip {

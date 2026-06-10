@@ -338,7 +338,10 @@ onMounted(() => {
 .play-bar {
   @apply w-full;
   border-radius: 12px;
-  transition: all 0.3s ease;
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    opacity 0.3s ease;
 
   /* 默认变量 */
   --text-on-fill: #ffffff;
@@ -493,12 +496,12 @@ onMounted(() => {
 
   &:hover {
     background-color: var(--button-bg);
-    transform: scale(1.05);
+    transform: translateY(-1px);
   }
 
   &:active {
     background-color: var(--button-hover);
-    transform: scale(0.95);
+    transform: translateY(0);
   }
 
   &.play-btn {
@@ -539,7 +542,7 @@ onMounted(() => {
       color 0.2s ease;
 
     &:hover {
-      transform: scale(1.1);
+      transform: translateY(-1px);
       color: var(--fill-color);
     }
   }

@@ -249,7 +249,10 @@ onUnmounted(() => {
       background: color-mix(in srgb, var(--qqm-surface-muted, #f2f4f5) 72%, transparent);
       border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
       box-shadow: 0 8px 20px rgba(20, 24, 31, 0.06);
-      transition: all 0.3s ease;
+      transition:
+        background 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
 
       // 定时值显示
       .timer-value {

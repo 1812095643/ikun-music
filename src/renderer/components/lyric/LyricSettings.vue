@@ -508,7 +508,10 @@ defineExpose({
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  transition: all 0.2s;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.9);
 }
@@ -526,7 +529,7 @@ defineExpose({
   border-radius: 12px;
   position: relative;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: background 0.3s ease;
 }
 
 .toggle-switch::before {
@@ -538,7 +541,7 @@ defineExpose({
   border-radius: 50%;
   left: 2px;
   top: 2px;
-  transition: all 0.3s;
+  transition: transform 0.3s ease;
 }
 
 .toggle-switch:checked {
@@ -631,7 +634,9 @@ defineExpose({
   padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
   font-size: 14px;
   color: rgba(255, 255, 255, 0.8);
 }
@@ -648,7 +653,10 @@ defineExpose({
   padding: 10px 8px;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.8);
   background: rgba(255, 255, 255, 0.03);

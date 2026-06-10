@@ -150,7 +150,10 @@ watch(
   @apply fixed bottom-[76px] left-0 w-full flex flex-col;
   z-index: 10000;
   animation-duration: 0.3s !important;
-  transition: all 0.3s ease;
+  transition:
+    bottom 0.3s ease,
+    opacity 0.3s ease,
+    transform 0.3s ease;
 
   &.is-menu-show {
     bottom: calc(var(--safe-area-inset-bottom, 0) + 66px);

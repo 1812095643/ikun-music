@@ -271,7 +271,10 @@ const handleLoginError = (error: string) => {
         @apply text-gray-900 dark:text-white bg-transparent;
         @apply border-b border-gray-200 dark:border-gray-700;
         @apply placeholder-gray-500 dark:placeholder-gray-400;
-        transition: all 0.3s ease;
+        transition:
+          border-color 0.3s ease,
+          color 0.3s ease,
+          transform 0.3s ease;
 
         &:focus {
           @apply border-green-500;

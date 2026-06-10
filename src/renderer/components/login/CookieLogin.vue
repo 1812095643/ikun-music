@@ -209,6 +209,6 @@ onBeforeUnmount(() => {
   width: 250px;
   height: 40px;
   @apply mt-4 text-white rounded-xl;
-  @apply bg-blue-600 hover:bg-blue-700 transition-colors;
+  @apply bg-primary hover:bg-primary/90 transition-colors;
 }
 </style>

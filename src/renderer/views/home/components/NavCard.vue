@@ -94,14 +94,14 @@ interface Props {
   icon: string;
   title: string;
   subtitle: string;
-  color?: 'rose' | 'amber' | 'purple' | 'blue' | 'emerald' | 'cyan';
+  color?: string;
   active?: boolean;
   badge?: string | null;
   aspect?: 'square' | 'tall' | 'wide';
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  color: 'blue',
+  color: 'qq',
   active: false,
   badge: null,
   aspect: 'square'
@@ -122,96 +122,20 @@ const aspectClass = computed(() => {
   }
 });
 
-const colorClasses = computed(() => {
-  const colors = {
-    rose: {
-      bg: 'bg-rose-50 dark:bg-rose-950/30',
-      activeBg: 'dark:bg-rose-950/50',
-      iconBg: 'bg-rose-100 dark:bg-rose-900/40',
-      activeIconBg: 'dark:bg-rose-900/60',
-      iconColor: 'text-rose-600 dark:text-rose-400',
-      title: 'text-rose-900 dark:text-rose-100',
-      subtitle: 'text-rose-700 dark:text-rose-300',
-      arrow: 'text-rose-600 dark:text-rose-400',
-      pattern: 'text-rose-600',
-      glow: 'bg-rose-500/20',
-      badgeBg: 'bg-rose-500 text-white',
-      activeDot: 'bg-rose-500'
-    },
-    amber: {
-      bg: 'bg-amber-50 dark:bg-amber-950/30',
-      activeBg: 'dark:bg-amber-950/50',
-      iconBg: 'bg-amber-100 dark:bg-amber-900/40',
-      activeIconBg: 'dark:bg-amber-900/60',
-      iconColor: 'text-amber-600 dark:text-amber-400',
-      title: 'text-amber-900 dark:text-amber-100',
-      subtitle: 'text-amber-700 dark:text-amber-300',
-      arrow: 'text-amber-600 dark:text-amber-400',
-      pattern: 'text-amber-600',
-      glow: 'bg-amber-500/20',
-      badgeBg: 'bg-amber-500 text-white',
-      activeDot: 'bg-amber-500'
-    },
-    purple: {
-      bg: 'bg-purple-50 dark:bg-purple-950/30',
-      activeBg: 'dark:bg-purple-950/50',
-      iconBg: 'bg-purple-100 dark:bg-purple-900/40',
-      activeIconBg: 'dark:bg-purple-900/60',
-      iconColor: 'text-purple-600 dark:text-purple-400',
-      title: 'text-purple-900 dark:text-purple-100',
-      subtitle: 'text-purple-700 dark:text-purple-300',
-      arrow: 'text-purple-600 dark:text-purple-400',
-      pattern: 'text-purple-600',
-      glow: 'bg-purple-500/20',
-      badgeBg: 'bg-purple-500 text-white',
-      activeDot: 'bg-purple-500'
-    },
-    blue: {
-      bg: 'bg-blue-50 dark:bg-blue-950/30',
-      activeBg: 'dark:bg-blue-950/50',
-      iconBg: 'bg-blue-100 dark:bg-blue-900/40',
-      activeIconBg: 'dark:bg-blue-900/60',
-      iconColor: 'text-blue-600 dark:text-blue-400',
-      title: 'text-blue-900 dark:text-blue-100',
-      subtitle: 'text-blue-700 dark:text-blue-300',
-      arrow: 'text-blue-600 dark:text-blue-400',
-      pattern: 'text-blue-600',
-      glow: 'bg-blue-500/20',
-      badgeBg: 'bg-blue-500 text-white',
-      activeDot: 'bg-blue-500'
-    },
-    emerald: {
-      bg: 'bg-emerald-50 dark:bg-emerald-950/30',
-      activeBg: 'dark:bg-emerald-950/50',
-      iconBg: 'bg-emerald-100 dark:bg-emerald-900/40',
-      activeIconBg: 'dark:bg-emerald-900/60',
-      iconColor: 'text-emerald-600 dark:text-emerald-400',
-      title: 'text-emerald-900 dark:text-emerald-100',
-      subtitle: 'text-emerald-700 dark:text-emerald-300',
-      arrow: 'text-emerald-600 dark:text-emerald-400',
-      pattern: 'text-emerald-600',
-      glow: 'bg-emerald-500/20',
-      badgeBg: 'bg-emerald-500 text-white',
-      activeDot: 'bg-emerald-500'
-    },
-    cyan: {
-      bg: 'bg-cyan-50 dark:bg-cyan-950/30',
-      activeBg: 'dark:bg-cyan-950/50',
-      iconBg: 'bg-cyan-100 dark:bg-cyan-900/40',
-      activeIconBg: 'dark:bg-cyan-900/60',
-      iconColor: 'text-cyan-600 dark:text-cyan-400',
-      title: 'text-cyan-900 dark:text-cyan-100',
-      subtitle: 'text-cyan-700 dark:text-cyan-300',
-      arrow: 'text-cyan-600 dark:text-cyan-400',
-      pattern: 'text-cyan-600',
-      glow: 'bg-cyan-500/20',
-      badgeBg: 'bg-cyan-500 text-white',
-      activeDot: 'bg-cyan-500'
-    }
-  };
-
-  return colors[props.color];
-});
+const colorClasses = computed(() => ({
+  bg: 'bg-neutral-50 dark:bg-neutral-900/60',
+  activeBg: 'bg-primary/5 dark:bg-primary/10',
+  iconBg: 'bg-primary/10 dark:bg-primary/15',
+  activeIconBg: 'bg-primary/15 dark:bg-primary/20',
+  iconColor: 'text-primary',
+  title: 'text-neutral-900 dark:text-neutral-50',
+  subtitle: 'text-neutral-500 dark:text-neutral-400',
+  arrow: 'text-primary',
+  pattern: 'text-primary',
+  glow: 'bg-primary/10',
+  badgeBg: 'bg-primary text-white',
+  activeDot: 'bg-primary'
+}));
 </script>
 
 <style scoped>

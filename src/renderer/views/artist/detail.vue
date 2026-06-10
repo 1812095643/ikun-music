@@ -964,19 +964,23 @@ const formatSong = (item: any) => {
 
 .tab-indicator-enter-active,
 .tab-indicator-leave-active {
-  transition: all 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .tab-indicator-enter-from,
 .tab-indicator-leave-to {
   opacity: 0;
-  transform: scale(0.95);
+  transform: translateY(2px);
 }
 
 /* Search Slide Animation */
 .search-slide-enter-active,
 .search-slide-leave-active {
-  transition: all 0.25s ease;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
 }
 
 .search-slide-enter-from,
@@ -1036,10 +1040,10 @@ const formatSong = (item: any) => {
 @keyframes pulse {
   0%,
   100% {
-    transform: scale(1);
+    transform: translateY(0);
   }
   50% {
-    transform: scale(1.05);
+    transform: translateY(-1px);
   }
 }
 

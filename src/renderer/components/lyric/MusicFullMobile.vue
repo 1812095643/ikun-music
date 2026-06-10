@@ -1231,11 +1231,11 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
     }
 
     &:hover {
-      transform: scale(1.05);
+      transform: translateY(-1px);
     }
 
     &:active {
-      transform: scale(0.95);
+      transform: translateY(0);
     }
   }
 
@@ -1261,12 +1261,12 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
         transition: transform 0.15s ease-out;
 
         &.active {
-          transform: translate(-50%, -50%) scale(1.3);
+          transform: translate(-50%, -50%);
           box-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
         }
 
         &:active {
-          transform: translate(-50%, -50%) scale(1.3);
+          transform: translate(-50%, -50%);
         }
       }
     }
@@ -1372,11 +1372,11 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
     }
 
     &:hover {
-      transform: scale(1.1);
+      transform: translateY(-1px);
     }
 
     &:active {
-      transform: scale(0.9);
+      transform: translateY(0);
     }
 
     &.landscape {
@@ -1687,30 +1687,30 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 @keyframes styleChange {
   0% {
     opacity: 0.7;
-    transform: scale(0.95);
+    transform: translateY(1px);
   }
   50% {
     opacity: 0.9;
-    transform: scale(1.03);
+    transform: translateY(-1px);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
 @keyframes clickPulse {
   0% {
     opacity: 0.5;
-    transform: scale(1);
+    transform: translateY(0);
   }
   50% {
     opacity: 1;
-    transform: scale(1.1);
+    transform: translateY(-1px);
   }
   100% {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
@@ -1739,11 +1739,11 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
   }
 
   &:hover {
-    transform: scale(1.1);
+    transform: translateY(-1px);
   }
 
   &:active {
-    transform: scale(0.9);
+    transform: translateY(0);
   }
 
   &.landscape {
@@ -2013,7 +2013,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
       transition: transform 0.3s ease-out;
 
       &:active {
-        transform: scale(0.95);
+        transform: translateY(1px);
       }
     }
   }

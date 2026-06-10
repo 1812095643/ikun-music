@@ -259,7 +259,7 @@ onUnmounted(() => {
   @apply mt-4 text-white text-xs transition-colors duration-300;
 
   &.expired {
-    @apply text-orange-400;
+    @apply text-primary;
   }
 
   &.scanned {

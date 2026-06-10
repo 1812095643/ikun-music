@@ -1154,7 +1154,9 @@ body,
     --text-color: #e6e6e6;
     --text-secondary: #ffffffea;
     --highlight-color: var(--lyric-highlight-color, #1ed760);
-    --control-bg: rgba(124, 124, 124, 0.3);
+    --control-bg: rgba(255, 255, 255, 0.12);
+    --control-hover-bg: rgba(255, 255, 255, 0.18);
+    --control-border: rgba(255, 255, 255, 0.16);
     &:hover:not(.lyric_lock) {
       background: rgba(44, 44, 44, 0.466) !important;
     }
@@ -1164,7 +1166,9 @@ body,
     --text-color: #383838;
     --text-secondary: #282828ae;
     --highlight-color: var(--lyric-highlight-color, #1db954);
-    --control-bg: rgba(38, 38, 38, 0.532);
+    --control-bg: rgba(255, 255, 255, 0.78);
+    --control-hover-bg: rgba(255, 255, 255, 0.92);
+    --control-border: rgba(255, 255, 255, 0.34);
     &:hover:not(.lyric_lock) {
       background: rgba(0, 0, 0, 0.434) !important;
     }
@@ -1180,7 +1184,7 @@ body,
   display: flex;
   justify-content: space-between;
   align-items: start;
-  padding: 0 20px;
+  padding: 0 24px;
   opacity: 0;
   visibility: hidden;
   transition:
@@ -1193,7 +1197,12 @@ body,
     color: var(--text-color);
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 10px;
+    padding: 5px;
+    border: 1px solid var(--control-border);
+    border-radius: 14px;
+    background: var(--control-bg);
+    backdrop-filter: blur(18px) saturate(1.2);
   }
 
   .play-controls {
@@ -1203,12 +1212,19 @@ body,
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 10px;
+    padding: 5px;
+    border: 1px solid var(--control-border);
+    border-radius: 999px;
+    background: var(--control-bg);
+    backdrop-filter: blur(18px) saturate(1.2);
     -webkit-app-region: no-drag;
 
     .play-button {
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
+      background: var(--highlight-color);
+      color: #fff;
       i {
         font-size: 24px;
       }
@@ -1222,22 +1238,35 @@ body,
 
 .control-buttons {
   display: flex;
-  gap: 16px;
+  gap: 10px;
+  padding: 5px;
+  border: 1px solid var(--control-border);
+  border-radius: 14px;
+  background: var(--control-bg);
+  backdrop-filter: blur(18px) saturate(1.2);
   -webkit-app-region: no-drag;
 }
 
 .control-button {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 10px;
   color: var(--text-color);
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
   &:hover {
-    background: var(--control-bg);
+    background: var(--control-hover-bg);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   i {
@@ -1251,7 +1280,7 @@ body,
 
   &.theme-color-button {
     &.active {
-      background: var(--control-bg);
+      background: var(--control-hover-bg);
 
       i {
         color: var(--highlight-color);
@@ -1309,7 +1338,7 @@ body,
 
     &.lyric-line-current {
       opacity: 1;
-      transform: scale(1.03);
+      transform: translateY(-1px);
     }
   }
 }
@@ -1334,14 +1363,16 @@ body,
 .lyric-line {
   padding: 4px 20px;
   text-align: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 
   &.lyric-line-current {
-    transform: scale(1.05);
+    transform: translateY(-1px);
     opacity: 1;
 
     // 当前播放歌词的特殊样式

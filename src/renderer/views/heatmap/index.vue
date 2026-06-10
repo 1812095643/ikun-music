@@ -639,7 +639,7 @@ onMounted(() => {
 
     &:hover {
       @apply ring-2 ring-green-400 ring-opacity-50;
-      transform: scale(1.04);
+      transform: translateY(-1px);
     }
   }
 }

@@ -156,7 +156,7 @@
               class="bg-primary/5 dark:bg-primary/10 rounded-xl p-5 border border-primary/10 dark:border-primary/15"
             >
               <div class="flex gap-3">
-                <div class="mt-0.5 text-blue-500">
+                <div class="mt-0.5 text-primary">
                   <i class="ri-lightbulb-flash-line text-lg"></i>
                 </div>
                 <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
@@ -272,7 +272,7 @@
                     <div
                       class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-colors"
                       :class="{
-                        'bg-blue-50 text-blue-500':
+                        'bg-primary/10 text-primary':
                           taskStatus === 'processing' || taskStatus === 'pending',
                         'bg-green-50 text-green-500': taskStatus === 'success',
                         'bg-red-50 text-red-500': taskStatus === 'failed'

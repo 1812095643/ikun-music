@@ -117,13 +117,15 @@ watch(show, (val) => {
 /* PC Scale Fade Transition */
 .scale-fade-enter-active,
 .scale-fade-leave-active {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition:
+    opacity 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .scale-fade-enter-from,
 .scale-fade-leave-to {
   opacity: 0;
-  transform: scale(0.95);
+  transform: translateY(8px);
 }
 
 /* Mobile Slide Up Transition */

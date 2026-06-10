@@ -185,7 +185,7 @@ onMounted(() => {
     }
 
     img {
-      transform: scale(1.03);
+      transform: translateY(-1px);
     }
 
     .play-icon {

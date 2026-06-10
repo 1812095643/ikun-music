@@ -424,13 +424,15 @@ const isArtist = (profile: any) => {
 
 .tab-indicator-enter-active,
 .tab-indicator-leave-active {
-  transition: all 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .tab-indicator-enter-from,
 .tab-indicator-leave-to {
   opacity: 0;
-  transform: scale(0.95);
+  transform: translateY(2px);
 }
 
 .song-item-container {

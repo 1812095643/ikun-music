@@ -291,7 +291,11 @@ const formatFreq = (freq: number) => {
 
 :deep(.n-tag) {
   cursor: pointer;
-  transition: all 0.2s;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
   text-align: center;
 
   &:hover {
@@ -314,9 +318,12 @@ const formatFreq = (freq: number) => {
   --n-handle-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   .n-slider-handle {
-    transition: all 0.2s;
+    transition:
+      background-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
     &:hover {
-      transform: scale(1.2);
+      transform: translateY(-1px);
     }
   }
 }
