@@ -18,7 +18,7 @@
                 />
                 <div class="flex-1 space-y-4 text-center md:text-left">
                   <div class="h-6 w-20 skeleton-shimmer rounded-full" />
-                  <div class="h-10 w-1/2 md:h-12 skeleton-shimmer rounded-xl" />
+                  <div class="h-10 w-1/2 md:h-12 skeleton-shimmer rounded-lg" />
                   <div class="flex justify-center gap-4 md:justify-start">
                     <div class="h-6 w-24 skeleton-shimmer rounded-lg" />
                     <div class="h-6 w-24 skeleton-shimmer rounded-lg" />
@@ -31,7 +31,7 @@
           <div class="mt-8 page-padding-x">
             <div class="space-y-4">
               <div v-for="i in 8" :key="i" class="flex items-center gap-4">
-                <div class="h-12 w-12 skeleton-shimmer rounded-xl flex-shrink-0" />
+                <div class="h-12 w-12 skeleton-shimmer rounded-lg flex-shrink-0" />
                 <div class="flex-1 space-y-2">
                   <div class="h-4 w-1/3 skeleton-shimmer rounded-lg" />
                   <div class="h-3 w-1/4 skeleton-shimmer rounded-lg" />
@@ -196,7 +196,7 @@
             <Transition name="search-slide">
               <div v-if="isSearchVisible && activeTab === 'songs'" class="search-container mt-3">
                 <div
-                  class="relative flex items-center bg-neutral-100 dark:bg-neutral-800 rounded-xl overflow-hidden"
+                  class="relative flex items-center bg-neutral-100 dark:bg-neutral-800 rounded-lg overflow-hidden"
                 >
                   <i class="iconfont icon-search text-neutral-400 dark:text-neutral-500 ml-4" />
                   <input
@@ -221,7 +221,7 @@
           <!-- Tab Navigation -->
           <section class="tab-nav page-padding-x pt-4 md:pt-6">
             <div
-              class="tab-list relative flex gap-1 p-1 bg-neutral-100 dark:bg-neutral-800/50 rounded-xl w-fit"
+              class="tab-list relative flex gap-1 p-1 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg w-fit"
             >
               <button
                 v-for="tab in tabs"
@@ -314,7 +314,7 @@
                 >
                   <!-- Cover -->
                   <div
-                    class="album-cover relative aspect-square overflow-hidden rounded-xl shadow-sm"
+                    class="album-cover relative aspect-square overflow-hidden rounded-lg shadow-sm"
                   >
                     <img
                       :src="getImgUrl(album.picUrl, '500y500')"

@@ -417,7 +417,9 @@ onMounted(() => {
       .back-button {
         @apply text-2xl;
         @apply text-gray-700 dark:text-gray-300;
-        @apply hover:text-green-500 dark:hover:text-green-400;
+        &:hover {
+          color: var(--qqm-primary, #22c55e);
+        }
         @apply transition-colors;
       }
 
@@ -465,7 +467,7 @@ onMounted(() => {
     }
 
     .heatmap-container {
-      @apply rounded-xl p-6;
+      @apply rounded-lg p-6;
       background: color-mix(in srgb, var(--qqm-surface) 70%, transparent);
       border: 1px solid rgba(255, 255, 255, 0.58);
       box-shadow: var(--qqm-shadow);
@@ -482,10 +484,10 @@ onMounted(() => {
         @apply mt-6 grid grid-cols-1 md:grid-cols-3 gap-4;
 
         .stat-card {
-          @apply flex items-start gap-4 p-4 rounded-xl;
+          @apply flex items-start gap-4 p-4 rounded-lg;
           background: color-mix(in srgb, var(--qqm-surface-muted) 66%, transparent);
           border: 1px solid var(--qqm-border);
-          @apply transition-all duration-300;
+          @apply transition-colors duration-200;
 
           &:hover {
             border-color: rgba(30, 207, 115, 0.16);
@@ -498,7 +500,7 @@ onMounted(() => {
             @apply w-12 h-12 rounded-lg;
             background: var(--qqm-primary);
             @apply text-white text-2xl;
-            @apply shadow-md;
+            @apply shadow-sm;
 
             .iconfont {
               @apply text-2xl;
@@ -526,11 +528,19 @@ onMounted(() => {
 
                 &.clickable {
                   @apply cursor-pointer rounded-md px-2 py-1 -mx-2 -my-1;
-                  @apply transition-all duration-200;
-                  @apply hover:bg-green-50 dark:hover:bg-green-900/20;
+                  @apply transition-colors duration-200;
+                  &:hover {
+                    background-color: color-mix(
+                      in srgb,
+                      var(--qqm-primary, #22c55e) 10%,
+                      transparent
+                    );
+                  }
 
                   .song-name {
-                    @apply hover:text-green-600 dark:hover:text-green-400;
+                    &:hover {
+                      color: var(--qqm-primary, #22c55e);
+                    }
                   }
                 }
 
@@ -554,7 +564,7 @@ onMounted(() => {
               .play-count,
               .time-info {
                 @apply text-sm font-medium;
-                @apply text-green-600 dark:text-green-400;
+                color: var(--qqm-primary, #22c55e);
               }
             }
           }
@@ -596,16 +606,21 @@ onMounted(() => {
 
       &.clickable {
         @apply cursor-pointer rounded px-2 -mx-2;
-        @apply transition-all duration-200;
-        @apply hover:bg-green-500/30;
+        @apply transition-colors duration-200;
+        &:hover {
+          background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 30%, transparent);
+        }
 
         .song-name {
-          @apply hover:text-green-600;
+          &:hover {
+            color: var(--qqm-primary, #22c55e);
+          }
         }
       }
 
       .song-rank {
-        @apply font-bold text-green-500;
+        @apply font-bold;
+        color: var(--qqm-primary, #22c55e);
       }
 
       .song-name {
@@ -635,7 +650,7 @@ onMounted(() => {
 
   .n-heatmap__day {
     @apply rounded-sm;
-    @apply transition-all duration-200;
+    @apply transition-colors duration-200;
 
     &:hover {
       @apply ring-2 ring-green-400 ring-opacity-50;

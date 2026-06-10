@@ -13,7 +13,7 @@
         <div>
           <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
             <div
-              class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"
+              class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary"
             >
               <i class="ri-import-fill text-xl"></i>
             </div>
@@ -32,12 +32,12 @@
         <!-- 自定义 Tab 切换 -->
         <div class="flex justify-center mb-8">
           <div
-            class="bg-white dark:bg-white/5 p-1.5 rounded-xl shadow-sm border border-gray-100 dark:border-white/10 flex gap-1 relative"
+            class="bg-white dark:bg-white/5 p-1.5 rounded-lg shadow-sm border border-gray-100 dark:border-white/10 flex gap-1 relative"
           >
             <div
               v-for="tab in tabs"
               :key="tab.id"
-              class="relative z-10 px-6 py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all duration-300 flex items-center gap-2"
+              class="relative z-10 px-6 py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-colors duration-200 flex items-center gap-2"
               :class="
                 currentTab === tab.id
                   ? 'text-white'
@@ -51,7 +51,7 @@
 
             <!-- 滑动背景 -->
             <div
-              class="absolute top-1.5 bottom-1.5 bg-primary rounded-xl shadow-md transition-all duration-300 ease-out"
+              class="absolute top-1.5 bottom-1.5 bg-primary rounded-lg shadow-sm transition-colors duration-200 ease-out"
               :style="tabIndicatorStyle"
             ></div>
           </div>
@@ -62,7 +62,7 @@
           <!-- 左侧：输入区域 -->
           <div class="lg:col-span-2 space-y-6">
             <div
-              class="bg-white dark:bg-neutral-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-none overflow-hidden p-1 transition-all duration-300"
+              class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-none overflow-hidden p-1 transition-colors duration-200"
             >
               <!-- 链接导入内容 -->
               <div v-if="currentTab === 'link'" class="p-6 space-y-6 animate-fade-in">
@@ -71,11 +71,11 @@
                     <input
                       v-model="link.value"
                       :placeholder="t('comp.playlist.import.linkPlaceholder')"
-                      class="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-lg px-5 py-4 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400"
+                      class="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-lg px-5 py-4 outline-none transition-colors duration-200 text-gray-900 dark:text-white placeholder-gray-400"
                     />
                     <button
                       v-if="linkInputs.length > 1"
-                      class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all opacity-0 group-hover:opacity-100"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
                       @click="removeLinkRow(index)"
                     >
                       <i class="ri-delete-bin-line"></i>
@@ -83,7 +83,7 @@
                   </div>
 
                   <button
-                    class="w-full py-3 rounded-lg border border-dashed border-gray-200 dark:border-gray-700 text-gray-500 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 flex items-center justify-center gap-2 font-medium"
+                    class="w-full py-3 rounded-lg border border-dashed border-gray-200 dark:border-gray-700 text-gray-500 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-colors duration-200 flex items-center justify-center gap-2 font-medium"
                     @click="addLinkRow"
                   >
                     <i class="ri-add-line text-lg"></i>
@@ -98,7 +98,7 @@
                   v-model="textInput"
                   :placeholder="t('comp.playlist.import.textPlaceholder')"
                   rows="12"
-                  class="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-lg px-5 py-4 outline-none transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-400 font-mono text-sm resize-none"
+                  class="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary/50 focus:bg-white dark:focus:bg-black rounded-lg px-5 py-4 outline-none transition-colors duration-200 text-gray-900 dark:text-white placeholder-gray-400 font-mono text-sm resize-none"
                 ></textarea>
                 <div class="flex items-center gap-2 text-xs text-gray-400 px-2">
                   <i class="ri-information-line"></i>
@@ -120,28 +120,28 @@
                     <input
                       v-model="item.name"
                       :placeholder="t('comp.playlist.import.songNamePlaceholder')"
-                      class="flex-1 bg-gray-50 dark:bg-white/5 border-transparent focus:border-primary/50 rounded-xl px-4 py-2.5 outline-none text-sm transition-all border-2"
+                      class="flex-1 bg-gray-50 dark:bg-white/5 border-transparent focus:border-primary/50 rounded-lg px-4 py-2.5 outline-none text-sm transition-colors border-2"
                     />
                     <input
                       v-model="item.artist"
                       :placeholder="t('comp.playlist.import.artistNamePlaceholder')"
-                      class="flex-1 bg-gray-50 dark:bg-white/5 border-transparent focus:border-primary/50 rounded-xl px-4 py-2.5 outline-none text-sm transition-all border-2"
+                      class="flex-1 bg-gray-50 dark:bg-white/5 border-transparent focus:border-primary/50 rounded-lg px-4 py-2.5 outline-none text-sm transition-colors border-2"
                     />
                     <input
                       v-model="item.album"
                       :placeholder="t('comp.playlist.import.albumNamePlaceholder')"
-                      class="flex-1 bg-gray-50 dark:bg-white/5 border-transparent focus:border-primary/50 rounded-xl px-4 py-2.5 outline-none text-sm transition-all border-2"
+                      class="flex-1 bg-gray-50 dark:bg-white/5 border-transparent focus:border-primary/50 rounded-lg px-4 py-2.5 outline-none text-sm transition-colors border-2"
                     />
                     <button
                       v-if="localMetadata.length > 1"
-                      class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all opacity-0 group-hover:opacity-100"
+                      class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
                       @click="removeMetadataRow(index)"
                     >
                       <i class="ri-delete-bin-line"></i>
                     </button>
                   </div>
                   <button
-                    class="ml-9 px-4 py-2 rounded-xl text-sm font-medium text-primary hover:bg-primary/10 transition-colors flex items-center gap-1"
+                    class="ml-9 px-4 py-2 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 transition-colors flex items-center gap-1"
                     @click="addMetadataRow"
                   >
                     <i class="ri-add-line"></i>
@@ -153,7 +153,7 @@
 
             <!-- 帮助提示 (根据 Tab 变化) -->
             <div
-              class="bg-primary/5 dark:bg-primary/10 rounded-xl p-5 border border-primary/10 dark:border-primary/15"
+              class="bg-primary/5 dark:bg-primary/10 rounded-lg p-5 border border-primary/10 dark:border-primary/15"
             >
               <div class="flex gap-3">
                 <div class="mt-0.5 text-primary">
@@ -179,7 +179,7 @@
           <div class="space-y-6">
             <!-- 选项卡片 -->
             <div
-              class="bg-white dark:bg-neutral-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-none p-6"
+              class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-none p-6"
             >
               <h3 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <i class="ri-settings-4-line text-primary"></i>
@@ -189,7 +189,7 @@
               <div class="space-y-4">
                 <!-- 导入到星标歌单开关 -->
                 <div
-                  class="flex items-center justify-between p-4 rounded-lg cursor-pointer transition-all border"
+                  class="flex items-center justify-between p-4 rounded-lg cursor-pointer transition-colors border"
                   :class="
                     importToStarPlaylist
                       ? 'bg-primary/5 border-primary/50'
@@ -232,14 +232,14 @@
                   <input
                     v-model="playlistName"
                     :placeholder="t('comp.playlist.import.playlistNamePlaceholder')"
-                    class="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary/50 rounded-lg pl-11 pr-4 py-3.5 outline-none transition-all text-sm text-gray-900 dark:text-white"
+                    class="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary/50 rounded-lg pl-11 pr-4 py-3.5 outline-none transition-colors text-sm text-gray-900 dark:text-white"
                   />
                 </div>
               </div>
 
               <!-- 主操作按钮 -->
               <button
-                class="w-full mt-6 py-3.5 rounded-lg bg-primary text-white font-bold text-base shadow-sm shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-all duration-300 flex items-center justify-center gap-2"
+                class="w-full mt-6 py-3.5 rounded-lg bg-primary text-white font-bold text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none transition-colors duration-200 flex items-center justify-center gap-2"
                 :disabled="isImportDisabled"
                 @click="handleImport"
               >
@@ -256,7 +256,7 @@
             <!-- 状态反馈 -->
             <div v-if="taskId" class="animate-fade-in-up">
               <div
-                class="bg-white dark:bg-neutral-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-none p-6"
+                class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 shadow-sm dark:shadow-none p-6"
               >
                 <div class="flex items-center justify-between mb-4">
                   <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -273,8 +273,9 @@
                       class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-colors"
                       :class="{
                         'bg-primary/10 text-primary':
-                          taskStatus === 'processing' || taskStatus === 'pending',
-                        'bg-green-50 text-green-500': taskStatus === 'success',
+                          taskStatus === 'processing' ||
+                          taskStatus === 'pending' ||
+                          taskStatus === 'success',
                         'bg-red-50 text-red-500': taskStatus === 'failed'
                       }"
                     >
@@ -295,7 +296,7 @@
 
                   <div
                     v-if="taskStatus === 'success'"
-                    class="bg-green-50 dark:bg-green-900/10 rounded-xl p-3 text-green-700 dark:text-green-400 text-sm flex justify-between"
+                    class="bg-primary/10 dark:bg-primary/15 rounded-lg p-3 text-primary dark:text-primary text-sm flex justify-between"
                   >
                     <span>{{ t('comp.playlist.import.successCount') }}</span>
                     <span class="font-bold">{{ successCount }}</span>
@@ -303,7 +304,7 @@
 
                   <div
                     v-if="taskStatus === 'failed'"
-                    class="bg-red-50 dark:bg-red-900/10 rounded-xl p-3 text-red-700 dark:text-red-400 text-sm"
+                    class="bg-red-50 dark:bg-red-900/10 rounded-lg p-3 text-red-700 dark:text-red-400 text-sm"
                   >
                     {{ failReason }}
                   </div>

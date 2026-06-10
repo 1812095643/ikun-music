@@ -26,7 +26,7 @@
           <div
             v-for="tab in ['songs', 'playlists', 'albums', 'podcasts']"
             :key="tab"
-            class="px-4 h-7 rounded-md text-xs font-medium cursor-pointer transition-all duration-300 flex items-center justify-center whitespace-nowrap"
+            class="px-4 h-7 rounded-md text-xs font-medium cursor-pointer transition-colors duration-200 flex items-center justify-center whitespace-nowrap"
             :class="
               currentCategory === tab
                 ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
@@ -44,7 +44,7 @@
           class="flex items-center bg-gray-100 dark:bg-neutral-800 rounded-lg p-1 h-9 flex-shrink-0"
         >
           <button
-            class="px-3 h-7 rounded-md text-xs font-medium transition-all duration-300"
+            class="px-3 h-7 rounded-md text-xs font-medium transition-colors duration-200"
             :class="
               currentTab === 'local'
                 ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
@@ -55,7 +55,7 @@
             {{ t('history.tabs.local') }}
           </button>
           <button
-            class="px-3 h-7 rounded-md text-xs font-medium transition-all duration-300"
+            class="px-3 h-7 rounded-md text-xs font-medium transition-colors duration-200"
             :class="
               currentTab === 'cloud'
                 ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
@@ -78,7 +78,7 @@
             <div
               v-for="(item, index) in displayList"
               :key="item.id"
-              class="group flex items-center justify-between rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors p-1"
+              class="group flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors p-1"
               :class="setAnimationClass('animate__fadeInUp')"
               :style="setAnimationDelay(index, 30)"
             >
@@ -95,7 +95,7 @@
                   {{ t('history.playCount', { count: item.count }) }}
                 </div>
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-all opacity-0 group-hover:opacity-100"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
                   v-show="currentTab === 'local'"
                   @click="handleDelMusic(item)"
                 >
@@ -113,7 +113,7 @@
               :item="item"
               :show-count="currentTab === 'local'"
               :show-delete="currentTab === 'local'"
-              class="rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+              class="rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
               :class="setAnimationClass('animate__fadeInUp')"
               :style="setAnimationDelay(index, 30)"
               @click="handlePlaylistClick(item)"
@@ -129,7 +129,7 @@
               :item="item"
               :show-count="currentTab === 'local'"
               :show-delete="currentTab === 'local'"
-              class="rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+              class="rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
               :class="setAnimationClass('animate__fadeInUp')"
               :style="setAnimationDelay(index, 30)"
               @click="handleAlbumClick(item)"
@@ -144,7 +144,7 @@
                 class="flex items-center bg-gray-100 dark:bg-neutral-800 rounded-lg p-1 w-fit h-8"
               >
                 <button
-                  class="px-3 h-6 rounded-md text-xs font-medium transition-all duration-300"
+                  class="px-3 h-6 rounded-md text-xs font-medium transition-colors duration-200"
                   :class="
                     currentPodcastSubTab === 'episodes'
                       ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
@@ -158,7 +158,7 @@
                   {{ t('history.podcastTabs.episodes') }}
                 </button>
                 <button
-                  class="px-3 h-6 rounded-md text-xs font-medium transition-all duration-300"
+                  class="px-3 h-6 rounded-md text-xs font-medium transition-colors duration-200"
                   :class="
                     currentPodcastSubTab === 'radios'
                       ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
@@ -178,7 +178,7 @@
               <div
                 v-for="(item, index) in displayList"
                 :key="item.id"
-                class="group flex items-center justify-between rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors p-1"
+                class="group flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors p-1"
                 :class="setAnimationClass('animate__fadeInUp')"
                 :style="setAnimationDelay(index, 30)"
               >
@@ -188,7 +188,7 @@
                   @play="handlePlayPodcast(item)"
                 />
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-all opacity-0 group-hover:opacity-100"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
                   @click="handleDelPodcast(item)"
                 >
                   <i class="ri-close-line text-lg"></i>
@@ -200,7 +200,7 @@
               <div
                 v-for="(item, index) in displayList"
                 :key="item.id"
-                class="group flex items-center justify-between rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                class="group flex items-center justify-between rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
                 :class="setAnimationClass('animate__fadeInUp')"
                 :style="setAnimationDelay(index, 30)"
               >
@@ -210,7 +210,7 @@
                   @click="handlePodcastRadioClick(item)"
                 />
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-all opacity-0 group-hover:opacity-100 mr-2"
+                  class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer transition-colors opacity-0 group-hover:opacity-100 mr-2"
                   @click="handleDelPodcastRadio(item)"
                 >
                   <i class="ri-close-line text-lg"></i>
@@ -221,7 +221,7 @@
 
           <div v-if="displayList.length === 0 && !loading" class="text-center py-12 text-gray-400">
             <div
-              class="w-20 h-20 mx-auto rounded-xl bg-gray-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
+              class="w-20 h-20 mx-auto rounded-lg bg-gray-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
             >
               <i class="ri-history-line text-3xl text-gray-300 dark:text-gray-600"></i>
             </div>
@@ -232,9 +232,9 @@
             <div
               v-for="i in 8"
               :key="i"
-              class="flex items-center gap-4 rounded-xl p-2 animate-pulse"
+              class="flex items-center gap-4 rounded-lg p-2 animate-pulse"
             >
-              <div class="h-12 w-12 rounded-xl bg-gray-200 dark:bg-neutral-800"></div>
+              <div class="h-12 w-12 rounded-lg bg-gray-200 dark:bg-neutral-800"></div>
               <div class="flex-1 space-y-2">
                 <div class="h-4 w-1/3 rounded bg-gray-200 dark:bg-neutral-800"></div>
                 <div class="h-3 w-1/4 rounded bg-gray-200 dark:bg-neutral-800"></div>
