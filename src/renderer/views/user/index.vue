@@ -471,7 +471,7 @@ const currentLoginType = computed(() => userStore.loginType);
     @apply flex-1 rounded-lg overflow-hidden relative bg-no-repeat h-full;
     @apply bg-gray-900 dark:bg-gray-800;
     border: 1px solid var(--qqm-border);
-    box-shadow: var(--qqm-shadow);
+    box-shadow: none;
 
     .page {
       @apply p-4 w-full z-10 flex flex-col h-full;
@@ -481,7 +481,7 @@ const currentLoginType = computed(() => userStore.loginType);
         rgba(12, 16, 22, 0.34) 42%,
         rgba(12, 16, 22, 0.5) 100%
       );
-      backdrop-filter: blur(10px) saturate(1.08);
+      backdrop-filter: blur(6px) saturate(1.02);
     }
     .title {
       @apply text-lg font-bold flex items-center justify-between;
@@ -521,8 +521,8 @@ const currentLoginType = computed(() => userStore.loginType);
       @apply rounded-lg;
       background: color-mix(in srgb, var(--qqm-surface) 64%, transparent);
       border: 1px solid var(--qqm-border);
-      box-shadow: var(--qqm-shadow);
-      backdrop-filter: blur(16px) saturate(1.06);
+      box-shadow: none;
+      backdrop-filter: blur(8px) saturate(1.02);
       height: calc(100% - 60px);
 
       .record-item {
@@ -532,7 +532,7 @@ const currentLoginType = computed(() => userStore.loginType);
         transition:
           background-color 180ms var(--qqm-ease),
           border-color 180ms var(--qqm-ease),
-          transform 180ms var(--qqm-ease);
+          color 180ms var(--qqm-ease);
 
         &:hover {
           background: color-mix(in srgb, var(--qqm-surface-muted) 72%, transparent);
@@ -560,8 +560,8 @@ const currentLoginType = computed(() => userStore.loginType);
   @apply mt-4 py-4 px-2 rounded-lg flex-1 overflow-hidden;
   background: color-mix(in srgb, var(--qqm-surface) 68%, transparent);
   border: 1px solid rgba(255, 255, 255, 0.55);
-  box-shadow: var(--qqm-shadow);
-  backdrop-filter: blur(16px) saturate(1.08);
+  box-shadow: none;
+  backdrop-filter: blur(8px) saturate(1.02);
 
   &-title {
     @apply text-lg;

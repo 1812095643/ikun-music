@@ -470,8 +470,8 @@ onMounted(() => {
       @apply rounded-lg p-6;
       background: color-mix(in srgb, var(--qqm-surface) 70%, transparent);
       border: 1px solid rgba(255, 255, 255, 0.58);
-      box-shadow: var(--qqm-shadow);
-      backdrop-filter: blur(18px) saturate(1.08);
+      box-shadow: none;
+      backdrop-filter: blur(8px) saturate(1.02);
       .custom-heatmap {
         @apply w-full;
       }
@@ -491,8 +491,7 @@ onMounted(() => {
 
           &:hover {
             border-color: rgba(30, 207, 115, 0.16);
-            box-shadow: 0 8px 20px rgba(20, 24, 31, 0.06);
-            transform: translateY(-1px);
+            background: color-mix(in srgb, var(--qqm-surface-muted) 78%, transparent);
           }
 
           .stat-icon {
@@ -653,8 +652,7 @@ onMounted(() => {
     @apply transition-colors duration-200;
 
     &:hover {
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--qqm-primary, #22c55e) 32%, transparent);
-      transform: translateY(-1px);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
     }
   }
 }
