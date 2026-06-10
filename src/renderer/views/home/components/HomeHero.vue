@@ -225,38 +225,66 @@
                 </div>
               </template>
               <template v-else>
-                <div
-                  v-for="i in 4"
-                  :key="`empty-${i}`"
-                  class="flex items-center justify-center bg-neutral-200/80 dark:bg-neutral-700/50"
-                >
-                  <i class="ri-play-list-2-line text-lg text-neutral-300 dark:text-neutral-600" />
+                <div class="col-span-2 row-span-2 flex h-full flex-col justify-center px-5">
+                  <div
+                    class="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                  >
+                    <i class="ri-play-list-2-line text-xl" />
+                  </div>
+                  <div class="h-2 w-24 rounded bg-primary/15" />
+                  <div class="mt-2 h-2 w-36 rounded bg-primary/10" />
                 </div>
               </template>
             </div>
             <!-- Overlay -->
             <div
-              class="absolute inset-0 bg-black/25 transition-colors duration-200 group-hover:bg-black/30"
+              :class="
+                hotPlaylists.length > 0
+                  ? 'absolute inset-0 bg-black/25 transition-colors duration-200 group-hover:bg-black/30'
+                  : 'absolute inset-0 bg-white/10 dark:bg-black/10'
+              "
             />
             <!-- Content -->
             <div class="relative flex h-full flex-col justify-between p-5">
               <span
-                class="inline-flex w-fit items-center gap-1 rounded-md bg-black/30 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-sm"
+                :class="[
+                  'inline-flex w-fit items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold',
+                  hotPlaylists.length > 0
+                    ? 'bg-black/30 text-white backdrop-blur-sm'
+                    : 'bg-primary/10 text-primary'
+                ]"
               >
                 <i class="ri-play-list-2-line" />
                 {{ t('comp.homeHero.hotPlaylists') }}
               </span>
               <div class="flex items-end justify-between gap-4">
                 <div>
-                  <h3 class="text-lg font-bold text-white">
+                  <h3
+                    :class="
+                      hotPlaylists.length > 0
+                        ? 'text-lg font-bold text-white'
+                        : 'text-lg font-bold text-neutral-900 dark:text-white'
+                    "
+                  >
                     {{ t('comp.homeHero.hotPlaylists') }}
                   </h3>
-                  <p class="mt-0.5 text-sm text-white/70">
+                  <p
+                    :class="
+                      hotPlaylists.length > 0
+                        ? 'mt-0.5 text-sm text-white/70'
+                        : 'mt-0.5 text-sm text-neutral-500 dark:text-neutral-400'
+                    "
+                  >
                     {{ t('comp.homeHero.discoverNewReleases') }}
                   </p>
                 </div>
                 <div
-                  class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-white/20 text-white backdrop-blur-sm transition-colors duration-200 hover:bg-white/30"
+                  :class="[
+                    'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-colors duration-200',
+                    hotPlaylists.length > 0
+                      ? 'bg-white/20 text-white backdrop-blur-sm hover:bg-white/30'
+                      : 'bg-primary/10 text-primary hover:bg-primary/15'
+                  ]"
                 >
                   <i class="ri-arrow-right-s-line text-xl" />
                 </div>
