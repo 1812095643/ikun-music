@@ -520,7 +520,7 @@ const setMusicFull = () => {
 }
 
 .like-active {
-  @apply text-red-500 hover:text-red-600 !important;
+  @apply text-primary hover:text-primary !important;
 }
 
 .volume-slider-wrapper {

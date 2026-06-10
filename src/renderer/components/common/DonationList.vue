@@ -97,7 +97,7 @@
                 <span class="font-bold text-gray-900 dark:text-gray-100 truncate text-sm">
                   {{ donor.name }}
                 </span>
-                <span class="text-xs font-mono text-primary/80 bg-primary/5 px-1.5 py-0.5 rounded">
+                <span class="rounded bg-primary/5 px-1.5 py-0.5 font-mono text-xs text-primary/80">
                   ¥{{ donor.amount }}
                 </span>
               </div>
@@ -141,7 +141,7 @@ const PAGE_SIZE = 40;
 const FIRST_BATCH = 16;
 
 const AVATAR_COLORS = [
-  'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
+  'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
   'bg-primary/15 text-primary dark:bg-primary/20 dark:text-primary',
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',

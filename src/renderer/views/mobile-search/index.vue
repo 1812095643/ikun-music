@@ -385,7 +385,7 @@ onMounted(() => {
   @apply w-5 text-center text-sm font-medium text-gray-400;
 
   &.top {
-    @apply text-red-500;
+    @apply text-primary;
   }
 }
 

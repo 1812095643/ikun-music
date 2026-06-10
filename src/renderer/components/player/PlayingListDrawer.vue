@@ -235,7 +235,7 @@ const handleDeleteSong = (song: SongResult) => {
     .action-btn {
       @apply text-gray-500 dark:text-gray-400;
       &:hover {
-        @apply text-red-500 dark:text-red-400;
+        @apply text-neutral-700 dark:text-neutral-200;
       }
     }
   }

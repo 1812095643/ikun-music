@@ -271,7 +271,8 @@
                           taskStatus === 'processing' ||
                           taskStatus === 'pending' ||
                           taskStatus === 'success',
-                        'bg-red-50 text-red-500': taskStatus === 'failed'
+                        'bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300':
+                          taskStatus === 'failed'
                       }"
                     >
                       <i
@@ -299,7 +300,7 @@
 
                   <div
                     v-if="taskStatus === 'failed'"
-                    class="bg-red-50 dark:bg-red-900/10 rounded-lg p-3 text-red-700 dark:text-red-400 text-sm"
+                    class="rounded-lg border border-neutral-100 bg-neutral-50 p-3 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900/70 dark:text-neutral-300"
                   >
                     {{ failReason }}
                   </div>

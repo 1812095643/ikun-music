@@ -132,7 +132,7 @@
                 class="action-btn-pill flex items-center gap-1.5 md:gap-2 px-3.5 md:px-5 py-1.5 md:py-2.5 rounded-lg font-semibold text-xs md:text-sm transition-colors duration-200 border"
                 :class="
                   isCollected
-                    ? 'bg-neutral-100 dark:bg-neutral-800 text-red-500 border-neutral-200 dark:border-neutral-700'
+                    ? 'bg-primary/10 dark:bg-primary/15 text-primary border-primary/20 dark:border-primary/25'
                     : 'bg-neutral-50 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800'
                 "
                 @click="toggleCollect"

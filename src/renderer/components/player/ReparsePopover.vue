@@ -78,7 +78,7 @@
       </div>
       <!-- 清除自定义音源 -->
       <div
-        class="text-red-500 text-sm flex items-center bg-light-200 dark:bg-dark-200 rounded-lg p-2 cursor-pointer"
+        class="flex cursor-pointer items-center rounded-lg bg-light-200 p-2 text-sm text-neutral-500 transition-colors hover:text-neutral-700 dark:bg-dark-200 dark:text-neutral-400 dark:hover:text-neutral-200"
         @click="clearCustomSource"
       >
         <div class="flex items-center justify-center w-6 h-6 mr-3 text-lg">
