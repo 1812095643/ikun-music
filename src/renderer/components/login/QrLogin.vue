@@ -195,7 +195,8 @@ onUnmounted(() => {
 }
 
 .login-title {
-  @apply text-2xl font-bold mb-6 text-white;
+  @apply mb-5 text-2xl font-bold;
+  color: #111827;
 }
 
 .qr-container {
@@ -256,7 +257,8 @@ onUnmounted(() => {
 }
 
 .text {
-  @apply mt-4 text-white text-xs transition-colors duration-200;
+  @apply mt-4 text-xs transition-colors duration-200;
+  color: #737373;
 
   &.expired {
     color: var(--qqm-primary, #22c55e);
@@ -271,7 +273,12 @@ onUnmounted(() => {
   @apply mt-3;
 
   .manual-refresh {
-    @apply text-neutral-300 hover:text-white text-xs;
+    @apply text-xs;
+    color: #8a8a8a;
+
+    &:hover {
+      color: var(--qqm-primary, #22c55e);
+    }
   }
 }
 </style>

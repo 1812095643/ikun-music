@@ -194,49 +194,81 @@ const handleLoginError = (error: string) => {
 .login-page {
   @apply flex flex-col items-center justify-center;
   @apply bg-light dark:bg-black;
+  min-height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-page::before {
+  content: '';
+  position: absolute;
+  inset: 8% 12% auto auto;
+  width: 360px;
+  height: 260px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.14), transparent 68%);
+  pointer-events: none;
 }
 
 .login-title {
-  @apply text-2xl font-bold mb-6 text-white;
+  @apply mb-5 text-2xl font-bold;
+  color: #111827;
 }
 
 .text {
-  @apply mt-4 text-white text-xs;
+  @apply mt-4 text-xs;
+  color: #737373;
 }
 
 .phone-login {
-  width: 350px;
-  height: 550px; /* 恢复原来的高度 */
-  @apply rounded-lg rounded-b-none bg-cover bg-no-repeat relative overflow-hidden;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='400' height='560' preserveAspectRatio='none' viewBox='0 0 400 560'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1066%26quot%3b)' fill='none'%3e%3crect width='400' height='560' x='0' y='0' fill='rgba(24%2c 106%2c 59%2c 1)'%3e%3c/rect%3e%3cpath d='M0%2c234.738C43.535%2c236.921%2c80.103%2c205.252%2c116.272%2c180.923C151.738%2c157.067%2c188.295%2c132.929%2c207.855%2c94.924C227.898%2c55.979%2c233.386%2c10.682%2c226.119%2c-32.511C218.952%2c-75.107%2c199.189%2c-115.793%2c167.469%2c-145.113C137.399%2c-172.909%2c92.499%2c-171.842%2c55.779%2c-189.967C8.719%2c-213.196%2c-28.344%2c-282.721%2c-78.217%2c-266.382C-128.725%2c-249.834%2c-111.35%2c-166.696%2c-143.781%2c-124.587C-173.232%2c-86.348%2c-244.72%2c-83.812%2c-255.129%2c-36.682C-265.368%2c9.678%2c-217.952%2c48.26%2c-190.512%2c87.004C-167.691%2c119.226%2c-140.216%2c145.431%2c-109.013%2c169.627C-74.874%2c196.1%2c-43.147%2c232.575%2c0%2c234.738' fill='%23114b2a'%3e%3c/path%3e%3cpath d='M400 800.9010000000001C443.973 795.023 480.102 765.6 513.011 735.848 541.923 709.71 561.585 676.6320000000001 577.037 640.85 592.211 605.712 606.958 568.912 601.458 531.035 595.962 493.182 568.394 464.36400000000003 546.825 432.775 522.317 396.88300000000004 507.656 347.475 466.528 333.426 425.366 319.366 384.338 352.414 342.111 362.847 297.497 373.869 242.385 362.645 211.294 396.486 180.212 430.318 192.333 483.83299999999997 188.872 529.644 185.656 572.218 178.696 614.453 191.757 655.101 205.885 699.068 227.92 742.4110000000001 265.75 768.898 304.214 795.829 353.459 807.1220000000001 400 800.9010000000001' fill='%231f894c'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1066'%3e%3crect width='400' height='560' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
+  position: relative;
+  width: min(460px, calc(100vw - 48px));
+  height: 550px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--qqm-border) 78%, transparent);
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, rgba(34, 197, 94, 0.055), transparent 42%),
+    color-mix(in srgb, #ffffff 96%, var(--qqm-primary, #22c55e) 4%);
   box-shadow: none;
   animation-duration: 0.35s;
 
   .bg {
-    @apply absolute w-full h-full bg-light-100 dark:bg-dark-100 opacity-20;
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, transparent 0%, rgba(34, 197, 94, 0.055) 100%),
+      radial-gradient(circle at 82% 22%, rgba(34, 197, 94, 0.16), transparent 32%);
+    opacity: 1;
   }
 
   .content {
-    @apply absolute w-full h-full p-4 flex flex-col items-center justify-center text-center;
+    @apply absolute flex h-full w-full flex-col items-center text-center;
+    padding: 16px 18px 22px;
 
     .login-tabs {
-      @apply flex mb-6 bg-black bg-opacity-15 rounded-lg p-1;
-      width: 320px;
+      @apply mb-8 flex rounded-lg p-1;
+      width: min(320px, 100%);
+      border: 1px solid color-mix(in srgb, var(--qqm-border) 72%, transparent);
+      background: rgba(255, 255, 255, 0.78);
       animation-duration: 0.25s;
       animation-delay: 0.05s;
 
       .tab-item {
-        @apply flex-1 py-2 px-3 text-sm text-white text-center cursor-pointer rounded-lg transition-colors duration-200;
-        @apply hover:bg-white hover:bg-opacity-10;
+        @apply flex-1 cursor-pointer rounded-lg px-3 py-2 text-center text-sm transition-colors duration-200;
+        color: #525252;
         transform: translateY(0);
 
         &:hover {
+          color: var(--qqm-primary, #22c55e);
+          background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, transparent);
           transform: translateY(0);
         }
 
         &.active {
-          @apply text-white font-medium;
+          @apply font-medium;
           background-color: var(--qqm-primary, #22c55e);
+          color: #ffffff;
           transform: translateY(0);
           box-shadow: none;
         }
@@ -244,8 +276,9 @@ const handleLoginError = (error: string) => {
     }
 
     .login-content {
-      @apply flex-1 flex items-center justify-center;
+      @apply flex flex-1 items-center justify-center;
       min-height: 300px;
+      width: 100%;
     }
 
     .phone {
@@ -254,18 +287,17 @@ const handleLoginError = (error: string) => {
       max-width: 300px;
 
       &-page {
-        @apply bg-white/95 dark:bg-black/95 border border-neutral-100 dark:border-neutral-800;
+        @apply overflow-hidden rounded-lg;
         width: 250px;
-        @apply rounded-lg overflow-hidden;
         margin: 0 auto;
+        border: 1px solid color-mix(in srgb, var(--qqm-border) 78%, transparent);
+        background: rgba(255, 255, 255, 0.95);
       }
 
       &-input {
         height: 40px;
-        @apply w-full px-4 outline-none;
-        @apply text-neutral-900 dark:text-neutral-100 bg-transparent;
-        @apply border-b border-neutral-200 dark:border-neutral-800;
-        @apply placeholder-neutral-400 dark:placeholder-neutral-500;
+        @apply w-full bg-transparent px-4 outline-none;
+        @apply border-b border-neutral-200 text-neutral-900 placeholder-neutral-400;
         transition:
           border-color 0.2s ease,
           color 0.2s ease,
@@ -281,7 +313,7 @@ const handleLoginError = (error: string) => {
     .btn-login {
       width: 250px;
       height: 40px;
-      @apply mt-10 text-white rounded-lg;
+      @apply mt-9 rounded-lg text-white;
       @apply transition-colors duration-200;
       background-color: var(--qqm-primary, #22c55e);
       transform: translateY(0);
@@ -289,6 +321,43 @@ const handleLoginError = (error: string) => {
       &:hover {
         transform: translateY(0);
         box-shadow: none;
+      }
+    }
+  }
+}
+
+.dark {
+  .login-title {
+    color: #f5f5f5;
+  }
+
+  .text {
+    color: #a3a3a3;
+  }
+
+  .phone-login {
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, transparent);
+    background:
+      linear-gradient(135deg, rgba(34, 197, 94, 0.08), transparent 42%),
+      color-mix(in srgb, #050505 92%, var(--qqm-primary, #22c55e) 8%);
+
+    .content {
+      .login-tabs {
+        border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, transparent);
+        background: rgba(18, 18, 18, 0.88);
+
+        .tab-item {
+          color: #a3a3a3;
+        }
+      }
+
+      .phone-page {
+        border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, transparent);
+        background: rgba(10, 10, 10, 0.95);
+      }
+
+      .phone-input {
+        @apply border-neutral-800 text-neutral-100 placeholder-neutral-500;
       }
     }
   }

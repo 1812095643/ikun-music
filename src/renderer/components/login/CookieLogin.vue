@@ -140,11 +140,13 @@ onBeforeUnmount(() => {
 }
 
 .login-title {
-  @apply text-2xl font-bold mb-6 text-white;
+  @apply mb-5 text-2xl font-bold;
+  color: #111827;
 }
 
 .text {
-  @apply mt-4 text-white text-xs;
+  @apply mt-4 text-xs;
+  color: #737373;
 }
 
 .phone-page {
@@ -209,8 +211,22 @@ onBeforeUnmount(() => {
 .btn-auto-cookie {
   width: 250px;
   height: 40px;
-  @apply mt-4 text-white rounded-lg;
+  @apply mt-4 rounded-lg;
   @apply transition-colors duration-200;
-  background-color: var(--qqm-primary, #22c55e);
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, transparent);
+  background: color-mix(in srgb, #ffffff 94%, var(--qqm-primary, #22c55e) 6%);
+  color: color-mix(in srgb, var(--qqm-primary, #22c55e) 72%, #262626 28%);
+}
+
+.btn-auto-cookie:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 34%, transparent);
+  background: color-mix(in srgb, #ffffff 88%, var(--qqm-primary, #22c55e) 12%);
+  color: var(--qqm-primary, #22c55e);
+}
+
+.dark .btn-auto-cookie {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
+  background: color-mix(in srgb, #050505 86%, var(--qqm-primary, #22c55e) 14%);
+  color: color-mix(in srgb, var(--qqm-primary, #22c55e) 82%, #f5f5f5 18%);
 }
 </style>

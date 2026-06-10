@@ -111,11 +111,13 @@ defineExpose({
   width: 250px;
 
   .login-title {
-    @apply text-2xl font-bold mb-6 text-white;
+    @apply mb-5 text-2xl font-bold;
+    color: #111827;
   }
 
   .text {
-    @apply mt-4 text-white text-xs;
+    @apply mt-4 text-xs;
+    color: #737373;
   }
 
   .warning-text {
