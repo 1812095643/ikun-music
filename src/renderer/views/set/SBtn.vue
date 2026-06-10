@@ -1,7 +1,7 @@
 <template>
   <button
     :disabled="disabled || loading"
-    class="inline-flex items-center justify-center gap-1.5 rounded-lg px-3.5 py-1.5 text-sm font-medium transition-colors duration-200 select-none disabled:opacity-50 disabled:cursor-not-allowed active:translate-y-0"
+    class="inline-flex items-center justify-center gap-1.5 rounded-lg border px-3.5 py-1.5 text-sm font-medium transition-colors duration-200 select-none disabled:cursor-not-allowed disabled:opacity-50 active:translate-y-0"
     :class="variantClass"
     @click="$emit('click', $event)"
   >
@@ -33,13 +33,13 @@ defineEmits<{ click: [event: MouseEvent] }>();
 const variantClass = computed(() => {
   switch (props.variant) {
     case 'primary':
-      return 'bg-primary text-white hover:bg-primary/85';
+      return 'border-primary bg-primary text-white hover:bg-primary/85';
     case 'danger':
-      return 'bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-950/40 dark:text-red-400 dark:hover:bg-red-950/60';
+      return 'border-neutral-200 bg-white text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200';
     case 'ghost':
-      return 'bg-transparent text-neutral-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800';
+      return 'border-transparent bg-transparent text-neutral-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800';
     default:
-      return 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700';
+      return 'border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800';
   }
 });
 </script>

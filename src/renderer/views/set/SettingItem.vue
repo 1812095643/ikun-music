@@ -1,6 +1,6 @@
 <template>
   <div
-    class="setting-item flex items-center justify-between p-4 transition-colors bg-transparent text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 last:border-b-0 hover:bg-gray-50 hover:dark:bg-white/5"
+    class="setting-item flex items-center justify-between px-4 py-3.5 transition-colors bg-transparent text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 last:border-b-0 hover:bg-gray-50/80 hover:dark:bg-white/5"
     :class="[
       // 移动端垂直布局
       { 'max-md:flex-col max-md:items-start max-md:gap-3': !inline },
@@ -14,7 +14,7 @@
   >
     <!-- 左侧：标题和描述 -->
     <div class="flex-1 min-w-0 mr-4">
-      <div class="text-base font-medium mb-0.5">
+      <div class="mb-0.5 text-[15px] font-medium">
         <slot name="title">{{ title }}</slot>
       </div>
       <div

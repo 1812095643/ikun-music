@@ -1,7 +1,7 @@
 <template>
-  <div :id="id" :ref="setRef" class="mb-8 scroll-mt-20">
+  <div :id="id" :ref="setRef" class="mb-7 scroll-mt-20">
     <!-- 分组标题 -->
-    <div class="text-xl font-bold mb-4 text-gray-900 dark:text-white px-1">
+    <div class="mb-3 px-1 text-lg font-semibold text-gray-900 dark:text-white">
       <slot name="title">{{ title }}</slot>
     </div>
 

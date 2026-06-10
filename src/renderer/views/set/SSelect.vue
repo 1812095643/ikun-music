@@ -6,7 +6,7 @@
       :class="
         isOpen
           ? 'border-primary bg-white dark:bg-neutral-900'
-          : 'border-neutral-200 bg-neutral-50 hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-800 dark:hover:border-neutral-600'
+          : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
       "
       @click="toggle"
     >
@@ -32,7 +32,7 @@
     >
       <div
         v-if="isOpen"
-        class="absolute z-50 mt-1.5 w-full min-w-[160px] overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900"
+        class="absolute z-50 mt-1.5 w-full min-w-[160px] overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900"
         :class="dropdownPosition === 'top' ? 'bottom-full mb-1.5 mt-0' : ''"
       >
         <div class="max-h-[240px] overflow-y-auto py-1">
@@ -43,7 +43,7 @@
             :class="
               opt.value === modelValue
                 ? 'bg-primary/10 text-primary font-medium'
-                : 'text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800'
+                : 'text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800/80'
             "
             @click="select(opt.value)"
           >
