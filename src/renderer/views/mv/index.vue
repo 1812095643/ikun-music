@@ -43,7 +43,7 @@
               class="absolute inset-0 bg-transparent group-hover:bg-black/40 transition-colors duration-300 flex items-center justify-center"
             >
               <div
-                class="play-icon w-11 h-11 rounded-full bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-opacity duration-200 shadow-sm"
+                class="play-icon w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-sm"
               >
                 <i class="ri-play-fill text-2xl text-neutral-900 ml-1"></i>
               </div>

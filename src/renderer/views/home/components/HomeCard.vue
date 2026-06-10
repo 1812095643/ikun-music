@@ -13,7 +13,7 @@
       <div
         class="home-polished-overlay absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       >
-        <div class="home-polished-play flex h-11 w-11 items-center justify-center rounded-full">
+        <div class="home-polished-play flex h-10 w-10 items-center justify-center rounded-lg">
           <slot name="play-icon">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -32,7 +32,7 @@
       <!-- 右上角额外信息 (例如播放量) -->
       <div
         v-if="$slots.extra"
-        class="home-polished-extra absolute top-2 right-2 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] text-white"
+        class="home-polished-extra absolute top-2 right-2 flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] text-white"
       >
         <slot name="extra" />
       </div>

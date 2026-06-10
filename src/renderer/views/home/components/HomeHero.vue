@@ -3,7 +3,7 @@
     <!-- Skeleton Loading -->
     <div v-if="loading" class="space-y-4">
       <div class="flex gap-1.5 overflow-hidden md:hidden">
-        <div v-for="i in 6" :key="i" class="h-9 w-20 flex-shrink-0 skeleton-shimmer rounded-full" />
+        <div v-for="i in 6" :key="i" class="h-9 w-20 flex-shrink-0 skeleton-shimmer rounded-lg" />
       </div>
       <div class="hero-grid grid gap-3">
         <div class="skeleton-shimmer rounded-lg" style="height: 160px" />
@@ -18,7 +18,7 @@
         <button
           v-for="(item, index) in quickNavItems"
           :key="item.key"
-          class="nav-chip flex flex-shrink-0 items-center gap-1.5 rounded-full px-3.5 py-[7px] text-[13px] font-medium transition-colors duration-200 hover:text-neutral-900 dark:hover:text-neutral-100"
+          class="nav-chip flex flex-shrink-0 items-center gap-1.5 rounded-lg px-3.5 py-[7px] text-[13px] font-medium transition-colors duration-200 hover:text-neutral-900 dark:hover:text-neutral-100"
           :class="[
             item.active
               ? 'bg-primary text-white'
@@ -94,7 +94,7 @@
                   </div>
                 </div>
                 <button
-                  class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-white/90 text-neutral-900 shadow-sm transition-colors duration-200 hover:bg-white"
+                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-white/90 text-neutral-900 shadow-sm transition-colors duration-200 hover:bg-white"
                   @click.stop="playDayRecommend"
                 >
                   <i class="ri-play-fill ml-0.5 text-xl" />
@@ -164,14 +164,14 @@
                   <!-- Playback Controls -->
                   <div class="flex items-center gap-3">
                     <button
-                      class="flex h-8 w-8 items-center justify-center rounded-full text-white/60 transition-colors hover:text-white"
+                      class="flex h-8 w-8 items-center justify-center rounded-lg text-white/60 transition-colors hover:text-white"
                       :title="t('comp.homeHero.fmTrash')"
                       @click.stop="handleFmTrash"
                     >
                       <i class="ri-thumb-down-line text-lg" />
                     </button>
                     <button
-                      class="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-white transition-colors duration-200 hover:bg-white/30"
+                      class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20 text-white transition-colors duration-200 hover:bg-white/30"
                       @click.stop="handleFmPlay"
                     >
                       <i
@@ -180,7 +180,7 @@
                       />
                     </button>
                     <button
-                      class="flex h-8 w-8 items-center justify-center rounded-full text-white/60 transition-colors hover:text-white"
+                      class="flex h-8 w-8 items-center justify-center rounded-lg text-white/60 transition-colors hover:text-white"
                       :title="t('comp.homeHero.fmNext')"
                       @click.stop="handleFmNext"
                     >
@@ -254,7 +254,7 @@
                   </p>
                 </div>
                 <div
-                  class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors duration-200 hover:bg-white/30"
+                  class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-white/20 text-white backdrop-blur-sm transition-colors duration-200 hover:bg-white/30"
                 >
                   <i class="ri-arrow-right-s-line text-xl" />
                 </div>

@@ -75,7 +75,7 @@
                     />
                     <button
                       v-if="linkInputs.length > 1"
-                      class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
                       @click="removeLinkRow(index)"
                     >
                       <i class="ri-delete-bin-line"></i>
@@ -134,7 +134,7 @@
                     />
                     <button
                       v-if="localMetadata.length > 1"
-                      class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
+                      class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
                       @click="removeMetadataRow(index)"
                     >
                       <i class="ri-delete-bin-line"></i>
@@ -199,7 +199,7 @@
                 >
                   <div class="flex items-center gap-3">
                     <div
-                      class="w-10 h-10 rounded-full bg-white dark:bg-white/10 flex items-center justify-center text-lg"
+                      class="w-10 h-10 rounded-lg bg-white dark:bg-white/10 flex items-center justify-center text-lg"
                       :class="importToStarPlaylist ? 'text-primary' : 'text-gray-400'"
                     >
                       <i class="ri-heart-3-fill" v-if="importToStarPlaylist"></i>
@@ -210,7 +210,7 @@
                     }}</span>
                   </div>
                   <div
-                    class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors"
+                    class="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-colors"
                     :class="
                       importToStarPlaylist
                         ? 'border-primary bg-primary'
@@ -270,7 +270,7 @@
                 <div class="relative pt-2">
                   <div class="flex items-center gap-4 mb-4">
                     <div
-                      class="w-12 h-12 rounded-full flex items-center justify-center text-2xl transition-colors"
+                      class="w-10 h-10 rounded-lg flex items-center justify-center text-2xl transition-colors"
                       :class="{
                         'bg-primary/10 text-primary':
                           taskStatus === 'processing' ||

@@ -63,7 +63,7 @@
             class="play-overlay absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 opacity-0 backdrop-blur-0 transition-colors duration-200 group-hover:bg-black/10 group-hover:opacity-100"
           >
             <div
-              class="play-button flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-full bg-white shadow-sm transition-colors duration-200"
+              class="play-button flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-lg bg-white shadow-sm transition-colors duration-200"
             >
               <i class="iconfont icon-playfill text-lg md:text-2xl text-neutral-900 ml-0.5" />
             </div>
@@ -71,7 +71,7 @@
 
           <!-- Recommended Badge -->
           <div
-            class="badge absolute top-3 right-3 rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white"
+            class="badge absolute top-3 right-3 rounded-md bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white"
           >
             {{ t('comp.dailyRecommend.badge') }}
           </div>
