@@ -49,7 +49,7 @@
                   <div class="radio-info flex-1 text-center md:text-left">
                     <div class="radio-badge mb-2 md:mb-3">
                       <span
-                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
+                        class="podcast-radio-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-primary text-xs font-semibold uppercase tracking-wider"
                       >
                         <i class="ri-radio-line text-sm" />
                         {{ currentRadio.category }}
@@ -103,7 +103,7 @@
                 <div class="flex items-center gap-3">
                   <!-- Play All Button -->
                   <button
-                    class="play-all-btn flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-colors duration-200"
+                    class="qqm-primary-button play-all-btn flex items-center gap-2 px-5 py-2.5 rounded-lg text-white font-semibold text-sm transition-colors duration-200"
                     @click="handlePlayAll"
                   >
                     <i class="iconfont icon-playfill text-lg" />
@@ -116,7 +116,7 @@
                     :class="
                       isSubscribed
                         ? 'podcast-tab-active text-neutral-700 dark:text-neutral-200'
-                        : 'bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20'
+                        : 'podcast-subscribe-idle text-primary'
                     "
                     @click="handleSubscribe"
                   >
@@ -377,5 +377,27 @@ button {
 .podcast-cover-surface {
   border: 1px solid var(--qqm-border);
   background: var(--qqm-surface);
+}
+
+.podcast-radio-badge,
+.podcast-subscribe-idle {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.qqm-primary-button {
+  background: linear-gradient(
+    180deg,
+    var(--qqm-primary, #22c55e),
+    var(--qqm-primary-strong, #16a34a)
+  );
+}
+
+.qqm-primary-button:hover:not(:disabled) {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--qqm-primary, #22c55e) 92%, white),
+    var(--qqm-primary-strong, #16a34a)
+  );
 }
 </style>

@@ -60,7 +60,7 @@
                 <div class="playlist-info flex-1 text-center md:text-left">
                   <div class="playlist-badge mb-3">
                     <span
-                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/10 dark:bg-primary/15 text-primary text-xs font-semibold uppercase tracking-wider"
+                      class="music-list-badge inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-primary text-xs font-semibold uppercase tracking-wider"
                     >
                       {{ isAlbum ? '专辑' : '歌单' }}
                     </span>
@@ -124,7 +124,7 @@
             <div class="flex items-center gap-3">
               <!-- Play All Button -->
               <button
-                class="play-all-btn flex items-center gap-1.5 md:gap-2 px-3.5 md:px-5 py-1.5 md:py-2 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-xs md:text-sm transition-colors duration-200"
+                class="qqm-primary-button play-all-btn flex items-center gap-1.5 md:gap-2 px-3.5 md:px-5 py-1.5 md:py-2 rounded-lg text-white font-semibold text-xs md:text-sm transition-colors duration-200"
                 @click="handlePlayAll"
               >
                 <i class="ri-play-circle-line text-base md:text-lg" />
@@ -174,7 +174,7 @@
                   {{ t('common.selectAll') }}
                 </n-checkbox>
                 <button
-                  class="px-4 py-1.5 rounded-md bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors"
+                  class="qqm-subtle-button px-4 py-1.5 rounded-md text-primary text-xs font-bold transition-colors"
                   :disabled="selectedSongs.length === 0 || isDownloading"
                   @click="handleBatchDownload"
                 >
@@ -182,7 +182,7 @@
                   {{ t('favorite.download', { count: selectedSongs.length }) }}
                 </button>
                 <button
-                  class="px-4 py-1.5 rounded-md bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors"
+                  class="qqm-subtle-button px-4 py-1.5 rounded-md text-primary text-xs font-bold transition-colors"
                   :disabled="selectedSongs.length === 0"
                   @click="handleAddToPlaylist"
                 >
@@ -1081,5 +1081,31 @@ onMounted(checkCollectionStatus);
 
 .music-hero-mask {
   background: color-mix(in srgb, var(--qqm-bg, #f7f8fa) 98%, transparent);
+}
+
+.music-list-badge,
+.qqm-subtle-button {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.qqm-primary-button {
+  background: linear-gradient(
+    180deg,
+    var(--qqm-primary, #22c55e),
+    var(--qqm-primary-strong, #16a34a)
+  );
+}
+
+.qqm-primary-button:hover:not(:disabled) {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--qqm-primary, #22c55e) 92%, white),
+    var(--qqm-primary-strong, #16a34a)
+  );
+}
+
+.qqm-subtle-button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 9%, var(--qqm-surface));
 }
 </style>

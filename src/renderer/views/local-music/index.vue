@@ -19,7 +19,7 @@
               </p>
             </div>
             <div
-              class="hidden md:flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary"
+              class="local-header-icon hidden md:flex h-10 w-10 items-center justify-center rounded-lg text-primary"
             >
               <i class="ri-folder-music-line text-xl" />
             </div>
@@ -49,7 +49,7 @@
               <!-- 播放全部按钮 -->
               <button
                 v-if="filteredList.length > 0"
-                class="action-btn-pill flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-colors bg-primary text-white hover:bg-primary/90"
+                class="qqm-primary-button flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-colors text-white"
                 @click="handlePlayAll"
               >
                 <i class="ri-play-fill text-lg" />
@@ -90,9 +90,7 @@
 
         <!-- 扫描进度提示 -->
         <section v-if="localMusicStore.scanning" class="page-padding-x mt-6">
-          <div
-            class="flex items-center gap-4 p-4 rounded-lg bg-primary/5 dark:bg-primary/10 border border-primary/15"
-          >
+          <div class="local-scan-panel flex items-center gap-4 p-4 rounded-lg">
             <n-spin size="small" />
             <div>
               <p class="text-sm font-medium text-neutral-900 dark:text-neutral-100">
@@ -115,7 +113,7 @@
             <i class="ri-folder-music-fill text-5xl mb-4 text-neutral-200 dark:text-neutral-800" />
             <p class="text-neutral-400">{{ t('localMusic.emptyState') }}</p>
             <button
-              class="mt-6 px-6 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
+              class="qqm-primary-button mt-6 px-6 py-2 rounded-lg text-white text-sm font-medium transition-colors"
               @click="handleAddFolder"
             >
               <i class="ri-folder-add-line mr-2" />
@@ -162,7 +160,7 @@
               }}</span>
             </div>
             <button
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-primary hover:bg-primary/5 dark:hover:text-primary dark:hover:bg-primary/10 transition-colors flex-shrink-0 ml-2"
+              class="local-remove-button w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 transition-colors flex-shrink-0 ml-2"
               @click="handleRemoveFolder(folder)"
             >
               <i class="ri-delete-bin-line" />
@@ -370,5 +368,32 @@ onMounted(async () => {
 
 .local-music-page {
   background: var(--qqm-bg, #f7f8fa);
+}
+
+.local-header-icon,
+.local-scan-panel {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.qqm-primary-button {
+  background: linear-gradient(
+    180deg,
+    var(--qqm-primary, #22c55e),
+    var(--qqm-primary-strong, #16a34a)
+  );
+}
+
+.qqm-primary-button:hover:not(:disabled) {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--qqm-primary, #22c55e) 92%, white),
+    var(--qqm-primary-strong, #16a34a)
+  );
+}
+
+.local-remove-button:hover {
+  color: var(--qqm-primary, #22c55e);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface));
 }
 </style>

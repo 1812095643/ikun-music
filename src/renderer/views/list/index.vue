@@ -52,7 +52,7 @@
 
             <!-- Play Count Badge -->
             <div
-              class="absolute top-3 right-3 px-2 py-1 rounded-md bg-neutral-950/70 text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              class="playlist-count-badge absolute top-3 right-3 px-2 py-1 rounded-md text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             >
               <i class="ri-play-fill"></i>
               {{ formatNumber(item.playCount) }}
@@ -251,5 +251,11 @@ watch(
 .list-card:hover .list-cover-surface {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.playlist-count-badge {
+  border: 1px solid color-mix(in srgb, #ffffff 14%, transparent);
+  background: color-mix(in srgb, #0f172a 44%, transparent);
+  backdrop-filter: blur(8px) saturate(1.06);
 }
 </style>

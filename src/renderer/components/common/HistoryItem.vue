@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center gap-3 px-2 py-2 mb-1 rounded-lg cursor-pointer transition-colors duration-200 hover:bg-primary/5 dark:hover:bg-primary/10"
+    class="history-item-row flex items-center gap-3 px-2 py-2 mb-1 rounded-lg cursor-pointer transition-colors duration-200"
     @click="$emit('click')"
   >
     <n-image
@@ -23,7 +23,7 @@
     </div>
     <div
       v-if="showDelete"
-      class="cursor-pointer rounded-lg border w-8 h-8 flex flex-shrink-0 justify-center items-center border-neutral-300 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 hover:border-neutral-400 hover:text-neutral-700 dark:hover:border-neutral-500 dark:hover:text-neutral-200 transition-colors duration-200"
+      class="history-delete-button cursor-pointer rounded-lg w-8 h-8 flex flex-shrink-0 justify-center items-center text-neutral-500 dark:text-neutral-400 transition-colors duration-200"
       @click.stop="$emit('delete')"
     >
       <i class="iconfont icon-close" />
@@ -46,3 +46,24 @@ defineEmits<{
   delete: [];
 }>();
 </script>
+
+<style scoped>
+.history-item-row:hover {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface, #ffffff));
+}
+
+.history-delete-button {
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  background: var(--qqm-surface, #ffffff);
+}
+
+.history-delete-button:hover {
+  color: var(--qqm-primary, #22c55e);
+  border-color: color-mix(
+    in srgb,
+    var(--qqm-primary, #22c55e) 24%,
+    var(--qqm-border, rgba(15, 23, 42, 0.08))
+  );
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface, #ffffff));
+}
+</style>
