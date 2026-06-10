@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="artist-detail-page h-full w-full bg-white dark:bg-black transition-colors duration-200"
-  >
+  <div class="artist-detail-page h-full w-full transition-colors duration-200">
     <n-scrollbar ref="scrollbarRef" class="h-full">
       <div class="artist-detail-content w-full pb-32">
         <!-- Loading State -->
@@ -76,7 +74,7 @@
                       class="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/18 transition-colors duration-200"
                     >
                       <div
-                        class="play-icon w-10 h-10 rounded-lg bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer ring-1 ring-black/5"
+                        class="play-icon w-10 h-10 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
                         @click="handlePlayAll"
                       >
                         <i class="iconfont icon-playfill text-2xl text-neutral-900 ml-1" />
@@ -227,7 +225,7 @@
                 <Transition name="tab-indicator">
                   <div
                     v-if="activeTab === tab.value"
-                    class="absolute inset-0 rounded-md bg-white ring-1 ring-black/5 dark:bg-neutral-700 dark:ring-white/10"
+                    class="artist-tab-indicator absolute inset-0 rounded-md"
                   />
                 </Transition>
               </button>
@@ -312,7 +310,7 @@
                       class="play-overlay absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/15 group-hover:opacity-100 transition-opacity duration-200"
                     >
                       <div
-                        class="play-icon w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center transition-opacity duration-200"
+                        class="play-icon w-10 h-10 rounded-lg flex items-center justify-center transition-opacity duration-200"
                       >
                         <i class="iconfont icon-playfill text-xl text-neutral-900 ml-0.5" />
                       </div>
@@ -1015,6 +1013,11 @@ const formatSong = (item: any) => {
   background: color-mix(in srgb, #050505 90%, var(--qqm-primary, #22c55e) 8%);
 }
 
+.artist-tab-indicator {
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface, #fff));
+}
+
 /* Tab Indicator Animation */
 .tab-item {
   z-index: 1;
@@ -1149,5 +1152,15 @@ button:focus-visible {
 
 input:focus-visible {
   @apply outline-none ring-1 ring-primary/50;
+}
+
+.play-icon {
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 68%, #fff 32%);
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 90%, transparent);
+  color: var(--qqm-text, #1f2329);
+}
+
+.play-icon:hover {
+  color: var(--qqm-primary, #22c55e);
 }
 </style>

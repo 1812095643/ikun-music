@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="search-result-page h-full w-full bg-white dark:bg-black transition-colors duration-200"
-  >
+  <div class="search-result-page h-full w-full transition-colors duration-200">
     <n-scrollbar class="h-full" @scroll="handleScroll">
       <div class="search-result-content pb-32">
         <!-- Header Section -->

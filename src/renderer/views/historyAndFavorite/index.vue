@@ -1,5 +1,5 @@
 <template>
-  <div class="history-favorite-layout flex h-full gap-5 bg-white pb-4 pt-5 dark:bg-black">
+  <div class="history-favorite-layout flex h-full gap-5 pb-4 pt-5">
     <favorite class="flex-item" v-if="!isMobile" />
     <history-list class="flex-item" />
   </div>

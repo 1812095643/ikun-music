@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container h-full w-full bg-white dark:bg-black transition-colors duration-200">
+  <div class="home-container h-full w-full transition-colors duration-200">
     <n-scrollbar class="h-full">
       <div class="home-content w-full pb-32 page-padding">
         <!-- Hero Section -->
@@ -51,6 +51,7 @@ const router = useRouter();
 
 <style lang="scss" scoped>
 .home-container {
+  background: var(--qqm-bg, #f7f8fa);
   position: relative;
 }
 </style>

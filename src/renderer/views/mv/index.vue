@@ -42,7 +42,7 @@
               class="absolute inset-0 bg-transparent group-hover:bg-black/15 transition-colors duration-200 flex items-center justify-center"
             >
               <div
-                class="play-icon flex h-10 w-10 items-center justify-center rounded-full bg-white/95 opacity-0 ring-1 ring-black/5 transition-opacity duration-200 group-hover:opacity-100"
+                class="play-icon flex h-10 w-10 items-center justify-center rounded-full opacity-0 transition-opacity duration-200 group-hover:opacity-100"
               >
                 <i class="ri-play-fill text-2xl text-neutral-900 ml-1"></i>
               </div>
@@ -280,5 +280,15 @@ const isPrevDisabled = computed(() => currentIndex.value === 0);
 
 .mv-load-more {
   border-top: 1px solid var(--qqm-border);
+}
+
+.play-icon {
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 68%, #fff 32%);
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 90%, transparent);
+  color: var(--qqm-text, #1f2329);
+}
+
+.play-icon:hover {
+  color: var(--qqm-primary, #22c55e);
 }
 </style>

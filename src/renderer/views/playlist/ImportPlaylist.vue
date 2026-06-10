@@ -1,6 +1,6 @@
 <template>
   <div
-    class="playlist-import-page h-full w-full bg-white dark:bg-black transition-colors duration-200 overflow-hidden flex flex-col relative"
+    class="playlist-import-page h-full w-full transition-colors duration-200 overflow-hidden flex flex-col relative"
   >
     <!-- 头部区域 -->
     <div class="flex-shrink-0 z-10 page-padding pt-8 pb-4 relative">
@@ -545,5 +545,9 @@ onUnmounted(() => {
 .import-add-button:hover {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 38%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.playlist-import-page {
+  background: var(--qqm-bg, #f7f8fa);
 }
 </style>

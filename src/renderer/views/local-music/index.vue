@@ -1,5 +1,5 @@
 <template>
-  <div class="local-music-page h-full w-full bg-white dark:bg-black transition-colors duration-200">
+  <div class="local-music-page h-full w-full transition-colors duration-200">
     <n-scrollbar class="h-full">
       <div class="local-music-content pb-32">
         <!-- Page Header -->
@@ -366,5 +366,9 @@ onMounted(async () => {
   color: var(--qqm-primary, #22c55e);
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.local-music-page {
+  background: var(--qqm-bg, #f7f8fa);
 }
 </style>

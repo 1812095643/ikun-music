@@ -1,5 +1,5 @@
 <template>
-  <div class="download-page h-full w-full bg-white dark:bg-black transition-colors duration-200">
+  <div class="download-page h-full w-full transition-colors duration-200">
     <n-scrollbar class="h-full">
       <div class="download-content pb-32">
         <!-- Page Header -->
