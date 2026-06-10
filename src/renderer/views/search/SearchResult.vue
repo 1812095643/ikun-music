@@ -47,7 +47,7 @@
             <div class="flex items-center gap-3">
               <!-- Play All Button -->
               <button
-                class="play-all-btn flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-colors duration-200"
+                class="play-all-btn flex items-center gap-2 px-5 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-colors duration-200"
                 @click="handlePlayAll"
               >
                 <i class="ri-play-circle-line text-lg" />
@@ -108,7 +108,7 @@
         </section>
 
         <!-- Results Section -->
-        <section class="results-section page-padding-x mt-6">
+        <section class="results-section page-padding-x mt-4">
           <n-spin :show="searchDetailLoading">
             <div
               v-if="searchDetailLoading && !isLoadingMore"
@@ -544,7 +544,24 @@ watch(
 .search-action-bar,
 .search-load-more {
   border-bottom: 1px solid var(--qqm-border);
-  background: color-mix(in srgb, var(--qqm-surface) 94%, transparent);
+  background: color-mix(in srgb, var(--qqm-bg) 96%, transparent);
+}
+
+.results-section :deep(.song-results-list) {
+  overflow: visible !important;
+  border: 0 !important;
+  border-top: 1px solid var(--qqm-border) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+.results-section :deep(.song-item) {
+  border-bottom: 1px solid var(--qqm-border);
+  border-radius: 0;
+}
+
+.results-section :deep(.song-item:hover) {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, var(--qqm-bg));
 }
 
 .search-load-more {

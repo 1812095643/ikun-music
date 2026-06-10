@@ -3,17 +3,17 @@
     class="set-page h-full w-full bg-white dark:bg-black transition-colors duration-200 flex flex-col"
   >
     <!-- 顶部导航区 -->
-    <div class="settings-header flex-shrink-0 bg-white dark:bg-black z-10 page-padding pt-6 pb-2">
+    <div class="settings-header flex-shrink-0 z-10 page-padding pt-6 pb-3">
       <h1 class="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white mb-6">
         {{ t('common.settings') }}
       </h1>
 
       <n-scrollbar x-scrollable class="w-full">
-        <div class="flex items-center pl-2 pb-2 whitespace-nowrap">
+        <div class="settings-tabs flex items-center pb-1 whitespace-nowrap">
           <div
             v-for="section in navSections"
             :key="section.id"
-            class="py-1.5 px-3.5 mr-2 inline-block rounded-lg border cursor-pointer transition-colors duration-200 text-sm font-medium select-none"
+            class="setting-tab-button py-1.5 px-3.5 mr-2 inline-block rounded-lg border cursor-pointer transition-colors duration-200 text-sm font-medium select-none"
             :class="
               currentSection === section.id
                 ? 'border-primary/25 bg-primary/10 text-primary'
@@ -29,7 +29,7 @@
 
     <!-- 内容区域 -->
     <n-scrollbar class="flex-1">
-      <div class="w-full mx-auto pb-32 pt-6 page-padding">
+      <div class="settings-content w-full mx-auto pb-32 pt-5 page-padding">
         <div v-show="currentSection === 'basic'">
           <basic-tab />
         </div>
@@ -187,6 +187,22 @@ onMounted(() => {
 
 .settings-header {
   border-bottom: 1px solid var(--qqm-border);
+  background:
+    radial-gradient(
+      circle at 82% 0%,
+      color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, transparent),
+      transparent 28%
+    ),
+    var(--qqm-bg);
+}
+
+.settings-tabs {
+  gap: 2px;
+}
+
+.setting-tab-button {
+  border-color: var(--qqm-border);
+  background: var(--qqm-surface);
 }
 
 .settings-nav-item {
@@ -194,8 +210,34 @@ onMounted(() => {
   background: var(--qqm-surface);
 }
 
+.setting-tab-button:hover,
 .settings-nav-item:hover {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 26%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.settings-content :deep(.setting-section-surface) {
+  border: 1px solid var(--qqm-border);
+  border-radius: 10px;
+  background: var(--qqm-surface);
+  overflow: hidden;
+}
+
+.settings-content :deep(.setting-item) {
+  min-height: 72px;
+  border-bottom: 1px solid var(--qqm-border);
+}
+
+.settings-content :deep(.setting-item:hover) {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, var(--qqm-surface));
+}
+
+.settings-content :deep(.setting-section-surface > .setting-item:last-child) {
+  border-bottom: 0;
+}
+
+.settings-content :deep(.setting-item .text-\[15px\]) {
+  color: var(--qqm-text);
+  font-weight: 600;
 }
 </style>
