@@ -377,7 +377,7 @@ const openPlayListDrawer = () => {
 }
 
 .music-play-bar {
-  @apply h-[76px] w-full absolute bottom-0 left-0 flex items-center box-border px-6 py-2 pt-3;
+  @apply h-[76px] w-full absolute bottom-0 left-0 flex items-center box-border px-7 py-2 pt-3;
   @apply bg-light dark:bg-dark;
   border-top: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
   box-shadow: 0 -8px 24px rgba(20, 24, 31, 0.08);
@@ -395,7 +395,7 @@ const openPlayListDrawer = () => {
   }
 
   .music-content {
-    width: 260px;
+    width: 300px;
     min-width: 0;
     @apply ml-3;
 
@@ -417,8 +417,8 @@ const openPlayListDrawer = () => {
 }
 
 .music-buttons {
-  @apply mx-6 flex-1 flex justify-center items-center;
-  gap: 18px;
+  @apply mx-8 flex-1 flex justify-center items-center;
+  gap: 24px;
 
   .iconfont {
     @apply text-[24px] transition cursor-pointer;
@@ -445,7 +445,7 @@ const openPlayListDrawer = () => {
   }
 
   &-play {
-    @apply flex justify-center items-center w-12 h-12 rounded-full transition;
+    @apply flex justify-center items-center w-[52px] h-[52px] rounded-full transition;
     color: var(--qqm-primary-strong, #0dbd62);
     background: var(--qqm-primary-soft, rgba(30, 207, 115, 0.1));
     border: 1px solid rgba(30, 207, 115, 0.18);
@@ -459,6 +459,7 @@ const openPlayListDrawer = () => {
 
 .audio-volume {
   @apply flex items-center relative;
+  margin-right: 2px;
   &:hover {
     .volume-slider {
       @apply opacity-100 visible;
@@ -494,15 +495,40 @@ const openPlayListDrawer = () => {
 }
 
 .audio-button {
-  @apply flex items-center;
-  gap: 8px;
+  @apply flex items-center justify-end;
+  min-width: 370px;
+  gap: 18px;
+
+  &::before {
+    content: '';
+    width: 1px;
+    height: 24px;
+    margin-right: 4px;
+    background: var(--qqm-border, rgba(20, 24, 31, 0.08));
+  }
+
+  > * {
+    flex: 0 0 auto;
+  }
 
   .iconfont {
-    @apply text-[22px] transition cursor-pointer;
+    @apply text-[21px] transition cursor-pointer;
     color: var(--qqm-muted, rgba(107, 114, 128, 1));
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    transition:
+      color 180ms var(--qqm-ease, ease),
+      background-color 180ms var(--qqm-ease, ease),
+      transform 180ms var(--qqm-ease, ease);
 
     &:hover {
       color: var(--qqm-primary-strong, #0dbd62);
+      background: var(--qqm-primary-soft, rgba(30, 207, 115, 0.1));
+      transform: translateY(-1px);
     }
   }
 }
@@ -538,6 +564,12 @@ const openPlayListDrawer = () => {
   }
   .audio-button {
     @apply mx-0;
+    min-width: auto;
+    gap: 12px;
+
+    &::before {
+      display: none;
+    }
   }
   .music-buttons {
     @apply m-0;
