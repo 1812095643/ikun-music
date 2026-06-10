@@ -286,14 +286,14 @@
                     class="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin"
                   />
                   <span class="text-sm text-neutral-400 dark:text-neutral-500">{{
-                    t('common.loading') || 'Loading...'
+                    t('common.loading') || '加载中'
                   }}</span>
                 </div>
                 <div
                   v-else-if="!songPage.hasMore && songs.length > 0"
                   class="text-center text-sm text-neutral-400 dark:text-neutral-500"
                 >
-                  — {{ t('common.noMore') || 'No more' }} —
+                  — {{ t('common.noMore') || '没有更多了' }} —
                 </div>
               </div>
             </div>
@@ -355,14 +355,14 @@
                     class="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin"
                   />
                   <span class="text-sm text-neutral-400 dark:text-neutral-500">{{
-                    t('common.loading') || 'Loading...'
+                    t('common.loading') || '加载中'
                   }}</span>
                 </div>
                 <div
                   v-else-if="!albumPage.hasMore && albums.length > 0"
                   class="text-center text-sm text-neutral-400 dark:text-neutral-500"
                 >
-                  — {{ t('common.noMore') || 'No more' }} —
+                  — {{ t('common.noMore') || '没有更多了' }} —
                 </div>
               </div>
             </div>

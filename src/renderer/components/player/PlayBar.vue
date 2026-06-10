@@ -380,7 +380,7 @@ const openPlayListDrawer = () => {
   @apply h-[76px] w-full absolute bottom-0 left-0 flex items-center box-border px-7 py-2 pt-3;
   @apply bg-light dark:bg-dark;
   border-top: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  box-shadow: 0 -8px 24px rgba(20, 24, 31, 0.08);
+  box-shadow: 0 -6px 18px rgba(20, 24, 31, 0.06);
   z-index: 9999;
   animation-duration: 0.5s !important;
 
@@ -421,17 +421,15 @@ const openPlayListDrawer = () => {
   gap: 24px;
 
   .iconfont {
-    @apply text-[24px] transition cursor-pointer;
+    @apply text-[24px] transition-colors cursor-pointer;
     color: var(--qqm-muted, rgba(107, 114, 128, 1));
     line-height: 1;
     transition:
       color 180ms var(--qqm-ease, ease),
-      transform 180ms var(--qqm-ease, ease),
       background-color 180ms var(--qqm-ease, ease);
 
     &:hover {
       color: var(--qqm-primary-strong, #0dbd62);
-      transform: translateY(-1px);
     }
   }
 
@@ -445,14 +443,13 @@ const openPlayListDrawer = () => {
   }
 
   &-play {
-    @apply flex justify-center items-center w-[52px] h-[52px] rounded-full transition;
+    @apply flex justify-center items-center w-11 h-11 rounded-lg transition-colors;
     color: var(--qqm-primary-strong, #0dbd62);
     background: var(--qqm-primary-soft, rgba(30, 207, 115, 0.1));
     border: 1px solid rgba(30, 207, 115, 0.18);
 
     &:hover {
       background: rgba(30, 207, 115, 0.16);
-      transform: translateY(-1px);
     }
   }
 }
@@ -512,23 +509,21 @@ const openPlayListDrawer = () => {
   }
 
   .iconfont {
-    @apply text-[21px] transition cursor-pointer;
+    @apply text-[21px] transition-colors cursor-pointer;
     color: var(--qqm-muted, rgba(107, 114, 128, 1));
     width: 30px;
     height: 30px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 999px;
+    border-radius: 8px;
     transition:
       color 180ms var(--qqm-ease, ease),
-      background-color 180ms var(--qqm-ease, ease),
-      transform 180ms var(--qqm-ease, ease);
+      background-color 180ms var(--qqm-ease, ease);
 
     &:hover {
       color: var(--qqm-primary-strong, #0dbd62);
       background: var(--qqm-primary-soft, rgba(30, 207, 115, 0.1));
-      transform: translateY(-1px);
     }
   }
 }
@@ -730,7 +725,7 @@ const openPlayListDrawer = () => {
   @apply mx-2;
 
   .delete-btn {
-    @apply p-2 rounded-full transition-colors duration-200 cursor-pointer;
+    @apply p-2 rounded-lg transition-colors duration-200 cursor-pointer;
     @apply hover:bg-red-50 dark:hover:bg-red-900/20;
 
     .iconfont {

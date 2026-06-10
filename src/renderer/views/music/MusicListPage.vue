@@ -59,7 +59,7 @@
                     <span
                       class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
                     >
-                      {{ isAlbum ? 'Album' : 'Playlist' }}
+                      {{ isAlbum ? '专辑' : '歌单' }}
                     </span>
                   </div>
                   <h1
