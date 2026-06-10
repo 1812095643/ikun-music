@@ -34,19 +34,19 @@
   <Teleport to="body">
     <Transition
       enter-active-class="transition duration-200 ease-out"
-      enter-from-class="opacity-0 scale-95"
-      enter-to-class="opacity-100 scale-100"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
       leave-active-class="transition duration-150 ease-in"
-      leave-from-class="opacity-100 scale-100"
-      leave-to-class="opacity-0 scale-95"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
     >
       <div
         v-if="showCloseModal"
-        class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm"
+        class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/35"
         @click.self="showCloseModal = false"
       >
         <div
-          class="relative w-[360px] transform overflow-hidden rounded-xl bg-white/95 p-6 shadow-md backdrop-blur-xl transition-all dark:bg-neutral-900/95 border border-neutral-200 dark:border-neutral-800"
+          class="relative w-[360px] transform overflow-hidden rounded-lg bg-white p-6 transition-opacity dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
         >
           <!-- Close Icon -->
           <button
@@ -94,19 +94,19 @@
 
           <div class="mt-6 flex justify-end gap-3">
             <button
-              class="rounded-full px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-200 dark:hover:bg-neutral-800 transition-colors focus:outline-none"
+              class="rounded-lg px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-200 dark:hover:bg-neutral-800 transition-colors focus:outline-none"
               @click="showCloseModal = false"
             >
               {{ t('common.cancel') }}
             </button>
             <button
-              class="rounded-full px-4 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 transition-colors focus:outline-none"
+              class="rounded-lg px-4 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 transition-colors focus:outline-none"
               @click="handleAction('close')"
             >
               {{ t('comp.titleBar.exitApp') }}
             </button>
             <button
-              class="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-colors shadow-sm shadow-primary/20"
+              class="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-white hover:bg-primary/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 transition-colors"
               @click="handleAction('minimize')"
             >
               {{ t('comp.titleBar.minimizeToTray') }}

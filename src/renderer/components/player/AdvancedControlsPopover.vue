@@ -217,11 +217,11 @@ const selectSpeed = (speed: number) => {
 .sleep-timer-countdown {
   @apply fixed top-0 left-1/2 transform -translate-x-1/2 py-1 px-3 rounded-b-lg text-white text-sm flex items-center;
   background-color: var(--qqm-primary, #22c55e);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: none;
   z-index: 9998;
   min-width: 80px;
   text-align: center;
-  animation: fadeInDown 0.3s ease-out;
+  animation: fadeInDown 0.22s var(--qqm-ease, ease-out);
 
   @keyframes fadeInDown {
     from {
@@ -281,7 +281,7 @@ const selectSpeed = (speed: number) => {
   @apply p-6 rounded-lg;
   background: color-mix(in srgb, var(--qqm-surface, #fff) 96%, transparent);
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.07);
+  box-shadow: none;
   max-width: 600px;
   margin: 0 auto;
 }

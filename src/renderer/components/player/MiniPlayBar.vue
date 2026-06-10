@@ -329,13 +329,12 @@ const setMusicFull = () => {
 
 <style lang="scss" scoped>
 .mini-play-bar {
-  @apply w-full flex flex-col bg-light-200 dark:bg-dark-200 shadow-sm bg-opacity-60 backdrop-blur dark:bg-opacity-60;
+  @apply w-full flex flex-col bg-light-200 dark:bg-dark-200;
   height: 64px;
   border-radius: 8px;
   position: relative;
 
   &.mini-mode {
-    box-shadow: 0 8px 20px rgba(20, 24, 31, 0.08);
     -webkit-app-region: drag;
 
     .mini-bar-container {
@@ -525,10 +524,9 @@ const setMusicFull = () => {
 }
 
 .volume-slider-wrapper {
-  @apply p-2 py-4 rounded-lg backdrop-blur;
-  background: color-mix(in srgb, var(--qqm-surface, #fff) 82%, transparent);
+  @apply p-2 py-4 rounded-lg;
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 96%, transparent);
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.08);
   height: 160px;
 
   :deep(.n-slider) {

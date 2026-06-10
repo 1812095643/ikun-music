@@ -54,9 +54,7 @@
                   backgroundImage: `url(${getImgUrl(artistInfo.cover || artistInfo.picUrl, '800y800')})`
                 }"
               />
-              <div
-                class="absolute inset-0 bg-gradient-to-b from-white/70 via-white/92 to-white dark:from-neutral-900/70 dark:via-neutral-900/92 dark:to-neutral-900"
-              />
+              <div class="absolute inset-0 bg-white/94 dark:bg-neutral-900/94" />
             </div>
 
             <!-- Hero Content -->
@@ -65,7 +63,7 @@
                 <!-- Artist Avatar -->
                 <div class="artist-avatar-wrapper relative group">
                   <div
-                    class="avatar-glow absolute -inset-1 rounded-full bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    class="avatar-glow absolute -inset-px rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   />
                   <div
                     class="avatar-container relative w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10"
@@ -239,7 +237,7 @@
                 <Transition name="tab-indicator">
                   <div
                     v-if="activeTab === tab.value"
-                    class="absolute inset-0 bg-white dark:bg-neutral-700 rounded-lg shadow-sm"
+                    class="absolute inset-0 rounded-md bg-white ring-1 ring-black/5 dark:bg-neutral-700 dark:ring-white/10"
                   />
                 </Transition>
               </button>
@@ -950,7 +948,7 @@ const formatSong = (item: any) => {
 .action-bar {
   transition:
     background-color 0.3s,
-    box-shadow 0.3s;
+    border-color 0.2s;
 }
 
 /* Tab Indicator Animation */
@@ -972,7 +970,7 @@ const formatSong = (item: any) => {
 .tab-indicator-enter-from,
 .tab-indicator-leave-to {
   opacity: 0;
-  transform: translateY(2px);
+  transform: translateY(0);
 }
 
 /* Search Slide Animation */
@@ -986,7 +984,7 @@ const formatSong = (item: any) => {
 .search-slide-enter-from,
 .search-slide-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateY(0);
   max-height: 0;
   margin-top: 0;
 }
@@ -1018,13 +1016,13 @@ const formatSong = (item: any) => {
 
 /* Album Card Animation */
 .album-card {
-  animation: fadeInUp 0.4s ease backwards;
+  animation: fadeInUp 0.28s var(--qqm-ease, cubic-bezier(0.2, 0, 0, 1)) backwards;
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -1043,17 +1041,17 @@ const formatSong = (item: any) => {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-1px);
+    transform: translateY(0);
   }
 }
 
 /* Hover Effects */
 .album-cover {
-  transition: box-shadow 0.3s ease;
+  transition: border-color 0.2s var(--qqm-ease, ease);
 }
 
 .album-card:hover .album-cover {
-  @apply shadow-sm;
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
 }
 
 /* Mobile Optimizations */
@@ -1077,10 +1075,10 @@ const formatSong = (item: any) => {
 
 /* Focus states for accessibility */
 button:focus-visible {
-  @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-white dark:ring-offset-neutral-900;
+  @apply outline-none ring-1 ring-primary/70 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900;
 }
 
 input:focus-visible {
-  @apply outline-none ring-2 ring-primary/50;
+  @apply outline-none ring-1 ring-primary/50;
 }
 </style>

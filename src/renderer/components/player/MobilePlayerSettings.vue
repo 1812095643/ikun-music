@@ -7,11 +7,11 @@
         @click.self="close"
       >
         <!-- 遮罩层 -->
-        <div class="absolute inset-0 bg-black/50" @click="close"></div>
+        <div class="absolute inset-0 bg-black/45" @click="close"></div>
 
-        <!-- 弹窗内容 - 磨砂玻璃效果 -->
+        <!-- 弹窗内容 -->
         <div
-          class="mobile-player-settings-panel relative w-full max-w-lg bg-gray-900/75 backdrop-blur-md rounded-t-lg overflow-hidden max-h-[85vh] flex flex-col border-t border-white/10 shadow-sm shadow-black/10"
+          class="mobile-player-settings-panel relative w-full max-w-lg bg-gray-900 rounded-t-lg overflow-hidden max-h-[85vh] flex flex-col border-t border-white/10"
         >
           <!-- 顶部拖拽条 -->
           <div class="flex justify-center pt-3 pb-2 flex-shrink-0">

@@ -523,26 +523,14 @@ watch(
   min-height: 260px;
   margin: 18px 0 8px;
   border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
-  border-radius: 14px;
-  background:
-    radial-gradient(
-      circle at 50% 0%,
-      color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, transparent),
-      transparent 34%
-    ),
-    color-mix(in srgb, #ffffff 94%, var(--qqm-primary, #22c55e) 6%);
+  border-radius: 12px;
+  background: color-mix(in srgb, #ffffff 96%, var(--qqm-primary, #22c55e) 4%);
   color: #737373;
 }
 
 .dark .search-empty-state {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent);
-  background:
-    radial-gradient(
-      circle at 50% 0%,
-      color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent),
-      transparent 36%
-    ),
-    color-mix(in srgb, #050505 92%, var(--qqm-primary, #22c55e) 8%);
+  background: color-mix(in srgb, #050505 94%, var(--qqm-primary, #22c55e) 6%);
   color: #a3a3a3;
 }
 

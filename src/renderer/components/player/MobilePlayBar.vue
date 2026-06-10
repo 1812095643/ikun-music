@@ -276,10 +276,8 @@ watch(
   // Mini模式样式
   .mobile-mini-controls {
     @apply flex items-center justify-between pr-4 mx-3 h-12 rounded-lg;
-    background: color-mix(in srgb, var(--qqm-surface, #fff) 78%, transparent);
+    background: color-mix(in srgb, var(--qqm-surface, #fff) 96%, transparent);
     border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-    box-shadow: 0 4px 14px rgba(20, 24, 31, 0.06);
-    backdrop-filter: blur(8px) saturate(1.02);
 
     .mini-song-info {
       @apply flex items-center flex-1 min-w-0 cursor-pointer;
@@ -332,14 +330,11 @@ watch(
   height: 60vh;
   width: 90vw;
   max-width: 400px;
-  @apply relative rounded-t-2xl overflow-hidden;
+  @apply relative rounded-t-lg overflow-hidden;
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  box-shadow: 0 -4px 14px rgba(20, 24, 31, 0.06);
-
   .mobile-play-list-back {
-    backdrop-filter: blur(8px);
     @apply absolute top-0 left-0 w-full h-full;
-    background: color-mix(in srgb, var(--qqm-surface, #fff) 82%, transparent);
+    background: color-mix(in srgb, var(--qqm-surface, #fff) 96%, transparent);
   }
 
   .mobile-play-list-item {

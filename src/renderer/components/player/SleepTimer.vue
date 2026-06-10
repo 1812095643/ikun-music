@@ -248,11 +248,11 @@ onUnmounted(() => {
       @apply flex flex-col items-center justify-center p-8 mb-5 w-full rounded-lg;
       background: color-mix(in srgb, var(--qqm-surface-muted, #f2f4f5) 72%, transparent);
       border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-      box-shadow: 0 8px 20px rgba(20, 24, 31, 0.06);
+      box-shadow: none;
       transition:
         background 0.3s ease,
         border-color 0.3s ease,
-        box-shadow 0.3s ease;
+        border-color 0.2s ease;
 
       // 定时值显示
       .timer-value {
@@ -276,8 +276,7 @@ onUnmounted(() => {
       @apply w-full py-3 text-base rounded-lg transition-colors duration-200;
 
       &:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 8px 18px rgba(20, 24, 31, 0.08);
+        border-color: rgba(30, 207, 115, 0.16);
       }
 
       &:active {
@@ -311,10 +310,8 @@ onUnmounted(() => {
           @apply px-4 py-2 rounded-lg text-gray-800 dark:text-gray-200 transition-colors duration-200;
           background: color-mix(in srgb, var(--qqm-surface-muted, #f2f4f5) 70%, transparent);
           border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-          box-shadow: 0 4px 12px rgba(20, 24, 31, 0.04);
 
           &:hover {
-            transform: translateY(-1px);
             border-color: rgba(30, 207, 115, 0.16);
           }
 

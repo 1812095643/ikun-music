@@ -45,7 +45,7 @@
 
           <!-- Play Button -->
           <button
-            class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] bg-white text-neutral-900 shadow-sm transition-opacity duration-200 ease-out"
+            class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] bg-white text-neutral-900 ring-1 ring-black/5 transition-opacity duration-200 ease-out"
             @click.stop="$emit('play')"
           >
             <i class="ri-play-fill ml-0.5 text-lg" />
@@ -56,7 +56,7 @@
       <!-- Badge -->
       <div
         v-if="badge"
-        class="absolute left-3 top-3 rounded-[9px] px-2.5 py-1 text-[11px] font-bold text-white shadow-sm backdrop-blur-sm"
+        class="absolute left-3 top-3 rounded-md px-2.5 py-1 text-[11px] font-bold text-white"
         :class="badgeClass"
       >
         {{ badge }}
@@ -65,7 +65,7 @@
       <!-- Play Count (for playlists) -->
       <div
         v-if="playCount"
-        class="absolute right-3 top-3 flex items-center gap-1.5 rounded-[9px] bg-neutral-950/55 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm"
+        class="absolute right-3 top-3 flex items-center gap-1.5 rounded-md bg-neutral-950/70 px-2.5 py-1 text-[11px] font-semibold text-white"
       >
         <i class="ri-play-fill text-[10px]" />
         <span>{{ formatNumber(playCount) }}</span>

@@ -113,7 +113,7 @@ onUnmounted(() => {
 .sleep-timer-countdown {
   @apply fixed top-[28px] left-1/2 transform -translate-x-1/2 -translate-y-full py-1 px-3 rounded-b-lg text-white text-sm flex items-center transition-transform cursor-pointer;
   background-color: var(--qqm-primary, #22c55e);
-  box-shadow: 0 6px 16px rgba(30, 207, 115, 0.18);
+  box-shadow: none;
   z-index: 9998;
   min-width: 80px;
   text-align: center;
@@ -121,7 +121,7 @@ onUnmounted(() => {
   -webkit-app-region: no-drag;
 
   &:hover {
-    transform: translate(-50%, calc(-100% - 1px));
+    filter: brightness(0.98);
   }
 
   @keyframes fadeInDown {

@@ -51,7 +51,7 @@
               class="absolute inset-0 bg-transparent group-hover:bg-black/15 transition-colors duration-200 flex items-center justify-center"
             >
               <div
-                class="play-icon w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                class="play-icon w-10 h-10 rounded-lg bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 ring-1 ring-black/5"
               >
                 <i class="ri-play-fill text-2xl text-neutral-900 ml-1"></i>
               </div>
@@ -59,7 +59,7 @@
 
             <!-- Play Count Badge -->
             <div
-              class="absolute top-3 right-3 px-2 py-1 rounded-lg bg-neutral-950/55 backdrop-blur-sm text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+              class="absolute top-3 right-3 px-2 py-1 rounded-md bg-neutral-950/70 text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
             >
               <i class="ri-play-fill"></i>
               {{ formatNumber(item.playCount) }}

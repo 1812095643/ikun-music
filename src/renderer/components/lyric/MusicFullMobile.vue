@@ -39,7 +39,7 @@
         <!-- 定时器倒计时显示 -->
         <div
           v-if="hasSleepTimerActive"
-          class="flex items-center gap-1 px-2 py-1 rounded-full bg-black/30 backdrop-blur-sm text-xs text-white/90"
+          class="flex items-center gap-1 px-2 py-1 rounded-md bg-black/45 text-xs text-white/90"
           @click="showPlayerSettings = true"
         >
           <i class="ri-timer-line text-primary"></i>
@@ -1955,7 +1955,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
   .unified-controls {
     &.fullscreen-mode {
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.52) 0%, rgba(0, 0, 0, 0) 100%);
     }
 
     .back-button {

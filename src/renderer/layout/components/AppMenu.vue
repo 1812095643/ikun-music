@@ -215,10 +215,8 @@ const toggleMenu = () => {
   width: 3px;
   height: 17px;
   border-radius: 999px;
-  background: linear-gradient(180deg, #46e78f 0%, #12c86d 100%);
-  box-shadow:
-    0 0 0 3px rgba(30, 207, 115, 0.08),
-    0 3px 8px rgba(18, 200, 109, 0.28);
+  background: #22c55e;
+  box-shadow: none;
   transform: translateY(-50%) scaleY(1);
   transform-origin: center;
   animation: activeIndicatorSpring 420ms cubic-bezier(0.16, 1.25, 0.32, 1) both;

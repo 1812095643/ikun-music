@@ -408,8 +408,7 @@ onMounted(() => {
   .heatmap-header {
     @apply flex items-center justify-between flex-shrink-0 px-6 py-3;
     border-bottom: 1px solid var(--qqm-border);
-    background: color-mix(in srgb, var(--qqm-bg) 86%, transparent);
-    backdrop-filter: blur(16px) saturate(1.05);
+    background: color-mix(in srgb, var(--qqm-bg) 96%, transparent);
 
     .header-left {
       @apply flex items-center gap-4;
@@ -468,10 +467,9 @@ onMounted(() => {
 
     .heatmap-container {
       @apply rounded-lg p-6;
-      background: color-mix(in srgb, var(--qqm-surface) 70%, transparent);
+      background: color-mix(in srgb, var(--qqm-surface) 96%, transparent);
       border: 1px solid rgba(255, 255, 255, 0.58);
       box-shadow: none;
-      backdrop-filter: blur(8px) saturate(1.02);
       .custom-heatmap {
         @apply w-full;
       }
@@ -652,7 +650,7 @@ onMounted(() => {
     @apply transition-colors duration-200;
 
     &:hover {
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
     }
   }
 }

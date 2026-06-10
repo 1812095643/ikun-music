@@ -14,9 +14,7 @@
                   backgroundImage: `url(${getImgUrl(getCoverImgUrl, '800y800')})`
                 }"
               ></div>
-              <div
-                class="absolute inset-0 bg-gradient-to-b from-white/70 via-white/92 to-white dark:from-black/70 dark:via-black/92 dark:to-black"
-              ></div>
+              <div class="absolute inset-0 bg-white/94 dark:bg-black/94"></div>
             </div>
 
             <!-- Hero Content -->
@@ -25,7 +23,7 @@
                 <!-- Playlist Cover -->
                 <div class="cover-wrapper relative group">
                   <div
-                    class="cover-glow absolute -inset-px rounded-lg bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    class="cover-glow absolute -inset-px rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   ></div>
                   <div
                     class="cover-container relative w-48 h-48 md:w-64 md:h-64 rounded-lg overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10"
@@ -44,7 +42,7 @@
                       <button
                         v-if="!isMobile"
                         type="button"
-                        class="play-icon w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-auto"
+                        class="play-icon w-10 h-10 rounded-lg bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-auto ring-1 ring-black/5"
                         @click.stop="handlePlayAll"
                       >
                         <i class="ri-play-fill text-3xl text-neutral-900 ml-1" />
@@ -57,7 +55,7 @@
                 <div class="playlist-info flex-1 text-center md:text-left">
                   <div class="playlist-badge mb-3">
                     <span
-                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
+                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-primary/8 dark:bg-primary/15 text-primary text-xs font-semibold uppercase tracking-wider"
                     >
                       {{ isAlbum ? '专辑' : '歌单' }}
                     </span>
@@ -875,17 +873,17 @@ onMounted(checkCollectionStatus);
 .action-bar {
   transition:
     background-color 0.3s,
-    box-shadow 0.3s;
+    border-color 0.2s;
 }
 
 .animate-item {
-  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation: fadeInUp 0.28s var(--qqm-ease, cubic-bezier(0.2, 0, 0, 1)) backwards;
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -906,7 +904,7 @@ onMounted(checkCollectionStatus);
   &:hover {
     color: var(--qqm-primary, #22c55e);
     background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
-    transform: translateY(-1px);
+    transform: translateY(0);
   }
 }
 

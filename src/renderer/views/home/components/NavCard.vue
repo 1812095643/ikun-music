@@ -4,25 +4,6 @@
     :class="[aspectClass, colorClasses.bg, active ? colorClasses.activeBg : '']"
     @click="$emit('click')"
   >
-    <!-- Background Pattern -->
-    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-      <div
-        class="absolute inset-0"
-        :class="colorClasses.pattern"
-        style="
-          background-image: radial-gradient(circle at 20% 50%, currentColor 1px, transparent 1px);
-          background-size: 20px 20px;
-          opacity: 0.05;
-        "
-      />
-    </div>
-
-    <!-- Glow Effect on Hover -->
-    <div
-      class="absolute -inset-[1px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-      :class="colorClasses.glow"
-    />
-
     <!-- Content Container -->
     <div class="relative h-full flex flex-col justify-between p-4 md:p-5">
       <!-- Header with Icon and Badge -->
@@ -126,8 +107,6 @@ const colorClasses = computed(() => ({
   title: 'text-neutral-900 dark:text-neutral-50',
   subtitle: 'text-neutral-500 dark:text-neutral-400',
   arrow: 'text-primary',
-  pattern: 'text-primary',
-  glow: 'bg-primary/10',
   badgeBg: 'bg-primary text-white',
   activeDot: 'bg-primary'
 }));
@@ -136,33 +115,6 @@ const colorClasses = computed(() => ({
 <style scoped>
 .nav-card {
   position: relative;
-  will-change: transform;
-}
-
-.nav-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.nav-card:hover::before {
-  opacity: 1;
-}
-
-.icon-wrapper {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 @keyframes pulse-subtle {

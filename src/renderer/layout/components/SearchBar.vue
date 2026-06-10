@@ -45,7 +45,7 @@
         :show="showSuggestions"
         :show-arrow="false"
         style="margin-top: 6px"
-        content-style="padding:0;border-radius:12px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,0.12);"
+        content-style="padding:0;border-radius:10px;overflow:hidden;border:1px solid rgba(20,24,31,0.08);box-shadow:none;"
         raw
       >
         <template #trigger>
@@ -537,9 +537,9 @@ onMounted(() => {
   top: 3px;
   left: 0;
   height: calc(100% - 6px);
-  border-radius: 9999px;
+  border-radius: 10px;
   background: #22c55e;
-  box-shadow: 0 1px 6px rgba(34, 197, 94, 0.35);
+  box-shadow: none;
   transition:
     transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
     width 0.28s cubic-bezier(0.34, 1.4, 0.64, 1);
@@ -630,7 +630,7 @@ onMounted(() => {
   transition:
     border-color 0.2s,
     background 0.2s,
-    box-shadow 0.2s;
+    border-color 0.2s;
 }
 .dark .search-inner {
   border-color: #374151;
@@ -639,11 +639,11 @@ onMounted(() => {
 .search-inner--focus {
   border-color: #22c55e;
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.18);
 }
 .dark .search-inner--focus {
   background: #0a0a0a;
-  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.22);
 }
 
 .search-icon-glyph {
@@ -756,14 +756,14 @@ onMounted(() => {
   cursor: pointer;
   transition:
     border-color 0.15s,
-    box-shadow 0.15s;
+    border-color 0.15s;
 }
 .dark .user-btn {
   border-color: #374151;
 }
 .user-btn:hover {
   border-color: #22c55e;
-  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.12);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.18);
 }
 
 .login-label {
@@ -783,9 +783,7 @@ onMounted(() => {
   overflow: hidden;
   background: #fff;
   border: 1px solid #f3f4f6;
-  box-shadow:
-    0 4px 20px rgba(0, 0, 0, 0.1),
-    0 1px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: none;
 }
 .dark .user-menu {
   background: #111827;

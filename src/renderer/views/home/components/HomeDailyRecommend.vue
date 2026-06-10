@@ -60,7 +60,7 @@
 
           <!-- Play Overlay -->
           <div
-            class="play-overlay absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 opacity-0 backdrop-blur-0 transition-colors duration-200 group-hover:bg-black/10 group-hover:opacity-100"
+            class="play-overlay absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 opacity-0 transition-colors duration-200 group-hover:bg-black/10 group-hover:opacity-100"
           >
             <div
               class="play-button flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-lg bg-white shadow-sm transition-colors duration-200"

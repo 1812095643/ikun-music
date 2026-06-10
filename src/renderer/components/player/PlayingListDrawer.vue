@@ -202,8 +202,7 @@ const handleDeleteSong = (song: SongResult) => {
 
   background: color-mix(in srgb, var(--qqm-surface, #fff) 94%, transparent);
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  box-shadow: 0 10px 24px rgba(20, 24, 31, 0.08);
-  backdrop-filter: blur(10px) saturate(1.02);
+  box-shadow: none;
 
   &-header {
     @apply flex items-center justify-between px-4 py-2;
@@ -284,7 +283,7 @@ const handleDeleteSong = (song: SongResult) => {
     border-radius: 14px 14px 0 0;
     border-left: none;
     border-top: 1px solid theme('colors.gray.200');
-    box-shadow: 0 -8px 20px rgba(20, 24, 31, 0.08);
+    box-shadow: none;
 
     &-header {
       @apply text-center relative px-4;

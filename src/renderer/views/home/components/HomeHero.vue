@@ -64,7 +64,7 @@
                   {{ t('comp.homeHero.dailyRecommend') }}
                 </h3>
                 <span
-                  class="mt-1.5 inline-flex items-center gap-1 rounded-md bg-white/15 px-2 py-0.5 text-[11px] font-semibold text-white/80 backdrop-blur-sm"
+                  class="mt-1.5 inline-flex items-center gap-1 rounded-md bg-white/18 px-2 py-0.5 text-[11px] font-semibold text-white/85"
                 >
                   <i class="ri-calendar-check-fill" />
                   {{ dayRecommendSongs.length }} {{ t('comp.homeHero.songs') }}
@@ -249,9 +249,7 @@
               <span
                 :class="[
                   'inline-flex w-fit items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold',
-                  hotPlaylists.length > 0
-                    ? 'bg-black/30 text-white backdrop-blur-sm'
-                    : 'bg-primary/10 text-primary'
+                  hotPlaylists.length > 0 ? 'bg-black/45 text-white' : 'bg-primary/10 text-primary'
                 ]"
               >
                 <i class="ri-play-list-2-line" />
@@ -282,7 +280,7 @@
                   :class="[
                     'flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg transition-colors duration-200',
                     hotPlaylists.length > 0
-                      ? 'bg-white/20 text-white backdrop-blur-sm hover:bg-white/30'
+                      ? 'bg-white/22 text-white hover:bg-white/30'
                       : 'bg-primary/10 text-primary hover:bg-primary/15'
                   ]"
                 >

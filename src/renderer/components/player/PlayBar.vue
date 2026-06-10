@@ -380,13 +380,13 @@ const openPlayListDrawer = () => {
   @apply h-[76px] w-full absolute bottom-0 left-0 flex items-center box-border px-7 py-2 pt-3;
   @apply bg-light dark:bg-dark;
   border-top: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  box-shadow: 0 -4px 14px rgba(20, 24, 31, 0.05);
+  box-shadow: none;
   z-index: 9999;
   animation-duration: 0.24s !important;
 
   &.play-bar-opcity {
     @apply bg-transparent !important;
-    box-shadow: 0 -4px 18px rgba(20, 24, 31, 0.08);
+    box-shadow: none;
   }
 
   &.animate__slideOutDown {
@@ -479,7 +479,7 @@ const openPlayListDrawer = () => {
     @apply absolute opacity-0 invisible transition-opacity duration-200 bottom-[34px] left-1/2 -translate-x-1/2 h-[168px] px-2 py-4 rounded-lg;
     background: var(--qqm-surface, #ffffff);
     border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-    box-shadow: var(--qqm-shadow, 0 8px 20px rgba(20, 24, 31, 0.06));
+    box-shadow: none;
 
     .volume-percentage {
       @apply absolute -top-7 left-1/2 -translate-x-1/2 text-xs font-medium px-2 py-1 rounded-md;
@@ -534,11 +534,10 @@ const openPlayListDrawer = () => {
     width: 300px;
     @apply relative rounded-lg overflow-hidden py-2;
     border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-    box-shadow: var(--qqm-shadow, 0 8px 20px rgba(20, 24, 31, 0.06));
+    box-shadow: none;
     &-back {
-      backdrop-filter: blur(10px);
       @apply absolute top-0 left-0 w-full h-full;
-      background: color-mix(in srgb, var(--qqm-surface, #fff) 72%, transparent);
+      background: color-mix(in srgb, var(--qqm-surface, #fff) 96%, transparent);
     }
     &-content {
       @apply mx-2;
@@ -715,10 +714,9 @@ const openPlayListDrawer = () => {
 
 .music-eq {
   @apply p-4 rounded-lg;
-  backdrop-filter: blur(10px);
-  background: color-mix(in srgb, var(--qqm-surface, #fff) 72%, transparent);
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 96%, transparent);
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  box-shadow: var(--qqm-shadow, 0 8px 20px rgba(20, 24, 31, 0.06));
+  box-shadow: none;
 }
 
 .music-play-list-content {

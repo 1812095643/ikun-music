@@ -45,7 +45,7 @@
         class="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"
       >
         <div
-          class="bg-neutral-950/55 backdrop-blur-sm rounded-full p-4 pointer-events-auto active:translate-y-0"
+          class="bg-neutral-950/70 rounded-lg p-4 pointer-events-auto active:translate-y-0"
           @click.stop="togglePlay"
         >
           <n-icon size="48" color="white">
@@ -69,7 +69,7 @@
 
       <!-- Top Bar (Title & Close) -->
       <div
-        class="absolute top-0 left-0 right-0 p-4 z-[9999999] transition-opacity duration-200 bg-black/45 pointer-events-auto"
+        class="absolute top-0 left-0 right-0 p-4 z-[9999999] transition-opacity duration-200 bg-black/55 pointer-events-auto"
         :class="{ '-translate-y-full opacity-0': !showControls }"
         style="-webkit-app-region: drag"
         @click.stop
@@ -105,7 +105,7 @@
 
       <!-- Bottom Controls -->
       <div
-        class="absolute bottom-0 left-0 right-0 z-40 transition-opacity duration-200 bg-black/55 pb-6 pt-12 px-4 md:px-6"
+        class="absolute bottom-0 left-0 right-0 z-40 transition-opacity duration-200 bg-black/65 pb-6 pt-12 px-4 md:px-6"
         :class="{ 'translate-y-full opacity-0': !showControls }"
         @click.stop
       >

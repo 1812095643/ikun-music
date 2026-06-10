@@ -1202,7 +1202,6 @@ body,
     border: 1px solid var(--control-border);
     border-radius: 14px;
     background: var(--control-bg);
-    backdrop-filter: blur(8px) saturate(1.02);
   }
 
   .play-controls {
@@ -1215,9 +1214,8 @@ body,
     gap: 10px;
     padding: 5px;
     border: 1px solid var(--control-border);
-    border-radius: 999px;
+    border-radius: 14px;
     background: var(--control-bg);
-    backdrop-filter: blur(8px) saturate(1.02);
     -webkit-app-region: no-drag;
 
     .play-button {
@@ -1243,7 +1241,6 @@ body,
   border: 1px solid var(--control-border);
   border-radius: 14px;
   background: var(--control-bg);
-  backdrop-filter: blur(8px) saturate(1.02);
   -webkit-app-region: no-drag;
 }
 

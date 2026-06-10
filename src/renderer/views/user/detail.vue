@@ -49,9 +49,7 @@
                   backgroundImage: `url(${getImgUrl(userDetail.profile.backgroundUrl)})`
                 }"
               />
-              <div
-                class="absolute inset-0 bg-gradient-to-b from-white/70 via-white/92 to-white dark:from-neutral-900/70 dark:via-neutral-900/92 dark:to-neutral-900"
-              />
+              <div class="absolute inset-0 bg-white/94 dark:bg-neutral-900/94" />
             </div>
 
             <!-- Hero Content -->
@@ -60,7 +58,7 @@
                 <!-- User Avatar -->
                 <div class="relative group">
                   <div
-                    class="absolute -inset-1 rounded-full bg-primary/10 blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    class="absolute -inset-px rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   />
                   <div
                     class="relative w-28 h-28 md:w-40 md:h-40 rounded-full overflow-hidden shadow-sm ring-1 ring-white/60 dark:ring-neutral-800/60"
