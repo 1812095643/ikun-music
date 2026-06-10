@@ -6,7 +6,7 @@
   >
     <!-- Cover -->
     <div
-      class="relative aspect-square overflow-hidden rounded-2xl bg-neutral-100 shadow-sm transition-all duration-300 ease-out group-hover:shadow-xl dark:bg-neutral-800"
+      class="relative aspect-square overflow-hidden rounded-xl border border-white/60 bg-neutral-100 shadow-sm transition-all duration-300 ease-out group-hover:shadow-md dark:border-white/10 dark:bg-neutral-800"
     >
       <img
         ref="coverRef"
@@ -47,7 +47,7 @@
 
           <!-- Play Button -->
           <button
-            class="flex h-12 w-12 flex-shrink-0 translate-y-2 items-center justify-center rounded-full bg-white text-neutral-900 shadow-2xl transition-all duration-500 ease-out hover:scale-110 group-hover:translate-y-0 active:scale-95"
+            class="flex h-11 w-11 flex-shrink-0 translate-y-2 items-center justify-center rounded-[10px] bg-white text-neutral-900 shadow-md transition-all duration-500 ease-out hover:scale-105 group-hover:translate-y-0 active:scale-95"
             @click.stop="$emit('play')"
           >
             <i class="ri-play-fill ml-0.5 text-lg" />
@@ -58,7 +58,7 @@
       <!-- Badge -->
       <div
         v-if="badge"
-        class="absolute left-3 top-3 rounded-lg px-2.5 py-1 text-[11px] font-bold text-white shadow-lg backdrop-blur-sm"
+        class="absolute left-3 top-3 rounded-[9px] px-2.5 py-1 text-[11px] font-bold text-white shadow-sm backdrop-blur-sm"
         :class="badgeClass"
       >
         {{ badge }}
@@ -67,7 +67,7 @@
       <!-- Play Count (for playlists) -->
       <div
         v-if="playCount"
-        class="absolute right-3 top-3 flex items-center gap-1.5 rounded-lg bg-black/40 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md"
+        class="absolute right-3 top-3 flex items-center gap-1.5 rounded-[9px] bg-black/40 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md"
       >
         <i class="ri-play-fill text-[10px]" />
         <span>{{ formatNumber(playCount) }}</span>
@@ -138,13 +138,13 @@ const displayTracks = computed(() => props.tracks.slice(0, 3));
 const badgeClass = computed(() => {
   switch (props.badgeType) {
     case 'new':
-      return 'bg-gradient-to-r from-orange-500 to-rose-500';
+      return 'bg-primary/90';
     case 'hot':
-      return 'bg-gradient-to-r from-rose-500 to-pink-500';
+      return 'bg-primary/90';
     case 'recommend':
-      return 'bg-gradient-to-r from-primary to-blue-500';
+      return 'bg-primary/90';
     default:
-      return 'bg-gradient-to-r from-primary to-blue-500';
+      return 'bg-primary/90';
   }
 });
 

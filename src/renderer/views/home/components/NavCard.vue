@@ -1,11 +1,11 @@
 <template>
   <div
-    class="nav-card group relative overflow-hidden rounded-xl md:rounded-2xl cursor-pointer transition-all duration-300"
+    class="nav-card group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300"
     :class="[
       aspectClass,
       colorClasses.bg,
       active ? colorClasses.activeBg : '',
-      'hover:shadow-lg hover:-translate-y-0.5'
+      'hover:shadow-md hover:-translate-y-0.5'
     ]"
     @click="$emit('click')"
   >
@@ -24,7 +24,7 @@
 
     <!-- Glow Effect on Hover -->
     <div
-      class="absolute -inset-[1px] rounded-xl md:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"
+      class="absolute -inset-[1px] rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm"
       :class="colorClasses.glow"
     />
 
@@ -34,7 +34,7 @@
       <div class="flex items-start justify-between">
         <!-- Icon -->
         <div
-          class="icon-wrapper flex items-center justify-center h-10 w-10 md:h-11 md:w-11 rounded-xl md:rounded-2xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-3"
+          class="icon-wrapper flex items-center justify-center h-10 w-10 md:h-11 md:w-11 rounded-[10px] transition-all duration-300 group-hover:scale-105"
           :class="[colorClasses.iconBg, active ? colorClasses.activeIconBg : '']"
         >
           <i
@@ -49,7 +49,7 @@
         <!-- Badge (optional) -->
         <div
           v-if="badge"
-          class="badge px-2 py-0.5 rounded-full text-[10px] md:text-xs font-semibold animate-pulse"
+          class="badge px-2 py-0.5 rounded-[9px] text-[10px] md:text-xs font-semibold animate-pulse"
           :class="colorClasses.badgeBg"
         >
           {{ badge }}
@@ -81,7 +81,7 @@
     <!-- Active Indicator -->
     <div
       v-if="active"
-      class="absolute top-3 left-3 h-2 w-2 rounded-full animate-pulse"
+      class="absolute top-3 left-3 h-2 w-2 rounded-[4px] animate-pulse"
       :class="colorClasses.activeDot"
     />
   </div>
