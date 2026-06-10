@@ -108,46 +108,55 @@ const playProgram = async (program: DjProgram) => {
 <template>
   <div class="program-list">
     <n-spin :show="loading">
-      <div v-if="programs.length === 0" class="text-center py-12 text-neutral-400">暂无节目</div>
+      <div v-if="programs.length === 0" class="program-empty">
+        <i class="ri-broadcast-line"></i>
+        <span>暂无节目</span>
+      </div>
 
-      <div v-else class="space-y-2">
+      <div v-else class="program-list-body">
         <div
           v-for="program in programs"
           :key="program.id"
-          class="program-row flex items-center gap-4 px-3 py-2.5 rounded-lg cursor-pointer group"
+          class="program-row flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer group"
           @click="playProgram(program)"
         >
-          <div class="relative flex-shrink-0 w-16 h-16">
+          <div class="program-cover relative h-14 w-14 flex-shrink-0">
             <img
               :src="getImgUrl(program.coverUrl, '100y100')"
               :alt="program.mainSong.name"
-              class="w-full h-full rounded-lg object-cover"
+              class="h-full w-full rounded-md object-cover"
             />
             <div
-              class="absolute inset-0 bg-black/35 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+              class="program-play-mask absolute inset-0 flex items-center justify-center rounded-md opacity-0 transition-opacity group-hover:opacity-100"
             >
-              <i class="ri-play-fill text-white text-2xl"></i>
+              <i class="ri-play-fill text-xl text-white"></i>
             </div>
           </div>
 
-          <div class="flex-1 min-w-0">
+          <div class="program-main min-w-0 flex-1">
             <h4
-              class="text-sm font-medium truncate text-neutral-900 dark:text-neutral-100 group-hover:text-primary transition-colors"
+              class="program-title truncate text-sm font-medium text-neutral-900 transition-colors group-hover:text-primary dark:text-neutral-100"
             >
               {{ program.mainSong.name || program.name }}
             </h4>
-            <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-1">
+            <p class="program-desc mt-1 truncate text-xs text-neutral-500 dark:text-neutral-400">
               {{ program.description }}
             </p>
-            <div class="text-xs text-neutral-400 mt-1">
+            <div class="program-meta mt-1 text-xs text-neutral-400">
               {{ formatDate(program.createTime) }} ·
               {{ secondToMinute(program.mainSong.duration / 1000) }}
             </div>
           </div>
 
-          <div class="flex-shrink-0 text-xs text-neutral-400 text-right">
-            <div>{{ formatNumber(program.listenerCount) }} {{ $t('podcast.listeners') }}</div>
-            <div class="mt-1">{{ formatNumber(program.commentCount) }} 评论</div>
+          <div class="program-stats flex-shrink-0 text-xs text-neutral-400">
+            <span>
+              <i class="ri-headphone-line"></i>
+              {{ formatNumber(program.listenerCount) }}
+            </span>
+            <span>
+              <i class="ri-message-2-line"></i>
+              {{ formatNumber(program.commentCount) }}
+            </span>
           </div>
         </div>
       </div>
@@ -155,15 +164,109 @@ const playProgram = async (program: DjProgram) => {
   </div>
 </template>
 <style scoped>
+.program-list-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .program-row {
-  border-bottom: 1px solid var(--qqm-border);
+  position: relative;
+  min-height: 72px;
+  border: 1px solid transparent;
   transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+    background-color 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .program-row:hover {
-  background: color-mix(in srgb, var(--qqm-primary-soft) 42%, transparent);
-  transform: translateX(2px);
+  border-color: color-mix(in srgb, var(--qqm-primary) 12%, transparent);
+  background-color: color-mix(in srgb, var(--qqm-primary-soft) 24%, transparent);
+}
+
+.program-row::after {
+  position: absolute;
+  right: 12px;
+  bottom: -3px;
+  left: 80px;
+  height: 1px;
+  background: var(--qqm-border);
+  content: '';
+  opacity: 0.72;
+}
+
+.program-row:last-child::after,
+.program-row:hover::after {
+  opacity: 0;
+}
+
+.program-cover img {
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 5%);
+}
+
+.program-play-mask {
+  background: rgb(0 0 0 / 32%);
+}
+
+.program-desc {
+  max-width: min(680px, 72vw);
+}
+
+.program-meta {
+  letter-spacing: 0.01em;
+}
+
+.program-stats {
+  display: flex;
+  width: 132px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.program-stats span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: color-mix(in srgb, currentColor 84%, transparent);
+  white-space: nowrap;
+}
+
+.program-stats i {
+  font-size: 14px;
+  color: color-mix(in srgb, var(--qqm-primary) 54%, currentColor);
+}
+
+.program-empty {
+  display: flex;
+  min-height: 220px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--qqm-text-muted);
+  font-size: 13px;
+}
+
+.program-empty i {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--qqm-border);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--qqm-primary-soft) 34%, transparent);
+  color: var(--qqm-primary);
+  font-size: 22px;
+}
+
+@media (max-width: 768px) {
+  .program-stats {
+    display: none;
+  }
+
+  .program-row::after {
+    left: 76px;
+  }
 }
 </style>

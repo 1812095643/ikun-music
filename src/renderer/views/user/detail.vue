@@ -137,17 +137,15 @@
 
           <!-- Tab Navigation -->
           <section class="page-padding-x pt-4 md:pt-6">
-            <div
-              class="relative flex gap-1 p-1 bg-neutral-100 dark:bg-neutral-800/50 rounded-lg w-fit"
-            >
+            <div class="user-tabs relative flex w-fit gap-1 rounded-lg p-1">
               <button
                 v-for="tab in tabs"
                 :key="tab.value"
-                class="relative px-4 md:px-6 py-2 md:py-2.5 rounded-lg text-sm font-medium transition-colors duration-200"
+                class="relative rounded-md px-4 py-2 text-sm font-medium transition-colors duration-200 md:px-6"
                 :class="
                   activeTab === tab.value
                     ? 'text-neutral-900 dark:text-white'
-                    : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'
+                    : 'text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200'
                 "
                 @click="activeTab = tab.value"
               >
@@ -155,7 +153,7 @@
                 <Transition name="tab-indicator">
                   <div
                     v-if="activeTab === tab.value"
-                    class="absolute inset-0 rounded-lg border border-neutral-100 bg-white dark:border-neutral-700 dark:bg-neutral-700"
+                    class="absolute inset-0 rounded-md border border-primary/10 bg-white dark:border-white/10 dark:bg-white/10"
                   />
                 </Transition>
               </button>
@@ -166,26 +164,23 @@
           <section class="page-padding-x py-6 md:py-8">
             <!-- Playlists Tab -->
             <div v-show="activeTab === 'playlists'">
-              <div
-                v-if="playList.length === 0"
-                class="flex flex-col items-center justify-center py-16 text-neutral-400 dark:text-neutral-500"
-              >
+              <div v-if="playList.length === 0" class="qqm-user-empty">
                 <i class="ri-play-list-line text-5xl mb-4 opacity-50" />
                 <p>{{ t('user.detail.noPlaylists') }}</p>
               </div>
               <div
                 v-else
-                class="grid grid-cols-2 gap-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+                class="user-playlist-grid grid grid-cols-2 gap-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
               >
                 <div
                   v-for="item in playList"
                   :key="item.id"
-                  class="group cursor-pointer"
+                  class="user-playlist-card group cursor-pointer"
                   @click="openPlaylist(item)"
                 >
                   <!-- Cover -->
                   <div
-                    class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
+                    class="user-playlist-cover relative aspect-square overflow-hidden rounded-lg"
                   >
                     <n-image
                       :src="getImgUrl(item.coverImgUrl, '300y300')"
@@ -195,17 +190,17 @@
                     />
                     <!-- Play Count Overlay -->
                     <div
-                      class="absolute top-2 right-2 px-2 py-0.5 rounded-md text-xs bg-black/50 text-white flex items-center gap-1"
+                      class="absolute right-2 top-2 flex items-center gap-1 rounded-md bg-black/45 px-2 py-0.5 text-xs text-white"
                     >
                       <i class="ri-play-fill" />
                       {{ formatNumber(item.playCount) }}
                     </div>
                     <!-- Play Overlay -->
                     <div
-                      class="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/15 group-hover:opacity-100 transition-opacity duration-200"
+                      class="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-opacity duration-200 group-hover:bg-black/12 group-hover:opacity-100"
                     >
                       <div
-                        class="w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center transition-opacity duration-200"
+                        class="flex h-9 w-9 items-center justify-center rounded-full bg-white/95 transition-opacity duration-200"
                       >
                         <i class="ri-play-fill text-xl text-neutral-900 ml-0.5" />
                       </div>
@@ -214,7 +209,7 @@
                   <!-- Info -->
                   <div class="mt-3">
                     <h3
-                      class="line-clamp-2 text-sm font-semibold text-neutral-800 dark:text-neutral-100 group-hover:text-primary dark:group-hover:text-primary transition-colors"
+                      class="line-clamp-2 text-sm font-medium text-neutral-800 transition-colors group-hover:text-primary dark:text-neutral-100 dark:group-hover:text-primary"
                     >
                       {{ item.name }}
                     </h3>
@@ -229,10 +224,7 @@
             <!-- Records Tab -->
             <div v-show="activeTab === 'records'">
               <!-- No Permission -->
-              <div
-                v-if="!hasRecordPermission"
-                class="flex flex-col items-center justify-center py-16 text-neutral-400 dark:text-neutral-500"
-              >
+              <div v-if="!hasRecordPermission" class="qqm-user-empty">
                 <i class="ri-lock-line text-5xl mb-4 opacity-50" />
                 <p>
                   {{
@@ -243,10 +235,7 @@
                 </p>
               </div>
               <!-- Empty -->
-              <div
-                v-else-if="!recordList || recordList.length === 0"
-                class="flex flex-col items-center justify-center py-16 text-neutral-400 dark:text-neutral-500"
-              >
+              <div v-else-if="!recordList || recordList.length === 0" class="qqm-user-empty">
                 <i class="ri-music-2-line text-5xl mb-4 opacity-50" />
                 <p>{{ t('user.detail.noRecords') }}</p>
               </div>
@@ -419,6 +408,52 @@ const isArtist = (profile: any) => {
   min-height: 200px;
 }
 
+.user-tabs {
+  border: 1px solid var(--qqm-border);
+  background: color-mix(in srgb, var(--qqm-surface-2) 70%, transparent);
+}
+
+.user-playlist-card {
+  animation: fadeInSoft 0.22s ease-out backwards;
+}
+
+.user-playlist-cover {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-2);
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.user-playlist-card:hover .user-playlist-cover {
+  border-color: color-mix(in srgb, var(--qqm-primary) 22%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary-soft) 24%, var(--qqm-surface-2));
+}
+
+.qqm-user-empty {
+  display: flex;
+  min-height: 260px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--qqm-text-muted);
+  font-size: 13px;
+}
+
+.qqm-user-empty i {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 1px solid var(--qqm-border);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--qqm-primary-soft) 34%, transparent);
+  color: var(--qqm-primary);
+  font-size: 23px;
+  opacity: 1;
+}
+
 .tab-indicator-enter-active,
 .tab-indicator-leave-active {
   transition:
@@ -435,6 +470,17 @@ const isArtist = (profile: any) => {
 .song-item-container {
   content-visibility: auto;
   contain-intrinsic-size: 0 52px;
+}
+
+@keyframes fadeInSoft {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 button:focus-visible {
