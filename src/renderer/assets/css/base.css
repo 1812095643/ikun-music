@@ -553,32 +553,43 @@ body {
 /* 首页卡片最终精修：靠近 QQ 音乐的清爽封面流，弱化厚重卡片阴影与过度圆角。 */
 .home-polished-card,
 .home-list-card {
-  background: transparent !important;
+  position: relative;
+  background: color-mix(in srgb, var(--qqm-surface) 54%, transparent) !important;
+  border: 1px solid rgba(255, 255, 255, 0.62);
   border-radius: 10px !important;
-  box-shadow: none !important;
+  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.045) !important;
+  backdrop-filter: blur(14px) saturate(1.08);
   transition:
     transform 180ms var(--qqm-ease),
+    background-color 180ms var(--qqm-ease),
+    border-color 180ms var(--qqm-ease),
+    box-shadow 180ms var(--qqm-ease),
     color 180ms var(--qqm-ease);
 }
 
 .home-polished-card:hover,
 .home-list-card:hover {
   transform: translateY(-2px);
-  background: transparent !important;
-  box-shadow: none !important;
+  background: color-mix(in srgb, var(--qqm-surface) 72%, transparent) !important;
+  border-color: rgba(30, 207, 115, 0.18);
+  box-shadow: 0 14px 28px rgba(20, 24, 31, 0.08) !important;
 }
 
 .home-polished-cover,
 .home-list-card > div:first-child {
   border-radius: 10px !important;
-  border: 1px solid var(--qqm-border);
-  box-shadow: 0 6px 16px rgba(20, 24, 31, 0.07) !important;
-  background: var(--qqm-surface-muted);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 8px 18px rgba(20, 24, 31, 0.07) !important;
+  background: color-mix(in srgb, var(--qqm-surface-muted) 72%, transparent);
 }
 
 .home-polished-card:hover .home-polished-cover,
 .home-list-card:hover > div:first-child {
-  box-shadow: 0 10px 24px rgba(20, 24, 31, 0.11) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 12px 26px rgba(20, 24, 31, 0.12) !important;
 }
 
 .home-polished-overlay {
@@ -594,8 +605,31 @@ body {
 }
 
 .home-polished-extra {
-  background: rgba(18, 22, 28, 0.58) !important;
-  backdrop-filter: blur(10px);
+  background: rgba(18, 22, 28, 0.52) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px) saturate(1.08);
+}
+
+.dark .home-polished-card,
+.dark .home-list-card {
+  background: rgba(24, 27, 31, 0.5) !important;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18) !important;
+}
+
+.dark .home-polished-card:hover,
+.dark .home-list-card:hover {
+  background: rgba(30, 34, 39, 0.64) !important;
+  border-color: rgba(30, 207, 115, 0.22);
+}
+
+.dark .home-polished-cover,
+.dark .home-list-card > div:first-child {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 24px rgba(0, 0, 0, 0.22) !important;
 }
 
 .home-polished-title,
