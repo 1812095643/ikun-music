@@ -11,7 +11,7 @@
     <div class="p-6 pb-4">
       <div class="mb-6 flex items-center">
         <div
-          class="mr-5 h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl shadow-lg ring-2 ring-neutral-100 dark:ring-neutral-800"
+          class="mr-5 h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl shadow-sm ring-1 ring-neutral-100 dark:ring-neutral-800"
         >
           <img src="@/assets/logo.png" alt="App Icon" class="h-full w-full object-cover" />
         </div>
@@ -37,7 +37,7 @@
 
       <div
         v-if="hasReleaseNotes"
-        class="mb-6 overflow-hidden rounded-2xl bg-neutral-50 dark:bg-neutral-800/50"
+        class="mb-6 overflow-hidden rounded-xl bg-neutral-50 dark:bg-neutral-800/50"
       >
         <n-scrollbar style="max-height: 300px">
           <div
@@ -47,10 +47,7 @@
         </n-scrollbar>
       </div>
 
-      <div
-        v-if="showProgressCard"
-        class="mb-6 rounded-2xl bg-neutral-50 p-4 dark:bg-neutral-800/50"
-      >
+      <div v-if="showProgressCard" class="mb-6 rounded-xl bg-neutral-50 p-4 dark:bg-neutral-800/50">
         <div class="mb-2.5 flex items-center justify-between">
           <span class="text-sm text-neutral-500 dark:text-neutral-400">{{ progressText }}</span>
           <span class="text-sm font-bold text-primary">{{ progressPercent }}%</span>
@@ -67,7 +64,7 @@
 
       <div
         v-if="showErrorCard"
-        class="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200"
+        class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200"
       >
         <div class="mb-1 font-semibold">{{ t('comp.update.autoUpdateFailed') }}</div>
         <div>{{ errorText }}</div>

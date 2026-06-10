@@ -13,7 +13,7 @@
           :class="[
             animationClass,
             index === 0 ? 'ml-0.5' : '',
-            isActive(category) ? 'bg-primary text-white shadow-lg shadow-primary/25 scale-105' : ''
+            isActive(category) ? 'bg-primary text-white shadow-sm shadow-primary/20' : ''
           ]"
           :style="getAnimationDelay(index)"
           @click="handleClickCategory(category)"

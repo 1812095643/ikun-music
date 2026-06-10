@@ -16,7 +16,7 @@
         <div class="artist-cover">
           <n-image
             :src="getImgUrl(artistInfo?.avatar, '300y300')"
-            class="w-48 h-48 rounded-2xl object-cover"
+            class="w-48 h-48 rounded-xl object-cover"
             preview-disabled
           />
         </div>

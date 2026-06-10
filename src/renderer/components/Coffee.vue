@@ -12,7 +12,9 @@
         </slot>
       </template>
 
-      <div class="p-6 rounded-lg shadow-lg bg-light dark:bg-gray-800">
+      <div
+        class="p-6 rounded-lg shadow-sm bg-light dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
+      >
         <div class="flex gap-10">
           <div class="flex flex-col items-center gap-2">
             <n-image

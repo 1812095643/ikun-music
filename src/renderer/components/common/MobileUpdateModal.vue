@@ -10,7 +10,7 @@
           class="w-full max-w-lg bg-white dark:bg-gray-900 rounded-t-3xl overflow-hidden animate-slide-up"
         >
           <!-- 顶部装饰条 -->
-          <div class="h-1 bg-gradient-to-r from-green-400 via-green-500 to-emerald-600"></div>
+          <div class="h-1 bg-primary"></div>
 
           <!-- 关闭条 -->
           <div class="flex justify-center pt-3 pb-2">
@@ -22,7 +22,7 @@
             <div class="flex items-center gap-4">
               <!-- 应用图标 -->
               <div
-                class="w-20 h-20 rounded-2xl overflow-hidden shadow-lg flex-shrink-0 ring-2 ring-green-500/20"
+                class="w-20 h-20 rounded-xl overflow-hidden shadow-sm flex-shrink-0 ring-1 ring-green-500/20"
               >
                 <img src="@/assets/logo.png" alt="App Icon" class="w-full h-full object-cover" />
               </div>
@@ -30,9 +30,7 @@
               <!-- 版本信息 -->
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-2">
-                  <span
-                    class="px-3 py-1 text-xs font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 rounded-full"
-                  >
+                  <span class="px-3 py-1 text-xs font-medium text-white bg-primary rounded-lg">
                     {{ t('comp.update.title') }}
                   </span>
                 </div>
@@ -47,9 +45,7 @@
           </div>
 
           <!-- 更新内容 -->
-          <div
-            class="mx-6 mb-6 max-h-80 overflow-y-auto rounded-2xl bg-gray-50 dark:bg-gray-800/50"
-          >
+          <div class="mx-6 mb-6 max-h-80 overflow-y-auto rounded-xl bg-gray-50 dark:bg-gray-800/50">
             <div
               class="p-5 text-sm text-gray-600 dark:text-gray-300 leading-relaxed"
               v-html="parsedReleaseNotes"
@@ -63,13 +59,13 @@
           >
             <button
               @click="handleLater"
-              class="flex-1 py-4 px-4 rounded-2xl text-base font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-[0.98] transition-all duration-200"
+              class="flex-1 py-4 px-4 rounded-lg text-base font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-[0.98] transition-all duration-200"
             >
               {{ t('comp.update.noThanks') }}
             </button>
             <button
               @click="handleUpdate"
-              class="flex-1 py-4 px-4 rounded-2xl text-base font-medium text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 active:scale-[0.98] transition-all duration-200 shadow-lg shadow-green-500/25"
+              class="flex-1 py-4 px-4 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary/90 active:scale-[0.98] transition-all duration-200 shadow-sm shadow-green-500/20"
             >
               <span class="flex items-center justify-center gap-2">
                 <i class="ri-download-2-line text-lg"></i>

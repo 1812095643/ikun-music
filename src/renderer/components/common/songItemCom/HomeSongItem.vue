@@ -11,7 +11,7 @@
       <n-image
         v-if="item.picUrl"
         :src="getImgUrl(item.picUrl, '200y200')"
-        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         preview-disabled
         :img-props="{
           crossorigin: 'anonymous',
@@ -22,7 +22,7 @@
       <div
         class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       >
-        <i class="iconfont icon-playfill text-lg md:text-xl text-white drop-shadow-lg"></i>
+        <i class="iconfont icon-playfill text-lg md:text-xl text-white drop-shadow-sm"></i>
       </div>
     </div>
 
@@ -48,7 +48,7 @@
 
     <!-- More Button -->
     <button
-      class="more-btn flex h-8 w-8 items-center justify-center rounded-[9px] opacity-0 transition-all duration-300 group-hover:bg-white dark:group-hover:bg-neutral-800 group-hover:opacity-100 hover:scale-110 active:scale-95"
+      class="more-btn flex h-8 w-8 items-center justify-center rounded-[9px] opacity-0 transition-all duration-300 group-hover:bg-white dark:group-hover:bg-neutral-800 group-hover:opacity-100 hover:-translate-y-0.5 active:scale-95"
       @click.stop="onMenuClick"
     >
       <i class="ri-more-fill text-sm text-neutral-600 dark:text-neutral-300"></i>

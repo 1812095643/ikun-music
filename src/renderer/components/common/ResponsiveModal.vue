@@ -13,8 +13,8 @@
         <Transition :name="isMobile ? 'slide-up' : 'scale-fade'">
           <div
             v-if="show"
-            class="responsive-modal-card relative z-10 w-full bg-white dark:bg-[#1c1c1e] shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
-            :class="[isMobile ? 'rounded-t-[20px] pb-safe' : 'md:max-w-[720px] md:rounded-2xl']"
+            class="responsive-modal-card relative z-10 w-full bg-white dark:bg-[#1c1c1e] shadow-md overflow-hidden flex flex-col max-h-[85vh]"
+            :class="[isMobile ? 'rounded-t-xl pb-safe' : 'md:max-w-[720px] md:rounded-xl']"
             @click.stop
           >
             <!-- Header -->
@@ -25,7 +25,7 @@
                 {{ title }}
               </h3>
               <button
-                class="p-1 -mr-1 rounded-full text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                class="p-1 -mr-1 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
                 @click="close"
               >
                 <i class="ri-close-line text-lg"></i>

@@ -19,7 +19,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 max-w-3xl mx-auto">
       <!-- 支付宝 -->
       <div
-        class="pay-card group relative overflow-hidden rounded-2xl bg-[#00A0E9]/5 border border-[#00A0E9]/20 p-6 flex flex-col items-center transition-all hover:bg-[#00A0E9]/10 hover:shadow-lg hover:shadow-[#00A0E9]/10"
+        class="pay-card group relative overflow-hidden rounded-xl bg-white/70 dark:bg-neutral-900/60 border border-[#00A0E9]/20 p-6 flex flex-col items-center transition-all hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
           class="absolute -right-4 -top-4 w-24 h-24 bg-[#00A0E9]/10 rounded-full blur-2xl group-hover:bg-[#00A0E9]/20 transition-colors"
@@ -27,7 +27,7 @@
         <img
           :src="alipay"
           alt="Alipay"
-          class="w-52 h-52 rounded-xl shadow-sm mb-4 group-hover:scale-105 transition-transform duration-300"
+          class="w-52 h-52 rounded-xl shadow-sm mb-4 transition-transform duration-300 group-hover:-translate-y-0.5"
         />
         <div class="flex items-center gap-2 text-[#00A0E9] font-bold text-lg">
           <i class="ri-alipay-fill text-2xl"></i>
@@ -37,7 +37,7 @@
 
       <!-- 微信支付 -->
       <div
-        class="pay-card group relative overflow-hidden rounded-2xl bg-[#09BB07]/5 border border-[#09BB07]/20 p-6 flex flex-col items-center transition-all hover:bg-[#09BB07]/10 hover:shadow-lg hover:shadow-[#09BB07]/10"
+        class="pay-card group relative overflow-hidden rounded-xl bg-white/70 dark:bg-neutral-900/60 border border-[#09BB07]/20 p-6 flex flex-col items-center transition-all hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
           class="absolute -right-4 -top-4 w-24 h-24 bg-[#09BB07]/10 rounded-full blur-2xl group-hover:bg-[#09BB07]/20 transition-colors"
@@ -45,7 +45,7 @@
         <img
           :src="wechat"
           alt="WeChat"
-          class="w-52 h-52 rounded-xl shadow-sm mb-4 group-hover:scale-105 transition-transform duration-300"
+          class="w-52 h-52 rounded-xl shadow-sm mb-4 transition-transform duration-300 group-hover:-translate-y-0.5"
         />
         <div class="flex items-center gap-2 text-[#09BB07] font-bold text-lg">
           <i class="ri-wechat-pay-fill text-2xl"></i>

@@ -202,7 +202,7 @@ const onPlayMusic = () => {
       transition-duration: 0.15s;
 
       &:hover {
-        transform: scale(1.1); /* hover:scale-110 */
+        transform: translateY(-1px);
       }
 
       .iconfont {
@@ -231,7 +231,7 @@ const onPlayMusic = () => {
       align-items: center;
 
       &:hover {
-        transform: scale(1.1); /* hover:scale-110 */
+        transform: translateY(-1px);
       }
 
       .iconfont {
