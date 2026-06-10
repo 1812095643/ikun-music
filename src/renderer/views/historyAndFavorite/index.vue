@@ -17,7 +17,7 @@ import HistoryList from '@/views/history/index.vue';
 
 <style scoped>
 .flex-item {
-  @apply flex-1 overflow-hidden rounded-xl border transition-all duration-300;
+  @apply flex-1 overflow-hidden rounded-lg border transition-colors duration-200;
   background: color-mix(in srgb, var(--qqm-surface) 70%, transparent);
   border-color: var(--qqm-border);
   box-shadow: var(--qqm-shadow);

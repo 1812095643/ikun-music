@@ -127,7 +127,7 @@
                       class="relative h-1.5 bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden"
                     >
                       <div
-                        class="absolute inset-y-0 left-0 bg-primary transition-all duration-300"
+                        class="absolute inset-y-0 left-0 bg-primary transition-colors duration-200"
                         :class="{ 'bg-red-500': item.status === 'error' }"
                         :style="{ width: `${item.progress}%` }"
                       ></div>
@@ -1100,16 +1100,18 @@ onMounted(() => {
 }
 
 .action-btn-pill {
-  @apply transition-all border-neutral-200 dark:border-neutral-800;
+  @apply transition-colors border-neutral-200 dark:border-neutral-800;
   &:hover:not(:disabled) {
-    @apply border-primary/30 bg-primary/5;
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 30%, transparent);
+    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, transparent);
   }
 }
 
 .action-btn-icon {
-  @apply transition-all;
+  @apply transition-colors;
   &:hover {
-    @apply text-primary bg-primary/10;
+    color: var(--qqm-primary, #22c55e);
+    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
     transform: translateY(-1px);
   }
 }

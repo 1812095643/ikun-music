@@ -10,7 +10,7 @@
         <button
           v-for="tab in tabs"
           :key="tab.key"
-          class="flex-1 py-1 text-xs font-medium rounded-md transition-all duration-200"
+          class="flex-1 py-1 text-xs font-medium rounded-md transition-colors duration-200"
           :class="[
             activeTab === tab.key
               ? 'bg-white dark:bg-white/10 text-gray-900 dark:text-white shadow-sm'
@@ -36,10 +36,10 @@
                 <div
                   v-for="source in allSources"
                   :key="source.key"
-                  class="group relative flex items-center p-2.5 rounded-xl border transition-all duration-200 cursor-pointer"
+                  class="group relative flex items-center p-2.5 rounded-lg border transition-colors duration-200 cursor-pointer"
                   :class="[
                     isSourceSelected(source.key)
-                      ? 'bg-emerald-50/50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20'
+                      ? 'bg-primary/10 dark:bg-primary/15 border-primary/20 dark:border-primary/25'
                       : 'bg-white dark:bg-white/5 border-gray-100 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/10',
                     { 'opacity-60 cursor-not-allowed': !source.available }
                   ]"
@@ -65,7 +65,7 @@
                         class="w-4 h-4 rounded-full border flex items-center justify-center transition-colors shrink-0 ml-1"
                         :class="[
                           isSourceSelected(source.key)
-                            ? 'bg-emerald-500 border-emerald-500'
+                            ? 'bg-primary border-primary'
                             : 'border-gray-300 dark:border-gray-600'
                         ]"
                       >
@@ -110,7 +110,7 @@
                 </h3>
                 <button
                   @click="importLxMusicScript"
-                  class="flex items-center gap-1 px-2.5 py-1 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-medium rounded-lg transition-colors"
+                  class="flex items-center gap-1 px-2.5 py-1 bg-primary hover:bg-primary/90 text-white text-xs font-medium rounded-lg transition-colors"
                 >
                   <i class="ri-upload-line"></i>
                   {{ t('settings.playback.lxMusic.scripts.importLocal') }}
@@ -122,10 +122,10 @@
                 <div
                   v-for="api in lxMusicApis"
                   :key="api.id"
-                  class="flex items-center p-2.5 rounded-xl border transition-all duration-200"
+                  class="flex items-center p-2.5 rounded-lg border transition-colors duration-200"
                   :class="[
                     activeLxApiId === api.id
-                      ? 'bg-emerald-50/50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20'
+                      ? 'bg-primary/10 dark:bg-primary/15 border-primary/20 dark:border-primary/25'
                       : 'bg-white dark:bg-white/5 border-gray-100 dark:border-white/5'
                   ]"
                 >
@@ -133,7 +133,7 @@
                     <input
                       type="radio"
                       :checked="activeLxApiId === api.id"
-                      class="peer appearance-none w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 checked:border-emerald-500 checked:bg-emerald-500 transition-colors cursor-pointer"
+                      class="peer appearance-none w-4 h-4 rounded-full border border-gray-300 dark:border-gray-600 checked:border-primary checked:bg-primary transition-colors cursor-pointer"
                       @change="setActiveLxApi(api.id)"
                     />
                     <i
@@ -153,14 +153,14 @@
                         v-else
                         v-model="editingName"
                         ref="renameInputRef"
-                        class="w-full px-2 py-0.5 text-sm bg-white dark:bg-black/20 border border-emerald-500 rounded focus:outline-none"
+                        class="w-full px-2 py-0.5 text-sm bg-white dark:bg-black/20 border border-primary rounded focus:outline-none"
                         @blur="saveScriptName(api.id)"
                         @keyup.enter="saveScriptName(api.id)"
                       />
 
                       <button
                         v-if="editingScriptId !== api.id"
-                        class="text-gray-400 hover:text-emerald-500 transition-colors"
+                        class="text-gray-400 hover:text-primary transition-colors"
                         @click="startRenaming(api)"
                       >
                         <i class="ri-edit-line text-sm"></i>
@@ -187,7 +187,7 @@
 
               <div
                 v-else
-                class="py-6 text-center text-xs text-gray-400 bg-gray-50 dark:bg-white/5 rounded-xl border border-dashed border-gray-200 dark:border-white/10"
+                class="py-6 text-center text-xs text-gray-400 bg-gray-50 dark:bg-white/5 rounded-lg border border-dashed border-gray-200 dark:border-white/10"
               >
                 <p>{{ t('settings.playback.lxMusic.scripts.empty') }}</p>
               </div>
@@ -201,12 +201,12 @@
                   <input
                     v-model="lxScriptUrl"
                     :placeholder="t('settings.playback.lxMusic.scripts.urlPlaceholder')"
-                    class="flex-1 px-3 py-1.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-xs focus:outline-none focus:border-emerald-500 transition-colors"
+                    class="flex-1 px-3 py-1.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-lg text-xs focus:outline-none focus:border-primary transition-colors"
                     :disabled="isImportingFromUrl"
                   />
                   <button
                     @click="importLxMusicScriptFromUrl"
-                    class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-medium rounded-xl transition-colors flex items-center gap-1"
+                    class="px-3 py-1.5 bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-medium rounded-lg transition-colors flex items-center gap-1"
                     :disabled="!lxScriptUrl.trim() || isImportingFromUrl"
                   >
                     <i v-if="isImportingFromUrl" class="ri-loader-4-line animate-spin"></i>
@@ -223,7 +223,7 @@
               class="flex flex-col items-center justify-center py-6 text-center h-full"
             >
               <div
-                class="w-12 h-12 bg-primary/10 dark:bg-primary/20 text-primary rounded-xl flex items-center justify-center mb-3"
+                class="w-12 h-12 bg-primary/10 dark:bg-primary/20 text-primary rounded-lg flex items-center justify-center mb-3"
               >
                 <i class="ri-plug-fill text-2xl"></i>
               </div>
@@ -245,7 +245,7 @@
 
               <div
                 v-if="settingsStore.setData.customApiPluginName"
-                class="mt-4 flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 rounded-lg text-xs"
+                class="mt-4 flex items-center gap-2 px-3 py-1.5 bg-primary/10 dark:bg-primary/15 text-primary dark:text-primary rounded-lg text-xs"
               >
                 <i class="ri-check-circle-fill"></i>
                 <span
@@ -273,7 +273,7 @@
           {{ t('common.cancel') }}
         </button>
         <button
-          class="px-4 py-2 text-xs font-medium text-white bg-primary hover:bg-primary/90 rounded-lg shadow-sm shadow-primary/20 transition-all active:translate-y-0"
+          class="px-4 py-2 text-xs font-medium text-white rounded-lg transition-colors confirm-button"
           @click="handleConfirm"
         >
           {{ t('common.confirm') }}
@@ -732,5 +732,12 @@ watch(
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+.confirm-button {
+  background-color: var(--qqm-primary, #22c55e);
+}
+
+.confirm-button:hover {
+  background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 90%, black);
 }
 </style>

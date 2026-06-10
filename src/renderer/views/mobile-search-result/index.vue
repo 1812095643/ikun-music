@@ -355,7 +355,8 @@ onMounted(() => {
   @apply transition-colors duration-200;
 
   &.active {
-    @apply bg-green-500 text-white;
+    background-color: var(--qqm-primary, #22c55e);
+    color: white;
   }
 }
 

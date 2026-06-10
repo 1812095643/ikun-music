@@ -23,7 +23,7 @@
             <button
               v-for="isDesc in [true, false]"
               :key="String(isDesc)"
-              class="px-3 h-full rounded-md text-xs font-medium transition-all duration-300 flex items-center gap-1"
+              class="px-3 h-full rounded-md text-xs font-medium transition-colors duration-200 flex items-center gap-1"
               :class="
                 isDescending === isDesc
                   ? 'bg-white dark:bg-neutral-700 text-gray-900 dark:text-white shadow-sm'
@@ -37,7 +37,7 @@
           </div>
 
           <button
-            class="h-9 px-4 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-white text-xs font-medium transition-all duration-300 flex items-center gap-1.5"
+            class="h-9 px-4 rounded-lg bg-primary/10 hover:bg-primary text-primary hover:text-white text-xs font-medium transition-colors duration-200 flex items-center gap-1.5"
             @click="startSelect"
           >
             <i class="ri-checkbox-multiple-line text-sm"></i>
@@ -87,7 +87,7 @@
           class="h-full flex flex-col items-center justify-center text-gray-400"
         >
           <div
-            class="w-20 h-20 rounded-xl bg-gray-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
+            class="w-20 h-20 rounded-lg bg-gray-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
           >
             <i class="ri-heart-line text-4xl text-gray-300 dark:text-gray-600"></i>
           </div>
@@ -100,7 +100,7 @@
             :key="song.id"
             :item="song"
             :favorite="false"
-            class="rounded-xl hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+            class="rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
             :class="[
               setAnimationClass('animate__fadeInUp'),
               { '!bg-primary/10': selectedSongs.includes(song.id as number) }
@@ -123,9 +123,9 @@
             <div
               v-for="i in 5"
               :key="i"
-              class="flex items-center gap-4 rounded-xl p-2 animate-pulse"
+              class="flex items-center gap-4 rounded-lg p-2 animate-pulse"
             >
-              <div class="h-12 w-12 rounded-xl bg-gray-200 dark:bg-neutral-800"></div>
+              <div class="h-12 w-12 rounded-lg bg-gray-200 dark:bg-neutral-800"></div>
               <div class="flex-1 space-y-2">
                 <div class="h-4 w-1/3 rounded bg-gray-200 dark:bg-neutral-800"></div>
                 <div class="h-3 w-1/4 rounded bg-gray-200 dark:bg-neutral-800"></div>
