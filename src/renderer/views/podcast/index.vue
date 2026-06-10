@@ -64,7 +64,7 @@
                 class="w-full h-full rounded-lg object-cover"
               />
               <div
-                class="absolute inset-0 bg-black/40 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                class="absolute inset-0 bg-black/25 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center"
               >
                 <i class="ri-play-fill text-white text-2xl"></i>
               </div>

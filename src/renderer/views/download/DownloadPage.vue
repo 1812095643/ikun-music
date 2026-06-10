@@ -1,5 +1,5 @@
 <template>
-  <div class="download-page h-full w-full bg-white dark:bg-black transition-colors duration-500">
+  <div class="download-page h-full w-full bg-white dark:bg-black transition-colors duration-200">
     <n-scrollbar class="h-full">
       <div class="download-content pb-32">
         <!-- Page Header -->
@@ -171,7 +171,7 @@
                       class="w-full h-full object-cover"
                     />
                     <div
-                      class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      class="absolute inset-0 flex items-center justify-center bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
                       @click="handlePlayMusic(item)"
                     >
                       <i class="ri-play-fill text-white text-xl" />

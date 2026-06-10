@@ -1,6 +1,6 @@
 <template>
   <div
-    class="radio-detail-page h-full w-full bg-white dark:bg-black transition-colors duration-500"
+    class="radio-detail-page h-full w-full bg-white dark:bg-black transition-colors duration-200"
   >
     <n-scrollbar class="h-full" @scroll="handleScroll">
       <div class="radio-detail-content w-full pb-32">

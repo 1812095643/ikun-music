@@ -31,7 +31,7 @@
               @click="toggleCreateForm"
             >
               <div
-                class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white transition-transform duration-300"
+                class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white transition-transform duration-200 ease-out"
                 :class="{ 'rotate-45': isCreating }"
               >
                 <i class="iconfont text-xl" :class="isCreating ? 'ri-close-line' : 'ri-add-line'" />

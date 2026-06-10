@@ -54,7 +54,7 @@ const goToDetail = () => {
       <!-- Episode count badge -->
       <div
         v-if="radio?.programCount && !program"
-        class="absolute top-2 right-2 px-2 py-1 rounded-md bg-black/40 text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        class="absolute top-2 right-2 px-2 py-1 rounded-md bg-neutral-950/55 text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
       >
         <i class="ri-mic-fill"></i>
         {{ radio.programCount }}

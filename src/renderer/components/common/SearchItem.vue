@@ -31,7 +31,7 @@
       <!-- Item Size Badge (for Album) -->
       <div
         v-if="item.type === '专辑' && item.size"
-        class="absolute top-2 right-2 flex items-center gap-1 rounded-md bg-black/40 px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        class="absolute top-2 right-2 flex items-center gap-1 rounded-md bg-neutral-950/55 px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
       >
         <i class="ri-music-2-line" />
         <span>{{ item.size }}</span>

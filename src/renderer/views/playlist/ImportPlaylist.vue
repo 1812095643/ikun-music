@@ -1,6 +1,6 @@
 <template>
   <div
-    class="playlist-import-page h-full w-full bg-gray-50 dark:bg-black transition-colors duration-500 overflow-hidden flex flex-col relative"
+    class="playlist-import-page h-full w-full bg-gray-50 dark:bg-black transition-colors duration-200 overflow-hidden flex flex-col relative"
   >
     <!-- 背景装饰 -->
     <div

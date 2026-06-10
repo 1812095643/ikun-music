@@ -1,6 +1,6 @@
 <template>
   <div
-    class="set-page h-full w-full bg-white dark:bg-black transition-colors duration-500 flex flex-col"
+    class="set-page h-full w-full bg-white dark:bg-black transition-colors duration-200 flex flex-col"
   >
     <!-- 顶部导航区 -->
     <div

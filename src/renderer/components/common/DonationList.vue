@@ -24,11 +24,7 @@
         <div
           class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/15 transition-colors"
         ></div>
-        <img
-          :src="alipay"
-          alt="Alipay"
-          class="w-52 h-52 rounded-lg shadow-sm mb-4 transition-transform duration-300 group-"
-        />
+        <img :src="alipay" alt="Alipay" class="w-52 h-52 rounded-lg shadow-sm mb-4" />
         <div class="flex items-center gap-2 text-primary font-bold text-lg">
           <i class="ri-alipay-fill text-2xl"></i>
           {{ t('common.alipay') }}
@@ -42,11 +38,7 @@
         <div
           class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/15 transition-colors"
         ></div>
-        <img
-          :src="wechat"
-          alt="WeChat"
-          class="w-52 h-52 rounded-lg shadow-sm mb-4 transition-transform duration-300 group-"
-        />
+        <img :src="wechat" alt="WeChat" class="w-52 h-52 rounded-lg shadow-sm mb-4" />
         <div class="flex items-center gap-2 text-primary font-bold text-lg">
           <i class="ri-wechat-pay-fill text-2xl"></i>
           {{ t('common.wechat') }}

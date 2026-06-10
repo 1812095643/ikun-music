@@ -65,7 +65,7 @@
       <!-- Play Count (for playlists) -->
       <div
         v-if="playCount"
-        class="absolute right-3 top-3 flex items-center gap-1.5 rounded-[9px] bg-black/40 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-md"
+        class="absolute right-3 top-3 flex items-center gap-1.5 rounded-[9px] bg-neutral-950/55 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-sm"
       >
         <i class="ri-play-fill text-[10px]" />
         <span>{{ formatNumber(playCount) }}</span>

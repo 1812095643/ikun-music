@@ -1,5 +1,5 @@
 <template>
-  <div class="toplist-page h-full w-full bg-white dark:bg-black transition-colors duration-500">
+  <div class="toplist-page h-full w-full bg-white dark:bg-black transition-colors duration-200">
     <n-scrollbar class="h-full">
       <div class="toplist-content w-full pb-32 pt-6 page-padding">
         <!-- Hero Section -->
@@ -47,7 +47,7 @@
 
                 <!-- Play Overlay -->
                 <div
-                  class="absolute inset-0 bg-transparent group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center"
+                  class="absolute inset-0 bg-transparent group-hover:bg-black/15 transition-colors duration-200 flex items-center justify-center"
                 >
                   <div
                     class="play-icon w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
@@ -58,7 +58,7 @@
 
                 <!-- Update Frequency Badge -->
                 <div
-                  class="absolute bottom-3 left-3 px-2 py-1 rounded-lg bg-black/40 backdrop-blur-md text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  class="absolute bottom-3 left-3 px-2 py-1 rounded-lg bg-neutral-950/55 backdrop-blur-sm text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   v-if="item.updateFrequency"
                 >
                   {{ item.updateFrequency }}
@@ -66,7 +66,7 @@
 
                 <!-- Play Count Badge -->
                 <div
-                  class="absolute top-3 right-3 px-2 py-1 rounded-lg bg-black/40 backdrop-blur-md text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  class="absolute top-3 right-3 px-2 py-1 rounded-lg bg-neutral-950/55 backdrop-blur-sm text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                 >
                   <i class="ri-play-fill"></i>
                   {{ formatNumber(item.playCount) }}

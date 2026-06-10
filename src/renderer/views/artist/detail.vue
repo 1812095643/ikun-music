@@ -1,6 +1,6 @@
 <template>
   <div
-    class="artist-detail-page h-full w-full bg-white dark:bg-neutral-900 transition-colors duration-500"
+    class="artist-detail-page h-full w-full bg-white dark:bg-neutral-900 transition-colors duration-200"
   >
     <n-scrollbar ref="scrollbarRef" class="h-full">
       <div class="artist-detail-content w-full pb-32">
@@ -49,7 +49,7 @@
             <!-- Background Image with Blur -->
             <div class="hero-bg absolute inset-0 -top-20">
               <div
-                class="absolute inset-0 bg-cover bg-center scale-[1.02] blur-xl opacity-30 dark:opacity-20"
+                class="absolute inset-0 bg-cover bg-center opacity-20 dark:opacity-15"
                 :style="{
                   backgroundImage: `url(${getImgUrl(artistInfo.cover || artistInfo.picUrl, '800y800')})`
                 }"
@@ -65,7 +65,7 @@
                 <!-- Artist Avatar -->
                 <div class="artist-avatar-wrapper relative group">
                   <div
-                    class="avatar-glow absolute -inset-1 rounded-full bg-primary/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    class="avatar-glow absolute -inset-1 rounded-full bg-primary/10 blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   />
                   <div
                     class="avatar-container relative w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10"
@@ -136,7 +136,7 @@
 
           <!-- Action Bar -->
           <section
-            class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border-b border-neutral-100 dark:border-neutral-800/50"
+            class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md border-b border-neutral-100 dark:border-neutral-800/50"
           >
             <div class="flex items-center justify-between gap-3">
               <!-- Left Actions -->
@@ -324,7 +324,7 @@
                     />
                     <!-- Play Overlay -->
                     <div
-                      class="play-overlay absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/20 group-hover:opacity-100 transition-opacity duration-200"
+                      class="play-overlay absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/15 group-hover:opacity-100 transition-opacity duration-200"
                     >
                       <div
                         class="play-icon w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center transition-opacity duration-200"

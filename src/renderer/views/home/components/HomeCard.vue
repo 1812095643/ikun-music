@@ -11,7 +11,7 @@
 
       <!-- 播放按钮遮罩 (Apple Music 风格) -->
       <div
-        class="home-polished-overlay absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        class="home-polished-overlay absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100"
       >
         <div class="home-polished-play flex h-10 w-10 items-center justify-center rounded-lg">
           <slot name="play-icon">

@@ -41,7 +41,7 @@
             />
             <!-- Gradient Overlay on Hover -->
             <div
-              class="absolute inset-0 bg-gradient-to-tr from-primary/30 via-primary/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              class="absolute inset-0 bg-black/10 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
             />
           </div>
 

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="user-followers-page h-full w-full bg-white dark:bg-neutral-900 transition-colors duration-500"
+    class="user-followers-page h-full w-full bg-white dark:bg-neutral-900 transition-colors duration-200"
   >
     <n-scrollbar class="h-full">
       <div class="w-full pb-32">

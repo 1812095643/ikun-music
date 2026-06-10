@@ -5,7 +5,7 @@
     @click="$emit('click')"
   >
     <!-- Background Pattern -->
-    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
       <div
         class="absolute inset-0"
         :class="colorClasses.pattern"
@@ -19,7 +19,7 @@
 
     <!-- Glow Effect on Hover -->
     <div
-      class="absolute -inset-[1px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      class="absolute -inset-[1px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
       :class="colorClasses.glow"
     />
 
@@ -44,7 +44,7 @@
         <!-- Badge (optional) -->
         <div
           v-if="badge"
-          class="badge px-2 py-0.5 rounded-[9px] text-[10px] md:text-xs font-semibold animate-pulse"
+          class="badge px-2 py-0.5 rounded-[9px] text-[10px] md:text-xs font-semibold"
           :class="colorClasses.badgeBg"
         >
           {{ badge }}
@@ -76,7 +76,7 @@
     <!-- Active Indicator -->
     <div
       v-if="active"
-      class="absolute top-3 left-3 h-2 w-2 rounded-[4px] animate-pulse"
+      class="absolute top-3 left-3 h-2 w-2 rounded-[4px]"
       :class="colorClasses.activeDot"
     />
   </div>

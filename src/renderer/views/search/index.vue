@@ -1,6 +1,6 @@
 <template>
   <div
-    class="search-page-container h-full w-full bg-white dark:bg-black transition-colors duration-500"
+    class="search-page-container h-full w-full bg-white dark:bg-black transition-colors duration-200"
   >
     <n-scrollbar class="h-full">
       <div class="search-content w-full pb-32 pt-6 page-padding">

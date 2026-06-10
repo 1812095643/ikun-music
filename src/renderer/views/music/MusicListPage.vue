@@ -1,5 +1,5 @@
 <template>
-  <div class="music-list-page h-full w-full bg-white dark:bg-black transition-colors duration-500">
+  <div class="music-list-page h-full w-full bg-white dark:bg-black transition-colors duration-200">
     <n-scrollbar ref="scrollbarRef" class="h-full" @scroll="handleScroll">
       <div class="music-list-content pb-32">
         <!-- Hero Section 和 Action Bar -->
@@ -25,7 +25,7 @@
                 <!-- Playlist Cover -->
                 <div class="cover-wrapper relative group">
                   <div
-                    class="cover-glow absolute -inset-px rounded-lg bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    class="cover-glow absolute -inset-px rounded-lg bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   ></div>
                   <div
                     class="cover-container relative w-48 h-48 md:w-64 md:h-64 rounded-lg overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10"

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-full bg-white dark:bg-neutral-900 transition-colors duration-500">
+  <div class="h-full w-full bg-white dark:bg-neutral-900 transition-colors duration-200">
     <n-scrollbar class="h-full">
       <div class="w-full pb-32">
         <!-- Loading State -->
@@ -44,7 +44,7 @@
             <!-- Background Image with Blur -->
             <div class="absolute inset-0 -top-20">
               <div
-                class="absolute inset-0 bg-cover bg-center scale-[1.02] blur-xl opacity-30 dark:opacity-20"
+                class="absolute inset-0 bg-cover bg-center opacity-20 dark:opacity-15"
                 :style="{
                   backgroundImage: `url(${getImgUrl(userDetail.profile.backgroundUrl)})`
                 }"
@@ -60,7 +60,7 @@
                 <!-- User Avatar -->
                 <div class="relative group">
                   <div
-                    class="absolute -inset-1 rounded-full bg-primary/10 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    class="absolute -inset-1 rounded-full bg-primary/10 blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   />
                   <div
                     class="relative w-28 h-28 md:w-40 md:h-40 rounded-full overflow-hidden shadow-sm ring-1 ring-white/60 dark:ring-neutral-800/60"
@@ -205,7 +205,7 @@
                     </div>
                     <!-- Play Overlay -->
                     <div
-                      class="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/20 group-hover:opacity-100 transition-opacity duration-200"
+                      class="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/15 group-hover:opacity-100 transition-opacity duration-200"
                     >
                       <div
                         class="w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center transition-opacity duration-200"

@@ -45,7 +45,7 @@
         <div class="cover-wrapper relative aspect-square">
           <!-- 背景层 -->
           <div
-            class="cover-bg absolute inset-0 rounded-lg bg-neutral-100 dark:bg-neutral-800 transition-shadow duration-300 group-hover:shadow-primary/10"
+            class="cover-bg absolute inset-0 rounded-lg bg-neutral-100 dark:bg-neutral-800 transition-colors duration-200"
           />
 
           <!-- 图片层 -->

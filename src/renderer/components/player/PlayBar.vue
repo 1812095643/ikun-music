@@ -644,7 +644,7 @@ const openPlayListDrawer = () => {
   @apply relative cursor-pointer w-12 h-12 shrink-0;
 
   .hover-arrow {
-    @apply absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 rounded-lg;
+    @apply absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 rounded-lg;
     background: rgba(0, 0, 0, 0.5);
 
     .hover-content {

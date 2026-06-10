@@ -1,10 +1,12 @@
 <template>
-  <div class="h-full w-full bg-white transition-colors duration-500 dark:bg-black">
+  <div class="h-full w-full bg-white transition-colors duration-200 dark:bg-black">
     <n-scrollbar ref="scrollbarRef" class="h-full" :size="100" @scroll="handleScroll">
       <div class="w-full pb-32">
         <!-- Page Header (scrolls away) -->
         <div ref="headerRef" class="page-padding pt-6 pb-2">
-          <h1 class="mb-2 text-2xl font-bold tracking-tight text-neutral-900 md:text-3xl dark:text-white">
+          <h1
+            class="mb-2 text-2xl font-bold tracking-tight text-neutral-900 md:text-3xl dark:text-white"
+          >
             {{ title }}
           </h1>
           <p v-if="description" class="text-neutral-500 dark:text-neutral-400">
@@ -41,6 +43,7 @@ import { ref } from 'vue';
 import CategorySelector from '@/components/common/CategorySelector.vue';
 
 type Category = string | number | { [key: string]: any };
+type ScrollTargetOptions = { top?: number; left?: number; behavior?: 'auto' | 'smooth' };
 
 withDefaults(
   defineProps<{
@@ -74,7 +77,7 @@ const handleScroll = (e: any) => {
   emit('scroll', e);
 };
 
-const scrollTo = (options: ScrollToOptions) => {
+const scrollTo = (options: ScrollTargetOptions) => {
   scrollbarRef.value?.scrollTo(options);
 };
 
