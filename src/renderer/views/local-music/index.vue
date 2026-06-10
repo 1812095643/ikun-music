@@ -26,11 +26,11 @@
 
         <!-- Action Bar (Sticky) -->
         <section
-          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/95 dark:bg-black/95 border-b border-neutral-100 dark:border-neutral-800/50"
+          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5 bg-white/95 dark:bg-black/95 border-b border-neutral-100 dark:border-neutral-800/60"
         >
-          <div class="flex items-center justify-between gap-4">
+          <div class="flex items-center justify-between gap-3">
             <!-- 左侧：搜索框 -->
-            <div class="flex-1 max-w-xs">
+            <div class="flex-1 max-w-sm">
               <n-input
                 v-model:value="searchKeyword"
                 :placeholder="t('localMusic.search')"
@@ -45,7 +45,7 @@
             </div>
 
             <!-- 右侧：操作按钮 -->
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2.5">
               <!-- 播放全部按钮 -->
               <button
                 v-if="filteredList.length > 0"
@@ -106,11 +106,11 @@
         </section>
 
         <!-- 歌曲列表 -->
-        <section class="list-section page-padding-x mt-6">
+        <section class="list-section page-padding-x mt-4">
           <!-- 空状态 -->
           <div
             v-if="!localMusicStore.scanning && filteredList.length === 0"
-            class="empty-state py-20 text-center"
+            class="empty-state py-16 text-center"
           >
             <i class="ri-folder-music-fill text-5xl mb-4 text-neutral-200 dark:text-neutral-800" />
             <p class="text-neutral-400">{{ t('localMusic.emptyState') }}</p>
@@ -127,7 +127,7 @@
           <div v-else-if="filteredList.length > 0" class="song-list-container">
             <n-virtual-list
               class="song-virtual-list"
-              style="max-height: calc(100vh - 280px)"
+              style="max-height: calc(100vh - 260px)"
               :items="filteredSongResults"
               :item-size="70"
               item-resizable

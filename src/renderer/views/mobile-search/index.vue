@@ -265,13 +265,13 @@ onMounted(() => {
 <style lang="scss" scoped>
 .mobile-search-page {
   @apply fixed inset-0 z-50;
-  @apply bg-light dark:bg-black;
+  @apply bg-white dark:bg-black;
   @apply flex flex-col;
 }
 
 .search-header {
-  @apply flex items-center gap-3 pl-1 pr-3 py-3;
-  @apply border-b border-gray-100 dark:border-gray-800;
+  @apply flex items-center gap-2 pl-2 pr-3 py-3;
+  @apply border-b border-neutral-100 dark:border-neutral-800/70;
 
   &.safe-area-top {
     padding-top: calc(var(--safe-area-inset-top, 0px) + 12px);
@@ -280,15 +280,15 @@ onMounted(() => {
 
 .header-back {
   @apply flex items-center justify-center;
-  @apply w-8 h-8 rounded-lg text-2xl;
-  @apply text-gray-600 dark:text-gray-300;
-  @apply active:bg-gray-100 dark:active:bg-neutral-800;
+  @apply w-9 h-9 rounded-lg text-2xl;
+  @apply text-neutral-600 dark:text-neutral-300;
+  @apply active:bg-neutral-100 dark:active:bg-neutral-900;
 }
 
 .search-input-wrapper {
   @apply flex-1 flex items-center gap-2;
-  @apply bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-neutral-800;
-  @apply px-4 py-1;
+  @apply bg-neutral-50 dark:bg-neutral-950 rounded-lg border border-neutral-100 dark:border-neutral-800;
+  @apply px-3.5 py-1.5;
 }
 
 .search-icon {
@@ -310,7 +310,7 @@ onMounted(() => {
 
 .search-types {
   @apply flex gap-2 px-4 py-3 overflow-x-auto;
-  @apply border-b border-gray-100 dark:border-gray-800;
+  @apply border-b border-neutral-100 dark:border-neutral-800/70;
 
   &::-webkit-scrollbar {
     display: none;
@@ -319,7 +319,7 @@ onMounted(() => {
 
 .type-tag {
   @apply px-3.5 py-1.5 rounded-md text-sm whitespace-nowrap;
-  @apply bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-neutral-800;
+  @apply bg-neutral-50 dark:bg-neutral-950 text-neutral-600 dark:text-neutral-300 border border-neutral-100 dark:border-neutral-800;
   @apply transition-colors duration-200;
 
   &.active {
@@ -329,7 +329,7 @@ onMounted(() => {
 }
 
 .search-content {
-  @apply flex-1 overflow-y-auto px-4 py-3;
+  @apply flex-1 overflow-y-auto px-4 py-4;
 }
 
 .search-section {
@@ -353,9 +353,9 @@ onMounted(() => {
 }
 
 .suggestion-item {
-  @apply flex items-center gap-3 py-3;
-  @apply text-gray-700 dark:text-gray-200;
-  @apply active:bg-gray-50 dark:active:bg-gray-800;
+  @apply flex items-center gap-3 rounded-lg px-2 py-3;
+  @apply text-neutral-700 dark:text-neutral-200;
+  @apply active:bg-primary/5 dark:active:bg-primary/10;
 
   i {
     @apply text-gray-400;
@@ -368,8 +368,8 @@ onMounted(() => {
 
 .history-tag {
   @apply px-3 py-1.5 rounded-md text-sm;
-  @apply bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-neutral-800;
-  @apply active:bg-gray-200 dark:active:bg-gray-700;
+  @apply bg-neutral-50 dark:bg-neutral-950 text-neutral-600 dark:text-neutral-300 border border-neutral-100 dark:border-neutral-800;
+  @apply active:bg-primary/5 active:text-primary dark:active:bg-primary/10;
 }
 
 .hot-list {
@@ -377,8 +377,8 @@ onMounted(() => {
 }
 
 .hot-item {
-  @apply flex items-center gap-3 py-2.5;
-  @apply active:bg-gray-50 dark:active:bg-gray-800;
+  @apply flex items-center gap-3 rounded-lg px-2 py-2.5;
+  @apply active:bg-primary/5 dark:active:bg-primary/10;
 }
 
 .hot-rank {

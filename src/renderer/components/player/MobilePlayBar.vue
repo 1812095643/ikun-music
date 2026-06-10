@@ -77,7 +77,7 @@ const settingsStore = useSettingsStore();
 // 是否播放
 const play = computed(() => playerStore.isPlay);
 // 背景颜色
-const background = ref('#000');
+const background = ref('var(--qqm-surface, #ffffff)');
 
 // 播放控制
 function handleNext() {
@@ -138,7 +138,7 @@ onMounted(() => {
 watch(
   () => playerStore.playMusic,
   async () => {
-    background.value = playMusic.value.backgroundColor as string;
+    background.value = 'var(--qqm-surface, #ffffff)';
   },
   { immediate: true, deep: true }
 );
@@ -150,9 +150,9 @@ watch(
   z-index: 10000;
   animation-duration: 0.22s !important;
   transition:
-    bottom 0.3s ease,
-    opacity 0.3s ease,
-    transform 0.3s ease;
+    bottom 220ms var(--qqm-ease, ease),
+    opacity 220ms var(--qqm-ease, ease),
+    transform 220ms var(--qqm-ease, ease);
 
   &.is-menu-show {
     bottom: calc(var(--safe-area-inset-bottom, 0) + 66px);
@@ -277,7 +277,7 @@ watch(
       @apply flex items-center flex-1 min-w-0 cursor-pointer;
 
       .mini-song-cover {
-        @apply w-12 h-12 rounded-full border-8 border-dark-300 dark:border-light-300;
+        @apply w-11 h-11 rounded-lg border border-neutral-100 dark:border-neutral-800;
       }
 
       .mini-song-text {
@@ -300,8 +300,8 @@ watch(
         @apply flex items-center justify-center cursor-pointer transition;
 
         &.play {
-          @apply w-9 h-9 rounded-full flex items-center justify-center mr-2;
-          @apply bg-gray-100 dark:bg-gray-800;
+          @apply w-9 h-9 rounded-lg flex items-center justify-center mr-2;
+          @apply bg-primary/10 dark:bg-primary/15;
 
           .iconfont {
             @apply text-xl transition-colors;

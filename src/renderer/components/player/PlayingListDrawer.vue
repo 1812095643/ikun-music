@@ -187,8 +187,8 @@ const handleDeleteSong = (song: SongResult) => {
 .playlist-panel {
   @apply fixed right-4 z-[9999999] rounded-lg overflow-hidden;
   width: 360px;
-  height: 72vh;
-  top: 14vh; // 轻量右侧浮层，保留桌面播放器呼吸感
+  height: 68vh;
+  top: 16vh; // 轻量右侧浮层，保留桌面播放器呼吸感
   transform: translateX(0);
   opacity: 1;
   transition:
@@ -241,7 +241,7 @@ const handleDeleteSong = (song: SongResult) => {
   }
 
   &-content {
-    @apply h-[calc(72vh-60px)] overflow-hidden px-2 py-2;
+    @apply h-[calc(68vh-60px)] overflow-hidden px-2 py-2;
   }
 }
 

@@ -303,13 +303,13 @@ onMounted(() => {
 <style lang="scss" scoped>
 .mobile-search-result {
   @apply fixed inset-0;
-  @apply bg-light dark:bg-black;
+  @apply bg-white dark:bg-black;
   @apply flex flex-col;
 }
 
 .result-header {
-  @apply flex items-center gap-3 px-4 py-3;
-  @apply border-b border-gray-100 dark:border-gray-800;
+  @apply flex items-center gap-2 px-3 py-3;
+  @apply border-b border-neutral-100 dark:border-neutral-800/70;
 
   &.safe-area-top {
     padding-top: calc(var(--safe-area-inset-top, 0px) + 12px);
@@ -318,9 +318,9 @@ onMounted(() => {
 
 .header-back {
   @apply flex items-center justify-center;
-  @apply w-10 h-10 rounded-lg text-xl;
-  @apply text-gray-600 dark:text-gray-300;
-  @apply active:bg-gray-100 dark:active:bg-neutral-800;
+  @apply w-9 h-9 rounded-lg text-xl;
+  @apply text-neutral-600 dark:text-neutral-300;
+  @apply active:bg-neutral-100 dark:active:bg-neutral-900;
 }
 
 .header-keyword {
@@ -335,14 +335,14 @@ onMounted(() => {
 
 .action-btn {
   @apply flex items-center justify-center;
-  @apply w-10 h-10 rounded-lg text-xl;
-  @apply text-gray-600 dark:text-gray-300;
-  @apply active:bg-gray-100 dark:active:bg-neutral-800;
+  @apply w-9 h-9 rounded-lg text-xl;
+  @apply text-neutral-600 dark:text-neutral-300;
+  @apply active:bg-neutral-100 dark:active:bg-neutral-900;
 }
 
 .search-types {
   @apply flex gap-2 px-4 py-3 overflow-x-auto;
-  @apply border-b border-gray-100 dark:border-gray-800;
+  @apply border-b border-neutral-100 dark:border-neutral-800/70;
 
   &::-webkit-scrollbar {
     display: none;
@@ -351,7 +351,7 @@ onMounted(() => {
 
 .type-tag {
   @apply px-3.5 py-1.5 rounded-md text-sm whitespace-nowrap;
-  @apply bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 border border-gray-100 dark:border-neutral-800;
+  @apply bg-neutral-50 dark:bg-neutral-950 text-neutral-600 dark:text-neutral-300 border border-neutral-100 dark:border-neutral-800;
   @apply transition-colors duration-200;
 
   &.active {
@@ -370,7 +370,7 @@ onMounted(() => {
 }
 
 .result-list {
-  @apply pb-20;
+  @apply px-3 pb-24 pt-2;
 }
 
 .loading-more {
@@ -379,8 +379,8 @@ onMounted(() => {
 }
 
 .no-more {
-  @apply text-center py-4;
-  @apply text-gray-500 dark:text-gray-400;
+  @apply text-center py-5;
+  @apply text-neutral-400 dark:text-neutral-500;
 }
 
 .empty-state {

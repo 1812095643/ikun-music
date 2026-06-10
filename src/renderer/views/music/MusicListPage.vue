@@ -113,13 +113,13 @@
         <!-- Action Bar (Sticky) -->
         <section
           v-if="songList.length > 0"
-          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/95 dark:bg-black/95 border-b border-neutral-100 dark:border-neutral-800/50"
+          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5 bg-white/95 dark:bg-black/95 border-b border-neutral-100 dark:border-neutral-800/60"
         >
           <div class="flex items-center justify-between gap-4">
             <div class="flex items-center gap-3">
               <!-- Play All Button -->
               <button
-                class="play-all-btn flex items-center gap-1.5 md:gap-2 px-3.5 md:px-5 py-1.5 md:py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-xs md:text-sm transition-colors duration-200"
+                class="play-all-btn flex items-center gap-1.5 md:gap-2 px-3.5 md:px-5 py-1.5 md:py-2 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-xs md:text-sm transition-colors duration-200"
                 @click="handlePlayAll"
               >
                 <i class="ri-play-circle-line text-base md:text-lg" />
@@ -129,7 +129,7 @@
               <!-- Collect Button -->
               <button
                 v-if="canCollect"
-                class="action-btn-pill flex items-center gap-1.5 md:gap-2 px-3.5 md:px-5 py-1.5 md:py-2.5 rounded-lg font-semibold text-xs md:text-sm transition-colors duration-200 border"
+                class="action-btn-pill flex items-center gap-1.5 md:gap-2 px-3.5 md:px-4 py-1.5 md:py-2 rounded-lg font-semibold text-xs md:text-sm transition-colors duration-200 border"
                 :class="
                   isCollected
                     ? 'bg-primary/10 dark:bg-primary/15 text-primary border-primary/20 dark:border-primary/25'
@@ -234,10 +234,10 @@
         </section>
 
         <!-- List Content -->
-        <section class="song-list-section page-padding-x mt-6">
+        <section class="song-list-section page-padding-x mt-4">
           <div
             v-if="filteredSongs.length === 0 && searchKeyword"
-            class="empty-state py-20 text-center text-neutral-400"
+            class="empty-state py-16 text-center text-neutral-400"
           >
             <i class="ri-search-line text-4xl mb-4 opacity-20" />
             <p>{{ t('comp.musicList.noSearchResults') }}</p>
@@ -859,8 +859,8 @@ onMounted(checkCollectionStatus);
 
 .action-bar {
   transition:
-    background-color 0.3s,
-    border-color 0.2s;
+    background-color 180ms var(--qqm-ease, ease),
+    border-color 180ms var(--qqm-ease, ease);
 }
 
 .action-btn-pill {
@@ -881,7 +881,7 @@ onMounted(checkCollectionStatus);
 }
 
 .song-list-container {
-  padding-bottom: 100px;
+  padding-bottom: 96px;
 }
 
 .song-highlight {
@@ -891,8 +891,8 @@ onMounted(checkCollectionStatus);
 @keyframes highlightPulse {
   0%,
   30% {
-    background-color: rgba(var(--primary-color-rgb, 64, 128, 255), 0.15);
-    border-radius: 12px;
+    background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
+    border-radius: 10px;
   }
   100% {
     background-color: transparent;

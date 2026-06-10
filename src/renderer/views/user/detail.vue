@@ -58,10 +58,10 @@
                 <!-- User Avatar -->
                 <div class="relative group">
                   <div
-                    class="absolute -inset-px rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    class="absolute -inset-px rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   />
                   <div
-                    class="relative w-28 h-28 md:w-40 md:h-40 rounded-full overflow-hidden border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
+                    class="relative w-28 h-28 md:w-40 md:h-40 rounded-lg overflow-hidden border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
                   >
                     <img
                       :src="getImgUrl(userDetail.profile.avatarUrl, '300y300')"

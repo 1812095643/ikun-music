@@ -144,9 +144,9 @@ const onPlayMusic = () => {
 .list-song-item {
   padding: 0.5rem; /* p-2 */
   border-radius: 0.5rem;
-  margin-bottom: 0.5rem; /* mb-2 */
+  margin-bottom: 0.25rem;
   border-width: 1px;
-  border-color: rgb(243 244 246); /* border-gray-100 */
+  border-color: transparent;
   transition:
     background-color 180ms var(--qqm-ease, ease),
     border-color 180ms var(--qqm-ease, ease);
