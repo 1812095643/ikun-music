@@ -7,7 +7,7 @@
 
     <!-- 设置项列表容器 -->
     <div
-      class="bg-white dark:bg-neutral-900 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm"
+      class="bg-white dark:bg-neutral-900 rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
     >
       <slot></slot>
     </div>

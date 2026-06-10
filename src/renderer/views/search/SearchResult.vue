@@ -24,10 +24,10 @@
               <button
                 v-for="type in searchTypeOptions"
                 :key="type.key"
-                class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap"
+                class="px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 whitespace-nowrap"
                 :class="
                   searchType === type.key
-                    ? 'bg-primary text-white shadow-sm shadow-primary/20'
+                    ? 'bg-primary/10 text-primary'
                     : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800'
                 "
                 @click="handleTypeChange(type.key)"
@@ -47,7 +47,7 @@
             <div class="flex items-center gap-3">
               <!-- Play All Button -->
               <button
-                class="play-all-btn flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-sm shadow-primary/20"
+                class="play-all-btn flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-colors duration-200"
                 @click="handlePlayAll"
               >
                 <i class="ri-play-circle-line text-lg" />
@@ -62,7 +62,7 @@
 
               <button
                 v-if="!isSelecting && isElectron"
-                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100/80 dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
                 @click="startSelect"
               >
                 <i class="ri-checkbox-multiple-line text-lg" />
@@ -80,7 +80,7 @@
                   {{ t('common.selectAll') }}
                 </n-checkbox>
                 <button
-                  class="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-all"
+                  class="px-4 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors"
                   :disabled="selectedSongs.length === 0 || isDownloading"
                   @click="handleBatchDownload"
                 >
@@ -101,7 +101,7 @@
               <!-- Layout Toggle -->
               <button
                 v-if="!isMobile"
-                class="action-btn-icon w-10 h-10 rounded-full flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800 transition-all"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100/80 dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
                 @click="toggleLayout"
               >
                 <i :class="isCompactLayout ? 'ri-list-check-2' : 'ri-grid-line'" class="text-lg" />

@@ -22,7 +22,7 @@
           <!-- 创建新歌单 -->
           <div class="flex flex-col">
             <button
-              class="flex items-center gap-4 rounded-xl p-3 transition-all duration-200"
+              class="flex items-center gap-4 rounded-lg p-3 transition-colors duration-200"
               :class="
                 isCreating
                   ? 'bg-neutral-100 dark:bg-neutral-800'
@@ -31,7 +31,7 @@
               @click="toggleCreateForm"
             >
               <div
-                class="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-white shadow-sm shadow-primary/20 transition-transform duration-300"
+                class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white transition-transform duration-300"
                 :class="{ 'rotate-45': isCreating }"
               >
                 <i class="iconfont text-xl" :class="isCreating ? 'ri-close-line' : 'ri-add-line'" />
@@ -88,7 +88,7 @@
                 </div>
 
                 <button
-                  class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/20 transition-all duration-200 hover:bg-primary/90 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
                   :disabled="!formValue.name || creating"
                   @click="handleCreatePlaylist"
                 >
@@ -104,13 +104,13 @@
             <div
               v-for="(playlist, index) in playlists"
               :key="playlist.id"
-              class="group flex cursor-pointer items-center gap-3.5 rounded-xl p-2.5 transition-all duration-200 hover:bg-neutral-50 active:translate-y-0 dark:hover:bg-neutral-800/60"
+              class="group flex cursor-pointer items-center gap-3.5 rounded-lg p-2.5 transition-colors duration-200 hover:bg-primary/5 dark:hover:bg-primary/10"
               :style="{ animationDelay: `${index * 0.03}s` }"
               @click="handleAddToPlaylist(playlist)"
             >
               <!-- 封面 -->
               <div
-                class="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl bg-neutral-100 shadow-sm dark:bg-neutral-800"
+                class="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800"
               >
                 <n-image
                   :src="getImgUrl(playlist.coverImgUrl || playlist.picUrl, '100y100')"
@@ -132,7 +132,7 @@
 
               <!-- 添加按钮 -->
               <div
-                class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-neutral-300 transition-all duration-200 group-hover:bg-primary/10 group-hover:text-primary dark:text-neutral-600 dark:group-hover:text-primary"
+                class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-neutral-300 transition-colors duration-200 group-hover:bg-primary/10 group-hover:text-primary dark:text-neutral-600 dark:group-hover:text-primary"
               >
                 <i class="iconfont ri-add-line text-xl" />
               </div>

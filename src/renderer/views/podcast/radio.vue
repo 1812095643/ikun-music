@@ -7,18 +7,16 @@
         <n-spin :show="isLoading && !currentRadio">
           <div v-if="currentRadio" class="radio-content">
             <!-- Hero Section -->
-            <section class="hero-section relative overflow-hidden rounded-tl-2xl">
+            <section class="hero-section relative overflow-hidden">
               <!-- Background Image with Blur -->
-              <div class="hero-bg absolute inset-0 -top-20">
+              <div class="hero-bg hidden">
                 <div
-                  class="absolute inset-0 bg-cover bg-center scale-105 blur-2xl opacity-40 dark:opacity-30"
+                  class="hidden"
                   :style="{
                     backgroundImage: `url(${getImgUrl(currentRadio.picUrl, '800y800')})`
                   }"
                 />
-                <div
-                  class="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white dark:via-black/80 dark:to-black"
-                />
+                <div class="hidden" />
               </div>
 
               <!-- Hero Content -->
@@ -26,23 +24,21 @@
                 <div class="flex flex-col md:flex-row gap-6 md:gap-10 items-center md:items-end">
                   <!-- Radio Cover -->
                   <div class="radio-cover-wrapper relative group">
+                    <div class="hidden" />
                     <div
-                      class="cover-glow absolute -inset-1 rounded-xl bg-primary/10 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    />
-                    <div
-                      class="cover-container relative w-48 h-48 md:w-56 md:h-56 rounded-xl overflow-hidden shadow-md ring-1 ring-black/5 dark:ring-white/10"
+                      class="cover-container relative w-44 h-44 md:w-52 md:h-52 rounded-lg overflow-hidden ring-1 ring-neutral-100 dark:ring-neutral-800"
                     >
                       <img
                         :src="getImgUrl(currentRadio.picUrl, '500y500')"
                         :alt="currentRadio.name"
-                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                        class="w-full h-full object-cover"
                       />
                       <!-- Play overlay on cover -->
                       <div
-                        class="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/30 transition-all duration-300"
+                        class="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/25 transition-colors duration-300"
                       >
                         <div
-                          class="play-icon w-14 h-14 rounded-full bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 shadow-md cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                          class="play-icon w-12 h-12 rounded-lg bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-opacity duration-300 cursor-pointer"
                           @click="handlePlayAll"
                         >
                           <i class="iconfont icon-playfill text-2xl text-neutral-900 ml-1" />
@@ -55,7 +51,7 @@
                   <div class="radio-info flex-1 text-center md:text-left">
                     <div class="radio-badge mb-2 md:mb-3">
                       <span
-                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
+                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary text-xs font-semibold uppercase tracking-wider"
                       >
                         <i class="ri-radio-line text-sm" />
                         {{ currentRadio.category }}
@@ -109,7 +105,7 @@
                 <div class="flex items-center gap-3">
                   <!-- Play All Button -->
                   <button
-                    class="play-all-btn flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-sm shadow-primary/20"
+                    class="play-all-btn flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-colors duration-200"
                     @click="handlePlayAll"
                   >
                     <i class="iconfont icon-playfill text-lg" />
@@ -118,7 +114,7 @@
 
                   <!-- Subscribe Button -->
                   <button
-                    class="subscribe-btn flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 shadow-sm"
+                    class="subscribe-btn flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors duration-200"
                     :class="
                       isSubscribed
                         ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200'

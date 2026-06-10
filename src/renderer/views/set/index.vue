@@ -15,10 +15,10 @@
           <div
             v-for="section in navSections"
             :key="section.id"
-            class="py-1.5 px-4 mr-3 inline-block rounded-[9px] cursor-pointer transition-all duration-300 text-sm font-medium select-none"
+            class="py-1.5 px-4 mr-3 inline-block rounded-lg cursor-pointer transition-colors duration-300 text-sm font-medium select-none"
             :class="
               currentSection === section.id
-                ? 'bg-primary text-white shadow-sm shadow-primary/20 scale-[1.02]'
+                ? 'bg-primary/10 text-primary'
                 : 'bg-gray-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-gray-200 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white'
             "
             @click="currentSection = section.id"
