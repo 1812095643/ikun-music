@@ -244,7 +244,7 @@
               <button
                 v-if="config.gradientColors.colors.length > 2"
                 @click="removeGradientColor(index)"
-                class="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs hover:bg-red-600 transition-colors"
+                class="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center rounded-full bg-black/45 text-white text-xs hover:bg-black/60 transition-colors"
               >
                 <i class="ri-close-line"></i>
               </button>
@@ -304,7 +304,7 @@
               />
               <button
                 @click="clearBackgroundImage"
-                class="absolute top-2 right-2 p-2 rounded-lg bg-red-500/80 text-white hover:bg-red-500 transition-colors"
+                class="absolute top-2 right-2 p-2 rounded-lg bg-black/45 text-white hover:bg-black/60 transition-colors"
               >
                 <i class="ri-delete-bin-line"></i>
               </button>

@@ -87,7 +87,7 @@
                     </div>
                     <button
                       @click="cancelTimer"
-                      class="px-3 py-1 rounded-lg text-sm bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                      class="px-3 py-1 rounded-lg text-sm bg-white/10 text-white/70 hover:bg-white/15 hover:text-white"
                     >
                       {{ t('player.sleepTimer.cancel') }}
                     </button>

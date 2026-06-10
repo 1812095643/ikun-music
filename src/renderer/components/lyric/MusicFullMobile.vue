@@ -39,7 +39,7 @@
         <!-- 定时器倒计时显示 -->
         <div
           v-if="hasSleepTimerActive"
-          class="flex items-center gap-1 px-2 py-1 rounded-md bg-black/45 text-xs text-white/90"
+          class="flex items-center gap-1 px-2 py-1 rounded-md bg-black/35 text-xs text-white/90"
           @click="showPlayerSettings = true"
         >
           <i class="ri-timer-line text-primary"></i>
@@ -1674,7 +1674,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 // 过渡动画
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.18s ease;
 }
 
 .fade-enter-from,

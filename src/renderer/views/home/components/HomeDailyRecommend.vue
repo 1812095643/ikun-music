@@ -70,7 +70,7 @@
 
           <!-- Recommended Badge -->
           <div
-            class="badge absolute top-3 right-3 rounded-md bg-red-500 px-2.5 py-1 text-[10px] font-bold text-white"
+            class="badge absolute top-3 right-3 rounded-md bg-primary px-2.5 py-1 text-[10px] font-bold text-white"
           >
             {{ t('comp.dailyRecommend.badge') }}
           </div>

@@ -723,7 +723,7 @@ const openPlayListDrawer = () => {
 
   .delete-btn {
     @apply p-2 rounded-lg transition-colors duration-200 cursor-pointer;
-    @apply hover:bg-red-50 dark:hover:bg-red-900/20;
+    @apply hover:bg-neutral-100 dark:hover:bg-white/10;
 
     .iconfont {
       @apply text-lg;

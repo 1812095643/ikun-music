@@ -69,7 +69,7 @@
 
       <!-- Top Bar (Title & Close) -->
       <div
-        class="absolute top-0 left-0 right-0 p-4 z-[9999999] transition-opacity duration-200 bg-black/55 pointer-events-auto"
+        class="absolute top-0 left-0 right-0 p-4 z-[9999999] transition-opacity duration-200 bg-black/40 pointer-events-auto"
         :class="{ '-translate-y-full opacity-0': !showControls }"
         style="-webkit-app-region: drag"
         @click.stop
@@ -269,7 +269,7 @@
       >
         <div
           v-if="showModeHint"
-          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/45 px-4 py-3 rounded-lg flex flex-col items-center gap-1.5 pointer-events-none z-50"
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/35 px-4 py-3 rounded-lg flex flex-col items-center gap-1.5 pointer-events-none z-50"
         >
           <n-icon size="32" class="text-primary">
             <i :class="playMode === 'single' ? 'ri-repeat-one-line' : 'ri-play-list-line'"></i>

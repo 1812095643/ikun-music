@@ -185,6 +185,6 @@ onMounted(() => {
 /* Scroll fade indicators */
 .scroll-fade-left,
 .scroll-fade-right {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.18s ease;
 }
 </style>

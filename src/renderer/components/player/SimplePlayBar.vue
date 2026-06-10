@@ -448,7 +448,7 @@ onMounted(() => {
 
     .current-time {
       opacity: 0.8;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.18s ease;
 
       &:hover {
         opacity: 1;

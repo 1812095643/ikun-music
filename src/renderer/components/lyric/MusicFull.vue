@@ -995,7 +995,7 @@ defineExpose({
 
 .close-btn {
   opacity: 0.3;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.18s ease;
 
   &:hover {
     opacity: 1;

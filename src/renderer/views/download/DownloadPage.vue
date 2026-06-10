@@ -60,7 +60,7 @@
             <div class="flex items-center gap-3">
               <button
                 v-if="tabName === 'downloaded' && downloadedList.length > 0"
-                class="action-btn-pill flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-colors hover:bg-red-50 dark:hover:bg-red-900/10 text-red-500 border border-neutral-200 dark:border-neutral-800"
+                class="action-btn-pill flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-colors hover:bg-neutral-100 dark:hover:bg-white/10 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-200 border border-neutral-200 dark:border-neutral-800"
                 @click="showClearConfirm = true"
               >
                 <i class="ri-delete-bin-line text-lg" />
