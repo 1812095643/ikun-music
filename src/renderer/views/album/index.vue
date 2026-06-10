@@ -15,7 +15,7 @@
       <!-- Loading State -->
       <template v-if="loading && page === 0">
         <div v-for="i in 15" :key="`loading-${i}`" class="space-y-3">
-          <div class="aspect-square skeleton-shimmer rounded-xl" />
+          <div class="aspect-square skeleton-shimmer rounded-lg" />
           <div class="h-4 w-3/4 skeleton-shimmer rounded-lg" />
           <div class="h-3 w-1/2 skeleton-shimmer rounded-lg" />
         </div>

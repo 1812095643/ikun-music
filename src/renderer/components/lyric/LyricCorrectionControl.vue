@@ -27,7 +27,7 @@ const { t } = useI18n();
       <span>{{ t('player.subtractCorrection', { num: 0.2 }) }}</span>
     </n-tooltip>
     <span
-      class="text-xs py-0.5 px-1 rounded bg-white/70 dark:bg-neutral-800/70 shadow font-mono tracking-wider text-gray-700 dark:text-gray-200 bg-opacity-40 backdrop-blur-2xl"
+      class="text-xs py-0.5 px-1 rounded bg-white/70 dark:bg-neutral-800/70 shadow font-mono tracking-wider text-gray-700 dark:text-gray-200 bg-opacity-40 backdrop-blur-md"
     >
       {{ props.correctionTime > 0 ? '+' : '' }}{{ props.correctionTime.toFixed(1) }}s
     </span>

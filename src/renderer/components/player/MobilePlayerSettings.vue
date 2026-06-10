@@ -42,7 +42,7 @@
                 <span class="text-sm font-medium text-white/80">
                   {{ t('player.settings.playbackSpeed') }}
                 </span>
-                <span class="text-sm text-green-400 font-medium">{{ playbackRate }}x</span>
+                <span class="text-sm text-primary font-medium">{{ playbackRate }}x</span>
               </div>
               <div class="flex flex-wrap gap-2">
                 <button
@@ -70,7 +70,7 @@
                 <span class="text-sm font-medium text-white/80">
                   {{ t('player.sleepTimer.title') }}
                 </span>
-                <span v-if="hasTimerActive" class="text-sm text-green-400 font-medium">
+                <span v-if="hasTimerActive" class="text-sm text-primary font-medium">
                   {{ timerStatusText }}
                 </span>
               </div>
@@ -80,8 +80,8 @@
                 <div class="p-4 rounded-lg bg-primary/15 border border-primary/30">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                      <i class="ri-timer-line text-green-400 text-xl"></i>
-                      <span class="text-green-400">
+                      <i class="ri-timer-line text-primary text-xl"></i>
+                      <span class="text-primary">
                         {{ timerDisplayText }}
                       </span>
                     </div>

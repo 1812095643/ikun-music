@@ -36,7 +36,7 @@
         v-if="playLoading || isBuffering"
         class="absolute inset-0 flex items-center justify-center pointer-events-none z-30"
       >
-        <n-spin size="large" stroke="#10b981" />
+        <n-spin size="large" stroke="var(--qqm-primary, #22c55e)" />
       </div>
 
       <!-- Mobile: Center Play Button Overlay -->
@@ -151,7 +151,7 @@
               <n-button
                 quaternary
                 circle
-                class="!text-white hover:!text-green-400"
+                class="!text-white hover:!text-primary"
                 @click="handlePrev"
                 :disabled="!props.currentMv"
               >
@@ -163,7 +163,7 @@
               <n-button
                 quaternary
                 circle
-                class="!text-white hover:!text-green-400"
+                class="!text-white hover:!text-primary"
                 @click="togglePlay"
               >
                 <template #icon>
@@ -176,7 +176,7 @@
               <n-button
                 quaternary
                 circle
-                class="!text-white hover:!text-green-400"
+                class="!text-white hover:!text-primary"
                 @click="handleNext"
                 :disabled="!props.currentMv"
               >
@@ -199,7 +199,7 @@
                 <n-button
                   quaternary
                   circle
-                  class="!text-white hover:!text-green-400"
+                  class="!text-white hover:!text-primary"
                   @click="togglePlayMode"
                 >
                   <template #icon>
@@ -219,7 +219,7 @@
               <n-button
                 quaternary
                 circle
-                class="!text-white hover:!text-green-400"
+                class="!text-white hover:!text-primary"
                 @click="toggleMute"
               >
                 <template #icon>
@@ -245,7 +245,7 @@
             <n-button
               quaternary
               circle
-              class="!text-white hover:!text-green-400"
+              class="!text-white hover:!text-primary"
               @click="toggleFullscreen"
             >
               <template #icon>

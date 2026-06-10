@@ -60,7 +60,7 @@
           <div class="px-6 pb-8 space-y-3">
             <button
               @click="handleAgree"
-              class="w-full py-4 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary/90 active:translate-y-0 transition-colors duration-200 shadow-sm shadow-green-500/20"
+              class="w-full py-4 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary/90 active:translate-y-0 transition-colors duration-200 shadow-sm"
             >
               <span class="flex items-center justify-center gap-2">
                 <i class="ri-check-line text-lg"></i>
@@ -123,9 +123,7 @@
                 <div class="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
                   <i class="ri-wechat-fill text-2xl text-white"></i>
                 </div>
-                <span class="text-sm font-medium text-green-700 dark:text-green-300">{{
-                  t('comp.donate.wechat')
-                }}</span>
+                <span class="text-sm font-medium text-primary">{{ t('comp.donate.wechat') }}</span>
               </button>
 
               <button

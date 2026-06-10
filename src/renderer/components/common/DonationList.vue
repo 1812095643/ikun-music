@@ -22,7 +22,7 @@
         class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
-          class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/15 transition-colors"
+          class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/15 transition-colors"
         ></div>
         <img
           :src="alipay"
@@ -40,7 +40,7 @@
         class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
-          class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/15 transition-colors"
+          class="absolute -right-4 -top-4 w-24 h-24 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/15 transition-colors"
         ></div>
         <img
           :src="wechat"
@@ -149,7 +149,7 @@ const FIRST_BATCH = 16;
 const AVATAR_COLORS = [
   'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
-  'bg-primary/15 text-primary dark:bg-green-900/30 dark:text-green-400',
+  'bg-primary/15 text-primary dark:bg-primary/20 dark:text-primary',
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
   'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',

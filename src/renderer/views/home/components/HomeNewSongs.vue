@@ -19,7 +19,7 @@
 
     <!-- Loading Skeleton -->
     <div v-if="loading" class="songs-grid grid gap-3" :class="gridClass">
-      <div v-for="i in 10" :key="i" class="h-20 skeleton-shimmer rounded-xl" />
+      <div v-for="i in 10" :key="i" class="h-20 skeleton-shimmer rounded-lg" />
     </div>
 
     <!-- Songs Grid (Even columns: 1→2→3→4→5) -->

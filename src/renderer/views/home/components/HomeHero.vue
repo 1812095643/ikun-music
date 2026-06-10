@@ -117,7 +117,7 @@
               ref="fmCoverRef"
               :src="getImgUrl(fmCurrentCover, '512y512')"
               alt=""
-              class="absolute inset-0 h-full w-full scale-150 object-cover opacity-30 blur-2xl"
+              class="absolute inset-0 h-full w-full scale-110 object-cover opacity-25 blur-xl"
               :class="isFmPlaying ? 'fm-bg-flow' : ''"
               crossorigin="anonymous"
               @load="extractFmColor"

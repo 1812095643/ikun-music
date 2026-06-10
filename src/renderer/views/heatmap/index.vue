@@ -653,7 +653,7 @@ onMounted(() => {
     @apply transition-colors duration-200;
 
     &:hover {
-      @apply ring-2 ring-green-400 ring-opacity-50;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--qqm-primary, #22c55e) 32%, transparent);
       transform: translateY(-1px);
     }
   }

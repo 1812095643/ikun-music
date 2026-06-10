@@ -49,7 +49,7 @@
             <!-- Background Image with Blur -->
             <div class="hero-bg absolute inset-0 -top-20">
               <div
-                class="absolute inset-0 bg-cover bg-center scale-105 blur-2xl opacity-40 dark:opacity-30"
+                class="absolute inset-0 bg-cover bg-center scale-[1.02] blur-xl opacity-30 dark:opacity-20"
                 :style="{
                   backgroundImage: `url(${getImgUrl(artistInfo.cover || artistInfo.picUrl, '800y800')})`
                 }"

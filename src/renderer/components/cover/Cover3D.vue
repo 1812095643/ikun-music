@@ -33,7 +33,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   loading: false,
   maxTilt: 12,
-  scale: 1.03,
+  scale: 1.01,
   shineIntensity: 0.25,
   objectFit: 'cover',
   disabled: false
@@ -145,10 +145,10 @@ onBeforeUnmount(() => {
 
 /* 3D视差效果样式 */
 .cover-wrapper {
-  @apply relative w-full h-full rounded-xl overflow-hidden;
-  transform-style: preserve-3d;
+  @apply relative w-full h-full rounded-lg overflow-hidden;
+
   will-change: transform;
-  backface-visibility: hidden;
+
   transform: translateZ(0); /* 强制硬件加速 */
 }
 
@@ -159,16 +159,15 @@ onBeforeUnmount(() => {
 }
 
 .cover-shine {
-  @apply absolute inset-0 pointer-events-none rounded-xl;
-  mix-blend-mode: overlay;
+  @apply absolute inset-0 pointer-events-none rounded-lg;
+  mix-blend-mode: soft-light;
   z-index: 1;
   will-change: background, opacity;
-  backface-visibility: hidden;
 }
 
 /* 为封面容器添加阴影效果 */
 .cover-3d-container:hover .cover-wrapper {
-  filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.25));
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12));
 }
 
 @keyframes spin {
@@ -181,7 +180,7 @@ onBeforeUnmount(() => {
 }
 
 .loading-overlay {
-  @apply absolute inset-0 flex items-center justify-center rounded-xl;
+  @apply absolute inset-0 flex items-center justify-center rounded-lg;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 2;
 }

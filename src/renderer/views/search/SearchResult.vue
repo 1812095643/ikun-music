@@ -118,7 +118,7 @@
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
             >
               <div v-for="i in 12" :key="i" class="space-y-3">
-                <div class="aspect-square skeleton-shimmer rounded-xl" />
+                <div class="aspect-square skeleton-shimmer rounded-lg" />
                 <div class="h-4 w-3/4 skeleton-shimmer rounded-lg" />
               </div>
             </div>

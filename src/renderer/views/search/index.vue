@@ -23,12 +23,12 @@
               <div
                 v-for="(item, index) in hotSearchData?.data"
                 :key="index"
-                class="hot-search-card group flex items-center gap-4 px-3 py-2.5 rounded-lg cursor-pointer transition-all duration-300 animate-item"
+                class="hot-search-card group flex items-center gap-4 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-200 animate-item"
                 :style="{ animationDelay: calculateAnimationDelay(index, 0.03) }"
                 @click="handleSearch(item.searchWord)"
               >
                 <span
-                  class="flex-shrink-0 w-8 text-lg font-bold italic transition-colors duration-300"
+                  class="flex-shrink-0 w-8 text-lg font-bold italic transition-colors duration-200"
                   :class="index < 3 ? 'text-primary' : 'text-neutral-300 dark:text-neutral-700'"
                 >
                   {{ String(index + 1).padStart(2, '0') }}
