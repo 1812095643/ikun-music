@@ -1255,13 +1255,13 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
       .progress-thumb {
         @apply absolute top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full bg-white;
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.55);
+        box-shadow: none;
         z-index: 2;
         transition: transform 0.15s ease-out;
 
         &.active {
           transform: translate(-50%, -50%);
-          box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.75);
+          box-shadow: none;
         }
 
         &:active {
@@ -1304,7 +1304,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45);
+      box-shadow: none;
     }
 
     &.paused {
@@ -1500,7 +1500,6 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
             width: 54px;
             height: 54px;
             background-color: rgba(255, 255, 255, 0.15);
-            backdrop-filter: none;
             border-radius: 50%;
 
             &.play-pause {
@@ -1895,7 +1894,6 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 .control-btn {
   @apply w-9 h-9 flex items-center justify-center rounded cursor-pointer transition-colors duration-200 z-[9999];
   background: rgba(142, 142, 142, 0.192);
-  backdrop-filter: blur(6px);
   top: calc(var(--safe-area-inset-top, 0) + 20px);
 
   i {
@@ -1905,7 +1903,6 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
   &.pure-mode {
     background: transparent;
-    backdrop-filter: none;
 
     &:not(:hover) {
       i {

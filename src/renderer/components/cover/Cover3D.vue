@@ -34,7 +34,7 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   maxTilt: 12,
   scale: 1.01,
-  shineIntensity: 0.25,
+  shineIntensity: 0.12,
   objectFit: 'cover',
   disabled: false
 });
@@ -80,7 +80,7 @@ const shineStyle = computed(() => {
 
   return {
     opacity: props.shineIntensity,
-    background: `radial-gradient(200px circle at ${shineX}% ${shineY}%, rgba(255,255,255,0.3), transparent 50%)`,
+    background: `linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.16) ${Math.min(shineX, shineY)}%, transparent 58%)`,
     transition: 'none'
   };
 });
@@ -147,27 +147,19 @@ onBeforeUnmount(() => {
 .cover-wrapper {
   @apply relative w-full h-full rounded-lg overflow-hidden;
 
-  will-change: transform;
-
-  transform: translateZ(0); /* 强制硬件加速 */
+  transform: translateZ(0);
 }
 
 .cover-image {
   @apply w-full h-full;
   border-radius: inherit;
-  transform: translateZ(0); /* 强制硬件加速 */
+  transform: translateZ(0);
 }
 
 .cover-shine {
   @apply absolute inset-0 pointer-events-none rounded-lg;
   mix-blend-mode: soft-light;
   z-index: 1;
-  will-change: background, opacity;
-}
-
-/* 为封面容器添加阴影效果 */
-.cover-3d-container:hover .cover-wrapper {
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12));
 }
 
 @keyframes spin {

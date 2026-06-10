@@ -376,11 +376,11 @@ onMounted(() => {
   /* 极亮主题色适配 */
   &.light-theme-color {
     .progress-fill {
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+      box-shadow: none;
     }
 
     .control-btn.play-btn {
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      box-shadow: none;
       color: var(--text-on-fill);
     }
 
@@ -392,11 +392,11 @@ onMounted(() => {
   /* 极暗主题色适配 */
   &.dark-theme-color {
     .progress-fill {
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+      box-shadow: none;
     }
 
     .control-btn.play-btn {
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+      box-shadow: none;
     }
 
     .volume-control .iconfont:hover {
@@ -433,7 +433,7 @@ onMounted(() => {
       }
 
       .progress-fill {
-        box-shadow: 0 0 0 1px var(--high-contrast-color);
+        box-shadow: none;
       }
     }
   }
@@ -553,7 +553,7 @@ onMounted(() => {
       .n-slider-handle {
         @apply opacity-0 transition-opacity duration-200;
         background: white;
-        box-shadow: 0 0 0 1px var(--high-contrast-color);
+        box-shadow: none;
         border: 2px solid var(--fill-color);
       }
 

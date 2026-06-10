@@ -218,7 +218,7 @@ watch(
           .n-slider-handle {
             @apply transition-colors duration-200;
             opacity: 0;
-            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7);
+            box-shadow: none;
           }
 
           &:hover .n-slider-handle,
