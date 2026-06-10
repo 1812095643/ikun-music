@@ -414,7 +414,7 @@ onMounted(() => {
 
       .back-button {
         @apply text-2xl;
-        @apply text-gray-700 dark:text-gray-300;
+        @apply text-neutral-700 dark:text-neutral-300;
         &:hover {
           color: var(--qqm-primary, #22c55e);
         }
@@ -460,14 +460,14 @@ onMounted(() => {
       @apply flex flex-col items-center justify-center py-20;
 
       .loading-text {
-        @apply mt-4 text-gray-500 dark:text-gray-400;
+        @apply mt-4 text-neutral-500 dark:text-neutral-400;
       }
     }
 
     .heatmap-container {
       @apply rounded-lg p-6;
       background: color-mix(in srgb, var(--qqm-surface) 96%, transparent);
-      border: 1px solid rgba(255, 255, 255, 0.58);
+      border: 1px solid var(--qqm-border);
       box-shadow: none;
       .custom-heatmap {
         @apply w-full;
@@ -482,13 +482,13 @@ onMounted(() => {
 
         .stat-card {
           @apply flex items-start gap-4 p-4 rounded-lg;
-          background: color-mix(in srgb, var(--qqm-surface-muted) 66%, transparent);
+          background: color-mix(in srgb, var(--qqm-surface) 98%, transparent);
           border: 1px solid var(--qqm-border);
           @apply transition-colors duration-200;
 
           &:hover {
             border-color: rgba(30, 207, 115, 0.16);
-            background: color-mix(in srgb, var(--qqm-surface-muted) 78%, transparent);
+            background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, var(--qqm-surface));
           }
 
           .stat-icon {
@@ -513,7 +513,7 @@ onMounted(() => {
 
             .stat-title {
               @apply text-sm font-medium mb-2;
-              @apply text-gray-600 dark:text-gray-400;
+              @apply text-neutral-600 dark:text-neutral-400;
             }
 
             .stat-value {
@@ -542,19 +542,19 @@ onMounted(() => {
 
                 .song-name {
                   @apply font-semibold truncate;
-                  @apply text-gray-900 dark:text-white;
+                  @apply text-neutral-900 dark:text-neutral-100;
                   @apply transition-colors;
                 }
 
                 .song-artist {
                   @apply text-sm truncate;
-                  @apply text-gray-500 dark:text-gray-400;
+                  @apply text-neutral-500 dark:text-neutral-400;
                 }
               }
 
               .day-info {
                 @apply font-semibold mb-1;
-                @apply text-gray-900 dark:text-white;
+                @apply text-neutral-900 dark:text-neutral-100;
               }
 
               .play-count,
@@ -585,7 +585,7 @@ onMounted(() => {
   .tooltip-plays {
     @apply text-sm mb-3 pb-2;
     @apply text-white;
-    @apply border-b border-gray-300;
+    @apply border-b border-white/25;
   }
 
   .tooltip-songs {
@@ -625,11 +625,11 @@ onMounted(() => {
       }
 
       .song-artist {
-        @apply text-gray-300 truncate max-w-[80px];
+        @apply text-neutral-300 truncate max-w-[80px];
       }
 
       .song-count {
-        @apply text-gray-200 ml-auto;
+        @apply text-neutral-200 ml-auto;
       }
     }
   }

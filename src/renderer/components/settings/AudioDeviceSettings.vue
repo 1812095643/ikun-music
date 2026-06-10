@@ -64,7 +64,7 @@ onMounted(() => {
 <template>
   <div class="space-y-3">
     <div class="flex items-center justify-between">
-      <span class="text-sm text-gray-700 dark:text-gray-300">
+      <span class="text-sm text-neutral-700 dark:text-neutral-300">
         {{ t('settings.playback.audioDevice') }}
       </span>
       <div class="flex items-center gap-2">

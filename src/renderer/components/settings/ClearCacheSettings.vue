@@ -21,7 +21,7 @@
             <template #default>
               <div>
                 <div>{{ t(`settings.system.cacheTypes.${option.key}.label`) }}</div>
-                <div class="text-gray-400 text-sm">
+                <div class="text-neutral-400 text-sm">
                   {{ t(`settings.system.cacheTypes.${option.key}.description`) }}
                 </div>
               </div>

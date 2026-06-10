@@ -117,7 +117,7 @@ const handlePaste = async () => {
 
     <div class="space-y-4">
       <div>
-        <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+        <div class="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
           {{ t('settings.cookie.description') }}
         </div>
 
@@ -155,14 +155,14 @@ const handlePaste = async () => {
       </div>
 
       <!-- 帮助信息 -->
-      <div class="text-xs text-gray-500 space-y-1">
+      <div class="text-xs text-neutral-500 space-y-1">
         <p>• {{ t('settings.cookie.help.format') }}</p>
         <p>• {{ t('settings.cookie.help.source') }}</p>
         <p>• {{ t('settings.cookie.help.storage') }}</p>
       </div>
 
       <!-- Cookie长度提示 -->
-      <div v-if="tokenInput" class="text-xs text-gray-400">
+      <div v-if="tokenInput" class="text-xs text-neutral-400">
         {{ t('settings.cookie.info.length', { length: tokenInput.length }) }}
       </div>
     </div>

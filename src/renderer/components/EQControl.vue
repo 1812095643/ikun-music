@@ -3,7 +3,7 @@
     class="eq-control p-6 rounded-lg bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 w-full max-w-[700px]"
   >
     <div class="eq-header flex justify-between items-center mb-4">
-      <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
+      <h3 class="text-xl font-semibold text-neutral-800 dark:text-neutral-200">
         {{ t('player.eq.title') }}
         <n-tag type="warning" size="small" round v-if="!isElectron">
           桌面版可用，网页端不支持
@@ -37,7 +37,7 @@
     </div>
 
     <div
-      class="eq-sliders flex justify-between items-end bg-neutral-50 dark:bg-neutral-900 gap-1 rounded-lg p-2 h-[300px] border border-neutral-100 dark:border-neutral-800"
+      class="eq-sliders flex justify-between items-end bg-white dark:bg-black gap-1 rounded-lg p-2 h-[300px] border border-neutral-100 dark:border-neutral-800"
     >
       <div
         v-for="freq in frequencies"
@@ -45,7 +45,7 @@
         class="eq-slider flex flex-col items-center w-[45px] h-full"
       >
         <div
-          class="freq-label text-xs font-medium text-center text-gray-600 dark:text-gray-400 whitespace-nowrap m-2 h-5"
+          class="freq-label text-xs font-medium text-center text-neutral-600 dark:text-neutral-400 whitespace-nowrap m-2 h-5"
         >
           {{ formatFreq(freq) }}
         </div>
@@ -60,7 +60,7 @@
           class="flex-1 my-3 min-h-[180px]"
         />
         <div
-          class="gain-value text-xs font-medium text-center text-gray-600 dark:text-gray-400 whitespace-nowrap my-1 h-4"
+          class="gain-value text-xs font-medium text-center text-neutral-600 dark:text-neutral-400 whitespace-nowrap my-1 h-4"
         >
           {{ eqValues[freq.toString()] }}dB
         </div>
