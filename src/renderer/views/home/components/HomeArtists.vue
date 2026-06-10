@@ -23,15 +23,14 @@
     >
       <div class="artists-track flex gap-6 md:gap-8 lg:gap-10">
         <div
-          v-for="(item, index) in artists"
+          v-for="item in artists"
           :key="item.id"
-          class="artist-item animate-item group flex flex-shrink-0 snap-start flex-col items-center gap-3 md:gap-4 cursor-pointer"
-          :style="{ animationDelay: calculateAnimationDelay(index, 0.04) }"
+          class="artist-item group flex flex-shrink-0 snap-start flex-col items-center gap-3 md:gap-4 cursor-pointer"
           @click="navigateToArtist(item.id)"
         >
           <!-- Artist Avatar -->
           <div
-            class="artist-avatar relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800 shadow-sm transition-opacity duration-200 group-hover:shadow-primary/15"
+            class="artist-avatar relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 overflow-hidden rounded-full border border-neutral-100 bg-neutral-100 transition-colors duration-200 group-hover:border-primary/30 dark:border-neutral-800 dark:bg-neutral-800"
           >
             <img
               :src="getImgUrl(item.picUrl, '300y300')"
@@ -72,7 +71,7 @@ import { onMounted, ref } from 'vue';
 
 import { getHotSinger } from '@/api/home';
 import { useArtist } from '@/hooks/useArtist';
-import { calculateAnimationDelay, getImgUrl, isMobile } from '@/utils';
+import { getImgUrl, isMobile } from '@/utils';
 
 const props = defineProps<{
   title: string;

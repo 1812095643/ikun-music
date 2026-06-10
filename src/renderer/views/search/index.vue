@@ -23,8 +23,7 @@
               <div
                 v-for="(item, index) in hotSearchData?.data"
                 :key="index"
-                class="hot-search-card group flex items-center gap-4 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-200 animate-item"
-                :style="{ animationDelay: calculateAnimationDelay(index, 0.03) }"
+                class="hot-search-card group flex items-center gap-4 px-3 py-2.5 rounded-lg cursor-pointer transition-colors duration-200"
                 @click="handleSearch(item.searchWord)"
               >
                 <span
@@ -92,7 +91,6 @@ import { useRouter } from 'vue-router';
 import { getHotSearch } from '@/api/home';
 import { useSearchStore } from '@/store/modules/search';
 import type { IHotSearch } from '@/types/search';
-import { calculateAnimationDelay } from '@/utils';
 
 defineOptions({
   name: 'Search'
@@ -169,21 +167,6 @@ onMounted(() => {
 <style lang="scss" scoped>
 .search-page-container {
   position: relative;
-}
-
-.animate-item {
-  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .hot-search-card {

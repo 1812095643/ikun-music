@@ -53,29 +53,4 @@ const router = useRouter();
 .home-container {
   position: relative;
 }
-
-/* Global animation optimization - use will-change sparingly */
-:deep(.animate-item) {
-  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Stagger delays for sequential animations */
-:deep(.animate-item) {
-  @for $i from 1 through 20 {
-    &:nth-child(#{$i}) {
-      animation-delay: #{$i * 0.05}s;
-    }
-  }
-}
 </style>

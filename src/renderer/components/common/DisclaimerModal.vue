@@ -6,7 +6,7 @@
         class="disclaimer-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/45"
       >
         <div
-          class="disclaimer-modal-card w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-sm"
+          class="disclaimer-modal-card w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
         >
           <div class="h-1 bg-primary"></div>
           <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white px-6 mt-10">
@@ -60,7 +60,7 @@
           <div class="px-6 pb-8 space-y-3">
             <button
               @click="handleAgree"
-              class="w-full py-4 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary/90 active:translate-y-0 transition-colors duration-200 shadow-sm"
+              class="w-full py-4 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary/90 active:translate-y-0 transition-colors duration-200"
             >
               <span class="flex items-center justify-center gap-2">
                 <i class="ri-check-line text-lg"></i>
@@ -85,12 +85,12 @@
         class="donate-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/45"
       >
         <div
-          class="donate-modal-card w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-sm"
+          class="donate-modal-card w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
         >
           <div class="h-1 bg-primary"></div>
 
           <div class="flex justify-center pt-8 pb-4">
-            <div class="w-20 h-20 rounded-lg bg-primary flex items-center justify-center shadow-sm">
+            <div class="w-20 h-20 rounded-lg bg-primary flex items-center justify-center">
               <i class="ri-heart-3-fill text-4xl text-white"></i>
             </div>
           </div>
@@ -141,7 +141,7 @@
           <div class="px-6 pb-8">
             <button
               @click="handleEnterApp"
-              class="w-full py-4 rounded-lg text-base font-medium text-white bg-neutral-800 dark:bg-neutral-700 hover:bg-neutral-900 dark:hover:bg-neutral-600 active:translate-y-0 transition-colors duration-200 shadow-sm"
+              class="w-full py-4 rounded-lg text-base font-medium text-white bg-neutral-800 dark:bg-neutral-700 hover:bg-neutral-900 dark:hover:bg-neutral-600 active:translate-y-0 transition-colors duration-200"
             >
               <span class="flex items-center justify-center gap-2">
                 <i class="ri-arrow-right-line text-lg"></i>
@@ -164,7 +164,7 @@
         @click.self="closeQRCode"
       >
         <div
-          class="w-full max-w-sm mx-4 bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-sm"
+          class="w-full max-w-sm mx-4 bg-white dark:bg-gray-900 rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
         >
           <div class="h-2" :class="qrcodeType === 'wechat' ? 'bg-primary' : 'bg-neutral-500'"></div>
 

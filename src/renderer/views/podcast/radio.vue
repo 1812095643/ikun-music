@@ -345,19 +345,6 @@ onMounted(async () => {
     border-color 0.2s ease;
 }
 
-.animate-item {
-  animation: fadeInSoft 0.22s ease-out;
-}
-
-@keyframes fadeInSoft {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 /* Mobile Optimizations */
 @media (max-width: 768px) {
   .hero-section {

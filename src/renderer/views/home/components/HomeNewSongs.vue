@@ -25,13 +25,11 @@
     <!-- Songs Grid (Even columns: 1→2→3→4→5) -->
     <div v-else class="songs-grid grid gap-2 md:gap-3" :class="gridClass">
       <song-item
-        v-for="(song, index) in songs"
+        v-for="song in songs"
         :key="song.id"
         :item="song"
         home
         :favorite="false"
-        :style="{ animationDelay: calculateAnimationDelay(index % 5, 0.05) }"
-        class="animate-item"
         @play="playSong(song)"
       />
     </div>
@@ -46,7 +44,7 @@ import { getRecommendMusic } from '@/api/home';
 import SongItem from '@/components/common/SongItem.vue';
 import { usePlayerStore } from '@/store';
 import { SongResult } from '@/types/music';
-import { calculateAnimationDelay, isMobile } from '@/utils';
+import { isMobile } from '@/utils';
 
 const props = defineProps<{
   title: string;

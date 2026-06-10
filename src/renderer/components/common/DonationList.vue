@@ -22,9 +22,13 @@
         class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
-          class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-md group-hover:bg-primary/10 transition-colors duration-200"
+          class="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
         ></div>
-        <img :src="alipay" alt="Alipay" class="w-52 h-52 rounded-lg shadow-sm mb-4" />
+        <img
+          :src="alipay"
+          alt="Alipay"
+          class="w-52 h-52 rounded-lg border border-neutral-100 dark:border-neutral-800 mb-4"
+        />
         <div class="flex items-center gap-2 text-primary font-bold text-lg">
           <i class="ri-alipay-fill text-2xl"></i>
           {{ t('common.alipay') }}
@@ -36,9 +40,13 @@
         class="pay-card group relative overflow-hidden rounded-lg bg-white/70 dark:bg-neutral-900/60 border border-primary/15 p-6 flex flex-col items-center transition-colors hover:bg-white dark:hover:bg-neutral-900"
       >
         <div
-          class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-md group-hover:bg-primary/10 transition-colors duration-200"
+          class="absolute -right-4 -top-4 w-24 h-24 rounded-full bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
         ></div>
-        <img :src="wechat" alt="WeChat" class="w-52 h-52 rounded-lg shadow-sm mb-4" />
+        <img
+          :src="wechat"
+          alt="WeChat"
+          class="w-52 h-52 rounded-lg border border-neutral-100 dark:border-neutral-800 mb-4"
+        />
         <div class="flex items-center gap-2 text-primary font-bold text-lg">
           <i class="ri-wechat-pay-fill text-2xl"></i>
           {{ t('common.wechat') }}
@@ -60,15 +68,9 @@
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        <div
-          v-for="(donor, index) in visibleDonors"
-          :key="donor.id"
-          class="donor-card group"
-          :class="index < FIRST_BATCH ? 'animate-fade-in-up' : ''"
-          :style="index < FIRST_BATCH ? { animationDelay: `${index * 10}ms` } : undefined"
-        >
+        <div v-for="(donor, index) in visibleDonors" :key="donor.id" class="donor-card group">
           <div
-            class="h-full bg-white dark:bg-neutral-800/50 border border-gray-100 dark:border-gray-800 rounded-lg p-3 flex gap-3 hover:border-primary/30 hover:shadow-sm hover:bg-white dark:hover:bg-neutral-800 transition-opacity duration-200"
+            class="h-full bg-white dark:bg-neutral-800/50 border border-gray-100 dark:border-gray-800 rounded-lg p-3 flex gap-3 hover:border-primary/30 hover:bg-white dark:hover:bg-neutral-800 transition-colors duration-200"
           >
             <!-- 头像 -->
             <div class="relative flex-shrink-0">
@@ -225,17 +227,4 @@ onMounted(() => fetchDonors());
 onActivated(() => fetchDonors());
 </script>
 
-<style scoped>
-.animate-fade-in-up {
-  animation: fadeInSoft 0.22s ease-out backwards;
-}
-
-@keyframes fadeInSoft {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-</style>
+<style scoped></style>

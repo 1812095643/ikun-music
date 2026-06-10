@@ -8,7 +8,6 @@ const props = withDefaults(
   defineProps<{
     radio?: DjRadio;
     program?: DjProgram;
-    animationDelay?: string;
   }>(),
   {}
 );
@@ -23,7 +22,7 @@ const goToDetail = () => {
 </script>
 
 <template>
-  <div class="group cursor-pointer animate-item" :style="{ animationDelay }" @click="goToDetail">
+  <div class="group cursor-pointer" @click="goToDetail">
     <!-- Cover -->
     <div
       class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 transition-colors duration-200 group-hover:border-primary/20 dark:border-neutral-800"
@@ -79,19 +78,4 @@ const goToDetail = () => {
   </div>
 </template>
 
-<style scoped>
-.animate-item {
-  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-</style>
+<style scoped></style>

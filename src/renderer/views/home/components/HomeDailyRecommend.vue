@@ -37,8 +37,7 @@
       <div
         v-for="(song, index) in songs.slice(0, limit)"
         :key="song.id"
-        class="song-item animate-item group relative flex flex-col cursor-pointer"
-        :style="{ animationDelay: calculateAnimationDelay(index, 0.03) }"
+        class="song-item group relative flex flex-col cursor-pointer"
         @click="handleSongClick(song, index)"
       >
         <!-- Cover Container -->
@@ -63,7 +62,7 @@
             class="play-overlay absolute inset-0 flex items-center justify-center rounded-lg bg-black/0 opacity-0 transition-colors duration-200 group-hover:bg-black/10 group-hover:opacity-100"
           >
             <div
-              class="play-button flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-lg bg-white shadow-sm transition-colors duration-200"
+              class="play-button flex h-10 w-10 md:h-11 md:w-11 items-center justify-center rounded-lg bg-white transition-colors duration-200"
             >
               <i class="iconfont icon-playfill text-lg md:text-2xl text-neutral-900 ml-0.5" />
             </div>
@@ -109,7 +108,7 @@ import { computed, onActivated, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useRecommendStore } from '@/store';
-import { calculateAnimationDelay, getImgUrl } from '@/utils';
+import { getImgUrl } from '@/utils';
 
 defineProps<{
   title: string;

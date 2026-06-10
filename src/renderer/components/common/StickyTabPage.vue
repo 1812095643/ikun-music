@@ -17,7 +17,7 @@
         <!-- Tabs (sticky on scroll) -->
         <div
           class="sticky-tabs z-10 transition-shadow duration-200"
-          :class="isSticky ? 'sticky top-0 shadow-sm' : ''"
+          :class="isSticky ? 'sticky top-0 sticky-tabs--active' : ''"
         >
           <category-selector
             :model-value="modelValue"
@@ -87,5 +87,9 @@ defineExpose({ scrollbarRef, scrollTo });
 <style scoped>
 .sticky-tabs {
   background: inherit;
+}
+
+.sticky-tabs--active {
+  border-bottom: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
 }
 </style>

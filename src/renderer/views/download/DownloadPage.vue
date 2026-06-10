@@ -160,10 +160,9 @@
               </div>
               <div v-else class="space-y-2">
                 <div
-                  v-for="(item, index) in downList"
+                  v-for="item in downList"
                   :key="item.path"
-                  class="downloaded-item group animate-item p-3 rounded-lg flex items-center gap-4 border-b border-neutral-100 dark:border-neutral-800/50 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
-                  :style="{ animationDelay: `${index * 0.03}s` }"
+                  class="downloaded-item group p-3 rounded-lg flex items-center gap-4 border-b border-neutral-100 dark:border-neutral-800/50 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
                 >
                   <div class="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
                     <img
@@ -1082,19 +1081,6 @@ onMounted(() => {
 
 .hero-section {
   min-height: 240px;
-}
-
-.animate-item {
-  animation: fadeInSoft 0.22s ease-out backwards;
-}
-
-@keyframes fadeInSoft {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 .action-btn-pill {

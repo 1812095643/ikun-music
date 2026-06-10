@@ -29,7 +29,7 @@
     <!-- Playlist Grid -->
     <div v-else-if="displayPlaylists.length > 0" class="grid gap-6" :style="gridStyle">
       <home-list-item
-        v-for="(item, index) in displayPlaylists"
+        v-for="item in displayPlaylists"
         :key="item.id"
         :cover="item.picUrl"
         :title="item.name"
@@ -37,7 +37,6 @@
         :tracks="isElectron ? playlistTracksMap[item.id] || [] : []"
         :show-hover-tracks="isElectron"
         :play-count="item.playCount"
-        :animation-delay="calculateAnimationDelay(index, 0.04)"
         @click="handlePlaylistClick(item)"
         @play="playPlaylist(item)"
         @mouseenter="isElectron && loadTracksOnHover(item.id)"
@@ -62,7 +61,7 @@ import { getListDetail } from '@/api/list';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
 import { usePlayerCoreStore } from '@/store/modules/playerCore';
 import { usePlaylistStore } from '@/store/modules/playlist';
-import { calculateAnimationDelay, isElectron, isMobile } from '@/utils';
+import { isElectron, isMobile } from '@/utils';
 
 import HomeListItem from './HomeListItem.vue';
 

@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="home-list-card group cursor-pointer"
-    :style="{ animationDelay }"
-    @click="$emit('click')"
-  >
+  <div class="home-list-card group cursor-pointer" @click="$emit('click')">
     <!-- Cover -->
     <div
       class="relative aspect-square overflow-hidden rounded-lg border border-white/60 bg-neutral-100 shadow-sm transition-colors duration-200 ease-out dark:border-white/10 dark:bg-neutral-800"
@@ -110,12 +106,10 @@ const props = withDefaults(
     badge?: string;
     badgeType?: 'new' | 'hot' | 'recommend';
     playCount?: number;
-    animationDelay?: string;
     showHoverTracks?: boolean;
   }>(),
   {
     tracks: () => [],
-    animationDelay: '0s',
     showHoverTracks: true
   }
 );

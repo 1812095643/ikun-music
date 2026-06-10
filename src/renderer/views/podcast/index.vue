@@ -25,10 +25,9 @@
         </div>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           <radio-card
-            v-for="(radio, index) in subscribedRadios.slice(0, 10)"
+            v-for="radio in subscribedRadios.slice(0, 10)"
             :key="`sub-${radio.id}`"
             :radio="radio"
-            :animation-delay="calculateAnimationDelay(index, 0.04)"
           />
         </div>
       </section>
@@ -51,10 +50,9 @@
         </div>
         <div class="space-y-3">
           <div
-            v-for="(program, index) in todayPerfered.slice(0, 5)"
+            v-for="program in todayPerfered.slice(0, 5)"
             :key="`today-${program.id}`"
-            class="flex items-center gap-4 p-4 rounded-lg bg-neutral-50 dark:bg-neutral-900/50 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 cursor-pointer group transition-colors duration-200 animate-item"
-            :style="{ animationDelay: calculateAnimationDelay(index, 0.04) }"
+            class="flex items-center gap-4 p-4 rounded-lg bg-neutral-50 dark:bg-neutral-900/50 hover:bg-primary/5 dark:hover:bg-primary/10 cursor-pointer group transition-colors duration-200"
             @click="playProgram(program)"
           >
             <div class="relative flex-shrink-0 w-16 h-16 md:w-20 md:h-20">
@@ -104,10 +102,9 @@
         </div>
         <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           <radio-card
-            v-for="(radio, index) in recommendRadios.slice(0, 10)"
+            v-for="radio in recommendRadios.slice(0, 10)"
             :key="`recommend-${radio.id}`"
             :radio="radio"
-            :animation-delay="calculateAnimationDelay(index, 0.04)"
           />
         </div>
       </section>
@@ -123,12 +120,7 @@
           </div>
         </template>
         <template v-else>
-          <radio-card
-            v-for="(radio, index) in categoryRadios"
-            :key="`cat-${radio.id}`"
-            :radio="radio"
-            :animation-delay="calculateAnimationDelay(index % 30, 0.04)"
-          />
+          <radio-card v-for="radio in categoryRadios" :key="`cat-${radio.id}`" :radio="radio" />
         </template>
       </div>
 
@@ -171,7 +163,7 @@ import StickyTabPage from '@/components/common/StickyTabPage.vue';
 import RadioCard from '@/components/podcast/RadioCard.vue';
 import { usePlayerStore, usePlaylistStore, useUserStore } from '@/store';
 import type { DjCategory, DjProgram, DjRadio } from '@/types/podcast';
-import { calculateAnimationDelay, formatNumber, getImgUrl, secondToMinute } from '@/utils';
+import { formatNumber, getImgUrl, secondToMinute } from '@/utils';
 import { mapDjProgramToSongResult } from '@/utils/podcastUtils';
 
 defineOptions({ name: 'Podcast' });
@@ -364,17 +356,4 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss" scoped>
-.animate-item {
-  animation: fadeInSoft 0.22s ease-out backwards;
-}
-
-@keyframes fadeInSoft {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

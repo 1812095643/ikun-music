@@ -24,10 +24,9 @@
       class="private-content-grid grid grid-cols-1 gap-6 md:gap-8 lg:gap-10 md:grid-cols-2 lg:grid-cols-3"
     >
       <div
-        v-for="(content, index) in contentList"
+        v-for="content in contentList"
         :key="content.id"
-        class="content-item animate-item group relative flex flex-col cursor-pointer overflow-hidden rounded-lg bg-neutral-50 dark:bg-neutral-900"
-        :style="{ animationDelay: calculateAnimationDelay(index, 0.1) }"
+        class="content-item group relative flex flex-col cursor-pointer overflow-hidden rounded-lg bg-neutral-50 dark:bg-neutral-900"
         @click="handleContentClick(content)"
       >
         <!-- Cover Image (16:9) -->
@@ -44,7 +43,7 @@
 
           <!-- Exclusive Badge -->
           <div
-            class="exclusive-badge absolute top-4 left-4 flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-white shadow-sm"
+            class="exclusive-badge absolute top-4 left-4 flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-white"
           >
             <i class="iconfont icon-vip text-sm" />
             <span>独家</span>
@@ -84,7 +83,7 @@ import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { getPrivateContent } from '@/api/home';
-import { calculateAnimationDelay, getImgUrl } from '@/utils';
+import { getImgUrl } from '@/utils';
 
 defineProps<{
   title: string;

@@ -32,14 +32,13 @@
       class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
     >
       <home-list-item
-        v-for="(album, index) in displayAlbums"
+        v-for="album in displayAlbums"
         :key="album.id"
         :cover="album.picUrl"
         :title="album.name"
         :subtitle="getArtistNames(album)"
         :tracks="albumTracksMap[album.id] || []"
         :show-hover-tracks="!isMobile"
-        :animation-delay="calculateAnimationDelay(index, 0.04)"
         @click="handleAlbumClick(album)"
         @play="playAlbum(album)"
       />
@@ -63,7 +62,7 @@ import { getAlbum } from '@/api/list';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
 import { usePlayerCoreStore } from '@/store/modules/playerCore';
 import { usePlaylistStore } from '@/store/modules/playlist';
-import { calculateAnimationDelay, isElectron, isMobile } from '@/utils';
+import { isElectron, isMobile } from '@/utils';
 
 import HomeListItem from './HomeListItem.vue';
 
