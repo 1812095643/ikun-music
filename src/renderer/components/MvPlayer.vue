@@ -124,7 +124,7 @@
           >
             <template #thumb>
               <div
-                class="w-3 h-3 bg-white rounded-full shadow-sm opacity-0 group-hover/slider:opacity-100 transition-opacity duration-200"
+                class="w-3 h-3 bg-white rounded-full ring-1 ring-black/10 opacity-0 group-hover/slider:opacity-100 transition-opacity duration-200"
               ></div>
             </template>
           </n-slider>

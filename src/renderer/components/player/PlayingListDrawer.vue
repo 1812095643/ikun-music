@@ -189,25 +189,26 @@ const handleDeleteSong = (song: SongResult) => {
 <style lang="scss" scoped>
 .fixed-overlay {
   @apply fixed inset-0 z-[999999];
+  background: rgba(15, 23, 42, 0.08);
   pointer-events: auto; // 允许点击关闭
   cursor: default;
 }
 
 .playlist-panel {
-  @apply fixed right-0 z-[9999999] rounded-l-lg overflow-hidden;
-  width: 350px;
-  height: 70vh;
-  top: 15vh; // 距离顶部15%
+  @apply fixed right-4 z-[9999999] rounded-lg overflow-hidden;
+  width: 360px;
+  height: 72vh;
+  top: 14vh; // 轻量右侧浮层，保留桌面播放器呼吸感
   animation-duration: 0.24s !important; // 动画持续时间
 
-  background: color-mix(in srgb, var(--qqm-surface, #fff) 94%, transparent);
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 98%, transparent);
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
   box-shadow: none;
 
   &-header {
-    @apply flex items-center justify-between px-4 py-2;
+    @apply flex items-center justify-between px-4 py-3;
     border-bottom: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-    background: color-mix(in srgb, var(--qqm-surface, #fff) 96%, transparent);
+    background: color-mix(in srgb, var(--qqm-surface, #fff) 99%, transparent);
 
     .title {
       @apply text-base font-medium text-gray-800 dark:text-gray-200;
@@ -241,7 +242,7 @@ const handleDeleteSong = (song: SongResult) => {
   }
 
   &-content {
-    @apply h-[calc(70vh-60px)] overflow-hidden;
+    @apply h-[calc(72vh-60px)] overflow-hidden px-2 py-2;
   }
 }
 
@@ -258,8 +259,10 @@ const handleDeleteSong = (song: SongResult) => {
 }
 
 .music-play-list-content {
-  @apply pr-2 hover:bg-light-100 dark:hover:bg-dark-100;
+  @apply rounded-lg pr-2 transition-colors duration-150;
   &:hover {
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, transparent);
+
     .delete-btn {
       @apply visible;
     }
@@ -277,12 +280,13 @@ const handleDeleteSong = (song: SongResult) => {
   .playlist-panel {
     position: fixed;
     width: 100%;
+    right: 0;
     height: 80vh;
     top: auto;
     bottom: 0; // 移动端底部留出导航栏高度
     border-radius: 14px 14px 0 0;
     border-left: none;
-    border-top: 1px solid theme('colors.gray.200');
+    border-top: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
     box-shadow: none;
 
     &-header {

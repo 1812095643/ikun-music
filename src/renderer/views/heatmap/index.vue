@@ -1,6 +1,6 @@
 <template>
   <div class="heatmap-page">
-    <div class="heatmap-header" :class="setAnimationClass('animate__fadeInDown')">
+    <div class="heatmap-header">
       <div class="header-left">
         <h2>{{ t('history.heatmap.title') }}</h2>
       </div>
@@ -17,7 +17,7 @@
     </div>
 
     <n-scrollbar class="heatmap-content">
-      <div class="heatmap-wrapper" :class="setAnimationClass('animate__fadeInUp')">
+      <div class="heatmap-wrapper">
         <div v-if="loading" class="loading-wrapper">
           <n-spin size="large" />
           <p class="loading-text">{{ t('history.heatmap.loading') }}</p>
@@ -136,7 +136,6 @@ import { useI18n } from 'vue-i18n';
 import { usePlayerStore } from '@/store/modules/player';
 import { usePlayHistoryStore } from '@/store/modules/playHistory';
 import type { SongResult } from '@/types/music';
-import { setAnimationClass } from '@/utils';
 
 const { t } = useI18n();
 const playHistoryStore = usePlayHistoryStore();
@@ -497,7 +496,7 @@ onMounted(() => {
             @apply w-12 h-12 rounded-lg;
             background: var(--qqm-primary);
             @apply text-white text-2xl;
-            @apply shadow-sm;
+            border: 1px solid color-mix(in srgb, #fff 42%, transparent);
 
             .iconfont {
               @apply text-2xl;

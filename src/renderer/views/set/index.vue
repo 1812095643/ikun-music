@@ -32,31 +32,31 @@
     <!-- 内容区域 -->
     <n-scrollbar class="flex-1">
       <div class="w-full mx-auto pb-32 pt-6 page-padding">
-        <div v-show="currentSection === 'basic'" class="animate-fade-in">
+        <div v-show="currentSection === 'basic'">
           <basic-tab />
         </div>
 
-        <div v-show="currentSection === 'playback'" class="animate-fade-in">
+        <div v-show="currentSection === 'playback'">
           <playback-tab />
         </div>
 
-        <div v-show="currentSection === 'application'" class="animate-fade-in">
+        <div v-show="currentSection === 'application'">
           <application-tab />
         </div>
 
-        <div v-show="currentSection === 'network'" class="animate-fade-in">
+        <div v-show="currentSection === 'network'">
           <network-tab />
         </div>
 
-        <div v-show="currentSection === 'system'" class="animate-fade-in">
+        <div v-show="currentSection === 'system'">
           <system-tab />
         </div>
 
-        <div v-show="currentSection === 'about'" class="animate-fade-in">
+        <div v-show="currentSection === 'about'">
           <about-tab />
         </div>
 
-        <div v-show="currentSection === 'donation'" class="animate-fade-in">
+        <div v-show="currentSection === 'donation'">
           <donation-tab />
         </div>
 
@@ -185,20 +185,5 @@ onMounted(() => {
 <style scoped>
 :deep(.n-select .n-base-selection) {
   border-radius: 10px;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 </style>

@@ -251,4 +251,25 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.list-card {
+  border-radius: 10px;
+  transition: color 160ms var(--qqm-ease);
+
+  > div:first-child {
+    border: 1px solid var(--qqm-border);
+    box-shadow: none;
+  }
+
+  &:hover {
+    > div:first-child {
+      border-color: rgba(30, 207, 115, 0.18);
+      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, transparent);
+    }
+
+    h3 {
+      color: var(--qqm-primary-strong) !important;
+    }
+  }
+}
+</style>

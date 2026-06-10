@@ -60,7 +60,7 @@
               class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 overflow-hidden p-1 transition-colors duration-200"
             >
               <!-- 链接导入内容 -->
-              <div v-if="currentTab === 'link'" class="p-6 space-y-6 animate-fade-in">
+              <div v-if="currentTab === 'link'" class="p-6 space-y-6">
                 <div class="space-y-4">
                   <div v-for="(link, index) in linkInputs" :key="index" class="group relative">
                     <input
@@ -70,7 +70,7 @@
                     />
                     <button
                       v-if="linkInputs.length > 1"
-                      class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
+                      class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 transition-colors opacity-0 group-hover:opacity-100"
                       @click="removeLinkRow(index)"
                     >
                       <i class="ri-delete-bin-line"></i>
@@ -88,7 +88,7 @@
               </div>
 
               <!-- 文字导入内容 -->
-              <div v-if="currentTab === 'text'" class="p-6 space-y-6 animate-fade-in">
+              <div v-if="currentTab === 'text'" class="p-6 space-y-6">
                 <textarea
                   v-model="textInput"
                   :placeholder="t('comp.playlist.import.textPlaceholder')"
@@ -102,7 +102,7 @@
               </div>
 
               <!-- 元数据导入内容 -->
-              <div v-if="currentTab === 'local'" class="p-6 space-y-6 animate-fade-in">
+              <div v-if="currentTab === 'local'" class="p-6 space-y-6">
                 <div class="space-y-3">
                   <div
                     v-for="(item, index) in localMetadata"
@@ -129,7 +129,7 @@
                     />
                     <button
                       v-if="localMetadata.length > 1"
-                      class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100"
+                      class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 transition-colors opacity-0 group-hover:opacity-100"
                       @click="removeMetadataRow(index)"
                     >
                       <i class="ri-delete-bin-line"></i>
@@ -249,7 +249,7 @@
             </div>
 
             <!-- 状态反馈 -->
-            <div v-if="taskId" class="animate-fade-in-up">
+            <div v-if="taskId">
               <div
                 class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 p-6"
               >
@@ -494,33 +494,3 @@ onUnmounted(() => {
   if (statusCheckInterval.value) clearInterval(statusCheckInterval.value);
 });
 </script>
-
-<style lang="scss" scoped>
-.animate-fade-in {
-  animation: fadeIn 0.4s ease-out;
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-</style>

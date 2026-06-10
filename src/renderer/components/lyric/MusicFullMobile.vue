@@ -1835,7 +1835,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
   .fullscreen-header {
     @apply pt-16 pb-4 px-6 flex flex-col items-center fixed top-0 left-0 w-full z-10;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
     pointer-events: auto;
 
     .song-title {
@@ -2002,7 +2002,8 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 .cover-container {
   // 方形封面样式
   &.square-style {
-    @apply w-[85%] shadow-sm shadow-black/30 rounded-lg overflow-hidden mt-8 aspect-square;
+    @apply w-[85%] rounded-lg overflow-hidden mt-8 aspect-square;
+    border: 1px solid color-mix(in srgb, #fff 18%, transparent);
 
     .cover-image {
       @apply w-full h-full;
@@ -2035,7 +2036,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
     }
 
     .cover-image {
-      @apply w-full h-auto shadow-sm;
+      @apply w-full h-auto;
 
       &.full-blend {
         mix-blend-mode: luminosity;
@@ -2046,7 +2047,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
 
 .is-dark {
   .square-style {
-    @apply shadow-sm shadow-black/30;
+    border-color: color-mix(in srgb, #fff 12%, transparent);
   }
 }
 </style>

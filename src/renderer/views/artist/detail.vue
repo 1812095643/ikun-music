@@ -63,7 +63,7 @@
                 <!-- Artist Avatar -->
                 <div class="artist-avatar-wrapper relative group">
                   <div
-                    class="avatar-glow absolute -inset-px rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    class="avatar-glow absolute -inset-px rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 ring-1 ring-primary/20"
                   />
                   <div
                     class="avatar-container relative w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
@@ -78,7 +78,7 @@
                       class="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/25 transition-colors duration-200"
                     >
                       <div
-                        class="play-icon w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+                        class="play-icon w-10 h-10 rounded-lg bg-white/95 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer ring-1 ring-black/5"
                         @click="handlePlayAll"
                       >
                         <i class="iconfont icon-playfill text-2xl text-neutral-900 ml-1" />

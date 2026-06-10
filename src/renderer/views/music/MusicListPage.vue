@@ -160,10 +160,7 @@
                 <i class="ri-checkbox-multiple-line text-lg" />
               </button>
 
-              <div
-                v-if="isSelecting"
-                class="flex items-center gap-2 animate-in fade-in slide-in-from-left-2"
-              >
+              <div v-if="isSelecting" class="flex items-center gap-2">
                 <n-checkbox
                   :checked="isAllSelected"
                   :indeterminate="isIndeterminate"

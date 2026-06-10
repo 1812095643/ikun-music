@@ -26,7 +26,7 @@
             <span v-if="musicSources.length > 0" class="text-gray-400">{{
               musicSources.join(', ')
             }}</span>
-            <span v-else class="text-red-500 text-xs">{{
+            <span v-else class="text-gray-400 text-xs">{{
               t('settings.playback.noMusicSources')
             }}</span>
           </div>
