@@ -9,7 +9,9 @@
               <p class="text-xs font-semibold uppercase tracking-wider text-primary">
                 {{ t('download.title') }}
               </p>
-              <h1 class="mt-2 text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+              <h1
+                class="mt-2 text-3xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100"
+              >
                 {{
                   tabName === 'downloading'
                     ? t('download.tabs.downloading')
@@ -34,12 +36,12 @@
 
         <!-- Action Bar (Sticky) -->
         <section
-          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/95 dark:bg-black/95 border-b border-neutral-100 dark:border-neutral-800/50"
+          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/98 dark:bg-black/98 border-b border-neutral-100 dark:border-neutral-800"
         >
           <div class="flex items-center justify-between gap-4">
             <!-- Tabs (Segment Control) -->
             <div
-              class="flex items-center gap-1 rounded-lg bg-neutral-100/80 p-1 dark:bg-neutral-900/80"
+              class="flex items-center gap-1 rounded-md border border-neutral-100 bg-white p-1 dark:border-neutral-800 dark:bg-black"
             >
               <button
                 v-for="tab in ['downloading', 'downloaded']"
@@ -47,8 +49,8 @@
                 class="px-5 py-1.5 rounded-md text-sm font-medium transition-colors"
                 :class="
                   tabName === tab
-                    ? 'bg-white dark:bg-neutral-800 text-primary'
-                    : 'text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-neutral-500 hover:text-primary dark:text-neutral-400 dark:hover:text-primary'
                 "
                 @click="tabName = tab"
               >
@@ -60,7 +62,7 @@
             <div class="flex items-center gap-3">
               <button
                 v-if="tabName === 'downloaded' && downloadedList.length > 0"
-                class="action-btn-pill flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-colors hover:bg-neutral-100 dark:hover:bg-white/10 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-200 border border-neutral-200 dark:border-neutral-800"
+                class="action-btn-pill flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-colors hover:bg-primary/5 dark:hover:bg-primary/10 text-neutral-500 hover:text-primary dark:hover:text-primary border border-neutral-200 dark:border-neutral-800"
                 @click="showClearConfirm = true"
               >
                 <i class="ri-delete-bin-line text-lg" />
@@ -68,14 +70,14 @@
               </button>
 
               <button
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100/80 dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:hover:border-primary/25 dark:hover:bg-primary/10 transition-colors"
                 @click="openDownloadPath"
               >
                 <i class="ri-folder-open-line text-lg" />
               </button>
 
               <button
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-neutral-100/80 dark:bg-neutral-900/80 text-neutral-600 dark:text-neutral-400 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors"
+                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:hover:border-primary/25 dark:hover:bg-primary/10 transition-colors"
                 @click="showSettingsDrawer = true"
               >
                 <i class="ri-settings-3-line text-lg" />
@@ -109,7 +111,7 @@
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center justify-between mb-2">
                       <div class="truncate pr-4">
-                        <span class="text-sm font-bold text-neutral-900 dark:text-white">{{
+                        <span class="text-sm font-bold text-neutral-900 dark:text-neutral-100">{{
                           item.filename
                         }}</span>
                         <span class="ml-2 text-xs text-neutral-400">{{
@@ -179,9 +181,10 @@
 
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2">
-                      <span class="text-sm font-bold text-neutral-900 dark:text-white truncate">{{
-                        item.displayName || item.filename
-                      }}</span>
+                      <span
+                        class="text-sm font-bold text-neutral-900 dark:text-neutral-100 truncate"
+                        >{{ item.displayName || item.filename }}</span
+                      >
                       <span class="text-xs text-neutral-400 flex-shrink-0">{{
                         formatSize(item.size)
                       }}</span>
@@ -276,7 +279,7 @@
         <div class="download-settings-content space-y-8 py-4">
           <!-- Path Section -->
           <div class="setting-group">
-            <h3 class="text-sm font-bold text-neutral-900 dark:text-white mb-2">
+            <h3 class="text-sm font-bold text-neutral-900 dark:text-neutral-100 mb-2">
               {{ t('download.settingsPanel.path') }}
             </h3>
             <p class="text-xs text-neutral-500 mb-4">{{ t('download.settingsPanel.pathDesc') }}</p>
@@ -297,7 +300,7 @@
           <div class="setting-group">
             <div class="flex items-center justify-between">
               <div>
-                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                <h3 class="text-sm font-bold text-neutral-900 dark:text-neutral-100">
                   {{ t('download.settingsPanel.saveLyric') }}
                 </h3>
                 <p class="text-xs text-neutral-500 mt-1">
@@ -310,7 +313,7 @@
 
           <!-- Format Section -->
           <div class="setting-group">
-            <h3 class="text-sm font-bold text-neutral-900 dark:text-white mb-2">
+            <h3 class="text-sm font-bold text-neutral-900 dark:text-neutral-100 mb-2">
               {{ t('download.settingsPanel.fileFormat') }}
             </h3>
             <p class="text-xs text-neutral-500 mb-4">
@@ -360,7 +363,7 @@
                   <div
                     v-for="(comp, idx) in formatComponents"
                     :key="comp.id"
-                    class="flex items-center justify-between p-2 bg-neutral-50 dark:bg-neutral-900 rounded-lg"
+                    class="flex items-center justify-between p-2 bg-white dark:bg-black rounded-lg border border-neutral-100 dark:border-neutral-800"
                   >
                     <span class="text-xs">{{
                       t(`download.settingsPanel.components.${comp.type}`)
@@ -407,7 +410,7 @@
               </div>
 
               <div
-                class="p-3 bg-neutral-50 dark:bg-neutral-900 rounded-lg border border-dashed border-neutral-200 dark:border-neutral-800"
+                class="p-3 bg-white dark:bg-black rounded-lg border border-neutral-100 dark:border-neutral-800 border border-dashed border-neutral-200 dark:border-neutral-800"
               >
                 <p class="text-[10px] text-neutral-400 mb-1 uppercase font-bold">
                   {{ t('download.settingsPanel.preview') }}

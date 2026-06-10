@@ -5,7 +5,7 @@
         <!-- Hero Section -->
         <div class="mb-10">
           <h1
-            class="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900 dark:text-white mb-2"
+            class="text-3xl md:text-4xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100 mb-2"
           >
             {{ t('comp.toplist') }}
           </h1>
@@ -35,7 +35,7 @@
             >
               <!-- Cover Image -->
               <div
-                class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 transition-colors duration-200 dark:border-neutral-800 dark:bg-neutral-900"
+                class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 bg-white transition-colors duration-200 dark:border-neutral-800 dark:bg-black"
               >
                 <img
                   :src="getImgUrl(item.coverImgUrl, '400y400')"
@@ -75,7 +75,7 @@
               <!-- Info -->
               <div class="mt-3 space-y-1">
                 <h3
-                  class="text-sm md:text-base font-bold text-neutral-900 dark:text-white line-clamp-1 group-hover:text-primary transition-colors"
+                  class="text-sm md:text-base font-bold text-neutral-900 dark:text-neutral-100 line-clamp-1 group-hover:text-primary transition-colors"
                 >
                   {{ item.name }}
                 </h3>
