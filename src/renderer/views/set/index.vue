@@ -3,9 +3,7 @@
     class="set-page h-full w-full bg-white dark:bg-black transition-colors duration-200 flex flex-col"
   >
     <!-- 顶部导航区 -->
-    <div
-      class="flex-shrink-0 border-b border-neutral-100 dark:border-neutral-800 bg-white dark:bg-black z-10 page-padding pt-6 pb-2"
-    >
+    <div class="settings-header flex-shrink-0 bg-white dark:bg-black z-10 page-padding pt-6 pb-2">
       <h1 class="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white mb-6">
         {{ t('common.settings') }}
       </h1>
@@ -19,7 +17,7 @@
             :class="
               currentSection === section.id
                 ? 'border-primary/25 bg-primary/10 text-primary'
-                : 'border-neutral-100 bg-white text-neutral-600 hover:border-primary/30 hover:bg-primary/5 hover:text-primary dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-primary/30 dark:hover:bg-primary/10 dark:hover:text-primary'
+                : 'settings-nav-item text-neutral-600 hover:text-primary dark:text-neutral-400 dark:hover:text-primary'
             "
             @click="currentSection = section.id"
           >
@@ -185,5 +183,19 @@ onMounted(() => {
 <style scoped>
 :deep(.n-select .n-base-selection) {
   border-radius: 10px;
+}
+
+.settings-header {
+  border-bottom: 1px solid var(--qqm-border);
+}
+
+.settings-nav-item {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.settings-nav-item:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 26%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

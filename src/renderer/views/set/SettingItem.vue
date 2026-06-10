@@ -1,6 +1,6 @@
 <template>
   <div
-    class="setting-item flex items-center justify-between px-4 py-3.5 transition-colors bg-transparent text-neutral-900 dark:text-neutral-100 border-b border-neutral-100 dark:border-neutral-800 last:border-b-0 hover:bg-primary/5 hover:dark:bg-primary/10"
+    class="setting-item flex items-center justify-between px-4 py-3.5 transition-colors bg-transparent text-neutral-900 dark:text-neutral-100 last:border-b-0"
     :class="[
       // 移动端垂直布局
       { 'max-md:flex-col max-md:items-start max-md:gap-3': !inline },

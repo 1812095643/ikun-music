@@ -6,9 +6,7 @@
     </div>
 
     <!-- 设置项列表容器 -->
-    <div
-      class="bg-white dark:bg-black rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
-    >
+    <div class="setting-section-surface rounded-lg overflow-hidden">
       <slot></slot>
     </div>
   </div>

@@ -297,7 +297,8 @@ const handleLoginError = (error: string) => {
       &-input {
         height: 40px;
         @apply w-full bg-transparent px-4 outline-none;
-        @apply border-b border-neutral-200 text-neutral-900 placeholder-neutral-400;
+        border-bottom: 1px solid var(--qqm-border);
+        @apply text-neutral-900 placeholder-neutral-400;
         transition:
           border-color 0.2s ease,
           color 0.2s ease,

@@ -72,7 +72,7 @@
       </div>
 
       <!-- Loading More / No More -->
-      <div class="mt-12 py-8 border-t border-neutral-100 dark:border-neutral-800">
+      <div class="mv-load-more mt-12 py-8">
         <div v-if="loadingMore" class="flex flex-col items-center gap-4">
           <n-spin size="small" />
           <span class="text-xs text-neutral-400 font-medium tracking-widest uppercase">
@@ -267,5 +267,9 @@ const isPrevDisabled = computed(() => currentIndex.value === 0);
       color: var(--qqm-primary-strong) !important;
     }
   }
+}
+
+.mv-load-more {
+  border-top: 1px solid var(--qqm-border);
 }
 </style>

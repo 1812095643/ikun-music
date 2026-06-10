@@ -2,7 +2,7 @@
   <div class="user-page">
     <template v-if="infoLoading">
       <div
-        class="left-skeleton flex-1 max-w-[600px] rounded-lg overflow-hidden p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800"
+        class="left-skeleton user-skeleton-card flex-1 max-w-[600px] rounded-lg overflow-hidden p-4"
       >
         <div class="flex flex-col gap-6">
           <div class="flex justify-between">
@@ -40,7 +40,7 @@
             <div
               v-for="i in 10"
               :key="i"
-              class="flex items-center gap-4 rounded-lg bg-neutral-50 p-2 dark:bg-neutral-900"
+              class="user-profile-row flex items-center gap-4 rounded-lg p-2"
             >
               <div class="h-10 w-10 skeleton-shimmer rounded-lg flex-shrink-0" />
               <div class="h-10 w-10 skeleton-shimmer rounded-lg flex-shrink-0" />
@@ -574,7 +574,9 @@ const currentLoginType = computed(() => userStore.loginType);
     }
 
     &-img {
-      @apply flex items-center justify-center rounded-lg text-[32px] w-[56px] h-[56px] bg-neutral-100 dark:bg-neutral-900;
+      @apply flex items-center justify-center rounded-lg text-[32px] w-[56px] h-[56px];
+      border: 1px solid var(--qqm-border);
+      background: var(--qqm-surface);
       .iconfont {
         @apply text-[32px];
       }
@@ -628,5 +630,11 @@ const currentLoginType = computed(() => userStore.loginType);
   .n-tabs-capsule {
     @apply rounded-lg !important;
   }
+}
+
+.user-skeleton-card,
+.user-profile-row {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-2, var(--qqm-surface));
 }
 </style>

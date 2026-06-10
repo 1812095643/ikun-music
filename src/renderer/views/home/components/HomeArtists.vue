@@ -30,7 +30,7 @@
         >
           <!-- Artist Avatar -->
           <div
-            class="artist-avatar relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 overflow-hidden rounded-lg border border-neutral-100 bg-white transition-colors duration-200 group-hover:border-primary/30 dark:border-neutral-800 dark:bg-black"
+            class="artist-avatar qqm-artist-avatar relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 overflow-hidden rounded-lg transition-colors duration-200"
           >
             <img
               :src="getImgUrl(item.picUrl, '300y300')"
@@ -186,5 +186,15 @@ onMounted(() => {
 .scroll-fade-left,
 .scroll-fade-right {
   transition: opacity 0.18s ease;
+}
+
+.qqm-artist-avatar {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.group:hover .qqm-artist-avatar {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

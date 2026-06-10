@@ -122,7 +122,7 @@
                       </span>
                     </div>
                     <div
-                      class="relative h-1.5 bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden"
+                      class="download-progress-track relative h-1.5 rounded-full overflow-hidden"
                     >
                       <div
                         class="absolute inset-y-0 left-0 bg-primary transition-colors duration-200"
@@ -1165,5 +1165,9 @@ onMounted(() => {
     border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, var(--qqm-border));
     background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
   }
+}
+
+.download-progress-track {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, var(--qqm-border));
 }
 </style>

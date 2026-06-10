@@ -28,7 +28,7 @@
 
         <!-- Action Bar (Sticky) -->
         <section
-          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5 bg-white/95 dark:bg-black/95 border-b border-neutral-100 dark:border-neutral-800/60"
+          class="action-bar local-action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5"
         >
           <div class="flex items-center justify-between gap-3">
             <!-- 左侧：搜索框 -->
@@ -60,7 +60,7 @@
 
               <!-- 扫描按钮 -->
               <button
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:hover:border-primary/25 dark:hover:bg-primary/10 transition-colors"
+                class="action-btn-icon local-action-btn w-9 h-9 rounded-lg flex items-center justify-center text-neutral-600 dark:text-neutral-400"
                 :disabled="localMusicStore.scanning"
                 @click="handleScan"
               >
@@ -72,7 +72,7 @@
 
               <!-- 添加文件夹按钮 -->
               <button
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:hover:border-primary/25 dark:hover:bg-primary/10 transition-colors"
+                class="action-btn-icon local-action-btn w-9 h-9 rounded-lg flex items-center justify-center text-neutral-600 dark:text-neutral-400"
                 @click="handleAddFolder"
               >
                 <i class="ri-folder-add-line text-lg" />
@@ -81,7 +81,7 @@
               <!-- 文件夹管理按钮 -->
               <button
                 v-if="localMusicStore.folderPaths.length > 0"
-                class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:hover:border-primary/25 dark:hover:bg-primary/10 transition-colors"
+                class="action-btn-icon local-action-btn w-9 h-9 rounded-lg flex items-center justify-center text-neutral-600 dark:text-neutral-400"
                 @click="showFolderManager = true"
               >
                 <i class="ri-folder-settings-line text-lg" />
@@ -155,7 +155,7 @@
           <div
             v-for="folder in localMusicStore.folderPaths"
             :key="folder"
-            class="flex items-center justify-between p-3 rounded-lg bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800"
+            class="local-folder-row flex items-center justify-between p-3 rounded-lg"
           >
             <div class="flex items-center gap-3 min-w-0 flex-1">
               <i class="ri-folder-line text-lg text-primary flex-shrink-0" />
@@ -339,5 +339,23 @@ onMounted(async () => {
 :deep(.n-drawer-content) {
   border-left: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
   box-shadow: none;
+}
+
+.local-action-bar {
+  border-bottom: 1px solid var(--qqm-border);
+  background: color-mix(in srgb, var(--qqm-surface) 94%, transparent);
+}
+
+.local-action-btn,
+.local-folder-row {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.local-action-btn:hover,
+.local-folder-row:hover {
+  color: var(--qqm-primary, #22c55e);
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

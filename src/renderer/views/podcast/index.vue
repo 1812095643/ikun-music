@@ -52,7 +52,7 @@
           <div
             v-for="program in todayPerfered.slice(0, 5)"
             :key="`today-${program.id}`"
-            class="flex items-center gap-4 p-4 rounded-lg bg-neutral-50 dark:bg-neutral-900/50 hover:bg-primary/5 dark:hover:bg-primary/10 cursor-pointer group transition-colors duration-200"
+            class="podcast-channel-row flex items-center gap-4 p-4 rounded-lg cursor-pointer group transition-colors duration-200"
             @click="playProgram(program)"
           >
             <div class="relative flex-shrink-0 w-16 h-16 md:w-20 md:h-20">
@@ -356,4 +356,14 @@ onMounted(async () => {
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.podcast-channel-row {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-2, var(--qqm-surface));
+}
+
+.podcast-channel-row:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+</style>

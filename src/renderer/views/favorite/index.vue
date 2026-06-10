@@ -16,9 +16,7 @@
       <div v-if="!isComponent && isElectron" class="flex items-center gap-3">
         <template v-if="!isSelecting">
           <!-- Sort Controls -->
-          <div
-            class="flex items-center bg-white dark:bg-neutral-900 rounded-lg p-1 h-9 border border-neutral-100 dark:border-neutral-800"
-          >
+          <div class="favorite-segment flex items-center rounded-lg p-1 h-9">
             <button
               v-for="isDesc in [true, false]"
               :key="String(isDesc)"
@@ -45,10 +43,7 @@
         </template>
 
         <!-- Selection Controls -->
-        <div
-          v-else
-          class="flex items-center gap-3 bg-white dark:bg-neutral-900 rounded-lg px-4 py-1.5 border border-neutral-100 dark:border-neutral-800 h-9"
-        >
+        <div v-else class="favorite-search flex items-center gap-3 rounded-lg px-4 py-1.5 h-9">
           <n-checkbox
             :checked="isAllSelected"
             :indeterminate="isIndeterminate"
@@ -68,7 +63,7 @@
               {{ t('favorite.download', { count: selectedSongs.length }) }}
             </button>
             <button
-              class="h-6 px-3 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 text-xs font-medium hover:bg-primary/10 dark:hover:bg-primary/15 hover:text-primary transition-colors"
+              class="favorite-tag h-6 px-3 rounded-md text-neutral-600 dark:text-neutral-300 text-xs font-medium hover:text-primary transition-colors"
               @click="cancelSelect"
             >
               {{ t('common.cancel') }}
@@ -418,5 +413,17 @@ const handleSelectAll = (checked: boolean) => {
 
 .dark .favorite-empty-desc {
   color: #8a8a8a;
+}
+
+.favorite-segment,
+.favorite-search,
+.favorite-tag {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.favorite-tag:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface));
 }
 </style>

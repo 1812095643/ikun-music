@@ -25,7 +25,7 @@
             class="px-4 h-7 rounded-md text-xs font-medium cursor-pointer transition-colors duration-200 flex items-center justify-center whitespace-nowrap"
             :class="
               currentCategory === tab
-                ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 ring-1 ring-neutral-200 dark:ring-neutral-700'
+                ? 'history-chip-active text-neutral-900 dark:text-neutral-100'
                 : 'text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary'
             "
             @click="handleCategoryChange(tab as any)"
@@ -43,7 +43,7 @@
             class="px-3 h-7 rounded-md text-xs font-medium transition-colors duration-200"
             :class="
               currentTab === 'local'
-                ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 ring-1 ring-neutral-200 dark:ring-neutral-700'
+                ? 'history-chip-active text-neutral-900 dark:text-neutral-100'
                 : 'text-neutral-500 dark:text-neutral-400 hover:text-primary'
             "
             @click="handleTabChange('local')"
@@ -54,7 +54,7 @@
             class="px-3 h-7 rounded-md text-xs font-medium transition-colors duration-200"
             :class="
               currentTab === 'cloud'
-                ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 ring-1 ring-neutral-200 dark:ring-neutral-700'
+                ? 'history-chip-active text-neutral-900 dark:text-neutral-100'
                 : 'text-neutral-500 dark:text-neutral-400 hover:text-primary'
             "
             @click="handleTabChange('cloud')"
@@ -89,7 +89,7 @@
                   {{ t('history.playCount', { count: item.count }) }}
                 </div>
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
+                  class="history-action-btn w-8 h-8 flex items-center justify-center rounded-lg text-neutral-400 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
                   v-show="currentTab === 'local'"
                   @click="handleDelMusic(item)"
                 >
@@ -130,14 +130,12 @@
           <!-- 播客列表 -->
           <template v-if="currentCategory === 'podcasts'">
             <div class="mb-4 px-2">
-              <div
-                class="flex items-center bg-white dark:bg-neutral-900 rounded-lg p-1 w-fit h-8 border border-neutral-100 dark:border-neutral-800"
-              >
+              <div class="history-segment flex items-center rounded-lg p-1 w-fit h-8">
                 <button
                   class="px-3 h-6 rounded-md text-xs font-medium transition-colors duration-200"
                   :class="
                     currentPodcastSubTab === 'episodes'
-                      ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 ring-1 ring-neutral-200 dark:ring-neutral-700'
+                      ? 'history-chip-active text-neutral-900 dark:text-neutral-100'
                       : 'text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary'
                   "
                   @click="
@@ -151,7 +149,7 @@
                   class="px-3 h-6 rounded-md text-xs font-medium transition-colors duration-200"
                   :class="
                     currentPodcastSubTab === 'radios'
-                      ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 ring-1 ring-neutral-200 dark:ring-neutral-700'
+                      ? 'history-chip-active text-neutral-900 dark:text-neutral-100'
                       : 'text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary'
                   "
                   @click="
@@ -176,7 +174,7 @@
                   @play="handlePlayPodcast(item)"
                 />
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
+                  class="history-action-btn w-8 h-8 flex items-center justify-center rounded-lg text-neutral-400 cursor-pointer transition-colors opacity-0 group-hover:opacity-100"
                   @click="handleDelPodcast(item)"
                 >
                   <i class="ri-close-line text-lg"></i>
@@ -196,7 +194,7 @@
                   @click="handlePodcastRadioClick(item)"
                 />
                 <div
-                  class="w-8 h-8 flex items-center justify-center rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 dark:hover:text-neutral-200 dark:hover:bg-white/10 cursor-pointer transition-colors opacity-0 group-hover:opacity-100 mr-2"
+                  class="history-action-btn w-8 h-8 flex items-center justify-center rounded-lg text-neutral-400 cursor-pointer transition-colors opacity-0 group-hover:opacity-100 mr-2"
                   @click="handleDelPodcastRadio(item)"
                 >
                   <i class="ri-close-line text-lg"></i>
@@ -210,7 +208,7 @@
             class="text-center py-12 text-neutral-400"
           >
             <div
-              class="w-20 h-20 mx-auto rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-4"
+              class="history-empty-icon w-20 h-20 mx-auto rounded-lg flex items-center justify-center mb-4"
             >
               <i class="ri-history-line text-3xl text-neutral-300 dark:text-neutral-600"></i>
             </div>
@@ -715,5 +713,22 @@ const handleNavigateToHeatmap = () => {
 
 .dark .history-soft-button:hover {
   background: color-mix(in srgb, #050505 82%, var(--qqm-primary, #22c55e) 18%);
+}
+
+.history-segment,
+.history-chip-active {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.history-action-btn:hover {
+  color: var(--qqm-primary, #22c55e);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface));
+}
+
+.history-empty-icon {
+  border: 1px solid var(--qqm-border);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+  color: var(--qqm-primary, #22c55e);
 }
 </style>

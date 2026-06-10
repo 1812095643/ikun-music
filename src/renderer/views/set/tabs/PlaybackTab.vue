@@ -66,9 +66,7 @@
       </setting-item>
     </setting-section>
 
-    <div
-      class="mt-6 p-4 rounded-lg bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800"
-    >
+    <div class="playback-panel mt-6 p-4 rounded-lg">
       <div class="text-sm font-medium text-neutral-500 mb-3">支持正版</div>
       <div class="text-base text-neutral-900 dark:text-neutral-100 mb-4">
         大家还是需要支持正版，本软件只做开源探讨。各大音乐会员购买链接：
@@ -77,7 +75,7 @@
         <a
           v-for="link in memberLinks"
           :key="link.url"
-          class="px-4 py-2 rounded-lg bg-neutral-50 dark:bg-neutral-900 text-primary hover:bg-primary/5 hover:text-primary transition-colors"
+          class="playback-action px-4 py-2 rounded-lg text-primary hover:text-primary transition-colors"
           :href="link.url"
           target="_blank"
         >

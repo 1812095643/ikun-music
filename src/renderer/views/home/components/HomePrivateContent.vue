@@ -26,7 +26,7 @@
       <div
         v-for="content in contentList"
         :key="content.id"
-        class="content-item group relative flex flex-col cursor-pointer overflow-hidden rounded-lg bg-neutral-50 dark:bg-neutral-900"
+        class="content-item qqm-private-card group relative flex flex-col cursor-pointer overflow-hidden rounded-lg"
         @click="handleContentClick(content)"
       >
         <!-- Cover Image (16:9) -->
@@ -127,5 +127,18 @@ onMounted(() => {
 .cover-wrapper {
   overflow: hidden;
   will-change: transform;
+}
+
+.qqm-private-card {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-2, var(--qqm-surface));
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.qqm-private-card:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

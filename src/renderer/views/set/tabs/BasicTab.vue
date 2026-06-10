@@ -84,10 +84,7 @@
       </template>
     </setting-item>
 
-    <div
-      v-if="isElectron && selectedFonts.length > 0"
-      class="p-4 border-b border-neutral-100 dark:border-neutral-800"
-    >
+    <div v-if="isElectron && selectedFonts.length > 0" class="basic-option-row p-4">
       <div class="text-base font-bold mb-4 text-neutral-900 dark:text-neutral-100">
         {{ t('settings.basic.fontPreview.title') }}
       </div>
@@ -97,7 +94,7 @@
             {{ t(`settings.basic.fontPreview.${preview.key}`) }}
           </div>
           <div
-            class="text-lg text-neutral-900 dark:text-neutral-100 p-3 rounded-lg bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800"
+            class="basic-option-icon text-lg text-neutral-900 dark:text-neutral-100 p-3 rounded-lg"
           >
             {{ t(`settings.basic.fontPreview.${preview.key}Text`) }}
           </div>

@@ -78,7 +78,7 @@
                   </div>
 
                   <button
-                    class="w-full py-3 rounded-lg border border-dashed border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-colors duration-200 flex items-center justify-center gap-2 font-medium"
+                    class="import-add-button w-full py-3 rounded-lg text-neutral-500 hover:text-primary transition-colors duration-200 flex items-center justify-center gap-2 font-medium"
                     @click="addLinkRow"
                   >
                     <i class="ri-add-line text-lg"></i>
@@ -294,7 +294,7 @@
 
                   <div
                     v-if="taskStatus === 'failed'"
-                    class="rounded-lg border border-neutral-100 bg-neutral-50 p-3 text-sm text-neutral-600 dark:border-neutral-800 dark:bg-black dark:text-neutral-300"
+                    class="import-preview-box rounded-lg p-3 text-sm text-neutral-600 dark:text-neutral-300"
                   >
                     {{ failReason }}
                   </div>
@@ -527,5 +527,16 @@ onUnmounted(() => {
 .import-option-icon {
   border: 1px solid var(--qqm-border);
   background: var(--qqm-surface);
+}
+
+.import-add-button,
+.import-preview-box {
+  border: 1px dashed var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.import-add-button:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 38%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

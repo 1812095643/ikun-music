@@ -22,7 +22,7 @@
           :class="[
             item.active
               ? 'bg-primary text-white'
-              : 'border border-neutral-100 bg-white text-neutral-500 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:border-neutral-800 dark:bg-black dark:text-neutral-400 dark:hover:border-primary/25 dark:hover:bg-primary/10'
+              : 'hero-nav-chip text-neutral-500 hover:text-primary dark:text-neutral-400 dark:hover:text-primary'
           ]"
           @click="item.action"
         >
@@ -38,7 +38,7 @@
         <div class="hero-card">
           <!-- Card -->
           <div
-            class="daily-card group relative cursor-pointer overflow-hidden rounded-lg border border-neutral-100 transition-colors duration-200 ease-out dark:border-neutral-800"
+            class="daily-card qqm-hero-card group relative cursor-pointer overflow-hidden rounded-lg transition-colors duration-200 ease-out"
             :style="{ background: dailyCardBg }"
             @click="showDayRecommend"
           >
@@ -106,7 +106,7 @@
         <!-- ===== 已登录: 私人FM (Right Card) ===== -->
         <div v-if="isLoggedIn" class="hero-card">
           <div
-            class="fm-card group relative cursor-pointer overflow-hidden rounded-lg border border-neutral-100 transition-colors duration-200 ease-out dark:border-neutral-800"
+            class="fm-card qqm-hero-card group relative cursor-pointer overflow-hidden rounded-lg transition-colors duration-200 ease-out"
             :style="{ background: fmCardBg }"
             @click="handleFmPlay"
           >
@@ -205,7 +205,7 @@
           @click="router.push('/list')"
         >
           <div
-            class="fm-card relative overflow-hidden rounded-lg border border-neutral-100 bg-white transition-colors duration-200 ease-out hover:border-primary/20 hover:bg-primary/5 dark:border-neutral-800 dark:bg-black dark:hover:border-primary/25 dark:hover:bg-primary/10"
+            class="fm-card qqm-hero-card relative overflow-hidden rounded-lg transition-colors duration-200 ease-out"
           >
             <!-- 2x2 Cover Grid -->
             <div class="absolute inset-0 grid grid-cols-2 grid-rows-2">
@@ -788,5 +788,17 @@ onActivated(() => {
   100% {
     background-position: -200% 0;
   }
+}
+
+.hero-nav-chip,
+.qqm-hero-card {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.hero-nav-chip:hover,
+.qqm-hero-card:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

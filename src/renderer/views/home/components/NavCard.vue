@@ -99,7 +99,7 @@ const aspectClass = computed(() => {
 });
 
 const colorClasses = computed(() => ({
-  bg: 'bg-neutral-50 dark:bg-neutral-900/60',
+  bg: 'qqm-nav-card-surface',
   activeBg: 'bg-primary/5 dark:bg-primary/10',
   iconBg: 'bg-primary/10 dark:bg-primary/15',
   activeIconBg: 'bg-primary/15 dark:bg-primary/20',
@@ -129,5 +129,15 @@ const colorClasses = computed(() => ({
 
 .badge {
   animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.qqm-nav-card-surface {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-2, var(--qqm-surface));
+}
+
+.nav-card:hover .qqm-nav-card-surface {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 20%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

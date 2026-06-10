@@ -28,7 +28,7 @@
                 :class="
                   searchType === type.key
                     ? 'bg-primary/10 text-primary'
-                    : 'bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-primary/20 hover:bg-primary/5 hover:text-primary dark:hover:border-primary/25 dark:hover:bg-primary/10'
+                    : 'search-tab-surface text-neutral-600 dark:text-neutral-400 hover:text-primary'
                 "
                 @click="handleTypeChange(type.key)"
               >
@@ -41,7 +41,7 @@
         <!-- Action Bar (Sticky) -->
         <section
           v-if="searchDetail?.songs?.length && searchType === SEARCH_TYPE.MUSIC"
-          class="action-bar sticky top-0 z-20 page-padding-x py-3 bg-white/98 dark:bg-black/98 border-b border-neutral-100 dark:border-neutral-800"
+          class="action-bar search-action-bar sticky top-0 z-20 page-padding-x py-3"
         >
           <div class="flex items-center justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -186,7 +186,7 @@
               </div>
 
               <!-- Loading More / Footer -->
-              <div class="mt-12 py-8 border-t border-neutral-100 dark:border-neutral-800">
+              <div class="search-load-more mt-12 py-8">
                 <div v-if="isLoadingMore" class="flex flex-col items-center gap-4">
                   <n-spin size="small" />
                   <span class="text-xs text-neutral-400 font-medium tracking-widest uppercase">
@@ -539,5 +539,26 @@ watch(
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+.search-action-bar,
+.search-load-more {
+  border-bottom: 1px solid var(--qqm-border);
+  background: color-mix(in srgb, var(--qqm-surface) 94%, transparent);
+}
+
+.search-load-more {
+  border-top: 1px solid var(--qqm-border);
+  border-bottom: 0;
+}
+
+.search-tab-surface {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.search-tab-surface:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

@@ -35,7 +35,7 @@
             >
               <!-- Cover Image -->
               <div
-                class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 bg-white transition-colors duration-200 dark:border-neutral-800 dark:bg-black"
+                class="toplist-cover-surface relative aspect-square overflow-hidden rounded-lg transition-colors duration-200"
               >
                 <img
                   :src="getImgUrl(item.coverImgUrl, '400y400')"
@@ -169,5 +169,15 @@ onMounted(() => {
       transform: translateY(0);
     }
   }
+}
+
+.toplist-cover-surface {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.toplist-card:hover .toplist-cover-surface {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

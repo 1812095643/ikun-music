@@ -3,11 +3,7 @@
     <button
       :disabled="disabled"
       class="flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors duration-200 select-none disabled:opacity-50 disabled:cursor-not-allowed"
-      :class="
-        isOpen
-          ? 'border-primary bg-white dark:bg-neutral-900'
-          : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
-      "
+      :class="isOpen ? 's-select-active' : 's-select-surface'"
       @click="toggle"
     >
       <span
@@ -32,7 +28,7 @@
     >
       <div
         v-if="isOpen"
-        class="absolute z-50 mt-1.5 w-full min-w-[160px] overflow-hidden rounded-lg border border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900"
+        class="s-select-menu absolute z-50 mt-1.5 w-full min-w-[160px] overflow-hidden rounded-lg"
         :class="dropdownPosition === 'top' ? 'bottom-full mb-1.5 mt-0' : ''"
       >
         <div class="max-h-[240px] overflow-y-auto py-1">
@@ -43,7 +39,7 @@
             :class="
               opt.value === modelValue
                 ? 'bg-primary/10 text-primary font-medium'
-                : 'text-neutral-700 hover:bg-neutral-50 dark:text-neutral-300 dark:hover:bg-neutral-800/80'
+                : 'text-neutral-700 hover:text-primary dark:text-neutral-300'
             "
             @click="select(opt.value)"
           >

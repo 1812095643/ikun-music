@@ -309,7 +309,7 @@ onMounted(() => {
 
 .result-header {
   @apply flex items-center gap-2 px-3 py-3;
-  @apply border-b border-neutral-100 dark:border-neutral-800/70;
+  border-bottom: 1px solid var(--qqm-border);
 
   &.safe-area-top {
     padding-top: calc(var(--safe-area-inset-top, 0px) + 12px);
@@ -320,7 +320,9 @@ onMounted(() => {
   @apply flex items-center justify-center;
   @apply w-9 h-9 rounded-lg text-xl;
   @apply text-neutral-600 dark:text-neutral-300;
-  @apply active:bg-neutral-100 dark:active:bg-neutral-900;
+  &:active {
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface));
+  }
 }
 
 .header-keyword {
@@ -337,12 +339,14 @@ onMounted(() => {
   @apply flex items-center justify-center;
   @apply w-9 h-9 rounded-lg text-xl;
   @apply text-neutral-600 dark:text-neutral-300;
-  @apply active:bg-neutral-100 dark:active:bg-neutral-900;
+  &:active {
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface));
+  }
 }
 
 .search-types {
   @apply flex gap-2 px-4 py-3 overflow-x-auto;
-  @apply border-b border-neutral-100 dark:border-neutral-800/70;
+  border-bottom: 1px solid var(--qqm-border);
 
   &::-webkit-scrollbar {
     display: none;
@@ -351,7 +355,9 @@ onMounted(() => {
 
 .type-tag {
   @apply px-3.5 py-1.5 rounded-md text-sm whitespace-nowrap;
-  @apply bg-white dark:bg-black text-neutral-600 dark:text-neutral-300 border border-neutral-100 dark:border-neutral-800;
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+  @apply text-neutral-600 dark:text-neutral-300;
   @apply transition-colors duration-200;
 
   &.active {

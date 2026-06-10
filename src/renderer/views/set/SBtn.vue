@@ -35,11 +35,11 @@ const variantClass = computed(() => {
     case 'primary':
       return 'border-primary bg-primary text-white hover:bg-primary/85';
     case 'danger':
-      return 'border-neutral-200 bg-white text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-200';
+      return 's-btn-surface text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200';
     case 'ghost':
-      return 'border-transparent bg-transparent text-neutral-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800';
+      return 's-btn-ghost text-neutral-500 dark:text-neutral-400';
     default:
-      return 'border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-800';
+      return 's-btn-surface text-neutral-700 dark:text-neutral-300';
   }
 });
 </script>

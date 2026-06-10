@@ -44,7 +44,7 @@
         <div class="cover-wrapper relative aspect-square">
           <!-- 背景层 -->
           <div
-            class="cover-bg absolute inset-0 rounded-lg bg-neutral-100 dark:bg-neutral-800 transition-colors duration-200"
+            class="cover-bg qqm-home-cover absolute inset-0 rounded-lg transition-colors duration-200"
           />
 
           <!-- 图片层 -->
@@ -203,5 +203,10 @@ const playAll = async () => {
   transform: translateZ(0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+}
+
+.qqm-home-cover {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-2, var(--qqm-surface));
 }
 </style>

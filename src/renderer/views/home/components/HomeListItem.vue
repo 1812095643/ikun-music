@@ -2,7 +2,7 @@
   <div class="home-list-card group cursor-pointer" @click="$emit('click')">
     <!-- Cover -->
     <div
-      class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 bg-neutral-100 transition-colors duration-200 ease-out dark:border-neutral-800 dark:bg-neutral-800"
+      class="home-list-cover relative aspect-square overflow-hidden rounded-lg transition-colors duration-200 ease-out"
     >
       <img
         ref="coverRef"
@@ -200,5 +200,15 @@ const extractColor = async () => {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.home-list-cover {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface-2, var(--qqm-surface));
+}
+
+.home-list-card:hover .home-list-cover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 </style>

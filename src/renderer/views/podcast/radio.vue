@@ -26,7 +26,7 @@
                   <div class="radio-cover-wrapper relative group">
                     <div class="hidden" />
                     <div
-                      class="cover-container relative w-44 h-44 md:w-52 md:h-52 rounded-lg overflow-hidden ring-1 ring-neutral-100 dark:ring-neutral-800"
+                      class="cover-container podcast-cover-surface relative w-44 h-44 md:w-52 md:h-52 rounded-lg overflow-hidden"
                     >
                       <img
                         :src="getImgUrl(currentRadio.picUrl, '500y500')"
@@ -99,7 +99,7 @@
 
             <!-- Action Bar -->
             <section
-              class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/95 dark:bg-black/95 border-b border-neutral-100 dark:border-neutral-800/50"
+              class="action-bar podcast-radio-bar sticky top-0 z-20 page-padding-x py-3 md:py-4"
             >
               <div class="flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
@@ -117,7 +117,7 @@
                     class="subscribe-btn flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors duration-200"
                     :class="
                       isSubscribed
-                        ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200'
+                        ? 'podcast-tab-active text-neutral-700 dark:text-neutral-200'
                         : 'bg-primary/10 dark:bg-primary/20 text-primary border border-primary/20'
                     "
                     @click="handleSubscribe"
@@ -364,5 +364,20 @@ button {
 /* Hero background enhancement */
 .hero-bg {
   z-index: 0;
+}
+
+.podcast-radio-bar {
+  border-bottom: 1px solid var(--qqm-border);
+  background: color-mix(in srgb, var(--qqm-surface) 94%, transparent);
+}
+
+.podcast-tab-active {
+  border: 1px solid var(--qqm-border);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface));
+}
+
+.podcast-cover-surface {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
 }
 </style>

@@ -2,7 +2,7 @@
   <div class="inline-flex items-center gap-1" :class="widthClass">
     <button
       v-if="type === 'number' && showButtons"
-      class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-500 transition-colors hover:bg-neutral-50 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800"
+      class="s-input-action flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-neutral-500 transition-colors active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed dark:text-neutral-400"
       :disabled="disabled || atMin"
       @click="decrement"
     >
@@ -17,7 +17,7 @@
         :placeholder="placeholder"
         :disabled="disabled"
         inputmode="decimal"
-        class="w-full rounded-lg border border-neutral-200 bg-white py-1.5 pl-3 text-sm text-neutral-900 transition-colors duration-200 outline-none placeholder:text-neutral-400 focus:border-primary focus:bg-white disabled:opacity-50 disabled:cursor-not-allowed dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:bg-neutral-900"
+        class="s-input-field w-full rounded-lg py-1.5 pl-3 text-sm text-neutral-900 transition-colors duration-200 outline-none placeholder:text-neutral-400 disabled:opacity-50 disabled:cursor-not-allowed dark:text-neutral-100 dark:placeholder:text-neutral-500"
         :class="[type === 'number' && !suffix ? 'text-center pr-3' : '', suffix ? 'pr-10' : 'pr-3']"
         @input="handleInput"
         @blur="handleBlur"
@@ -33,7 +33,7 @@
 
     <button
       v-if="type === 'number' && showButtons"
-      class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-neutral-200 bg-white text-neutral-500 transition-colors hover:bg-neutral-50 active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800"
+      class="s-input-action flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg text-neutral-500 transition-colors active:translate-y-0 disabled:opacity-40 disabled:cursor-not-allowed dark:text-neutral-400"
       :disabled="disabled || atMax"
       @click="increment"
     >
