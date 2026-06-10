@@ -29,10 +29,15 @@
                     class="cover-container relative w-48 h-48 md:w-64 md:h-64 rounded-lg overflow-hidden border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900"
                   >
                     <n-image
+                      v-if="getCoverImgUrl"
                       :src="getImgUrl(getCoverImgUrl, '500y500')"
                       class="w-full h-full object-cover"
                       preview-disabled
                     />
+                    <div v-else class="cover-empty-state">
+                      <i class="ri-music-2-line"></i>
+                      <span>{{ isAlbum ? '专辑封面' : '歌单封面' }}</span>
+                    </div>
                     <!-- Play overlay on cover -->
                     <div
                       class="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/18 transition-colors duration-200"
@@ -241,6 +246,19 @@
           >
             <i class="ri-search-line text-4xl mb-4 opacity-20" />
             <p>{{ t('comp.musicList.noSearchResults') }}</p>
+          </div>
+
+          <div
+            v-else-if="filteredSongs.length === 0 && !loadingList"
+            class="music-list-empty-state"
+          >
+            <div class="music-list-empty-icon">
+              <i class="ri-play-list-2-line"></i>
+            </div>
+            <div>
+              <p class="music-list-empty-title">暂未加载到歌曲</p>
+              <p class="music-list-empty-desc">可以返回上一页，或者稍后重新进入这个列表。</p>
+            </div>
           </div>
 
           <div v-else class="song-list-container">
@@ -857,6 +875,38 @@ onMounted(checkCollectionStatus);
   min-height: 300px;
 }
 
+.cover-empty-state {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background:
+    radial-gradient(circle at 35% 25%, rgba(34, 197, 94, 0.14), transparent 34%),
+    linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(255, 255, 255, 0.94));
+  color: color-mix(in srgb, var(--qqm-primary, #22c55e) 72%, #111827 28%);
+}
+
+.cover-empty-state i {
+  font-size: 42px;
+  line-height: 1;
+}
+
+.cover-empty-state span {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.dark .cover-empty-state {
+  background:
+    radial-gradient(circle at 35% 25%, rgba(34, 197, 94, 0.16), transparent 34%),
+    linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(10, 10, 10, 0.95));
+  color: color-mix(in srgb, var(--qqm-primary, #22c55e) 80%, #f5f5f5 20%);
+}
+
 .action-bar {
   transition:
     background-color 180ms var(--qqm-ease, ease),
@@ -882,6 +932,57 @@ onMounted(checkCollectionStatus);
 
 .song-list-container {
   padding-bottom: 96px;
+}
+
+.music-list-empty-state {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 420px;
+  margin: 18px 0 0;
+  padding: 16px 18px;
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, #ffffff 95%, var(--qqm-primary, #22c55e) 5%);
+}
+
+.music-list-empty-icon {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
+  color: var(--qqm-primary, #22c55e);
+  font-size: 22px;
+}
+
+.music-list-empty-title {
+  color: #262626;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.music-list-empty-desc {
+  margin-top: 4px;
+  color: #737373;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.dark .music-list-empty-state {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent);
+  background: color-mix(in srgb, #050505 92%, var(--qqm-primary, #22c55e) 8%);
+}
+
+.dark .music-list-empty-title {
+  color: #f5f5f5;
+}
+
+.dark .music-list-empty-desc {
+  color: #a3a3a3;
 }
 
 .song-highlight {

@@ -137,11 +137,14 @@
   }
 }
 
-/* 骨架屏 shimmer 动画 */
+/* 骨架屏 shimmer 动画：运行态列表页会先展示大量占位块，使用带品牌绿的轻微层次，避免灰块过重影响 QQ 音乐式清爽观感。 */
 .skeleton-shimmer {
   position: relative;
   overflow: hidden;
-  background: #e5e7eb;
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, transparent);
+  background:
+    linear-gradient(135deg, rgba(34, 197, 94, 0.055), transparent 42%),
+    color-mix(in srgb, #ffffff 94%, var(--qqm-primary, #22c55e) 6%);
 }
 
 .skeleton-shimmer::after {
@@ -151,22 +154,25 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.72) 50%,
     transparent 100%
   );
-  animation: shimmer 1.5s infinite;
+  animation: shimmer 1.6s infinite;
   transform: translateX(-100%);
 }
 
 :root.dark .skeleton-shimmer {
-  background: #262626;
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, transparent);
+  background:
+    linear-gradient(135deg, rgba(34, 197, 94, 0.09), transparent 45%),
+    color-mix(in srgb, #050505 90%, var(--qqm-primary, #22c55e) 10%);
 }
 
 :root.dark .skeleton-shimmer::after {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.08) 50%,
     transparent 100%
   );
 }

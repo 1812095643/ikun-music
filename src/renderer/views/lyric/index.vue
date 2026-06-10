@@ -1437,12 +1437,37 @@ body,
 }
 
 .lyric-empty {
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 16px;
-  padding: 20px;
-
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 132px;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(30, 207, 115, 0.16);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg-color) 78%, var(--highlight-color, #1ecf73) 22%);
+  color: color-mix(in srgb, var(--text-color) 88%, var(--highlight-color, #1ecf73) 12%);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 13px 18px;
   text-shadow: none;
+}
+
+.lyric-empty::before {
+  content: '♪';
+  display: inline-flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(30, 207, 115, 0.13);
+  color: var(--highlight-color, #1ecf73);
+  font-size: 15px;
+  line-height: 1;
 }
 
 body {
