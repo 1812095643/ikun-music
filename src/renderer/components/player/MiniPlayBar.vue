@@ -485,7 +485,7 @@ const setMusicFull = () => {
   color: var(--text-color-2, #666);
 
   &:hover {
-    @apply bg-neutral-100 dark:bg-neutral-900;
+    background: var(--qqm-surface);
     color: var(--qqm-primary, #22c55e);
   }
 }
@@ -558,7 +558,7 @@ const setMusicFull = () => {
 
     .n-slider-rail {
       @apply overflow-hidden transition-colors duration-200;
-      @apply bg-neutral-200 dark:bg-neutral-800 !important;
+      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, var(--qqm-border)) !important;
     }
 
     .n-slider-handle {
@@ -593,7 +593,9 @@ const setMusicFull = () => {
 
   .delete-btn {
     @apply p-2 rounded-lg transition-colors duration-200 cursor-pointer;
-    @apply hover:bg-neutral-100 dark:hover:bg-white/10;
+    &:hover {
+      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, transparent);
+    }
 
     .iconfont {
       @apply text-lg;

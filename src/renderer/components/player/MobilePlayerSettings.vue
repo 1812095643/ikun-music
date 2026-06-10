@@ -11,7 +11,7 @@
 
         <!-- 弹窗内容 -->
         <div
-          class="mobile-player-settings-panel relative w-full max-w-lg bg-white dark:bg-black rounded-t-lg overflow-hidden max-h-[85vh] flex flex-col border-t border-neutral-100 dark:border-neutral-800"
+          class="mobile-player-settings-panel relative w-full max-w-lg rounded-t-lg overflow-hidden max-h-[85vh] flex flex-col"
         >
           <!-- 顶部拖拽条 -->
           <div class="flex justify-center pt-3 pb-2 flex-shrink-0">
@@ -53,7 +53,7 @@
                   :class="
                     playbackRate === option
                       ? 'bg-primary text-white'
-                      : 'bg-neutral-100 text-neutral-600 hover:bg-primary/5 hover:text-primary dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-primary/10'
+                      : 'mobile-setting-chip text-neutral-600 hover:text-primary dark:text-neutral-300'
                   "
                 >
                   {{ option }}x
@@ -62,7 +62,7 @@
             </div>
 
             <!-- 分隔线 -->
-            <div class="h-px bg-neutral-100 dark:bg-neutral-800 my-5"></div>
+            <div class="mobile-setting-divider h-px my-5"></div>
 
             <!-- 定时关闭 -->
             <div>
@@ -87,7 +87,7 @@
                     </div>
                     <button
                       @click="cancelTimer"
-                      class="px-3 py-1 rounded-lg text-sm bg-neutral-100 text-neutral-600 hover:bg-primary/5 hover:text-primary dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-primary/10"
+                      class="px-3 py-1 rounded-lg text-sm mobile-setting-chip text-neutral-600 hover:text-primary dark:text-neutral-300"
                     >
                       {{ t('player.sleepTimer.cancel') }}
                     </button>
@@ -107,7 +107,7 @@
                       v-for="minutes in [15, 30, 60, 90]"
                       :key="minutes"
                       @click="setTimeTimer(minutes)"
-                      class="px-4 py-2 rounded-lg text-sm font-medium bg-neutral-100 text-neutral-600 hover:bg-primary/5 hover:text-primary dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-primary/10"
+                      class="px-4 py-2 rounded-lg text-sm font-medium mobile-setting-chip text-neutral-600 hover:text-primary dark:text-neutral-300"
                     >
                       {{ minutes }}{{ t('player.sleepTimer.minutes') }}
                     </button>
@@ -115,7 +115,7 @@
                   <!-- 自定义时间 -->
                   <div class="flex items-center gap-2 mt-3">
                     <div
-                      class="flex items-center flex-1 bg-neutral-100 dark:bg-neutral-900 rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
+                      class="mobile-setting-input flex items-center flex-1 rounded-lg overflow-hidden"
                     >
                       <button
                         @click="decreaseMinutes"
@@ -159,7 +159,7 @@
                       v-for="songs in [1, 3, 5, 10]"
                       :key="songs"
                       @click="setSongsTimer(songs)"
-                      class="px-4 py-2 rounded-lg text-sm font-medium bg-neutral-100 text-neutral-600 hover:bg-primary/5 hover:text-primary dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-primary/10"
+                      class="px-4 py-2 rounded-lg text-sm font-medium mobile-setting-chip text-neutral-600 hover:text-primary dark:text-neutral-300"
                     >
                       {{ songs }}{{ t('player.sleepTimer.songs') }}
                     </button>
@@ -169,7 +169,7 @@
                 <!-- 播放列表结束 -->
                 <button
                   @click="setPlaylistEndTimer"
-                  class="w-full py-3 rounded-lg text-sm font-medium bg-neutral-100 text-neutral-600 hover:bg-primary/5 hover:text-primary dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-primary/10"
+                  class="w-full py-3 rounded-lg text-sm font-medium mobile-setting-chip text-neutral-600 hover:text-primary dark:text-neutral-300"
                 >
                   {{ t('player.sleepTimer.playlistEnd') }}
                 </button>
@@ -361,5 +361,25 @@ onUnmounted(() => {
 .settings-drawer-enter-from > div:last-child,
 .settings-drawer-leave-to > div:last-child {
   transform: translateY(16px);
+}
+
+.mobile-player-settings-panel,
+.mobile-setting-chip,
+.mobile-setting-input {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.mobile-player-settings-panel {
+  border-bottom: 0;
+}
+
+.mobile-setting-chip:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.mobile-setting-divider {
+  background: var(--qqm-border);
 }
 </style>

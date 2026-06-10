@@ -174,7 +174,8 @@ const formatDuration = (ms: number): string => {
 
 <style lang="scss" scoped>
 .compact-song-item {
-  @apply rounded-lg p-2 h-12 mb-1 border-b border-neutral-100 dark:border-neutral-800;
+  @apply rounded-lg p-2 h-12 mb-1;
+  border-bottom: 1px solid var(--qqm-border);
 
   &:hover {
     background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, transparent);
@@ -226,7 +227,9 @@ const formatDuration = (ms: number): string => {
     }
 
     .song-item-operating-play {
-      @apply w-7 h-7 flex items-center justify-center cursor-pointer rounded-lg bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100;
+      @apply w-7 h-7 flex items-center justify-center cursor-pointer rounded-lg text-neutral-900 dark:text-neutral-100;
+      border: 1px solid var(--qqm-border);
+      background: var(--qqm-surface);
 
       &:hover,
       &.bg-primary {

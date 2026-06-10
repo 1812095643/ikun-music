@@ -10,9 +10,7 @@
   >
     <div class="p-6 pb-4">
       <div class="mb-6 flex items-center">
-        <div
-          class="mr-5 h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg ring-1 ring-neutral-100 dark:ring-neutral-800"
-        >
+        <div class="update-icon-surface mr-5 h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg">
           <img src="@/assets/logo.png" alt="App Icon" class="h-full w-full object-cover" />
         </div>
         <div class="min-w-0 flex-1">
@@ -21,7 +19,7 @@
           </h2>
           <div class="flex items-center gap-2">
             <span
-              class="inline-flex items-center rounded-lg bg-neutral-100 px-2.5 py-0.5 text-xs font-semibold text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
+              class="update-version-badge inline-flex items-center rounded-lg px-2.5 py-0.5 text-xs font-semibold text-neutral-500 dark:text-neutral-400"
             >
               {{ t('comp.update.currentVersion') }} {{ currentVersionText }}
             </span>
@@ -35,10 +33,7 @@
         </div>
       </div>
 
-      <div
-        v-if="hasReleaseNotes"
-        class="mb-6 overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900/70"
-      >
+      <div v-if="hasReleaseNotes" class="update-content-card mb-6 overflow-hidden rounded-lg">
         <n-scrollbar style="max-height: 300px">
           <div
             class="update-body p-5 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
@@ -47,17 +42,12 @@
         </n-scrollbar>
       </div>
 
-      <div
-        v-if="showProgressCard"
-        class="mb-6 rounded-lg border border-neutral-100 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900/70"
-      >
+      <div v-if="showProgressCard" class="update-progress-card mb-6 rounded-lg p-4">
         <div class="mb-2.5 flex items-center justify-between">
           <span class="text-sm text-neutral-500 dark:text-neutral-400">{{ progressText }}</span>
           <span class="text-sm font-bold text-primary">{{ progressPercent }}%</span>
         </div>
-        <div
-          class="relative h-2 w-full overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700"
-        >
+        <div class="update-progress-track relative h-2 w-full overflow-hidden rounded-full">
           <div
             class="absolute inset-y-0 left-0 rounded-full bg-primary transition-[width] duration-300 ease-out"
             :style="{ width: `${progressPercent}%` }"
@@ -75,7 +65,7 @@
 
       <div class="flex gap-3" :class="{ 'mt-6': !showProgressCard }">
         <button
-          class="flex-1 rounded-lg bg-neutral-100 py-2.5 text-sm font-semibold text-neutral-600 transition-colors duration-200 hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+          class="update-secondary-btn flex-1 rounded-lg py-2.5 text-sm font-semibold text-neutral-600 transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 dark:text-neutral-300"
           :disabled="isChecking"
           @click="closeModal"
         >
@@ -405,5 +395,24 @@ onUnmounted(() => {
 
 .dark .update-body :deep(th) {
   background-color: rgb(64 64 64);
+}
+
+.update-icon-surface,
+.update-version-badge,
+.update-content-card,
+.update-progress-card,
+.update-secondary-btn {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.update-progress-track {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, var(--qqm-border));
+}
+
+.update-secondary-btn:hover {
+  color: var(--qqm-primary, #22c55e);
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

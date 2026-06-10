@@ -24,11 +24,7 @@
         <div
           class="absolute -right-4 -top-4 w-24 h-24 rounded-lg bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
         ></div>
-        <img
-          :src="alipay"
-          alt="Alipay"
-          class="w-52 h-52 rounded-lg border border-neutral-100 dark:border-neutral-800 mb-4"
-        />
+        <img :src="alipay" alt="Alipay" class="donation-qr-surface w-52 h-52 rounded-lg mb-4" />
         <div class="flex items-center gap-2 text-primary font-bold text-lg">
           <i class="ri-alipay-fill text-2xl"></i>
           {{ t('common.alipay') }}
@@ -42,11 +38,7 @@
         <div
           class="absolute -right-4 -top-4 w-24 h-24 rounded-lg bg-primary/5 transition-colors duration-200 group-hover:bg-primary/10"
         ></div>
-        <img
-          :src="wechat"
-          alt="WeChat"
-          class="w-52 h-52 rounded-lg border border-neutral-100 dark:border-neutral-800 mb-4"
-        />
+        <img :src="wechat" alt="WeChat" class="donation-qr-surface w-52 h-52 rounded-lg mb-4" />
         <div class="flex items-center gap-2 text-primary font-bold text-lg">
           <i class="ri-wechat-pay-fill text-2xl"></i>
           {{ t('common.wechat') }}
@@ -72,12 +64,12 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         <div v-for="(donor, index) in visibleDonors" :key="donor.id" class="donor-card group">
           <div
-            class="h-full bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 rounded-lg p-3 flex gap-3 hover:border-primary/30 hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors duration-200"
+            class="donation-record-card h-full rounded-lg p-3 flex gap-3 transition-colors duration-200"
           >
             <!-- 头像 -->
             <div class="relative flex-shrink-0">
               <div
-                class="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold border border-neutral-100 dark:border-neutral-800"
+                class="donation-avatar-surface w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold"
                 :class="avatarColorClass(donor.name)"
               >
                 {{ avatarInitial(donor.name) }}
@@ -108,7 +100,7 @@
               <div class="mt-1">
                 <div
                   v-if="donor.message"
-                  class="text-xs text-neutral-500 dark:text-neutral-400 truncate border-b border-dashed border-neutral-200 dark:border-neutral-700 inline-block max-w-full"
+                  class="donation-name-link text-xs text-neutral-500 dark:text-neutral-400 truncate inline-block max-w-full"
                   :title="donor.message"
                 >
                   "{{ donor.message }}"
@@ -148,8 +140,8 @@ const AVATAR_COLORS = [
   'bg-primary/15 text-primary dark:bg-primary/20 dark:text-primary',
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary',
-  'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
-  'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
+  'donation-badge-surface text-neutral-600 dark:text-neutral-300',
+  'donation-badge-surface text-neutral-600 dark:text-neutral-300',
   'bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary'
 ];
 
@@ -229,4 +221,21 @@ onMounted(() => fetchDonors());
 onActivated(() => fetchDonors());
 </script>
 
-<style scoped></style>
+<style scoped>
+.donation-qr-surface,
+.donation-record-card,
+.donation-avatar-surface,
+.donation-badge-surface {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.donation-record-card:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.donation-name-link {
+  border-bottom: 1px dashed var(--qqm-border);
+}
+</style>

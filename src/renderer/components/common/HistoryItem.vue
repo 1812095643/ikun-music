@@ -5,7 +5,7 @@
   >
     <n-image
       :src="imageUrl"
-      class="w-[56px] h-[56px] flex-shrink-0 rounded-lg bg-neutral-100 dark:bg-neutral-800"
+      class="history-cover-surface w-[56px] h-[56px] flex-shrink-0 rounded-lg"
       lazy
       preview-disabled
     />

@@ -13,13 +13,13 @@
         <Transition :name="isMobile ? 'slide-up' : 'scale-fade'">
           <div
             v-if="show"
-            class="responsive-modal-card relative z-10 w-full bg-white dark:bg-[#1c1c1e] border border-neutral-100 dark:border-neutral-800 overflow-hidden flex flex-col max-h-[85vh]"
+            class="responsive-modal-card relative z-10 w-full overflow-hidden flex flex-col max-h-[85vh]"
             :class="[isMobile ? 'rounded-t-lg pb-safe' : 'md:max-w-[720px] md:rounded-lg']"
             @click.stop
           >
             <!-- Header -->
             <div
-              class="flex items-center justify-between px-4 py-3 border-b border-neutral-100 dark:border-neutral-800 shrink-0"
+              class="responsive-modal-header flex items-center justify-between px-4 py-3 shrink-0"
             >
               <h3 class="text-[15px] font-semibold text-neutral-900 dark:text-neutral-100 truncate">
                 {{ title }}
@@ -38,10 +38,7 @@
             </div>
 
             <!-- Footer -->
-            <div
-              v-if="$slots.footer"
-              class="px-4 py-3 border-t border-neutral-100 dark:border-neutral-800 shrink-0 bg-white dark:bg-black"
-            >
+            <div v-if="$slots.footer" class="responsive-modal-footer px-4 py-3 shrink-0">
               <slot name="footer"></slot>
             </div>
           </div>
@@ -141,5 +138,19 @@ watch(show, (val) => {
 
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+.responsive-modal-card {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.responsive-modal-header {
+  border-bottom: 1px solid var(--qqm-border);
+}
+
+.responsive-modal-footer {
+  border-top: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
 }
 </style>

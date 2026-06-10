@@ -75,7 +75,7 @@
           {{ t('songItem.menu.playNext') }}
         </n-tooltip>
         <div
-          class="song-item-operating-play bg-neutral-100 dark:bg-neutral-900"
+          class="song-item-operating-play song-operating-surface"
           :class="{ 'bg-primary': isPlaying, 'is-loading': playLoading }"
           @click="onPlayMusic"
         >
@@ -168,7 +168,9 @@ const onPlayNext = () => {
   }
 
   .song-item-operating {
-    @apply flex items-center rounded-lg ml-4 border border-neutral-100 bg-white dark:border-neutral-800 dark:bg-neutral-900;
+    @apply flex items-center rounded-lg ml-4;
+    border: 1px solid var(--qqm-border);
+    background: var(--qqm-surface);
 
     .iconfont {
       @apply text-xl;
@@ -199,7 +201,9 @@ const onPlayNext = () => {
 
     &-play {
       @apply cursor-pointer rounded-[9px] w-10 h-10 flex justify-center items-center transition
-             border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-100;
+             text-neutral-900 dark:text-neutral-100;
+      border: 1px solid var(--qqm-border);
+      background: var(--qqm-surface);
 
       &:hover,
       &.bg-primary {
@@ -217,5 +221,16 @@ const onPlayNext = () => {
 
 .is-loading {
   opacity: 0.72;
+}
+
+.song-operating-surface {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.song-operating-surface:hover {
+  color: var(--qqm-primary, #22c55e);
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

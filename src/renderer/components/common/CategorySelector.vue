@@ -1,5 +1,5 @@
 <template>
-  <div class="border-b border-neutral-100 dark:border-neutral-800 bg-white dark:bg-black z-10">
+  <div class="category-selector-bar bg-white dark:bg-black z-10">
     <n-scrollbar ref="scrollbarRef" x-scrollable>
       <div
         class="flex items-center py-4 page-padding"
@@ -9,7 +9,7 @@
         <span
           v-for="(category, index) in categories"
           :key="getItemKey(category, index)"
-          class="py-1.5 px-4 mr-3 inline-block rounded-[9px] cursor-pointer transition-opacity duration-200 text-sm font-medium bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-primary/5 dark:hover:bg-primary/10 hover:text-primary dark:hover:text-primary"
+          class="category-selector-chip py-1.5 px-4 mr-3 inline-block rounded-[9px] cursor-pointer transition-colors duration-200 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-primary"
           :class="[
             animationClass,
             index === 0 ? 'ml-0.5' : '',

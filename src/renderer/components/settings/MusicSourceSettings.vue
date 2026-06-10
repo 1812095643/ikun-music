@@ -6,14 +6,14 @@
   >
     <div class="flex flex-col h-full">
       <!-- Tabs Header -->
-      <div class="flex p-0.5 mb-3 bg-neutral-100/80 dark:bg-neutral-900/80 rounded-lg shrink-0">
+      <div class="music-source-tabs flex p-0.5 mb-3 rounded-lg shrink-0">
         <button
           v-for="tab in tabs"
           :key="tab.key"
           class="flex-1 py-1 text-xs font-medium rounded-md transition-colors duration-200"
           :class="[
             activeTab === tab.key
-              ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 ring-1 ring-neutral-200 dark:ring-neutral-700'
+              ? 'music-source-tab-active text-neutral-900 dark:text-neutral-100'
               : 'text-neutral-500 dark:text-neutral-400 hover:text-primary dark:hover:text-primary'
           ]"
           @click="activeTab = tab.key"
@@ -40,7 +40,7 @@
                   :class="[
                     isSourceSelected(source.key)
                       ? 'bg-primary/10 dark:bg-primary/15 border-primary/20 dark:border-primary/25'
-                      : 'bg-white dark:bg-neutral-950 border-neutral-100 dark:border-neutral-800 hover:bg-primary/5 dark:hover:bg-primary/10 hover:border-primary/20',
+                      : 'music-source-card',
                     { 'opacity-60 cursor-not-allowed': !source.available }
                   ]"
                   @click="toggleSource(source.key)"
@@ -51,7 +51,7 @@
                       backgroundColor: isSourceSelected(source.key) ? source.color : 'transparent',
                       color: isSourceSelected(source.key) ? '#fff' : source.color
                     }"
-                    :class="{ 'bg-neutral-100 dark:bg-neutral-800': !isSourceSelected(source.key) }"
+                    :class="{ 'music-source-check-idle': !isSourceSelected(source.key) }"
                   >
                     <i :class="source.icon" class="text-base"></i>
                   </div>
@@ -127,7 +127,7 @@
                   :class="[
                     activeLxApiId === api.id
                       ? 'bg-primary/10 dark:bg-primary/15 border-primary/20 dark:border-primary/25'
-                      : 'bg-white dark:bg-neutral-950 border-neutral-100 dark:border-neutral-800 hover:bg-primary/5 dark:hover:bg-primary/10'
+                      : 'music-source-card'
                   ]"
                 >
                   <div class="relative flex items-center justify-center w-4 h-4 mr-3">
@@ -170,7 +170,7 @@
                     <div class="flex items-center gap-2 mt-0.5">
                       <span
                         v-if="api.info.version"
-                        class="text-[10px] text-neutral-500 bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 rounded"
+                        class="music-source-tag text-[10px] text-neutral-500 px-1.5 py-0.5 rounded"
                       >
                         v{{ api.info.version }}
                       </span>
@@ -188,13 +188,13 @@
 
               <div
                 v-else
-                class="py-6 text-center text-xs text-neutral-400 bg-neutral-50 dark:bg-neutral-900 rounded-lg border border-dashed border-neutral-200 dark:border-neutral-800"
+                class="music-source-empty py-6 text-center text-xs text-neutral-400 rounded-lg"
               >
                 <p>{{ t('settings.playback.lxMusic.scripts.empty') }}</p>
               </div>
 
               <!-- URL Import -->
-              <div class="mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
+              <div class="music-source-form mt-4 pt-4">
                 <h4 class="text-xs font-medium mb-2 text-neutral-900 dark:text-neutral-100">
                   {{ t('settings.playback.lxMusic.scripts.importOnline') }}
                 </h4>
@@ -202,7 +202,7 @@
                   <input
                     v-model="lxScriptUrl"
                     :placeholder="t('settings.playback.lxMusic.scripts.urlPlaceholder')"
-                    class="flex-1 px-3 py-1.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg text-xs focus:outline-none focus:border-primary transition-colors"
+                    class="music-source-input flex-1 px-3 py-1.5 rounded-lg text-xs focus:outline-none transition-colors"
                     :disabled="isImportingFromUrl"
                   />
                   <button
@@ -740,5 +740,33 @@ watch(
 
 .confirm-button:hover {
   background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 90%, black);
+}
+
+.music-source-tabs,
+.music-source-tab-active,
+.music-source-card,
+.music-source-tag,
+.music-source-input {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.music-source-card:hover,
+.music-source-input:focus {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+
+.music-source-check-idle {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.music-source-empty {
+  border: 1px dashed var(--qqm-border);
+  background: var(--qqm-surface-2, var(--qqm-surface));
+}
+
+.music-source-form {
+  border-top: 1px solid var(--qqm-border);
 }
 </style>

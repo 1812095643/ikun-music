@@ -68,7 +68,7 @@ const openSettings = () => {
 .mobile-header {
   @apply flex items-center justify-between px-4 py-3;
   @apply bg-white dark:bg-black;
-  @apply border-b border-neutral-100 dark:border-neutral-800;
+  border-bottom: 1px solid var(--qqm-border);
   min-height: 56px;
 
   &.safe-area-top {

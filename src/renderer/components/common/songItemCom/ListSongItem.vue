@@ -70,7 +70,7 @@
           ></i>
         </div>
         <div
-          class="song-item-operating-list-play bg-neutral-100 dark:bg-neutral-900"
+          class="song-item-operating-list-play song-operating-surface"
           :class="{ 'bg-primary': isPlaying, 'is-loading': playLoading }"
           @click="onPlayMusic"
         >
@@ -277,5 +277,10 @@ const onPlayMusic = () => {
 
 .is-loading {
   opacity: 0.72;
+}
+
+.song-operating-surface {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
 }
 </style>

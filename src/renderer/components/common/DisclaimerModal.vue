@@ -6,7 +6,7 @@
         class="disclaimer-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/30"
       >
         <div
-          class="disclaimer-modal-card w-full max-w-md mx-4 bg-white dark:bg-black rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
+          class="disclaimer-modal-card qqm-modal-card w-full max-w-md mx-4 rounded-lg overflow-hidden"
         >
           <div class="h-1 bg-primary"></div>
           <h2
@@ -87,7 +87,7 @@
         class="donate-modal-shell fixed inset-0 z-[999999] flex items-center justify-center bg-black/30"
       >
         <div
-          class="donate-modal-card w-full max-w-md mx-4 bg-white dark:bg-black rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
+          class="donate-modal-card qqm-modal-card w-full max-w-md mx-4 rounded-lg overflow-hidden"
         >
           <div class="h-1 bg-primary"></div>
 
@@ -130,7 +130,7 @@
 
               <button
                 @click="openDonateLink('alipay')"
-                class="flex flex-col items-center gap-2 p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                class="donate-qr-option flex flex-col items-center gap-2 p-4 rounded-lg transition-colors"
               >
                 <div class="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
                   <i class="ri-alipay-fill text-2xl text-white"></i>
@@ -165,9 +165,7 @@
         class="fixed inset-0 z-[9999999] flex items-center justify-center bg-black/35"
         @click.self="closeQRCode"
       >
-        <div
-          class="w-full max-w-sm mx-4 bg-white dark:bg-black rounded-lg overflow-hidden border border-neutral-100 dark:border-neutral-800"
-        >
+        <div class="qqm-modal-card w-full max-w-sm mx-4 rounded-lg overflow-hidden">
           <div class="h-2" :class="qrcodeType === 'wechat' ? 'bg-primary' : 'bg-neutral-500'"></div>
 
           <div class="flex items-center justify-between px-6 py-4">
@@ -321,5 +319,16 @@ onMounted(() => {
 .qrcode-modal-enter-from,
 .qrcode-modal-leave-to {
   opacity: 0;
+}
+
+.qqm-modal-card,
+.donate-qr-option {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.donate-qr-option:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

@@ -6,9 +6,7 @@
         class="fixed inset-0 z-[999999] flex items-end justify-center bg-black/30"
       >
         <!-- 弹窗内容 -->
-        <div
-          class="w-full max-w-lg overflow-hidden rounded-t-md border border-neutral-100 bg-white dark:border-neutral-800 dark:bg-black update-sheet"
-        >
+        <div class="mobile-update-sheet w-full max-w-lg overflow-hidden rounded-t-md update-sheet">
           <!-- 顶部装饰条 -->
           <div class="h-1 bg-primary"></div>
 
@@ -45,9 +43,7 @@
           </div>
 
           <!-- 更新内容 -->
-          <div
-            class="mx-6 mb-6 max-h-80 overflow-y-auto rounded-lg bg-neutral-50 dark:bg-neutral-800/50"
-          >
+          <div class="mobile-update-content mx-6 mb-6 max-h-80 overflow-y-auto rounded-lg">
             <div
               class="p-5 text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed"
               v-html="parsedReleaseNotes"
@@ -61,7 +57,7 @@
           >
             <button
               @click="handleLater"
-              class="flex-1 py-4 px-4 rounded-lg text-base font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors duration-200"
+              class="mobile-update-secondary flex-1 py-4 px-4 rounded-lg text-base font-medium text-neutral-700 dark:text-neutral-300 transition-colors duration-200"
             >
               {{ t('comp.update.noThanks') }}
             </button>
@@ -271,5 +267,17 @@ onMounted(() => {
 
 :deep(a) {
   color: #22c55e;
+}
+
+.mobile-update-sheet,
+.mobile-update-content,
+.mobile-update-secondary {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.mobile-update-secondary:hover {
+  color: var(--qqm-primary, #22c55e);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>

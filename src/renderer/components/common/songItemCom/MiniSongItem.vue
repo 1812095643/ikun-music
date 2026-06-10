@@ -67,7 +67,7 @@
           ></i>
         </div>
         <div
-          class="song-item-operating-play bg-neutral-100 dark:bg-neutral-900"
+          class="song-item-operating-play song-operating-surface"
           :class="{ 'bg-primary': isPlaying, 'is-loading': playLoading }"
           @click="onPlayMusic"
         >
@@ -143,7 +143,7 @@ const onPlayMusic = () => {
   border-radius: 0.5rem;
 
   &:hover {
-    background-color: rgb(250 250 250); /* bg-neutral-50 */
+    background-color: var(--qqm-surface);
   }
 
   .song-item-img {
@@ -176,7 +176,7 @@ const onPlayMusic = () => {
     margin-left: 1rem; /* ml-4 */
     padding-left: 0.5rem; /* pl-2 */
     border-width: 1px;
-    border-color: rgb(229 229 229); /* border-neutral-200 */
+    border-color: var(--qqm-border);
     background-color: #fff; /* bg-light fallback */
 
     .iconfont {
@@ -215,7 +215,7 @@ const onPlayMusic = () => {
       transition-property: all;
       transition-duration: 0.15s;
       border-width: 1px;
-      border-color: rgb(229 229 229); /* border-neutral-200 */
+      border-color: var(--qqm-border);
       color: rgb(23 23 23); /* text-neutral-900 */
 
       &:hover,
@@ -246,7 +246,7 @@ const onPlayMusic = () => {
 
   .song-item-operating {
     border-color: rgb(38 38 38);
-    background-color: rgb(10 10 10); /* dark:bg-neutral-950 */
+    background-color: var(--qqm-surface);
 
     &-like .icon-likefill {
       color: rgb(163 163 163); /* dark:text-neutral-400 */
@@ -261,5 +261,10 @@ const onPlayMusic = () => {
 
 .is-loading {
   opacity: 0.72;
+}
+
+.song-operating-surface {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
 }
 </style>

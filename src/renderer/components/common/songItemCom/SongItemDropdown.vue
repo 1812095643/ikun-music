@@ -55,7 +55,7 @@ const renderSongPreview = () => {
   return h(
     'div',
     {
-      class: 'flex items-center gap-3 px-2 dark:border-neutral-800 dark:text-neutral-100'
+      class: 'flex items-center gap-3 px-2 dark:text-neutral-100'
     },
     [
       h(NImage, {
@@ -238,7 +238,9 @@ const handleSelect = (key: string | number) => {
 
 <style lang="scss" scoped>
 :deep(.n-dropdown-menu) {
-  @apply min-w-[240px] overflow-hidden rounded-lg border border-neutral-100 dark:border-neutral-800;
+  @apply min-w-[240px] overflow-hidden rounded-lg;
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
 
   .n-dropdown-option {
     @apply h-9 text-sm;

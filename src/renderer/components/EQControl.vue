@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="eq-control p-6 rounded-lg bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 w-full max-w-[700px]"
-  >
+  <div class="eq-control eq-panel p-6 rounded-lg w-full max-w-[700px]">
     <div class="eq-header flex justify-between items-center mb-4">
       <h3 class="text-xl font-semibold text-neutral-800 dark:text-neutral-200">
         {{ t('player.eq.title') }}
@@ -36,9 +34,7 @@
       </n-scrollbar>
     </div>
 
-    <div
-      class="eq-sliders flex justify-between items-end bg-white dark:bg-black gap-1 rounded-lg p-2 h-[300px] border border-neutral-100 dark:border-neutral-800"
-    >
+    <div class="eq-sliders eq-panel flex justify-between items-end gap-1 rounded-lg p-2 h-[300px]">
       <div
         v-for="freq in frequencies"
         :key="freq"
@@ -328,5 +324,10 @@ const formatFreq = (freq: number) => {
       transform: translateY(0);
     }
   }
+}
+
+.eq-panel {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
 }
 </style>

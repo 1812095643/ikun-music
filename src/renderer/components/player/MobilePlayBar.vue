@@ -272,7 +272,8 @@ watch(
       @apply flex items-center flex-1 min-w-0 cursor-pointer;
 
       .mini-song-cover {
-        @apply w-11 h-11 rounded-lg border border-neutral-100 dark:border-neutral-800;
+        @apply w-11 h-11 rounded-lg;
+        border: 1px solid var(--qqm-border);
       }
 
       .mini-song-text {

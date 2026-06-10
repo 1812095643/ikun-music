@@ -6,7 +6,7 @@
   >
     <!-- Image Container -->
     <div
-      class="relative overflow-hidden rounded-lg border border-neutral-100 transition-colors duration-200 group-hover:border-primary/20 dark:border-neutral-800"
+      class="search-item-cover relative overflow-hidden rounded-lg transition-colors duration-200"
       :class="[item.type === 'mv' ? 'aspect-video' : 'aspect-square']"
     >
       <n-image
@@ -146,5 +146,14 @@ const handleShowMv = async () => {
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.search-item-cover {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.group:hover .search-item-cover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
 }
 </style>

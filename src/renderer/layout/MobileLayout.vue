@@ -123,7 +123,7 @@ provide('openPlaylistDrawer', openPlaylistDrawer);
 // 底部菜单固定在底部
 .mobile-bottom-menu {
   @apply bg-white dark:bg-black;
-  @apply border-t border-neutral-100 dark:border-neutral-800;
+  border-top: 1px solid var(--qqm-border);
 }
 
 .mobile-menu {

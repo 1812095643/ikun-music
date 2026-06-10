@@ -46,11 +46,11 @@
         @click.self="showCloseModal = false"
       >
         <div
-          class="relative w-[360px] transform overflow-hidden rounded-lg bg-white p-6 transition-opacity dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800"
+          class="title-dialog-card relative w-[360px] transform overflow-hidden rounded-lg p-6 transition-opacity"
         >
           <!-- Close Icon -->
           <button
-            class="absolute top-4 right-4 p-1 rounded-md text-neutral-400 hover:bg-neutral-100 hover:text-neutral-600 dark:hover:bg-neutral-800 dark:hover:text-neutral-200 transition-colors focus:outline-none"
+            class="title-dialog-close absolute top-4 right-4 p-1 rounded-md text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors focus:outline-none"
             @click="showCloseModal = false"
           >
             <i class="ri-close-line text-xl leading-none"></i>
@@ -94,13 +94,13 @@
 
           <div class="mt-6 flex justify-end gap-3">
             <button
-              class="rounded-lg px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:text-neutral-200 dark:hover:bg-neutral-800 transition-colors focus:outline-none"
+              class="title-dialog-secondary rounded-lg px-4 py-2 text-sm font-medium text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 transition-colors focus:outline-none"
               @click="showCloseModal = false"
             >
               {{ t('common.cancel') }}
             </button>
             <button
-              class="rounded-lg px-4 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 transition-colors focus:outline-none"
+              class="title-dialog-secondary rounded-lg px-4 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-300 transition-colors focus:outline-none"
               @click="handleAction('close')"
             >
               {{ t('comp.titleBar.exitApp') }}
@@ -197,5 +197,17 @@ const drag = (event: MouseEvent) => {
 
 #buttons {
   -webkit-app-region: no-drag;
+}
+
+.title-dialog-card,
+.title-dialog-secondary {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.title-dialog-close:hover,
+.title-dialog-secondary:hover {
+  color: var(--qqm-primary, #22c55e);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface));
 }
 </style>

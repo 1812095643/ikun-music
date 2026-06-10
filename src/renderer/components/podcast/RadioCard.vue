@@ -25,7 +25,7 @@ const goToDetail = () => {
   <div class="group cursor-pointer" @click="goToDetail">
     <!-- Cover -->
     <div
-      class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 transition-colors duration-200 group-hover:border-primary/20 dark:border-neutral-800"
+      class="radio-card-cover relative aspect-square overflow-hidden rounded-lg transition-colors duration-200"
     >
       <img
         :src="getImgUrl(radio?.picUrl || program?.coverUrl || '', '400y400')"
@@ -78,4 +78,13 @@ const goToDetail = () => {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.radio-card-cover {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.group:hover .radio-card-cover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+}
+</style>

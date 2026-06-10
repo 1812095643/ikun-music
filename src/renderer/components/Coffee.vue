@@ -12,9 +12,7 @@
         </slot>
       </template>
 
-      <div
-        class="p-6 rounded-lg bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800"
-      >
+      <div class="coffee-card p-6 rounded-lg">
         <div class="flex gap-10">
           <div class="flex flex-col items-center gap-2">
             <n-image

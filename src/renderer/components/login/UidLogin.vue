@@ -127,7 +127,8 @@ defineExpose({
   }
 
   .uid-page {
-    @apply bg-white/95 dark:bg-black/95 border border-neutral-100 dark:border-neutral-800;
+    border: 1px solid var(--qqm-border);
+    background: color-mix(in srgb, var(--qqm-surface) 95%, transparent);
     @apply rounded-lg overflow-hidden;
   }
 
@@ -135,7 +136,7 @@ defineExpose({
     height: 40px;
     @apply w-full px-4 outline-none;
     @apply text-neutral-900 dark:text-neutral-100 bg-transparent;
-    @apply border-b border-neutral-200 dark:border-neutral-800;
+    border-bottom: 1px solid var(--qqm-border);
     @apply placeholder-neutral-400 dark:placeholder-neutral-500;
 
     &:focus {

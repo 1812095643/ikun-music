@@ -244,7 +244,7 @@
               <button
                 v-if="config.gradientColors.colors.length > 2"
                 @click="removeGradientColor(index)"
-                class="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center rounded-md bg-white/90 text-neutral-500 text-xs ring-1 ring-neutral-200 hover:text-primary hover:bg-primary/10 transition-colors dark:bg-neutral-950/90 dark:ring-neutral-800"
+                class="lyric-floating-action absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center rounded-md text-neutral-500 text-xs hover:text-primary transition-colors"
               >
                 <i class="ri-close-line"></i>
               </button>
@@ -304,7 +304,7 @@
               />
               <button
                 @click="clearBackgroundImage"
-                class="absolute top-2 right-2 p-2 rounded-lg bg-white/90 text-neutral-500 ring-1 ring-neutral-200 hover:text-primary hover:bg-primary/10 transition-colors dark:bg-neutral-950/90 dark:ring-neutral-800"
+                class="lyric-floating-action absolute top-2 right-2 p-2 rounded-lg text-neutral-500 hover:text-primary transition-colors"
               >
                 <i class="ri-delete-bin-line"></i>
               </button>
@@ -801,5 +801,14 @@ defineExpose({
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+.lyric-floating-action {
+  border: 1px solid var(--qqm-border);
+  background: color-mix(in srgb, var(--qqm-surface) 92%, transparent);
+}
+
+.lyric-floating-action:hover {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface));
 }
 </style>

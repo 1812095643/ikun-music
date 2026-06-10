@@ -6,7 +6,7 @@
   >
     <!-- Album Cover -->
     <div
-      class="cover relative h-14 w-14 md:h-16 md:w-16 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800"
+      class="cover home-song-cover relative h-14 w-14 md:h-16 md:w-16 flex-shrink-0 overflow-hidden rounded-lg"
     >
       <n-image
         v-if="item.picUrl"
@@ -48,7 +48,7 @@
 
     <!-- More Button -->
     <button
-      class="more-btn flex h-8 w-8 items-center justify-center rounded-lg opacity-0 transition-opacity duration-200 group-hover:bg-white dark:group-hover:bg-neutral-800 group-hover:opacity-100"
+      class="more-btn home-song-more flex h-8 w-8 items-center justify-center rounded-lg opacity-0 transition-colors duration-200 group-hover:opacity-100"
       @click.stop="onMenuClick"
     >
       <i class="ri-more-fill text-sm text-neutral-600 dark:text-neutral-300"></i>
@@ -138,5 +138,16 @@ const onMenuClick = (event: MouseEvent) => handleMenuClick(event);
 <style lang="scss" scoped>
 .home-song-card {
   // 所有样式都已在模板中通过 Tailwind 类定义
+}
+
+.home-song-cover,
+.home-song-more {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.home-song-more:hover {
+  color: var(--qqm-primary, #22c55e);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface));
 }
 </style>

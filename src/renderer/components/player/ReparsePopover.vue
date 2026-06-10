@@ -19,27 +19,22 @@
         {{ t('player.playBar.reparse') }}
       </n-tooltip>
     </template>
-    <div
-      class="reparse-popover bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 p-4 rounded-lg max-w-60"
-    >
+    <div class="reparse-popover p-4 rounded-lg max-w-60">
       <div class="text-base font-medium mb-2">{{ t('player.reparse.title') }}</div>
       <div class="text-sm opacity-70 mb-3">{{ t('player.reparse.desc') }}</div>
       <div class="mb-3 max-h-80 overflow-y-auto">
         <div class="flex flex-col space-y-2">
           <template v-for="(group, groupIndex) in groupedSources" :key="group.key">
             <!-- 分组分隔线 -->
-            <div
-              v-if="groupIndex > 0"
-              class="border-t border-neutral-100 dark:border-neutral-800 my-1"
-            ></div>
+            <div v-if="groupIndex > 0" class="reparse-divider my-1"></div>
             <div
               v-for="source in group.sources"
               :key="source.id"
               class="source-button flex items-center p-2 rounded-lg transition-colors duration-200"
               :class="[
                 source.available
-                  ? 'cursor-pointer bg-neutral-50 dark:bg-neutral-900 hover:bg-primary/5 dark:hover:bg-primary/10'
-                  : 'opacity-40 cursor-not-allowed bg-neutral-50 dark:bg-neutral-900',
+                  ? 'reparse-option-active cursor-pointer'
+                  : 'reparse-option-disabled opacity-40 cursor-not-allowed',
                 {
                   'bg-primary/10 dark:bg-primary/15 text-primary': isCurrentSource(source.id),
                   'opacity-50 cursor-not-allowed': isReparsing && source.available
@@ -80,7 +75,7 @@
       </div>
       <!-- 清除自定义音源 -->
       <div
-        class="flex cursor-pointer items-center rounded-lg bg-neutral-50 p-2 text-sm text-neutral-500 transition-colors hover:bg-primary/5 hover:text-primary dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-primary/10"
+        class="reparse-custom-entry flex cursor-pointer items-center rounded-lg p-2 text-sm text-neutral-500 transition-colors hover:text-primary dark:text-neutral-400"
         @click="clearCustomSource"
       >
         <div class="flex items-center justify-center w-6 h-6 mr-3 text-lg">
@@ -339,5 +334,23 @@ watch(
 
 .iconfont {
   @apply text-2xl mx-3;
+}
+
+.reparse-popover,
+.reparse-option-active,
+.reparse-option-disabled,
+.reparse-custom-entry {
+  border: 1px solid var(--qqm-border);
+  background: var(--qqm-surface);
+}
+
+.reparse-divider {
+  border-top: 1px solid var(--qqm-border);
+}
+
+.reparse-option-active:hover,
+.reparse-custom-entry:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 </style>
