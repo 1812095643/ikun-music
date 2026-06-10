@@ -19,7 +19,9 @@
         {{ t('player.playBar.reparse') }}
       </n-tooltip>
     </template>
-    <div class="reparse-popover bg-light-100 dark:bg-dark-100 p-4 rounded-lg max-w-60">
+    <div
+      class="reparse-popover bg-white dark:bg-black border border-neutral-100 dark:border-neutral-800 p-4 rounded-lg max-w-60"
+    >
       <div class="text-base font-medium mb-2">{{ t('player.reparse.title') }}</div>
       <div class="text-sm opacity-70 mb-3">{{ t('player.reparse.desc') }}</div>
       <div class="mb-3 max-h-80 overflow-y-auto">
@@ -28,7 +30,7 @@
             <!-- 分组分隔线 -->
             <div
               v-if="groupIndex > 0"
-              class="border-t border-gray-200 dark:border-gray-700 my-1"
+              class="border-t border-neutral-100 dark:border-neutral-800 my-1"
             ></div>
             <div
               v-for="source in group.sources"

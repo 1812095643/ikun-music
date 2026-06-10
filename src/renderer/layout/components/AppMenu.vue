@@ -289,7 +289,7 @@ const toggleMenu = () => {
     bottom: 0;
     left: 0;
     z-index: 99999;
-    @apply bg-light dark:bg-black border-none border-gray-200 dark:border-gray-700;
+    @apply bg-white dark:bg-black border-none border-neutral-200 dark:border-neutral-800;
 
     &-header {
       display: none;

@@ -67,7 +67,7 @@
     </setting-section>
 
     <div
-      class="mt-6 p-4 rounded-lg bg-white dark:bg-neutral-900 border border-gray-100 dark:border-gray-800"
+      class="mt-6 p-4 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800"
     >
       <div class="text-sm font-medium text-gray-500 mb-3">支持正版</div>
       <div class="text-base text-gray-900 dark:text-white mb-4">
@@ -77,7 +77,7 @@
         <a
           v-for="link in memberLinks"
           :key="link.url"
-          class="px-4 py-2 rounded-lg bg-gray-50 dark:bg-black/20 text-primary hover:text-primary transition-colors"
+          class="px-4 py-2 rounded-lg bg-neutral-50 dark:bg-neutral-900 text-primary hover:bg-primary/5 hover:text-primary transition-colors"
           :href="link.url"
           target="_blank"
         >

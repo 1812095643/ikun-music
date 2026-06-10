@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-32 h-full flex-shrink-0 border-r border-gray-200 dark:border-gray-700 bg-light dark:bg-dark"
+    class="w-32 h-full flex-shrink-0 border-r border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black"
   >
     <div
       v-for="section in sections"
@@ -8,8 +8,8 @@
       class="px-4 py-2.5 cursor-pointer text-sm transition-colors duration-200 border-l-2"
       :class="[
         currentSection === section.id
-          ? 'text-primary dark:text-white bg-gray-50 dark:bg-dark-100 !border-primary font-medium'
-          : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-primary hover:dark:text-white hover:bg-gray-50 hover:dark:bg-dark-100 hover:border-gray-300'
+          ? 'text-primary bg-primary/10 dark:bg-primary/15 !border-primary font-medium'
+          : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-primary hover:dark:text-white hover:bg-primary/5 hover:dark:bg-primary/10 hover:border-primary/30'
       ]"
       @click="handleClick(section.id)"
     >

@@ -72,7 +72,7 @@
                   <!-- Artist Badge -->
                   <div
                     v-if="isArtist(item)"
-                    class="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-full bg-white dark:bg-neutral-800 flex items-center justify-center border border-neutral-100 dark:border-neutral-700"
+                    class="absolute -bottom-0.5 -right-0.5 w-6 h-6 rounded-md bg-white dark:bg-neutral-900 flex items-center justify-center border border-neutral-100 dark:border-neutral-800"
                   >
                     <i class="ri-verified-badge-fill text-primary text-sm" />
                   </div>

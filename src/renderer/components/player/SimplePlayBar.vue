@@ -475,7 +475,7 @@ onMounted(() => {
 }
 
 .control-btn {
-  @apply flex items-center justify-center rounded-full outline-none border-0 transition-colors duration-200;
+  @apply flex items-center justify-center rounded-lg outline-none border-0 transition-colors duration-200;
   color: var(--text-color);
   background: transparent;
   width: 32px;

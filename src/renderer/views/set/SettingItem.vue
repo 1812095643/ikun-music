@@ -1,12 +1,12 @@
 <template>
   <div
-    class="setting-item flex items-center justify-between px-4 py-3.5 transition-colors bg-transparent text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-800 last:border-b-0 hover:bg-gray-50/80 hover:dark:bg-white/5"
+    class="setting-item flex items-center justify-between px-4 py-3.5 transition-colors bg-transparent text-gray-900 dark:text-white border-b border-neutral-100 dark:border-neutral-800 last:border-b-0 hover:bg-primary/5 hover:dark:bg-primary/10"
     :class="[
       // 移动端垂直布局
       { 'max-md:flex-col max-md:items-start max-md:gap-3': !inline },
       // 可点击样式
       {
-        'cursor-pointer active:bg-gray-100 active:dark:bg-white/10': clickable
+        'cursor-pointer active:bg-primary/10 active:dark:bg-primary/15': clickable
       },
       customClass
     ]"

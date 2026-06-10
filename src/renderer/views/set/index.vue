@@ -4,7 +4,7 @@
   >
     <!-- 顶部导航区 -->
     <div
-      class="flex-shrink-0 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-black z-10 page-padding pt-6 pb-2"
+      class="flex-shrink-0 border-b border-neutral-100 dark:border-neutral-800 bg-white dark:bg-black z-10 page-padding pt-6 pb-2"
     >
       <h1 class="text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white mb-6">
         {{ t('common.settings') }}
@@ -19,7 +19,7 @@
             :class="
               currentSection === section.id
                 ? 'border-primary/25 bg-primary/10 text-primary'
-                : 'border-gray-100 bg-white text-neutral-600 hover:border-gray-200 hover:bg-gray-50 hover:text-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-neutral-700 dark:hover:bg-neutral-800 dark:hover:text-white'
+                : 'border-neutral-100 bg-white text-neutral-600 hover:border-primary/30 hover:bg-primary/5 hover:text-primary dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:border-primary/30 dark:hover:bg-primary/10 dark:hover:text-primary'
             "
             @click="currentSection = section.id"
           >

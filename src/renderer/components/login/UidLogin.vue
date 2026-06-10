@@ -133,7 +133,7 @@ defineExpose({
     height: 40px;
     @apply w-full px-4 outline-none;
     @apply text-gray-900 dark:text-white bg-transparent;
-    @apply border-b border-gray-200 dark:border-gray-700;
+    @apply border-b border-neutral-200 dark:border-neutral-800;
     @apply placeholder-gray-500 dark:placeholder-gray-400;
 
     &:focus {

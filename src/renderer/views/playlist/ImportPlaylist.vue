@@ -1,6 +1,6 @@
 <template>
   <div
-    class="playlist-import-page h-full w-full bg-gray-50 dark:bg-black transition-colors duration-200 overflow-hidden flex flex-col relative"
+    class="playlist-import-page h-full w-full bg-white dark:bg-black transition-colors duration-200 overflow-hidden flex flex-col relative"
   >
     <!-- 头部区域 -->
     <div class="flex-shrink-0 z-10 page-padding pt-8 pb-4 relative">
@@ -27,7 +27,7 @@
         <!-- 自定义 Tab 切换 -->
         <div class="flex justify-center mb-8">
           <div
-            class="bg-white dark:bg-white/5 p-1.5 rounded-lg border border-gray-100 dark:border-white/10 flex gap-1 relative"
+            class="bg-white dark:bg-white/5 p-1.5 rounded-lg border border-neutral-100 dark:border-neutral-800 flex gap-1 relative"
           >
             <div
               v-for="tab in tabs"
@@ -57,7 +57,7 @@
           <!-- 左侧：输入区域 -->
           <div class="lg:col-span-2 space-y-6">
             <div
-              class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 overflow-hidden p-1 transition-colors duration-200"
+              class="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-100 dark:border-neutral-800 overflow-hidden p-1 transition-colors duration-200"
             >
               <!-- 链接导入内容 -->
               <div v-if="currentTab === 'link'" class="p-6 space-y-6">
@@ -174,7 +174,7 @@
           <div class="space-y-6">
             <!-- 选项卡片 -->
             <div
-              class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 p-6"
+              class="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-100 dark:border-neutral-800 p-6"
             >
               <h3 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <i class="ri-settings-4-line text-primary"></i>
@@ -188,7 +188,7 @@
                   :class="
                     importToStarPlaylist
                       ? 'bg-primary/5 border-primary/50'
-                      : 'bg-gray-50 dark:bg-white/5 border-transparent hover:bg-gray-100 dark:hover:bg-white/10'
+                      : 'bg-neutral-50 dark:bg-neutral-900 border-transparent hover:bg-primary/5 dark:hover:bg-primary/10'
                   "
                   @click="importToStarPlaylist = !importToStarPlaylist"
                 >
@@ -209,7 +209,7 @@
                     :class="
                       importToStarPlaylist
                         ? 'border-primary bg-primary'
-                        : 'border-gray-300 dark:border-gray-600'
+                        : 'border-neutral-300 dark:border-neutral-700'
                     "
                   >
                     <i class="ri-check-line text-white text-xs" v-show="importToStarPlaylist"></i>
@@ -227,7 +227,7 @@
                   <input
                     v-model="playlistName"
                     :placeholder="t('comp.playlist.import.playlistNamePlaceholder')"
-                    class="w-full bg-gray-50 dark:bg-white/5 border border-transparent focus:border-primary/50 rounded-lg pl-11 pr-4 py-3.5 outline-none transition-colors text-sm text-gray-900 dark:text-white"
+                    class="w-full bg-neutral-50 dark:bg-neutral-900 border border-transparent focus:border-primary/50 rounded-lg pl-11 pr-4 py-3.5 outline-none transition-colors text-sm text-gray-900 dark:text-white"
                   />
                 </div>
               </div>
@@ -251,7 +251,7 @@
             <!-- 状态反馈 -->
             <div v-if="taskId">
               <div
-                class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-100 dark:border-gray-800 p-6"
+                class="bg-white dark:bg-neutral-900 rounded-lg border border-neutral-100 dark:border-neutral-800 p-6"
               >
                 <div class="flex items-center justify-between mb-4">
                   <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
