@@ -15,7 +15,7 @@
                 }"
               ></div>
               <div
-                class="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white dark:via-black/80 dark:to-black"
+                class="absolute inset-0 bg-gradient-to-b from-white/70 via-white/92 to-white dark:from-black/70 dark:via-black/92 dark:to-black"
               ></div>
             </div>
 
@@ -115,7 +115,7 @@
         <!-- Action Bar (Sticky) -->
         <section
           v-if="songList.length > 0"
-          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-neutral-100 dark:border-neutral-800/50"
+          class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/95 dark:bg-black/95 border-b border-neutral-100 dark:border-neutral-800/50"
         >
           <div class="flex items-center justify-between gap-4">
             <div class="flex items-center gap-3">

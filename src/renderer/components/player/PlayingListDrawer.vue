@@ -194,22 +194,21 @@ const handleDeleteSong = (song: SongResult) => {
 }
 
 .playlist-panel {
-  @apply fixed right-0 z-[9999999] rounded-l-xl overflow-hidden;
+  @apply fixed right-0 z-[9999999] rounded-l-lg overflow-hidden;
   width: 350px;
   height: 70vh;
   top: 15vh; // 距离顶部15%
-  animation-duration: 0.4s !important; // 动画持续时间
+  animation-duration: 0.24s !important; // 动画持续时间
 
-  background: color-mix(in srgb, var(--qqm-surface, #fff) 82%, transparent);
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 94%, transparent);
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  box-shadow: 0 14px 36px rgba(20, 24, 31, 0.12);
-  backdrop-filter: blur(18px) saturate(1.08);
+  box-shadow: 0 10px 24px rgba(20, 24, 31, 0.08);
+  backdrop-filter: blur(10px) saturate(1.02);
 
   &-header {
     @apply flex items-center justify-between px-4 py-2;
     border-bottom: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-    backdrop-filter: blur(10px);
-    background: color-mix(in srgb, var(--qqm-surface, #fff) 74%, transparent);
+    background: color-mix(in srgb, var(--qqm-surface, #fff) 96%, transparent);
 
     .title {
       @apply text-base font-medium text-gray-800 dark:text-gray-200;
@@ -285,7 +284,7 @@ const handleDeleteSong = (song: SongResult) => {
     border-radius: 14px 14px 0 0;
     border-left: none;
     border-top: 1px solid theme('colors.gray.200');
-    box-shadow: 0 -10px 26px rgba(20, 24, 31, 0.1);
+    box-shadow: 0 -8px 20px rgba(20, 24, 31, 0.08);
 
     &-header {
       @apply text-center relative px-4;

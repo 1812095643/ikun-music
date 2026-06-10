@@ -380,17 +380,17 @@ const openPlayListDrawer = () => {
   @apply h-[76px] w-full absolute bottom-0 left-0 flex items-center box-border px-7 py-2 pt-3;
   @apply bg-light dark:bg-dark;
   border-top: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  box-shadow: 0 -6px 18px rgba(20, 24, 31, 0.06);
+  box-shadow: 0 -4px 14px rgba(20, 24, 31, 0.05);
   z-index: 9999;
-  animation-duration: 0.5s !important;
+  animation-duration: 0.24s !important;
 
   &.play-bar-opcity {
     @apply bg-transparent !important;
-    box-shadow: 0 0 20px 5px #0000001d;
+    box-shadow: 0 -4px 18px rgba(20, 24, 31, 0.08);
   }
 
   &.animate__slideOutDown {
-    animation-duration: 0.3s !important;
+    animation-duration: 0.2s !important;
     pointer-events: none;
   }
 
@@ -536,7 +536,7 @@ const openPlayListDrawer = () => {
     border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
     box-shadow: var(--qqm-shadow, 0 8px 20px rgba(20, 24, 31, 0.06));
     &-back {
-      backdrop-filter: blur(20px);
+      backdrop-filter: blur(10px);
       @apply absolute top-0 left-0 w-full h-full;
       background: color-mix(in srgb, var(--qqm-surface, #fff) 72%, transparent);
     }
@@ -715,7 +715,7 @@ const openPlayListDrawer = () => {
 
 .music-eq {
   @apply p-4 rounded-lg;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
   background: color-mix(in srgb, var(--qqm-surface, #fff) 72%, transparent);
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
   box-shadow: var(--qqm-shadow, 0 8px 20px rgba(20, 24, 31, 0.06));

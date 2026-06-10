@@ -49,13 +49,13 @@
             <!-- Background Image with Blur -->
             <div class="hero-bg absolute inset-0 -top-20">
               <div
-                class="absolute inset-0 bg-cover bg-center opacity-20 dark:opacity-15"
+                class="absolute inset-0 bg-cover bg-center opacity-10 dark:opacity-10"
                 :style="{
                   backgroundImage: `url(${getImgUrl(artistInfo.cover || artistInfo.picUrl, '800y800')})`
                 }"
               />
               <div
-                class="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white dark:via-neutral-900/80 dark:to-neutral-900"
+                class="absolute inset-0 bg-gradient-to-b from-white/70 via-white/92 to-white dark:from-neutral-900/70 dark:via-neutral-900/92 dark:to-neutral-900"
               />
             </div>
 
@@ -65,7 +65,7 @@
                 <!-- Artist Avatar -->
                 <div class="artist-avatar-wrapper relative group">
                   <div
-                    class="avatar-glow absolute -inset-1 rounded-full bg-primary/10 blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    class="avatar-glow absolute -inset-1 rounded-full bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                   />
                   <div
                     class="avatar-container relative w-36 h-36 md:w-48 md:h-48 rounded-full overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10"
@@ -136,7 +136,7 @@
 
           <!-- Action Bar -->
           <section
-            class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md border-b border-neutral-100 dark:border-neutral-800/50"
+            class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/95 dark:bg-neutral-900/95 border-b border-neutral-100 dark:border-neutral-800/50"
           >
             <div class="flex items-center justify-between gap-3">
               <!-- Left Actions -->

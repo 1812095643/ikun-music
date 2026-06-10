@@ -201,12 +201,11 @@
               </div>
 
               <!-- Empty State -->
-              <div
-                v-if="!searchDetailLoading && isResultEmpty"
-                class="flex flex-col items-center justify-center py-20 text-neutral-400"
-              >
-                <i class="ri-search-line text-6xl mb-4 opacity-20"></i>
-                <p>{{ t('comp.musicList.noSearchResults') }}</p>
+              <div v-if="!searchDetailLoading && isResultEmpty" class="search-empty-state">
+                <div class="search-empty-icon">
+                  <i class="ri-search-line"></i>
+                </div>
+                <p class="search-empty-title">{{ t('comp.musicList.noSearchResults') }}</p>
               </div>
 
               <!-- Loading More / Footer -->
@@ -283,7 +282,9 @@ const ITEMS_PER_PAGE = 30;
 const page = ref(0);
 const hasMore = ref(true);
 const isLoadingMore = ref(false);
-const currentKeyword = computed(() => (route.query.keyword as string) || '');
+const currentKeyword = computed(
+  () => (route.query.keyword as string) || (route.query.keywords as string) || ''
+);
 
 const titleElRef = ref<HTMLElement | null>(null);
 useScrollTitle(currentKeyword, titleElRef);
@@ -484,7 +485,7 @@ onMounted(() => {
 });
 
 watch(
-  () => [route.query.keyword, route.query.type],
+  () => [route.query.keyword, route.query.keywords, route.query.type],
   () => {
     if (route.name === 'searchResult') {
       if (route.query.type) {
@@ -514,6 +515,60 @@ watch(
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.search-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  margin: 18px 0 8px;
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
+  border-radius: 14px;
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, transparent),
+      transparent 34%
+    ),
+    color-mix(in srgb, #ffffff 94%, var(--qqm-primary, #22c55e) 6%);
+  color: #737373;
+}
+
+.dark .search-empty-state {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent);
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent),
+      transparent 36%
+    ),
+    color-mix(in srgb, #050505 92%, var(--qqm-primary, #22c55e) 8%);
+  color: #a3a3a3;
+}
+
+.search-empty-icon {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
+  color: var(--qqm-primary, #22c55e);
+  font-size: 24px;
+}
+
+.search-empty-title {
+  margin-top: 16px;
+  color: #262626;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.dark .search-empty-title {
+  color: #f5f5f5;
 }
 
 .no-scrollbar {
