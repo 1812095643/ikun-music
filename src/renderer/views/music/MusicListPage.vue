@@ -47,7 +47,7 @@
                       <button
                         v-if="!isMobile"
                         type="button"
-                        class="play-icon w-11 h-11 rounded-full bg-white/96 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-auto ring-1 ring-black/5"
+                        class="play-icon w-11 h-11 rounded-full bg-white/96 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-auto"
                         @click.stop="handlePlayAll"
                       >
                         <i class="ri-play-fill text-3xl text-neutral-900 ml-1" />
@@ -97,7 +97,7 @@
                         listInfo.creator.nickname
                       }}</span>
                     </div>
-                    <div class="h-3 w-px rounded-full bg-neutral-200 dark:bg-neutral-700"></div>
+                    <div class="h-3 w-px rounded-full bg-[var(--qqm-border)]"></div>
                     <span class="text-sm text-neutral-500 dark:text-neutral-400">
                       {{ t('player.songNum', { num: total }) }}
                     </span>

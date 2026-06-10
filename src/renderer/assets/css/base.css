@@ -4,7 +4,7 @@ body {
 }
 
 .n-popover:has(.music-play) {
-  border-radius: 1.5rem !important;
+  border-radius: 0.75rem !important;
 }
 .n-popover {
   border-radius: 0.5rem !important;
@@ -30,7 +30,7 @@ body {
   --qqm-border: rgba(20, 24, 31, 0.08);
   --qqm-text: #151922;
   --qqm-muted: #6f7580;
-  --qqm-shadow: 0 8px 20px rgba(20, 24, 31, 0.06);
+  --qqm-shadow: 0 1px 2px rgba(20, 24, 31, 0.04);
   --qqm-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -41,7 +41,7 @@ body {
   --qqm-border: rgba(255, 255, 255, 0.08);
   --qqm-text: #f4f7f8;
   --qqm-muted: #a1a8b2;
-  --qqm-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+  --qqm-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
 }
 
 .layout-page,
@@ -253,7 +253,7 @@ body {
 }
 
 .home-list-card:hover > div:first-child {
-  box-shadow: 0 12px 24px rgba(20, 24, 31, 0.12) !important;
+  box-shadow: none !important;
 }
 
 .home-list-card h3 {
@@ -313,8 +313,8 @@ body {
   border: 1px solid var(--qqm-border) !important;
   border-radius: 12px !important;
   background: color-mix(in srgb, var(--qqm-surface) 94%, transparent) !important;
-  box-shadow: 0 12px 32px rgba(20, 24, 31, 0.12) !important;
-  backdrop-filter: blur(18px) saturate(1.08);
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 .play-bar-img,
@@ -603,7 +603,7 @@ body {
   background: rgba(18, 22, 28, 0.52) !important;
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(10px) saturate(1.08);
+  backdrop-filter: none;
 }
 
 .dark .home-polished-card,
@@ -1190,8 +1190,8 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.58) !important;
   border-radius: 12px !important;
   background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
-  box-shadow: 0 12px 30px rgba(20, 24, 31, 0.065) !important;
-  backdrop-filter: blur(18px) saturate(1.08);
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 .search-result-page .action-bar,
@@ -1204,7 +1204,7 @@ body {
   border-radius: 11px !important;
   background: color-mix(in srgb, var(--qqm-surface) 72%, transparent) !important;
   box-shadow: 0 8px 22px rgba(20, 24, 31, 0.045) !important;
-  backdrop-filter: blur(16px) saturate(1.08);
+  backdrop-filter: none;
 }
 
 .search-result-page .results-section,
@@ -1254,7 +1254,7 @@ body {
   border-radius: 12px !important;
   background: color-mix(in srgb, var(--qqm-surface) 48%, transparent) !important;
   box-shadow: 0 10px 26px rgba(20, 24, 31, 0.045) !important;
-  backdrop-filter: blur(14px) saturate(1.06);
+  backdrop-filter: none;
 }
 
 .album-page .list-card,
@@ -1271,7 +1271,7 @@ body {
 .search-result-page .search-item:hover {
   border-color: rgba(30, 207, 115, 0.16) !important;
   background: color-mix(in srgb, var(--qqm-surface) 66%, transparent) !important;
-  box-shadow: 0 12px 28px rgba(20, 24, 31, 0.07) !important;
+  box-shadow: none !important;
 }
 
 .album-page .list-card [class*='aspect-square'],
@@ -1292,7 +1292,7 @@ body {
   color: var(--qqm-primary-strong) !important;
   background: rgba(255, 255, 255, 0.88) !important;
   box-shadow: 0 8px 18px rgba(20, 24, 31, 0.18) !important;
-  backdrop-filter: blur(12px) saturate(1.12);
+  backdrop-filter: none;
 }
 
 .search-result-page .empty-state,
@@ -1304,7 +1304,7 @@ body {
 
 .fixed-overlay {
   background: rgba(17, 19, 21, 0.08) !important;
-  backdrop-filter: blur(2px);
+  backdrop-filter: none;
 }
 
 .playlist-panel {
@@ -1419,12 +1419,11 @@ body {
 .history-recommend-page .music-header {
   border-bottom-color: transparent !important;
   background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
-  backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: none;
 }
 
 .mv-page .mv-card,
 .podcast-page .radio-card,
-.podcast-page [class*='rounded-xl'][class*='bg-neutral'],
 .user-follows-page .user-card,
 .user-followers-page .user-card {
   padding: 8px !important;
@@ -1440,12 +1439,11 @@ body {
 
 .mv-page .mv-card:hover,
 .podcast-page .radio-card:hover,
-.podcast-page [class*='rounded-xl'][class*='bg-neutral']:hover,
 .user-follows-page .user-card:hover,
 .user-followers-page .user-card:hover {
   border-color: rgba(30, 207, 115, 0.16) !important;
   background: color-mix(in srgb, var(--qqm-surface) 66%, transparent) !important;
-  box-shadow: 0 12px 28px rgba(20, 24, 31, 0.07) !important;
+  box-shadow: none !important;
   transform: translateY(-1px);
 }
 
@@ -1474,7 +1472,7 @@ body {
   color: var(--qqm-primary-strong) !important;
   background: rgba(255, 255, 255, 0.88) !important;
   box-shadow: 0 8px 18px rgba(20, 24, 31, 0.18) !important;
-  backdrop-filter: blur(12px) saturate(1.12);
+  backdrop-filter: none;
 }
 
 .playlist-import-page > .absolute:first-child {
@@ -1485,8 +1483,6 @@ body {
   ) !important;
 }
 
-.playlist-import-page [class*='rounded-3xl'],
-.playlist-import-page [class*='rounded-2xl'],
 .heatmap-container,
 .heatmap-wrapper,
 .heatmap-page .stat-card,
@@ -1495,8 +1491,8 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.54) !important;
   border-radius: 12px !important;
   background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
-  box-shadow: 0 12px 30px rgba(20, 24, 31, 0.055) !important;
-  backdrop-filter: blur(16px) saturate(1.08);
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 .playlist-import-page input,
@@ -1546,20 +1542,17 @@ body {
   border-radius: 12px !important;
   background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
   box-shadow: 0 10px 26px rgba(20, 24, 31, 0.045) !important;
-  backdrop-filter: blur(14px) saturate(1.06);
+  backdrop-filter: none;
 }
 
 .dark .mv-page .mv-card:hover,
 .dark .podcast-page .radio-card:hover,
-.dark .podcast-page [class*='rounded-xl'][class*='bg-neutral']:hover,
 .dark .user-follows-page .user-card:hover,
 .dark .user-followers-page .user-card:hover {
   border-color: rgba(30, 207, 115, 0.18) !important;
   background: rgba(255, 255, 255, 0.06) !important;
 }
 
-.dark .playlist-import-page [class*='rounded-3xl'],
-.dark .playlist-import-page [class*='rounded-2xl'],
 .dark .heatmap-container,
 .dark .heatmap-wrapper,
 .dark .heatmap-page .stat-card,
@@ -1590,7 +1583,7 @@ body {
 .podcast-page .grid > .group.cursor-pointer.animate-item:hover {
   border-color: rgba(30, 207, 115, 0.16) !important;
   background: color-mix(in srgb, var(--qqm-surface) 66%, transparent) !important;
-  box-shadow: 0 12px 28px rgba(20, 24, 31, 0.07) !important;
+  box-shadow: none !important;
   transform: translateY(-1px);
 }
 
@@ -1607,7 +1600,7 @@ body {
   color: var(--qqm-primary-strong) !important;
   background: rgba(255, 255, 255, 0.88) !important;
   box-shadow: 0 8px 18px rgba(20, 24, 31, 0.18) !important;
-  backdrop-filter: blur(12px) saturate(1.12);
+  backdrop-filter: none;
 }
 
 .dark .podcast-page .grid > .group.cursor-pointer.animate-item:hover {
@@ -1636,7 +1629,7 @@ body {
   border-radius: 12px !important;
   background: color-mix(in srgb, var(--qqm-surface) 62%, transparent) !important;
   box-shadow: 0 14px 32px rgba(20, 24, 31, 0.08) !important;
-  backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: none;
 }
 
 .login-page .phone-login {
@@ -1670,8 +1663,8 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.54) !important;
   border-radius: 12px !important;
   background: color-mix(in srgb, var(--qqm-surface) 86%, transparent) !important;
-  box-shadow: 0 18px 44px rgba(20, 24, 31, 0.14) !important;
-  backdrop-filter: blur(20px) saturate(1.1);
+  box-shadow: none !important;
+  backdrop-filter: none;
 }
 
 .playlist-drawer .n-drawer-content,
@@ -1680,24 +1673,16 @@ body {
   background: color-mix(in srgb, var(--qqm-surface) 82%, transparent) !important;
 }
 
-.playlist-drawer [class*='rounded-2xl'],
-.playlist-drawer [class*='rounded-xl'],
-.artist-drawer [class*='rounded-2xl'],
 .artist-drawer .artist-cover img,
 .artist-drawer .search-item,
 .download-drawer-trigger .n-button,
 .eq-modal-content [class*='rounded-full'],
 .timer-modal-content [class*='rounded-full'],
 .speed-modal-content [class*='rounded-full'],
-.mobile-player-settings [class*='rounded-2xl'],
 .mobile-player-settings [class*='rounded-full'] {
   border-radius: 9px !important;
 }
 
-.playlist-drawer [class*='shadow-lg'],
-.playlist-drawer [class*='shadow-xl'],
-.artist-drawer [class*='shadow-lg'],
-.artist-drawer [class*='shadow-xl'],
 .download-drawer-trigger .n-button {
   box-shadow: 0 8px 20px rgba(20, 24, 31, 0.07) !important;
 }
@@ -1735,7 +1720,7 @@ body {
   border-top-right-radius: 12px !important;
   background: color-mix(in srgb, #151922 78%, transparent) !important;
   box-shadow: 0 -18px 44px rgba(0, 0, 0, 0.26) !important;
-  backdrop-filter: blur(22px) saturate(1.1);
+  backdrop-filter: none;
 }
 
 .dark .login-page .phone-login,
@@ -1749,7 +1734,7 @@ body {
 .dark .speed-modal-content {
   border-color: rgba(255, 255, 255, 0.08) !important;
   background: rgba(24, 27, 31, 0.76) !important;
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.26) !important;
+  box-shadow: none !important;
 }
 
 /* 明确弹窗组件语义类，避免依赖脆弱的原子类组合命中。 */
@@ -1757,7 +1742,7 @@ body {
 .donate-modal-shell,
 .responsive-modal-shell {
   background: rgba(17, 19, 21, 0.12) !important;
-  backdrop-filter: blur(2px) !important;
+  backdrop-filter: none !important;
 }
 
 .disclaimer-modal-card,
@@ -1771,24 +1756,10 @@ body {
   backdrop-filter: none;
 }
 
-.disclaimer-modal-card [class*='rounded-3xl'],
-.disclaimer-modal-card [class*='rounded-2xl'],
-.donate-modal-card [class*='rounded-3xl'],
-.donate-modal-card [class*='rounded-2xl'],
-.responsive-modal-card [class*='rounded-2xl'],
-.update-modal [class*='rounded-2xl'],
-.update-modal [class*='rounded-xl'] {
-  border-radius: 9px !important;
-}
-
 .disclaimer-modal-card button,
 .donate-modal-card button,
 .responsive-modal-card button,
-.update-modal button {
-  border-radius: 9px !important;
-}
-
-.disclaimer-modal-card button[class*='from-green'],
+.update-modal button .disclaimer-modal-card button[class*='from-green'],
 .donate-modal-card button[class*='from-gray'],
 .update-modal button[class*='bg-primary'] {
   background: var(--qqm-primary) !important;
@@ -1807,7 +1778,7 @@ body {
 .dark .update-modal {
   border-color: rgba(255, 255, 255, 0.08) !important;
   background: rgba(24, 27, 31, 0.76) !important;
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.26) !important;
+  box-shadow: none !important;
 }
 
 /* 播放沉浸页收口：保持 QQ 音乐的轻透层次，避免全屏页控件过厚过圆。 */
@@ -1886,19 +1857,19 @@ body {
 
 .mobile-player-settings .absolute.inset-0 {
   background: rgba(17, 19, 21, 0.14) !important;
-  backdrop-filter: blur(2px);
+  backdrop-filter: none;
 }
 
 .mobile-player-settings-panel {
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid var(--qqm-border) !important;
   border-radius: 12px 12px 0 0 !important;
-  background: #151922 !important;
+  background: var(--qqm-surface) !important;
   box-shadow: none !important;
 }
 
 .mobile-player-settings-panel button,
-.mobile-player-settings-panel [class*='rounded-full'],
-.mobile-player-settings-panel [class*='rounded-2xl'] {
+.mobile-player-settings-panel input,
+.mobile-player-settings-panel .mobile-setting-chip {
   border-radius: 9px !important;
 }
 

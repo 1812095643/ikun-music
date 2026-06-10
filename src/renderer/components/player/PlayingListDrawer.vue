@@ -182,7 +182,7 @@ const handleDeleteSong = (song: SongResult) => {
 .fixed-overlay {
   @apply fixed inset-0 z-[999999];
   background: rgba(15, 23, 42, 0.04);
-  backdrop-filter: blur(2px);
+  backdrop-filter: none;
   pointer-events: auto; // 允许点击关闭
   cursor: default;
 }
