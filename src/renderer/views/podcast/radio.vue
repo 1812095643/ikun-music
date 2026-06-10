@@ -35,10 +35,10 @@
                       />
                       <!-- Play overlay on cover -->
                       <div
-                        class="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/25 transition-colors duration-300"
+                        class="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/20 transition-colors duration-200"
                       >
                         <div
-                          class="play-icon w-12 h-12 rounded-lg bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-opacity duration-300 cursor-pointer"
+                          class="play-icon w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
                           @click="handlePlayAll"
                         >
                           <i class="iconfont icon-playfill text-2xl text-neutral-900 ml-1" />

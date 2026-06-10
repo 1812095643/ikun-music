@@ -26,7 +26,7 @@ const goToDetail = () => {
   <div class="group cursor-pointer animate-item" :style="{ animationDelay }" @click="goToDetail">
     <!-- Cover -->
     <div
-      class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 transition-colors duration-300 group-hover:border-primary/20 dark:border-neutral-800"
+      class="relative aspect-square overflow-hidden rounded-lg border border-neutral-100 transition-colors duration-200 group-hover:border-primary/20 dark:border-neutral-800"
     >
       <img
         :src="getImgUrl(radio?.picUrl || program?.coverUrl || '', '400y400')"
@@ -36,10 +36,10 @@ const goToDetail = () => {
       />
       <!-- Hover overlay -->
       <div
-        class="absolute inset-0 bg-transparent group-hover:bg-black/18 transition-colors duration-300 flex items-center justify-center"
+        class="absolute inset-0 bg-transparent group-hover:bg-black/18 transition-colors duration-200 flex items-center justify-center"
       >
         <div
-          class="w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 transition-opacity duration-300"
+          class="w-10 h-10 rounded-lg bg-white/90 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
         >
           <i class="ri-play-fill text-2xl text-neutral-900 ml-0.5"></i>
         </div>
@@ -54,7 +54,7 @@ const goToDetail = () => {
       <!-- Episode count badge -->
       <div
         v-if="radio?.programCount && !program"
-        class="absolute top-2 right-2 px-2 py-1 rounded-md bg-black/40 text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        class="absolute top-2 right-2 px-2 py-1 rounded-md bg-black/40 text-white text-[10px] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
       >
         <i class="ri-mic-fill"></i>
         {{ radio.programCount }}
@@ -73,7 +73,7 @@ const goToDetail = () => {
         v-if="radio?.subCount !== undefined"
         class="text-xs text-neutral-500 dark:text-neutral-400"
       >
-        {{ formatNumber(radio?.subCount || 0) }} subscribers
+        {{ formatNumber(radio?.subCount || 0) }} 订阅
       </p>
     </div>
   </div>
