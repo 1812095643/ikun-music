@@ -940,3 +940,467 @@ body {
   background: rgba(255, 255, 255, 0.06) !important;
   border-color: rgba(30, 207, 115, 0.18) !important;
 }
+
+/* 功能页 QQ 音乐风格补齐：设置、用户、榜单、下载与本地音乐保持同一套轻玻璃系统。 */
+.set-page,
+.user-page,
+.user-detail-page,
+.toplist-page,
+.history-and-favorite-page,
+.history-page,
+.favorite-page,
+.download-page,
+.local-music-page,
+.heatmap-page {
+  color: var(--qqm-text) !important;
+  background: var(--qqm-bg) !important;
+}
+
+.setting-section,
+.setting-item,
+.setting-nav,
+.settings-panel,
+.user-card,
+.profile-card,
+.toplist-card,
+.rank-card,
+.history-card,
+.favorite-card,
+.download-card,
+.local-folder-card,
+.local-music-panel,
+.heatmap-card,
+.n-tabs,
+.n-data-table,
+.n-list,
+.n-thing {
+  border-radius: 12px !important;
+}
+
+.setting-section,
+.settings-panel,
+.user-card,
+.profile-card,
+.toplist-card,
+.rank-card,
+.history-card,
+.favorite-card,
+.download-card,
+.local-folder-card,
+.local-music-panel,
+.heatmap-card {
+  background: color-mix(in srgb, var(--qqm-surface) 62%, transparent) !important;
+  border: 1px solid rgba(255, 255, 255, 0.58) !important;
+  box-shadow: 0 10px 26px rgba(20, 24, 31, 0.065) !important;
+  backdrop-filter: blur(16px) saturate(1.08);
+}
+
+.setting-item,
+.n-list-item,
+.n-data-table-tr,
+.download-item,
+.local-song-item,
+.history-item,
+.favorite-item,
+.rank-song-item {
+  border-radius: 9px !important;
+  transition:
+    background-color 180ms var(--qqm-ease),
+    border-color 180ms var(--qqm-ease),
+    transform 180ms var(--qqm-ease),
+    box-shadow 180ms var(--qqm-ease) !important;
+}
+
+.setting-item:hover,
+.n-list-item:hover,
+.download-item:hover,
+.local-song-item:hover,
+.history-item:hover,
+.favorite-item:hover,
+.rank-song-item:hover {
+  background: color-mix(in srgb, var(--qqm-surface) 72%, transparent) !important;
+  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.055) !important;
+}
+
+.setting-nav,
+.setting-nav-item,
+.category-selector,
+.category-item,
+.hot-search-item,
+.toplist-page .n-tabs-tab,
+.album-page .n-tabs-tab,
+.list-page .n-tabs-tab,
+.user-page .n-tabs-tab,
+.history-and-favorite-page .n-tabs-tab {
+  border-radius: 9px !important;
+}
+
+.setting-nav-item:hover,
+.category-item:hover,
+.hot-search-item:hover,
+.toplist-page .n-tabs-tab:hover,
+.album-page .n-tabs-tab:hover,
+.list-page .n-tabs-tab:hover,
+.user-page .n-tabs-tab:hover,
+.history-and-favorite-page .n-tabs-tab:hover {
+  color: var(--qqm-primary-strong) !important;
+  background: var(--qqm-primary-soft) !important;
+}
+
+.setting-nav-item.active,
+.setting-nav-item.router-link-active,
+.category-item.active,
+.hot-search-item.active,
+.n-tabs-tab--active {
+  color: var(--qqm-primary-strong) !important;
+  background: var(--qqm-primary-soft) !important;
+}
+
+.n-tabs-tab__label,
+.n-button,
+.n-input,
+.n-select,
+.n-base-selection,
+.n-switch,
+.n-tag {
+  font-weight: 500 !important;
+}
+
+.n-input,
+.n-input-wrapper,
+.n-base-selection,
+.n-base-selection-label,
+.n-input-number,
+.n-date-picker,
+.n-slider-rail {
+  border-radius: 9px !important;
+}
+
+.n-input,
+.n-base-selection-label,
+.n-input-number {
+  background: color-mix(in srgb, var(--qqm-surface) 78%, transparent) !important;
+  border-color: var(--qqm-border) !important;
+}
+
+.n-input:focus-within,
+.n-base-selection--active .n-base-selection-label,
+.n-base-selection:hover .n-base-selection-label {
+  border-color: rgba(30, 207, 115, 0.32) !important;
+  box-shadow: 0 0 0 3px rgba(30, 207, 115, 0.08) !important;
+}
+
+.n-button:not(.n-button--primary-type) {
+  border-color: var(--qqm-border) !important;
+  background: color-mix(in srgb, var(--qqm-surface) 76%, transparent) !important;
+}
+
+.n-button:not(.n-button--primary-type):hover {
+  color: var(--qqm-primary-strong) !important;
+  border-color: rgba(30, 207, 115, 0.26) !important;
+  background: var(--qqm-primary-soft) !important;
+}
+
+.user-avatar,
+.profile-avatar,
+.artist-avatar,
+.n-avatar {
+  border: 1px solid rgba(255, 255, 255, 0.62) !important;
+  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.08) !important;
+}
+
+.toplist-page h1,
+.set-page h1,
+.user-page h1,
+.download-page h1,
+.local-music-page h1,
+.history-and-favorite-page h1,
+.toplist-page h2,
+.set-page h2,
+.user-page h2,
+.download-page h2,
+.local-music-page h2,
+.history-and-favorite-page h2 {
+  color: var(--qqm-text) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.025em;
+}
+
+.toplist-page p,
+.set-page p,
+.user-page p,
+.download-page p,
+.local-music-page p,
+.history-and-favorite-page p,
+.setting-description,
+.user-subtitle,
+.card-subtitle {
+  color: var(--qqm-muted) !important;
+  line-height: 1.65 !important;
+}
+
+.n-data-table-th {
+  color: var(--qqm-muted) !important;
+  background: color-mix(in srgb, var(--qqm-bg) 78%, transparent) !important;
+  font-weight: 600 !important;
+}
+
+.n-data-table-td {
+  border-color: rgba(20, 24, 31, 0.06) !important;
+}
+
+.dark .setting-section,
+.dark .settings-panel,
+.dark .user-card,
+.dark .profile-card,
+.dark .toplist-card,
+.dark .rank-card,
+.dark .history-card,
+.dark .favorite-card,
+.dark .download-card,
+.dark .local-folder-card,
+.dark .local-music-panel,
+.dark .heatmap-card {
+  background: rgba(24, 27, 31, 0.58) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22) !important;
+}
+
+.dark .n-data-table-th {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.dark .n-data-table-td {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* 详情、列表、播放队列二次对齐 QQ 音乐：弱化厚重卡片，保留轻玻璃层与清晰列表节奏。 */
+.search-result-page,
+.album-page,
+.list-page,
+.history-and-favorite-page {
+  color: var(--qqm-text) !important;
+  background:
+    radial-gradient(circle at 82% 6%, rgba(30, 207, 115, 0.1), transparent 26%), var(--qqm-bg) !important;
+}
+
+.search-result-content,
+.album-page > div,
+.list-page > div {
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+.search-result-page .header-section,
+.album-page .header-section,
+.list-page .header-section,
+.local-music-page .header-section {
+  margin: 14px 18px 8px !important;
+  padding: 24px 26px !important;
+  border: 1px solid rgba(255, 255, 255, 0.58) !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 58%, transparent) !important;
+  box-shadow: 0 12px 30px rgba(20, 24, 31, 0.065) !important;
+  backdrop-filter: blur(18px) saturate(1.08);
+}
+
+.search-result-page .action-bar,
+.local-music-page .action-bar,
+.download-page .action-bar,
+.favorite-page > div:first-child,
+.history-page > div:first-child {
+  margin: 0 18px !important;
+  border: 1px solid var(--qqm-border) !important;
+  border-radius: 11px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 72%, transparent) !important;
+  box-shadow: 0 8px 22px rgba(20, 24, 31, 0.045) !important;
+  backdrop-filter: blur(16px) saturate(1.08);
+}
+
+.search-result-page .results-section,
+.album-page .grid,
+.list-page .grid,
+.download-page .list-section,
+.local-music-page .list-section {
+  margin-top: 18px !important;
+}
+
+.search-result-page button[class*='rounded-full'],
+.download-page button[class*='rounded-full'],
+.favorite-page button[class*='rounded-full'],
+.history-page button[class*='rounded-full'],
+.local-music-page button[class*='rounded-full'] {
+  border-radius: 9px !important;
+}
+
+.search-result-page .play-all-btn,
+.local-music-page .play-all-btn,
+.download-page .action-btn-pill,
+.favorite-page button[class*='bg-primary'],
+.history-page button[class*='bg-primary'] {
+  min-height: 36px;
+  border: 1px solid rgba(30, 207, 115, 0.22) !important;
+  box-shadow: 0 8px 18px rgba(30, 207, 115, 0.18) !important;
+}
+
+.search-result-page .action-btn-icon,
+.local-music-page .action-btn-icon,
+.download-page .action-btn-icon,
+.favorite-page [class*='rounded-full'][class*='bg-gray'],
+.history-page [class*='rounded-full'][class*='bg-gray'] {
+  border: 1px solid var(--qqm-border) !important;
+  background: color-mix(in srgb, var(--qqm-surface) 74%, transparent) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.44) !important;
+}
+
+.search-result-page .song-results-list,
+.local-music-page .song-list-container,
+.download-page .downloading-container,
+.download-page .downloaded-container,
+.favorite-page .space-y-1,
+.history-page .space-y-1 {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.52) !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 48%, transparent) !important;
+  box-shadow: 0 10px 26px rgba(20, 24, 31, 0.045) !important;
+  backdrop-filter: blur(14px) saturate(1.06);
+}
+
+.album-page .list-card,
+.list-page .list-card,
+.search-result-page .search-item {
+  padding: 8px !important;
+  border: 1px solid transparent !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+}
+
+.album-page .list-card:hover,
+.list-page .list-card:hover,
+.search-result-page .search-item:hover {
+  border-color: rgba(30, 207, 115, 0.16) !important;
+  background: color-mix(in srgb, var(--qqm-surface) 66%, transparent) !important;
+  box-shadow: 0 12px 28px rgba(20, 24, 31, 0.07) !important;
+}
+
+.album-page .list-card [class*='aspect-square'],
+.list-page .list-card [class*='aspect-square'],
+.search-result-page .search-item [class*='aspect-square'],
+.search-result-page .search-item [class*='aspect-video'] {
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.58) !important;
+  box-shadow: 0 10px 24px rgba(20, 24, 31, 0.075) !important;
+}
+
+.album-page .play-icon,
+.list-page .play-icon,
+.search-result-page .play-icon {
+  width: 42px !important;
+  height: 42px !important;
+  border: 1px solid rgba(255, 255, 255, 0.72) !important;
+  color: var(--qqm-primary-strong) !important;
+  background: rgba(255, 255, 255, 0.88) !important;
+  box-shadow: 0 8px 18px rgba(20, 24, 31, 0.18) !important;
+  backdrop-filter: blur(12px) saturate(1.12);
+}
+
+.search-result-page .empty-state,
+.local-music-page .empty-state,
+.favorite-page [class*='items-center'][class*='justify-center'],
+.history-page [class*='items-center'][class*='justify-center'] {
+  border-radius: 12px !important;
+}
+
+.fixed-overlay {
+  background: rgba(17, 19, 21, 0.28) !important;
+  backdrop-filter: blur(7px) saturate(1.06);
+}
+
+.playlist-panel {
+  overflow: hidden !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.52) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(30, 207, 115, 0.11), transparent 34%),
+    color-mix(in srgb, var(--qqm-surface) 82%, transparent) !important;
+  box-shadow: -18px 0 44px rgba(20, 24, 31, 0.16) !important;
+  backdrop-filter: blur(22px) saturate(1.12);
+}
+
+.playlist-panel-header {
+  height: 66px !important;
+  padding: 0 22px !important;
+  border-bottom: 1px solid var(--qqm-border) !important;
+  background: color-mix(in srgb, var(--qqm-surface) 62%, transparent) !important;
+}
+
+.playlist-panel-header .title {
+  color: var(--qqm-text) !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em;
+}
+
+.playlist-panel .action-btn,
+.playlist-panel .close-btn,
+.playlist-panel .delete-btn {
+  border: 1px solid var(--qqm-border) !important;
+  border-radius: 9px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 72%, transparent) !important;
+  transition:
+    color 180ms var(--qqm-ease),
+    background-color 180ms var(--qqm-ease),
+    transform 180ms var(--qqm-ease) !important;
+}
+
+.playlist-panel .action-btn:hover,
+.playlist-panel .close-btn:hover,
+.playlist-panel .delete-btn:hover {
+  color: var(--qqm-primary-strong) !important;
+  background: var(--qqm-primary-soft) !important;
+  transform: translateY(-1px);
+}
+
+.playlist-panel-content {
+  padding: 12px 14px 18px !important;
+}
+
+.music-play-list-content {
+  margin-bottom: 5px !important;
+  border: 1px solid transparent !important;
+  border-radius: 10px !important;
+  transition:
+    background-color 180ms var(--qqm-ease),
+    border-color 180ms var(--qqm-ease),
+    box-shadow 180ms var(--qqm-ease) !important;
+}
+
+.music-play-list-content:hover {
+  border-color: rgba(30, 207, 115, 0.14) !important;
+  background: color-mix(in srgb, var(--qqm-surface) 68%, transparent) !important;
+  box-shadow: 0 8px 20px rgba(20, 24, 31, 0.055) !important;
+}
+
+.empty-playlist {
+  margin: 18px !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  border-radius: 12px !important;
+  background: color-mix(in srgb, var(--qqm-surface) 54%, transparent) !important;
+  box-shadow: 0 12px 28px rgba(20, 24, 31, 0.06) !important;
+  backdrop-filter: blur(14px) saturate(1.06);
+}
+
+.dark .search-result-page .header-section,
+.dark .album-page .header-section,
+.dark .list-page .header-section,
+.dark .local-music-page .header-section,
+.dark .search-result-page .song-results-list,
+.dark .local-music-page .song-list-container,
+.dark .favorite-page .space-y-1,
+.dark .history-page .space-y-1,
+.dark .playlist-panel,
+.dark .empty-playlist {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(24, 27, 31, 0.58) !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22) !important;
+}

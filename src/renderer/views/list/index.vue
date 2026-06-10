@@ -1,6 +1,7 @@
 <template>
   <sticky-tab-page
     ref="pageRef"
+    class="list-page"
     :title="listTitle"
     :description="t('comp.pages.list.desc')"
     :model-value="currentType"
@@ -95,8 +96,8 @@ import { useRoute, useRouter } from 'vue-router';
 
 import { getPlaylistCategory } from '@/api/home';
 import { getListByCat } from '@/api/list';
-import StickyTabPage from '@/components/common/StickyTabPage.vue';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
+import StickyTabPage from '@/components/common/StickyTabPage.vue';
 import type { IPlayListSort } from '@/types/playlist';
 import { calculateAnimationDelay, formatNumber, getImgUrl } from '@/utils';
 

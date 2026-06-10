@@ -1,6 +1,7 @@
 <template>
   <sticky-tab-page
     ref="pageRef"
+    class="album-page"
     :title="t('comp.newAlbum.title')"
     :description="currentAreaName"
     :model-value="currentArea"
@@ -99,8 +100,8 @@ import { useRoute, useRouter } from 'vue-router';
 
 import { getNewAlbums } from '@/api/album';
 import { getAlbum } from '@/api/list';
-import StickyTabPage from '@/components/common/StickyTabPage.vue';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
+import StickyTabPage from '@/components/common/StickyTabPage.vue';
 import { usePlayerCoreStore } from '@/store/modules/playerCore';
 import { usePlaylistStore } from '@/store/modules/playlist';
 import { calculateAnimationDelay, getImgUrl } from '@/utils';
