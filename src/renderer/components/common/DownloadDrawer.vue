@@ -98,12 +98,21 @@ onMounted(() => {
   @apply fixed left-6 bottom-24 z-[999];
 
   .n-button {
-    @apply bg-white dark:bg-black;
-    @apply hover:bg-primary/5 dark:hover:bg-primary/10 hover:text-primary;
     @apply text-neutral-600 dark:text-neutral-300;
-    @apply transition-opacity duration-200;
     @apply w-10 h-10;
     border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+    background: color-mix(in srgb, var(--qqm-surface, #fff) 88%, transparent);
+    backdrop-filter: blur(12px) saturate(1.08);
+    transition:
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+
+    &:hover {
+      border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 28%, var(--qqm-border));
+      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface));
+      color: var(--qqm-primary, #22c55e);
+    }
 
     .iconfont {
       @apply text-xl;

@@ -496,7 +496,13 @@ onUnmounted(() => {
 .import-side-card,
 .import-status-card {
   border: 1px solid var(--qqm-border);
-  background: var(--qqm-surface);
+  background: var(--qqm-surface, #ffffff);
+}
+
+.import-main-card,
+.import-side-card,
+.import-status-card {
+  overflow: hidden;
 }
 
 .import-tip-card {
@@ -505,8 +511,8 @@ onUnmounted(() => {
 }
 
 .import-field {
-  border: 1px solid transparent;
-  background: var(--qqm-surface-2);
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  background: var(--qqm-surface, #ffffff);
 }
 
 .import-field:focus {
@@ -514,8 +520,8 @@ onUnmounted(() => {
   background: var(--qqm-surface);
 }
 .import-option-row {
-  border: 1px solid transparent;
-  background: var(--qqm-surface-2);
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  background: var(--qqm-surface, #ffffff);
 }
 
 .import-option-row:hover,
@@ -532,7 +538,8 @@ onUnmounted(() => {
 .import-add-button,
 .import-preview-box {
   border: 1px dashed var(--qqm-border);
-  background: var(--qqm-surface);
+  border-radius: 10px;
+  background: var(--qqm-surface, #ffffff);
 }
 
 .import-add-button:hover {

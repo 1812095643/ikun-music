@@ -299,13 +299,13 @@ watch(
 
 .playlist-create-trigger {
   border: 1px solid var(--qqm-border);
-  background: color-mix(in srgb, var(--qqm-surface-2) 82%, transparent);
+  background: var(--qqm-surface, #ffffff);
 }
 
 .playlist-create-trigger:hover,
 .playlist-create-trigger.is-active {
-  border-color: color-mix(in srgb, var(--qqm-primary) 18%, var(--qqm-border));
-  background: color-mix(in srgb, var(--qqm-primary-soft) 28%, var(--qqm-surface-2));
+  border-color: color-mix(in srgb, var(--qqm-primary) 22%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
 }
 
 .playlist-create-icon {
@@ -314,11 +314,12 @@ watch(
 
 .playlist-drawer-row {
   border: 1px solid transparent;
+  border-radius: 10px;
 }
 
 .playlist-drawer-row:hover {
-  border-color: color-mix(in srgb, var(--qqm-primary) 14%, transparent);
-  background: color-mix(in srgb, var(--qqm-primary-soft) 24%, transparent);
+  border-color: color-mix(in srgb, var(--qqm-primary) 18%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
 }
 
 .playlist-drawer-cover {

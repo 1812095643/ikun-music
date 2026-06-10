@@ -406,6 +406,12 @@ const isArtist = (profile: any) => {
 <style lang="scss" scoped>
 .hero-section {
   min-height: 200px;
+  border-bottom: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, var(--qqm-bg)),
+    var(--qqm-bg)
+  );
 }
 
 .user-avatar-surface {
@@ -415,11 +421,18 @@ const isArtist = (profile: any) => {
 
 .user-tabs {
   border: 1px solid var(--qqm-border);
-  background: color-mix(in srgb, var(--qqm-surface-2) 70%, transparent);
+  background: var(--qqm-surface, #ffffff);
 }
 
 .user-playlist-card {
+  padding: 6px;
+  border-radius: 10px;
   animation: fadeInSoft 0.22s ease-out backwards;
+  transition: background-color 0.18s ease;
+}
+
+.user-playlist-card:hover {
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, var(--qqm-surface, #fff));
 }
 
 .user-playlist-cover {
@@ -452,7 +465,7 @@ const isArtist = (profile: any) => {
   height: 46px;
   place-items: center;
   border: 1px solid var(--qqm-border);
-  border-radius: 50%;
+  border-radius: 14px;
   background: color-mix(in srgb, var(--qqm-primary-soft) 34%, transparent);
   color: var(--qqm-primary);
   font-size: 23px;
