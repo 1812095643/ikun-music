@@ -130,105 +130,127 @@ onMounted(() => {
   display: inline-block;
 
   .mac-style-button {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: #333;
-    transition: all 0.2s ease;
+    border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+    border-radius: 10px;
+    background: var(--qqm-surface, #ffffff);
+    color: var(--qqm-text, #1f2329);
+    transition:
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.1);
+      border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+      color: var(--qqm-primary, #22c55e);
     }
   }
 }
 
 .mac-style-drawer {
-  border-radius: 10px 0 0 10px;
-  overflow: hidden;
   position: relative;
+  overflow: hidden;
+  border-left: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  border-radius: 10px 0 0 10px;
+  background: var(--qqm-bg, #f7f8fa);
 }
 
 .drawer-container {
-  padding: 20px;
-  height: 100%;
   display: flex;
+  height: 100%;
   flex-direction: column;
+  padding: 22px;
 }
 
 .warning-content {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 22px;
 }
 
 .app-icon {
-  width: 100px;
-  height: 100px;
-  margin-bottom: 12px;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 8px;
 
   img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
     border-radius: 14px;
+    object-fit: contain;
   }
 }
 
 .warning-message {
-  text-align: center;
   max-width: 520px;
+  text-align: center;
 
   h3 {
-    font-size: 28px;
-    font-weight: 600;
-    margin-bottom: 18px;
-    color: #333;
+    margin-bottom: 14px;
+    color: var(--qqm-text, #1f2329);
+    font-size: 26px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
   }
 
   .platform-support {
     display: flex;
-    justify-content: center;
-    gap: 20px;
     flex-wrap: wrap;
-    margin-bottom: 16px;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 14px;
 
     span {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      font-size: 16px;
-      color: #444;
+      border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+      border-radius: 999px;
+      padding: 5px 10px;
+      background: var(--qqm-surface, #ffffff);
+      color: var(--qqm-muted, #7a828c);
+      font-size: 13px;
+      font-weight: 500;
     }
   }
 
   .description {
-    font-size: 16px;
-    line-height: 1.6;
-    color: #444;
     margin: 0 auto;
+    color: color-mix(in srgb, var(--qqm-text, #1f2329) 72%, transparent);
+    font-size: 14px;
+    line-height: 1.7;
   }
 }
 
 .action-links {
   display: flex;
-  gap: 20px;
-  justify-content: center;
   flex-wrap: wrap;
-  margin: 6px 0;
+  justify-content: center;
+  gap: 12px;
+  margin: 2px 0;
 
   a {
     display: inline-flex;
     align-items: center;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 16px;
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-size: 14px;
+    font-weight: 600;
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition:
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
 
     &.doc-link {
-      color: #555;
-      background-color: rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+      background: var(--qqm-surface, #ffffff);
+      color: var(--qqm-text, #1f2329);
 
       &:hover {
-        background-color: rgba(0, 0, 0, 0.1);
+        border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+        background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+        color: var(--qqm-primary, #22c55e);
       }
     }
 
@@ -244,26 +266,28 @@ onMounted(() => {
 }
 
 .qrcode-section {
-  text-align: center;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
 
   .qrcode {
-    width: 180px;
-    height: 180px;
-    border-radius: 10px;
+    width: 168px;
+    height: 168px;
+    border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+    border-radius: 12px;
     padding: 10px;
+    background: var(--qqm-surface, #ffffff);
     box-shadow: none;
-    background: white;
   }
 
   p {
-    margin-top: 14px;
-    font-size: 15px;
+    margin-top: 10px;
     color: var(--qqm-primary, #22c55e);
+    font-size: 13px;
+    font-weight: 600;
   }
 }
 
@@ -272,25 +296,25 @@ onMounted(() => {
   text-align: center;
 
   h4 {
-    font-size: 22px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    color: var(--qqm-text, #1f2329);
+    font-size: 20px;
+    font-weight: 650;
   }
 
   .support-desc {
-    font-size: 15px;
-    color: #555;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    color: var(--qqm-muted, #7a828c);
+    font-size: 13px;
   }
 }
 
 .payment-options {
   display: flex;
-  justify-content: center;
-  gap: 100px;
   flex-wrap: wrap;
-  padding-bottom: 100px;
+  justify-content: center;
+  gap: 48px;
+  padding-bottom: 92px;
 }
 
 .payment-option {
@@ -300,10 +324,12 @@ onMounted(() => {
   gap: 10px;
 
   .payment-icon {
-    width: 220px;
-    height: 220px;
-    border-radius: 12px;
+    width: 190px;
+    height: 190px;
     overflow: hidden;
+    border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+    border-radius: 12px;
+    background: var(--qqm-surface, #ffffff);
     box-shadow: none;
 
     img {
@@ -314,30 +340,33 @@ onMounted(() => {
   }
 
   span {
-    font-size: 15px;
-    color: #444;
+    color: var(--qqm-muted, #7a828c);
+    font-size: 13px;
+    font-weight: 500;
   }
 }
 
 .drawer-actions {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 30px;
-  width: 100%;
   position: absolute;
+  right: 0;
   bottom: 0;
   left: 0;
-  right: 0;
-  padding: 10px;
-  background-color: #fff;
   z-index: 999999999;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: 12px;
+  border-top: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  padding: 12px;
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 92%, transparent);
+  backdrop-filter: blur(12px) saturate(1.08);
 
   .action-button {
-    min-width: 110px;
-    border-radius: 8px;
-    font-size: 16px;
+    min-width: 104px;
+    border-radius: 10px;
     padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
 
     &.primary {
       background-color: var(--qqm-primary, #22c55e);
@@ -357,7 +386,7 @@ onMounted(() => {
     }
 
     .platform-support {
-      gap: 12px;
+      gap: 8px;
     }
 
     .description {
@@ -377,22 +406,20 @@ onMounted(() => {
     }
   }
 
+  .payment-options {
+    gap: 18px;
+  }
+
   .payment-option {
     .payment-icon {
-      width: 190px;
-      height: 190px;
+      width: 170px;
+      height: 170px;
     }
   }
 
   .drawer-actions {
-    flex-wrap: wrap;
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 10px;
-    background-color: #fff;
-    z-index: 999999999;
+    flex-wrap: wrap;
 
     .action-button {
       flex: 1 0 auto;

@@ -22,7 +22,7 @@
         class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-200 group-hover:bg-black/25"
       >
         <div
-          class="play-icon flex h-10 w-10 items-center justify-center rounded-lg bg-white/90 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+          class="play-icon flex h-10 w-10 items-center justify-center rounded-lg opacity-0 transition-opacity duration-200 group-hover:opacity-100"
         >
           <i class="ri-play-fill text-2xl text-neutral-900 ml-1" />
         </div>
@@ -155,5 +155,16 @@ const handleShowMv = async () => {
 
 .group:hover .search-item-cover {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.play-icon {
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 68%, #fff 32%);
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 90%, transparent);
+  color: var(--qqm-text, #1f2329);
+}
+
+.play-icon:hover {
+  color: var(--qqm-primary, #22c55e);
 }
 </style>

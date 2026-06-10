@@ -1,5 +1,5 @@
 <template>
-  <div class="category-selector-bar bg-white dark:bg-black z-10">
+  <div class="category-selector-bar z-10">
     <n-scrollbar ref="scrollbarRef" x-scrollable>
       <div
         class="flex items-center py-4 page-padding"
@@ -102,3 +102,19 @@ defineExpose({
   scrollbarRef
 });
 </script>
+
+<style scoped>
+.category-selector-bar {
+  border-bottom: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 94%, transparent);
+}
+
+.category-selector-chip {
+  border: 1px solid transparent;
+}
+
+.category-selector-chip:hover {
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
+}
+</style>
