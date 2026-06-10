@@ -251,17 +251,16 @@ watch(
   min-width: 480px;
   max-width: calc(100vw - 40px);
   background: var(--control-bg);
-  backdrop-filter: blur(10px);
   border-radius: 8px;
   padding: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: none;
   z-index: 1000;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.hidden {
     opacity: 0;
     visibility: hidden;
-    transform: translateX(-50%) translateY(-10px) scale(0.95);
+    transform: translateX(-50%) translateY(-4px) scale(0.99);
     pointer-events: none;
   }
 
@@ -279,7 +278,7 @@ watch(
     transform: none;
 
     &.hidden {
-      transform: translateY(-10px) scale(0.95);
+      transform: translateY(-4px) scale(0.99);
     }
 
     &.visible {
@@ -364,7 +363,7 @@ watch(
       justify-content: center;
 
       &:hover {
-        transform: scale(1.1);
+        transform: scale(1);
         border-color: rgba(255, 255, 255, 0.3);
       }
 
@@ -402,7 +401,7 @@ watch(
 
       &:hover {
         border-color: rgba(255, 255, 255, 0.4);
-        transform: scale(1.05);
+        transform: scale(1);
       }
 
       i {
@@ -447,7 +446,7 @@ watch(
     transition: all 0.2s ease;
 
     &:hover {
-      transform: scale(1.02);
+      transform: scale(1);
     }
   }
 }
