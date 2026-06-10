@@ -1,17 +1,17 @@
 <template>
   <div
-    class="home-song-card group flex cursor-pointer items-center gap-3 md:gap-4 rounded-[10px] p-2 md:p-2.5 transition-all duration-300 hover:bg-light-200 dark:hover:bg-dark-200"
+    class="home-song-card group flex cursor-pointer items-center gap-3 md:gap-4 rounded-lg p-2 md:p-2.5 transition-colors duration-300 hover:bg-primary/5 dark:hover:bg-primary/10"
     @click="onPlayMusic"
     @contextmenu.prevent="onMenuClick"
   >
     <!-- Album Cover -->
     <div
-      class="cover relative h-14 w-14 md:h-16 md:w-16 flex-shrink-0 overflow-hidden rounded-[9px] bg-neutral-100 dark:bg-neutral-800 shadow-sm"
+      class="cover relative h-14 w-14 md:h-16 md:w-16 flex-shrink-0 overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800"
     >
       <n-image
         v-if="item.picUrl"
         :src="getImgUrl(item.picUrl, '200y200')"
-        class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+        class="h-full w-full object-cover"
         preview-disabled
         :img-props="{
           crossorigin: 'anonymous',
@@ -22,7 +22,7 @@
       <div
         class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       >
-        <i class="iconfont icon-playfill text-lg md:text-xl text-white drop-shadow-sm"></i>
+        <i class="iconfont icon-playfill text-lg md:text-xl text-white"></i>
       </div>
     </div>
 
@@ -30,7 +30,7 @@
     <div class="song-info flex flex-col overflow-hidden flex-1 min-w-0">
       <n-ellipsis
         class="song-name text-sm md:text-base font-semibold text-neutral-800 dark:text-neutral-100 transition-colors duration-200 group-hover:text-primary dark:group-hover:text-white"
-        :class="{ 'text-green-500': isPlaying }"
+        :class="{ 'text-primary': isPlaying }"
       >
         {{ item.name }}
       </n-ellipsis>
@@ -38,7 +38,7 @@
         class="artist-name text-xs md:text-sm text-neutral-500 dark:text-neutral-400 mt-0.5"
       >
         <template v-for="(artist, index) in artists" :key="index">
-          <span class="cursor-pointer hover:text-green-500" @click.stop="onArtistClick(artist.id)">
+          <span class="cursor-pointer hover:text-primary" @click.stop="onArtistClick(artist.id)">
             {{ artist.name }}
           </span>
           <span v-if="index < artists.length - 1"> / </span>
@@ -48,7 +48,7 @@
 
     <!-- More Button -->
     <button
-      class="more-btn flex h-8 w-8 items-center justify-center rounded-[9px] opacity-0 transition-all duration-300 group-hover:bg-white dark:group-hover:bg-neutral-800 group-hover:opacity-100 hover:-translate-y-0.5 active:translate-y-0"
+      class="more-btn flex h-8 w-8 items-center justify-center rounded-lg opacity-0 transition-opacity duration-300 group-hover:bg-white dark:group-hover:bg-neutral-800 group-hover:opacity-100"
       @click.stop="onMenuClick"
     >
       <i class="ri-more-fill text-sm text-neutral-600 dark:text-neutral-300"></i>

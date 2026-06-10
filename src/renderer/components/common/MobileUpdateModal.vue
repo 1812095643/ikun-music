@@ -7,7 +7,7 @@
       >
         <!-- 弹窗内容 -->
         <div
-          class="w-full max-w-lg bg-white dark:bg-gray-900 rounded-t-3xl overflow-hidden animate-slide-up"
+          class="w-full max-w-lg bg-white dark:bg-neutral-900 rounded-t-xl overflow-hidden animate-slide-up"
         >
           <!-- 顶部装饰条 -->
           <div class="h-1 bg-primary"></div>
@@ -22,7 +22,7 @@
             <div class="flex items-center gap-4">
               <!-- 应用图标 -->
               <div
-                class="w-20 h-20 rounded-xl overflow-hidden shadow-sm flex-shrink-0 ring-1 ring-green-500/20"
+                class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 ring-1 ring-primary/20"
               >
                 <img src="@/assets/logo.png" alt="App Icon" class="w-full h-full object-cover" />
               </div>
@@ -45,7 +45,9 @@
           </div>
 
           <!-- 更新内容 -->
-          <div class="mx-6 mb-6 max-h-80 overflow-y-auto rounded-xl bg-gray-50 dark:bg-gray-800/50">
+          <div
+            class="mx-6 mb-6 max-h-80 overflow-y-auto rounded-lg bg-neutral-50 dark:bg-neutral-800/50"
+          >
             <div
               class="p-5 text-sm text-gray-600 dark:text-gray-300 leading-relaxed"
               v-html="parsedReleaseNotes"
@@ -59,13 +61,13 @@
           >
             <button
               @click="handleLater"
-              class="flex-1 py-4 px-4 rounded-lg text-base font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 active:translate-y-0 transition-all duration-200"
+              class="flex-1 py-4 px-4 rounded-lg text-base font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors duration-200"
             >
               {{ t('comp.update.noThanks') }}
             </button>
             <button
               @click="handleUpdate"
-              class="flex-1 py-4 px-4 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary/90 active:translate-y-0 transition-all duration-200 shadow-sm shadow-green-500/20"
+              class="flex-1 py-4 px-4 rounded-lg text-base font-medium text-white bg-primary hover:bg-primary/90 transition-colors duration-200"
             >
               <span class="flex items-center justify-center gap-2">
                 <i class="ri-download-2-line text-lg"></i>

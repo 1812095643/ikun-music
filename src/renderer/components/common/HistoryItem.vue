@@ -1,11 +1,11 @@
 <template>
   <div
-    class="flex items-center gap-3 px-2 py-2 mb-2 rounded-xl cursor-pointer transition-colors duration-200 bg-light-100 dark:bg-dark-100 hover:bg-light-200 dark:hover:bg-dark-200"
+    class="flex items-center gap-3 px-2 py-2 mb-1 rounded-lg cursor-pointer transition-colors duration-200 hover:bg-primary/5 dark:hover:bg-primary/10"
     @click="$emit('click')"
   >
     <n-image
       :src="imageUrl"
-      class="w-[60px] h-[60px] flex-shrink-0 rounded-xl bg-light-300 dark:bg-dark-300"
+      class="w-[56px] h-[56px] flex-shrink-0 rounded-lg bg-neutral-100 dark:bg-neutral-800"
       lazy
       preview-disabled
     />
@@ -23,7 +23,7 @@
     </div>
     <div
       v-if="showDelete"
-      class="cursor-pointer rounded-full border-2 w-8 h-8 flex flex-shrink-0 justify-center items-center border-gray-400 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-red-500 hover:text-red-500 transition-colors duration-200"
+      class="cursor-pointer rounded-lg border w-8 h-8 flex flex-shrink-0 justify-center items-center border-neutral-300 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 hover:border-red-500 hover:text-red-500 transition-colors duration-200"
       @click.stop="$emit('delete')"
     >
       <i class="iconfont icon-close" />

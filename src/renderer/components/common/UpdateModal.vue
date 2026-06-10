@@ -11,7 +11,7 @@
     <div class="p-6 pb-4">
       <div class="mb-6 flex items-center">
         <div
-          class="mr-5 h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl shadow-sm ring-1 ring-neutral-100 dark:ring-neutral-800"
+          class="mr-5 h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg ring-1 ring-neutral-100 dark:ring-neutral-800"
         >
           <img src="@/assets/logo.png" alt="App Icon" class="h-full w-full object-cover" />
         </div>
@@ -21,13 +21,13 @@
           </h2>
           <div class="flex items-center gap-2">
             <span
-              class="inline-flex items-center rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-semibold text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
+              class="inline-flex items-center rounded-lg bg-neutral-100 px-2.5 py-0.5 text-xs font-semibold text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
             >
               {{ t('comp.update.currentVersion') }} {{ currentVersionText }}
             </span>
             <span
               v-if="showNewBadge"
-              class="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary dark:bg-primary/20"
+              class="inline-flex items-center rounded-lg bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary dark:bg-primary/20"
             >
               NEW
             </span>
@@ -37,7 +37,7 @@
 
       <div
         v-if="hasReleaseNotes"
-        class="mb-6 overflow-hidden rounded-xl bg-neutral-50 dark:bg-neutral-800/50"
+        class="mb-6 overflow-hidden rounded-lg bg-neutral-50 dark:bg-neutral-800/50"
       >
         <n-scrollbar style="max-height: 300px">
           <div
@@ -47,7 +47,7 @@
         </n-scrollbar>
       </div>
 
-      <div v-if="showProgressCard" class="mb-6 rounded-xl bg-neutral-50 p-4 dark:bg-neutral-800/50">
+      <div v-if="showProgressCard" class="mb-6 rounded-lg bg-neutral-50 p-4 dark:bg-neutral-800/50">
         <div class="mb-2.5 flex items-center justify-between">
           <span class="text-sm text-neutral-500 dark:text-neutral-400">{{ progressText }}</span>
           <span class="text-sm font-bold text-primary">{{ progressPercent }}%</span>
@@ -56,7 +56,7 @@
           class="relative h-2 w-full overflow-hidden rounded-full bg-neutral-200 dark:bg-neutral-700"
         >
           <div
-            class="absolute inset-y-0 left-0 rounded-full bg-primary transition-all duration-300 ease-out shadow-[0_0_10px_rgba(34,197,94,0.4)]"
+            class="absolute inset-y-0 left-0 rounded-full bg-primary transition-[width] duration-300 ease-out"
             :style="{ width: `${progressPercent}%` }"
           />
         </div>
@@ -64,7 +64,7 @@
 
       <div
         v-if="showErrorCard"
-        class="mb-6 rounded-xl border border-primary/10 bg-primary/5 p-4 text-sm text-neutral-700 dark:border-primary/15 dark:bg-primary/10 dark:text-neutral-300"
+        class="mb-6 rounded-lg border border-primary/10 bg-primary/5 p-4 text-sm text-neutral-700 dark:border-primary/15 dark:bg-primary/10 dark:text-neutral-300"
       >
         <div class="mb-1 font-semibold">{{ t('comp.update.autoUpdateFailed') }}</div>
         <div>{{ errorText }}</div>
@@ -72,14 +72,14 @@
 
       <div class="flex gap-3" :class="{ 'mt-6': !showProgressCard }">
         <button
-          class="flex-1 rounded-xl bg-neutral-100 py-2.5 text-sm font-semibold text-neutral-600 transition-all duration-200 hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+          class="flex-1 rounded-lg bg-neutral-100 py-2.5 text-sm font-semibold text-neutral-600 transition-colors duration-200 hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
           :disabled="isChecking"
           @click="closeModal"
         >
           {{ t('comp.update.cancel') }}
         </button>
         <button
-          class="flex-1 rounded-xl bg-primary py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary/90 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50"
+          class="flex-1 rounded-lg bg-primary py-2.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           :disabled="primaryButtonDisabled"
           @click="handlePrimaryAction"
         >
