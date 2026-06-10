@@ -4,7 +4,7 @@
       <template #description>
         <div class="flex flex-wrap items-center gap-2">
           <span>{{ updateInfo.currentVersion }}</span>
-          <n-tag v-if="updateInfo.hasUpdate" type="success">
+          <n-tag v-if="updateInfo.hasUpdate" class="update-tag">
             {{ t('settings.about.hasUpdate') }} {{ updateInfo.latestVersion }}
           </n-tag>
         </div>
@@ -158,3 +158,12 @@ const openAuthor = () => {
 
 defineExpose({ checkForUpdates });
 </script>
+
+<style scoped>
+:deep(.update-tag) {
+  border-radius: 8px;
+  color: var(--qqm-primary, #22c55e);
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, transparent);
+}
+</style>

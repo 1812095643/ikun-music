@@ -75,17 +75,21 @@
 
           <n-collapse-transition :show="remoteControlConfig.enabled">
             <div class="remote-info">
-              <n-alert type="info">
+              <n-alert class="remote-info-alert">
                 <template #icon>
                   <n-icon><i class="ri-information-line"></i></n-icon>
                 </template>
                 <p>{{ t('settings.remoteControl.accessInfo') }}</p>
                 <div class="access-url">
-                  <n-tag type="success"> http://localhost:{{ remoteControlConfig.port }}/ </n-tag>
+                  <n-tag class="remote-url-tag">
+                    http://localhost:{{ remoteControlConfig.port }}/
+                  </n-tag>
                 </div>
                 <div v-if="localIpAddresses.length" class="local-ips">
                   <div v-for="ip in localIpAddresses" :key="ip" class="ip-address">
-                    <n-tag type="info"> http://{{ ip }}:{{ remoteControlConfig.port }}/ </n-tag>
+                    <n-tag class="remote-url-tag">
+                      http://{{ ip }}:{{ remoteControlConfig.port }}/
+                    </n-tag>
                   </div>
                 </div>
               </n-alert>
@@ -215,6 +219,19 @@ onMounted(async () => {
 
 .remote-info {
   margin-top: 16px;
+
+  :deep(.remote-info-alert) {
+    border-radius: 10px;
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent);
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, transparent);
+  }
+
+  :deep(.remote-url-tag) {
+    border-radius: 8px;
+    color: var(--qqm-primary, #22c55e);
+    border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 26%, transparent);
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, transparent);
+  }
 
   .access-url {
     margin-top: 10px;

@@ -12,7 +12,7 @@
         <div>
           <p class="shortcut-panel__summary">{{ summaryText }}</p>
         </div>
-        <n-tag type="info" size="small" class="shortcut-count-tag">
+        <n-tag size="small" class="shortcut-count-tag">
           {{ t('settings.shortcutSettings.enabledCount') }}: {{ enabledCount }}
         </n-tag>
       </div>
@@ -878,7 +878,10 @@ onUnmounted(() => {
 }
 
 :deep(.shortcut-count-tag) {
-  border-radius: 999px;
+  border-radius: 8px;
+  color: var(--qqm-primary, #22c55e);
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, transparent);
 }
 
 :deep(.toolbar-btn.n-button),
