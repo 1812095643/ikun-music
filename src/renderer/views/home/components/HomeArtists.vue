@@ -34,13 +34,13 @@
           >
             <img
               :src="getImgUrl(item.picUrl, '300y300')"
-              class="h-full w-full object-cover grayscale-[0.15] transition-colors duration-200 group-hover:grayscale-0 group-hover:brightness-110"
+              class="h-full w-full object-cover grayscale-[0.08] transition-colors duration-200 group-hover:grayscale-0"
               loading="lazy"
               :alt="item.name"
             />
             <!-- Gradient Overlay on Hover -->
             <div
-              class="absolute inset-0 bg-black/10 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+              class="absolute inset-0 bg-black/5 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
             />
           </div>
 

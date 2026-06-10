@@ -2,7 +2,6 @@
   <div
     class="music-play-bar"
     :class="[
-      setAnimationClass('animate__fadeInUp'),
       musicFullVisible ? 'play-bar-opcity' : '',
       musicFullVisible && MusicFullRef?.musicFullRef?.config?.hidePlayBar
         ? 'animate__animated animate__slideOutDown'
@@ -186,7 +185,7 @@ import { usePlayMode } from '@/hooks/usePlayMode';
 import { audioService } from '@/services/audioService';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSettingsStore } from '@/store/modules/settings';
-import { getImgUrl, isElectron, isMobile, secondToMinute, setAnimationClass } from '@/utils';
+import { getImgUrl, isElectron, isMobile, secondToMinute } from '@/utils';
 
 const playerStore = usePlayerStore();
 const settingsStore = useSettingsStore();

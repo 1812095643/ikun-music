@@ -2,21 +2,12 @@
   <!-- 透明遮罩层，点击任意位置关闭 -->
   <div v-if="internalVisible" class="fixed-overlay" @click="closePanel"></div>
 
-  <!-- 使用animate.css进行动画效果 -->
+  <!-- 播放队列使用短过渡，避免页面出现夸张滑入动效 -->
   <div
     v-if="internalVisible"
     class="playlist-panel"
-    :class="[
-      'animate__animated',
-      closing
-        ? isMobile
-          ? 'animate__slideOutDown'
-          : 'animate__slideOutRight'
-        : isMobile
-          ? 'animate__slideInUp'
-          : 'animate__slideInRight'
-    ]"
-    @animationend="onAnimationEnd"
+    :class="{ closing }"
+    @transitionend="onPanelTransitionEnd"
   >
     <div class="playlist-panel-header">
       <div class="title">{{ t('player.playBar.playList') }}</div>
@@ -100,7 +91,7 @@ watch(
       // 如果已经是关闭状态，不需要处理
       if (!internalVisible.value) return;
 
-      // 开始关闭动画，等 animationend 后再隐藏
+      // 开始关闭过渡，等 transitionend 后再隐藏
       closing.value = true;
     }
   },
@@ -118,11 +109,10 @@ const closePanel = () => {
   show.value = false;
 };
 
-// 动画结束后隐藏组件
-const onAnimationEnd = () => {
-  if (closing.value) {
-    internalVisible.value = false;
-  }
+// 面板关闭过渡结束后再卸载，避免内容突然消失。
+const onPanelTransitionEnd = (event: TransitionEvent) => {
+  if (event.target !== event.currentTarget || !closing.value) return;
+  internalVisible.value = false;
 };
 
 // 清空播放列表
@@ -199,7 +189,16 @@ const handleDeleteSong = (song: SongResult) => {
   width: 360px;
   height: 72vh;
   top: 14vh; // 轻量右侧浮层，保留桌面播放器呼吸感
-  animation-duration: 0.24s !important; // 动画持续时间
+  transform: translateX(0);
+  opacity: 1;
+  transition:
+    transform 0.18s ease,
+    opacity 0.18s ease;
+
+  &.closing {
+    transform: translateX(12px);
+    opacity: 0;
+  }
 
   background: color-mix(in srgb, var(--qqm-surface, #fff) 98%, transparent);
   border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
@@ -288,6 +287,10 @@ const handleDeleteSong = (song: SongResult) => {
     border-left: none;
     border-top: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
     box-shadow: none;
+
+    &.closing {
+      transform: translateY(10px);
+    }
 
     &-header {
       @apply text-center relative px-4;

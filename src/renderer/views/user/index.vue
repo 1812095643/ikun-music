@@ -57,7 +57,6 @@
       <div
         v-if="userDetail && user"
         class="left"
-        :class="setAnimationClass('animate__fadeIn')"
         :style="{ backgroundImage: `url(${getImgUrl(user.backgroundUrl)})` }"
       >
         <div class="page">
@@ -85,7 +84,7 @@
             </div>
           </div>
           <div class="uesr-signature">{{ userDetail.profile.signature }}</div>
-          <div class="play-list" :class="setAnimationClass('animate__fadeIn')">
+          <div class="play-list">
             <div class="tab-container">
               <n-tabs v-model:value="currentTab" type="segment" animated>
                 <n-tab v-for="tab in tabs" :key="tab.key" :name="tab.key" :tab="t(tab.label)">
@@ -142,7 +141,7 @@
           </div>
         </div>
       </div>
-      <div v-if="!isMobile" class="right" :class="setAnimationClass('animate__fadeIn')">
+      <div v-if="!isMobile" class="right">
         <div class="title">{{ t('user.ranking.title') }}</div>
         <div class="record-list">
           <n-scrollbar>
@@ -158,11 +157,7 @@
       </div>
     </template>
     <!-- 未登录时显示登录组件 -->
-    <div
-      v-if="!isLoggedIn && isMobile"
-      class="login-container"
-      :class="setAnimationClass('animate__fadeIn')"
-    >
+    <div v-if="!isLoggedIn && isMobile" class="login-container">
       <login-component @login-success="handleLoginSuccess" />
     </div>
   </div>
@@ -181,7 +176,7 @@ import PlayBottom from '@/components/common/PlayBottom.vue';
 import SongItem from '@/components/common/SongItem.vue';
 import { usePlayerStore } from '@/store/modules/player';
 import { useUserStore } from '@/store/modules/user';
-import { getImgUrl, isElectron, isMobile, setAnimationClass, setAnimationDelay } from '@/utils';
+import { getImgUrl, isElectron, isMobile } from '@/utils';
 import { checkLoginStatus as checkAuthStatus } from '@/utils/auth';
 import LoginComponent from '@/views/login/index.vue';
 

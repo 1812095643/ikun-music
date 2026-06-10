@@ -4,7 +4,7 @@ import { onBeforeUnmount, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getUserDetail } from '@/api/login';
-import { isElectron, setAnimationClass } from '@/utils';
+import { isElectron } from '@/utils';
 
 defineOptions({
   name: 'CookieLogin'
@@ -113,7 +113,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="cookie-login" :class="setAnimationClass('animate__fadeInUp')">
+  <div class="cookie-login">
     <div class="login-title">{{ t('login.title.cookie') }}</div>
     <div class="phone-page">
       <textarea

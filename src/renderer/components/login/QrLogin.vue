@@ -4,7 +4,6 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { checkQr, createQr, getQrKey, getUserDetail } from '@/api/login';
-import { setAnimationClass } from '@/utils';
 
 defineOptions({
   name: 'QrLogin'
@@ -145,7 +144,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="qr-login" :class="setAnimationClass('animate__fadeInUp')">
+  <div class="qr-login">
     <div class="login-title">{{ t('login.title.qr') }}</div>
 
     <!-- 二维码容器 -->

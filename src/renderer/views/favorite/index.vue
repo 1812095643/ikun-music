@@ -1,10 +1,7 @@
 <template>
   <div v-if="isComponent ? favoriteSongs.length : true" class="favorite-page h-full flex flex-col">
     <!-- Header Section -->
-    <div
-      class="flex items-center justify-between px-6 py-4 flex-shrink-0"
-      :class="setAnimationClass('animate__fadeInLeft')"
-    >
+    <div class="flex items-center justify-between px-6 py-4 flex-shrink-0">
       <div class="flex items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
@@ -82,7 +79,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex-grow min-h-0 px-2" :class="setAnimationClass('animate__fadeInUp')">
+    <div class="flex-grow min-h-0 px-2">
       <n-scrollbar ref="scrollbarRef" class="h-full pr-4" @scroll="handleScroll">
         <div
           v-if="favoriteList.length === 0"
@@ -98,16 +95,12 @@
 
         <div v-else class="space-y-1 pb-24" :class="{ 'max-w-[400px]': isComponent }">
           <song-item
-            v-for="(song, index) in favoriteSongs"
+            v-for="song in favoriteSongs"
             :key="song.id"
             :item="song"
             :favorite="false"
             class="rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
-            :class="[
-              setAnimationClass('animate__fadeInUp'),
-              { '!bg-primary/10': selectedSongs.includes(song.id as number) }
-            ]"
-            :style="getItemAnimationDelay(index)"
+            :class="{ '!bg-primary/10': selectedSongs.includes(song.id as number) }"
             :selectable="isSelecting"
             :selected="selectedSongs.includes(song.id as number)"
             @play="handlePlay"
@@ -152,7 +145,7 @@ import SongItem from '@/components/common/SongItem.vue';
 import { useDownload } from '@/hooks/useDownload';
 import { usePlayerStore } from '@/store';
 import type { SongResult } from '@/types/music';
-import { isElectron, setAnimationClass, setAnimationDelay } from '@/utils';
+import { isElectron } from '@/utils';
 
 const { t } = useI18n();
 const playerStore = usePlayerStore();
@@ -339,10 +332,6 @@ watch(
 
 const handlePlay = () => {
   playerStore.setPlayList(favoriteSongs.value);
-};
-
-const getItemAnimationDelay = (index: number) => {
-  return setAnimationDelay(index, 30);
 };
 
 const router = useRouter();

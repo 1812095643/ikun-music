@@ -1,10 +1,10 @@
 <template>
   <div class="login-page">
-    <div class="phone-login" :class="setAnimationClass('animate__fadeInDown')">
+    <div class="phone-login">
       <div class="bg"></div>
       <div class="content">
         <!-- Tab导航 -->
-        <div class="login-tabs" :class="setAnimationClass('animate__fadeInUp')">
+        <div class="login-tabs">
           <div
             v-for="tab in loginTabs"
             :key="tab.key"
@@ -19,12 +19,7 @@
         <!-- 登录内容区域 -->
         <div class="login-content">
           <!-- 过渡动画包装器 -->
-          <transition
-            name="login-content"
-            mode="out-in"
-            enter-active-class="animate__animated animate__fadeIn"
-            leave-active-class="animate__animated animate__fadeOut"
-          >
+          <transition name="login-content" mode="out-in">
             <!-- 二维码登录组件 -->
             <div v-if="activeMode === LoginMode.QR && !isTransitioning" key="qr" class="phone">
               <qr-login @login-success="handleLoginSuccess" @login-error="handleLoginError" />
@@ -91,7 +86,6 @@ import CookieLogin from '@/components/login/CookieLogin.vue';
 import QrLogin from '@/components/login/QrLogin.vue';
 import UidLogin from '@/components/login/UidLogin.vue';
 import { useUserStore } from '@/store/modules/user';
-import { setAnimationClass } from '@/utils';
 
 defineOptions({
   name: 'Login'
@@ -300,20 +294,15 @@ const handleLoginError = (error: string) => {
   }
 }
 
-/* 登录内容切换动画 */
+/* 登录内容切换保持克制，只用透明度避免页面上下跳动。 */
 .login-content-enter-active,
 .login-content-leave-active {
-  animation-duration: 0.2s;
+  transition: opacity 0.16s ease;
 }
 
-.login-content-enter-from {
-  opacity: 0;
-  transform: translateY(8px);
-}
-
+.login-content-enter-from,
 .login-content-leave-to {
   opacity: 0;
-  transform: translateY(0);
 }
 
 .mobile {

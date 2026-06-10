@@ -3,7 +3,6 @@
     ref="playBarRef"
     class="mobile-play-bar"
     :class="[
-      setAnimationClass('animate__fadeInUp'),
       playerStore.musicFull ? 'play-bar-expanded' : 'play-bar-mini',
       shouldShowMobileMenu ? 'is-menu-show' : 'is-menu-hide'
     ]"
@@ -68,7 +67,7 @@ import MusicFullWrapper from '@/components/lyric/MusicFullWrapper.vue';
 import { artistList, playMusic, textColors } from '@/hooks/MusicHook';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSettingsStore } from '@/store/modules/settings';
-import { getImgUrl, setAnimationClass } from '@/utils';
+import { getImgUrl } from '@/utils';
 
 const shouldShowMobileMenu = inject('shouldShowMobileMenu') as Ref<boolean>;
 
