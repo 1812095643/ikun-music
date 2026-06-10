@@ -12,7 +12,7 @@
               class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
             >
               <div v-for="i in 12" :key="i" class="flex flex-col items-center space-y-3">
-                <div class="h-20 w-20 skeleton-shimmer rounded-full" />
+                <div class="h-20 w-20 skeleton-shimmer rounded-lg" />
                 <div class="h-4 w-16 skeleton-shimmer rounded-lg" />
                 <div class="h-3 w-24 skeleton-shimmer rounded-lg" />
               </div>
@@ -60,7 +60,7 @@
                 <!-- Avatar -->
                 <div class="relative mx-auto w-fit">
                   <div
-                    class="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border border-neutral-100 bg-neutral-50 transition-colors duration-200 group-hover:border-primary/30 dark:border-neutral-800 dark:bg-neutral-900"
+                    class="w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden border border-neutral-100 bg-neutral-50 transition-colors duration-200 group-hover:border-primary/30 dark:border-neutral-800 dark:bg-neutral-900"
                   >
                     <img
                       :src="getImgUrl(item.avatarUrl, '100y100')"

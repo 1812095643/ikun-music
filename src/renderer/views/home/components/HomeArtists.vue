@@ -3,7 +3,7 @@
     <!-- Loading Skeleton -->
     <div v-if="loading" class="artists-scroll flex gap-6 md:gap-8 overflow-x-hidden pb-4">
       <div v-for="i in 8" :key="i" class="flex flex-col items-center gap-3">
-        <div class="h-20 w-20 md:h-24 md:w-24 lg:h-28 lg:w-28 skeleton-shimmer rounded-full" />
+        <div class="h-20 w-20 md:h-24 md:w-24 lg:h-28 lg:w-28 skeleton-shimmer rounded-lg" />
         <div class="h-3 w-16 skeleton-shimmer rounded-lg" />
       </div>
     </div>
@@ -30,7 +30,7 @@
         >
           <!-- Artist Avatar -->
           <div
-            class="artist-avatar relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 overflow-hidden rounded-full border border-neutral-100 bg-neutral-100 transition-colors duration-200 group-hover:border-primary/30 dark:border-neutral-800 dark:bg-neutral-800"
+            class="artist-avatar relative h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 overflow-hidden rounded-lg border border-neutral-100 bg-neutral-100 transition-colors duration-200 group-hover:border-primary/30 dark:border-neutral-800 dark:bg-neutral-800"
           >
             <img
               :src="getImgUrl(item.picUrl, '300y300')"

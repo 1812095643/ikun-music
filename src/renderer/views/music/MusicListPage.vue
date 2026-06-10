@@ -9,12 +9,12 @@
             <!-- Background Image with Blur -->
             <div class="hero-bg absolute inset-0 -top-20">
               <div
-                class="absolute inset-0 bg-cover bg-center opacity-10 dark:opacity-10"
+                class="absolute inset-0 bg-cover bg-center opacity-[0.04] dark:opacity-[0.05]"
                 :style="{
                   backgroundImage: `url(${getImgUrl(getCoverImgUrl, '800y800')})`
                 }"
               ></div>
-              <div class="absolute inset-0 bg-white/94 dark:bg-black/94"></div>
+              <div class="absolute inset-0 bg-white/98 dark:bg-black/98"></div>
             </div>
 
             <!-- Hero Content -->
@@ -35,7 +35,7 @@
                     />
                     <!-- Play overlay on cover -->
                     <div
-                      class="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/25 transition-colors duration-200"
+                      class="absolute inset-0 flex items-center justify-center bg-transparent group-hover:bg-black/18 transition-colors duration-200"
                       :class="isMobile ? 'pointer-events-none' : 'cursor-pointer'"
                       @click="!isMobile && handlePlayAll()"
                     >
@@ -62,18 +62,18 @@
                   </div>
                   <h1
                     ref="titleElRef"
-                    class="playlist-name text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white tracking-tight mb-4"
+                    class="playlist-name text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-900 dark:text-white tracking-tight mb-3"
                   >
                     {{ name }}
                   </h1>
 
                   <!-- Meta Info -->
                   <div
-                    class="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-6"
+                    class="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-5"
                   >
                     <div v-if="isAlbum && listInfo?.artist" class="flex items-center gap-2">
                       <n-avatar
-                        round
+                        :round="false"
                         :size="28"
                         :src="getImgUrl(listInfo.artist.picUrl, '50y50')"
                       />
@@ -84,7 +84,7 @@
                     </div>
                     <div v-else-if="!isAlbum && listInfo?.creator" class="flex items-center gap-2">
                       <n-avatar
-                        round
+                        :round="false"
                         :size="28"
                         :src="getImgUrl(listInfo.creator.avatarUrl, '50y50')"
                       />

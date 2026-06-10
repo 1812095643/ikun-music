@@ -9,9 +9,7 @@
             <div class="absolute inset-0 skeleton-shimmer" />
             <div class="relative z-10 page-padding-x pt-8 pb-6">
               <div class="flex flex-col items-center gap-6 md:flex-row md:items-end md:gap-10">
-                <div
-                  class="h-28 w-28 md:h-40 md:w-40 skeleton-shimmer rounded-full flex-shrink-0"
-                />
+                <div class="h-28 w-28 md:h-40 md:w-40 skeleton-shimmer rounded-lg flex-shrink-0" />
                 <div class="flex-1 space-y-4 text-center md:text-left">
                   <div class="h-8 w-40 skeleton-shimmer rounded-lg" />
                   <div class="flex justify-center gap-6 md:justify-start">
@@ -40,21 +38,21 @@
         <!-- Main Content -->
         <div v-else-if="userDetail">
           <!-- Hero Section -->
-          <section class="hero-section relative overflow-hidden rounded-tl-lg">
+          <section class="hero-section relative overflow-hidden">
             <!-- Background Image with Blur -->
             <div class="absolute inset-0 -top-20">
               <div
-                class="absolute inset-0 bg-cover bg-center opacity-20 dark:opacity-15"
+                class="absolute inset-0 bg-cover bg-center opacity-[0.05] dark:opacity-[0.06]"
                 :style="{
                   backgroundImage: `url(${getImgUrl(userDetail.profile.backgroundUrl)})`
                 }"
               />
-              <div class="absolute inset-0 bg-white/94 dark:bg-neutral-900/94" />
+              <div class="absolute inset-0 bg-white/98 dark:bg-black/98" />
             </div>
 
             <!-- Hero Content -->
             <div class="relative z-10 page-padding-x pt-4 md:pt-8 pb-6">
-              <div class="flex flex-col md:flex-row gap-6 md:gap-10 items-center md:items-end">
+              <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-end">
                 <!-- User Avatar -->
                 <div class="relative group">
                   <div

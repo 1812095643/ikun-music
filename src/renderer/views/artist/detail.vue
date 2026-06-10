@@ -1,6 +1,6 @@
 <template>
   <div
-    class="artist-detail-page h-full w-full bg-white dark:bg-neutral-900 transition-colors duration-200"
+    class="artist-detail-page h-full w-full bg-white dark:bg-black transition-colors duration-200"
   >
     <n-scrollbar ref="scrollbarRef" class="h-full">
       <div class="artist-detail-content w-full pb-32">
@@ -13,11 +13,9 @@
             </div>
             <div class="hero-content relative z-10 px-4 pb-6 pt-4 md:px-8 md:pt-8">
               <div class="flex flex-col items-center gap-6 md:flex-row md:items-end md:gap-10">
-                <div
-                  class="h-36 w-36 md:h-48 md:w-48 skeleton-shimmer rounded-full flex-shrink-0"
-                />
+                <div class="h-36 w-36 md:h-48 md:w-48 skeleton-shimmer rounded-lg flex-shrink-0" />
                 <div class="flex-1 space-y-4 text-center md:text-left">
-                  <div class="h-6 w-20 skeleton-shimmer rounded-full" />
+                  <div class="h-6 w-20 skeleton-shimmer rounded-md" />
                   <div class="h-10 w-1/2 md:h-12 skeleton-shimmer rounded-lg" />
                   <div class="flex justify-center gap-4 md:justify-start">
                     <div class="h-6 w-24 skeleton-shimmer rounded-lg" />
@@ -36,7 +34,7 @@
                   <div class="h-4 w-1/3 skeleton-shimmer rounded-lg" />
                   <div class="h-3 w-1/4 skeleton-shimmer rounded-lg" />
                 </div>
-                <div class="h-8 w-8 skeleton-shimmer rounded-full flex-shrink-0" />
+                <div class="h-8 w-8 skeleton-shimmer rounded-lg flex-shrink-0" />
               </div>
             </div>
           </div>
@@ -49,12 +47,12 @@
             <!-- Background Image with Blur -->
             <div class="hero-bg absolute inset-0 -top-20">
               <div
-                class="absolute inset-0 bg-cover bg-center opacity-10 dark:opacity-10"
+                class="absolute inset-0 bg-cover bg-center opacity-[0.05] dark:opacity-[0.06]"
                 :style="{
                   backgroundImage: `url(${getImgUrl(artistInfo.cover || artistInfo.picUrl, '800y800')})`
                 }"
               />
-              <div class="absolute inset-0 bg-white/94 dark:bg-neutral-900/94" />
+              <div class="absolute inset-0 bg-white/98 dark:bg-black/98" />
             </div>
 
             <!-- Hero Content -->
@@ -134,7 +132,7 @@
 
           <!-- Action Bar -->
           <section
-            class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-4 bg-white/95 dark:bg-neutral-900/95 border-b border-neutral-100 dark:border-neutral-800/50"
+            class="action-bar sticky top-0 z-20 page-padding-x py-3 md:py-3.5 bg-white/95 dark:bg-black/95 border-b border-neutral-100 dark:border-neutral-800/60"
           >
             <div class="flex items-center justify-between gap-3">
               <!-- Left Actions -->
@@ -150,7 +148,7 @@
 
                 <!-- Add to Playlist Button -->
                 <button
-                  class="add-btn flex items-center justify-center w-10 h-10 md:w-auto md:h-auto md:px-4 md:py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-medium text-sm transition-colors duration-200"
+                  class="add-btn flex items-center justify-center w-10 h-10 md:w-auto md:h-auto md:px-4 md:py-2.5 rounded-lg bg-neutral-100 dark:bg-neutral-900 hover:bg-primary/5 dark:hover:bg-primary/10 text-neutral-700 dark:text-neutral-200 font-medium text-sm transition-colors duration-200"
                   @click="addToPlaylist"
                 >
                   <i class="iconfont icon-add text-lg" />
@@ -167,7 +165,7 @@
                   :class="
                     isSearchVisible
                       ? 'bg-primary/10 dark:bg-primary/20 text-primary'
-                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700'
+                      : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-300 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10'
                   "
                   @click="isSearchVisible ? closeSearch() : showSearch()"
                 >
@@ -177,7 +175,7 @@
                 <!-- Layout Toggle (Desktop only) -->
                 <button
                   v-if="activeTab === 'songs' && !isMobile"
-                  class="action-btn w-10 h-10 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors duration-200"
+                  class="action-btn w-10 h-10 rounded-lg flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-300 hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors duration-200"
                   :title="
                     isCompactLayout
                       ? t('comp.musicList.switchToNormal')

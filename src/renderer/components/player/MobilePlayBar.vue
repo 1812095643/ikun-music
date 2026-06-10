@@ -7,13 +7,7 @@
       shouldShowMobileMenu ? 'is-menu-show' : 'is-menu-hide'
     ]"
     :style="{
-      color: playerStore.musicFull
-        ? textColors.theme === 'dark'
-          ? '#ffffff'
-          : '#ffffff'
-        : settingsStore.theme === 'dark'
-          ? '#ffffff'
-          : '#000000'
+      color: settingsStore.theme === 'dark' ? '#ffffff' : '#111827'
     }"
   >
     <!-- Mini模式 - 在musicFullVisible为false时显示 -->
@@ -64,7 +58,7 @@ import type { Ref } from 'vue';
 import { computed, inject, onMounted, ref, watch } from 'vue';
 
 import MusicFullWrapper from '@/components/lyric/MusicFullWrapper.vue';
-import { artistList, playMusic, textColors } from '@/hooks/MusicHook';
+import { artistList, playMusic } from '@/hooks/MusicHook';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSettingsStore } from '@/store/modules/settings';
 import { getImgUrl } from '@/utils';
@@ -236,7 +230,8 @@ watch(
       @apply flex items-center justify-center cursor-pointer transition;
 
       i {
-        @apply text-white transition-colors;
+        @apply transition-colors;
+        color: currentColor;
       }
 
       &.like i {
@@ -250,7 +245,7 @@ watch(
 
       &.play-pause {
         @apply w-12 h-12 rounded-full flex items-center justify-center;
-        background: rgba(255, 255, 255, 0.2);
+        background: color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
 
         i {
           @apply text-4xl;

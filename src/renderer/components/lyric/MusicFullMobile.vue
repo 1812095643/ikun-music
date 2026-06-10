@@ -3,7 +3,7 @@
     v-model:show="isVisible"
     height="100%"
     placement="bottom"
-    :style="{ background: playerStore.playMusic.primaryColor || background }"
+    :style="{ background: targetBackground }"
     :to="`#layout-main`"
     :z-index="9998"
   >
@@ -958,10 +958,8 @@ const setTextColors = (background: string) => {
   document.documentElement.style.setProperty('--text-color-primary', textColors.value.primary);
   document.documentElement.style.setProperty('--text-color-active', textColors.value.active);
 
-  // 解析背景颜色用于封面融合
-  let bgColor = playerStore.playMusic.primaryColor || 'rgba(25, 25, 25, 1)';
-
-  document.documentElement.style.setProperty('--bg-color', bgColor);
+  // 移动全屏播放页统一使用当前页面底色，避免封面取色造成厚重沉浸背景。
+  document.documentElement.style.setProperty('--bg-color', background);
 
   // 处理背景颜色动画
   if (currentBackground.value) {
