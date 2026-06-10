@@ -23,7 +23,7 @@
         <div class="mini-song-text">
           <n-ellipsis line-clamp="1">
             <span class="mini-song-title">{{ playMusic.name }}</span>
-            <span class="mx-2 text-gray-500 dark:text-gray-400">-</span>
+            <span class="mx-2 text-neutral-500 dark:text-neutral-400">-</span>
             <span
               class="mini-song-artist"
               v-for="(artists, artistsindex) in artistList"
@@ -283,7 +283,7 @@ watch(
         }
 
         .mini-song-artist {
-          @apply text-xs text-gray-500 dark:text-gray-400;
+          @apply text-xs text-neutral-500 dark:text-neutral-400;
         }
       }
     }

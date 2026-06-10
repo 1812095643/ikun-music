@@ -281,7 +281,7 @@ onMounted(() => {
   }
 
   &-title {
-    @apply text-xl font-bold text-gray-900 dark:text-white;
+    @apply text-xl font-bold text-neutral-900 dark:text-neutral-100;
   }
 
   &-content {
@@ -305,7 +305,7 @@ onMounted(() => {
 }
 
 .action-button {
-  @apply w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors text-gray-500 dark:text-gray-400;
+  @apply w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors text-neutral-500 dark:text-neutral-400;
 
   .icon {
     @apply text-lg;
@@ -327,7 +327,7 @@ onMounted(() => {
       width: 4px;
     }
     &::-webkit-scrollbar-thumb {
-      @apply bg-gray-400 dark:bg-gray-600 rounded;
+      @apply bg-neutral-300 dark:bg-neutral-700 rounded;
     }
   }
 }
@@ -337,7 +337,7 @@ onMounted(() => {
 }
 
 .empty-state {
-  @apply flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-600 py-20;
+  @apply flex flex-col items-center justify-center h-full text-neutral-400 dark:text-neutral-600 py-20;
 
   .icon {
     @apply text-6xl mb-4;
@@ -373,7 +373,7 @@ onMounted(() => {
     @apply w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer hover:bg-primary/5 hover:text-primary dark:hover:bg-primary/10 transition-colors;
 
     .icon {
-      @apply text-lg text-gray-500 dark:text-gray-400 transition-colors;
+      @apply text-lg text-neutral-500 dark:text-neutral-400 transition-colors;
     }
   }
 }

@@ -26,7 +26,7 @@
         }}</n-button>
       </div>
       <div class="modal-desc mt-4 text-center">
-        <p class="text-xs text-gray-400">
+        <p class="text-xs text-neutral-400">
           {{ t('comp.installApp.downloadProblem') }}
           <a
             class="text-primary"
@@ -101,7 +101,7 @@ const handleInstall = async (): Promise<void> => {
           @apply text-xl font-bold mb-1;
         }
         .app-desc {
-          @apply text-sm text-gray-400;
+          @apply text-sm text-neutral-400;
         }
       }
     }
@@ -113,7 +113,7 @@ const handleInstall = async (): Promise<void> => {
       .cancel-btn {
         @apply bg-neutral-900 text-neutral-300 border-none;
         &:hover {
-          @apply bg-gray-700;
+          @apply bg-neutral-700;
         }
       }
       .install-btn {

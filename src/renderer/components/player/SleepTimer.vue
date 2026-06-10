@@ -267,7 +267,7 @@ onUnmounted(() => {
 
       // 标签文本
       .timer-label {
-        @apply text-base text-gray-600 dark:text-gray-300;
+        @apply text-base text-neutral-600 dark:text-neutral-300;
       }
     }
 
@@ -295,7 +295,7 @@ onUnmounted(() => {
 
       // 选项标题
       .option-title {
-        @apply text-base font-medium mb-4 text-gray-700 dark:text-gray-200;
+        @apply text-base font-medium mb-4 text-neutral-700 dark:text-neutral-200;
         letter-spacing: 0.3px;
       }
 
@@ -307,7 +307,7 @@ onUnmounted(() => {
         // 选项按钮共享样式
         .time-option-btn,
         .songs-option-btn {
-          @apply px-4 py-2 rounded-lg text-gray-800 dark:text-gray-200 transition-colors duration-200;
+          @apply px-4 py-2 rounded-lg text-neutral-800 dark:text-neutral-200 transition-colors duration-200;
           background: color-mix(in srgb, var(--qqm-surface-muted, #f2f4f5) 70%, transparent);
           border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
 

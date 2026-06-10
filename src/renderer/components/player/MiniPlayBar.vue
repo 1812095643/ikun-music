@@ -112,7 +112,7 @@
               <song-item :key="item.id" class="flex-1" :item="item" mini></song-item>
               <div class="delete-btn" @click.stop="handleDeleteSong(item)">
                 <i
-                  class="iconfont ri-delete-bin-line text-gray-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                  class="iconfont ri-delete-bin-line text-neutral-400 hover:text-primary dark:hover:text-primary transition-colors"
                 ></i>
               </div>
             </div>
@@ -438,7 +438,7 @@ const setMusicFull = () => {
 }
 
 .control-button {
-  @apply flex items-center justify-center rounded-lg transition-colors duration-200 border-0 bg-transparent cursor-pointer text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary;
+  @apply flex items-center justify-center rounded-lg transition-colors duration-200 border-0 bg-transparent cursor-pointer text-neutral-600 hover:text-primary dark:text-neutral-400 dark:hover:text-primary;
   width: 32px;
   height: 32px;
 
@@ -464,7 +464,7 @@ const setMusicFull = () => {
 }
 
 .function-button {
-  @apply flex items-center justify-center rounded-lg transition-colors duration-200 border-0 bg-transparent cursor-pointer text-gray-600 hover:text-primary dark:text-gray-400 dark:hover:text-primary;
+  @apply flex items-center justify-center rounded-lg transition-colors duration-200 border-0 bg-transparent cursor-pointer text-neutral-600 hover:text-primary dark:text-neutral-400 dark:hover:text-primary;
   width: 32px;
   height: 32px;
 

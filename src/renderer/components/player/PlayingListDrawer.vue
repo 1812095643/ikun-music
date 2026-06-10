@@ -37,7 +37,7 @@
               <song-item :key="item.id" class="flex-1" :item="item" mini></song-item>
               <div class="delete-btn" @click.stop="handleDeleteSong(item)">
                 <i
-                  class="iconfont ri-delete-bin-line text-gray-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors"
+                  class="iconfont ri-delete-bin-line text-neutral-400 hover:text-primary dark:hover:text-primary transition-colors"
                 ></i>
               </div>
             </div>
@@ -210,7 +210,7 @@ const handleDeleteSong = (song: SongResult) => {
     background: color-mix(in srgb, var(--qqm-surface, #fff) 99%, transparent);
 
     .title {
-      @apply text-base font-medium text-gray-800 dark:text-gray-200;
+      @apply text-base font-medium text-neutral-800 dark:text-neutral-200;
     }
 
     .header-actions {
@@ -219,7 +219,7 @@ const handleDeleteSong = (song: SongResult) => {
 
     .action-btn,
     .close-btn {
-      @apply w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer mx-1 text-gray-800 dark:text-gray-200;
+      @apply w-8 h-8 flex items-center justify-center rounded-lg cursor-pointer mx-1 text-neutral-800 dark:text-neutral-200;
       @apply transition-colors;
 
       &:hover {
@@ -233,7 +233,7 @@ const handleDeleteSong = (song: SongResult) => {
     }
 
     .action-btn {
-      @apply text-gray-500 dark:text-gray-400;
+      @apply text-neutral-500 dark:text-neutral-400;
       &:hover {
         @apply text-neutral-700 dark:text-neutral-200;
       }
@@ -246,7 +246,7 @@ const handleDeleteSong = (song: SongResult) => {
 }
 
 .empty-playlist {
-  @apply flex flex-col items-center justify-center h-full text-gray-400 dark:text-gray-500;
+  @apply flex flex-col items-center justify-center h-full text-neutral-400 dark:text-neutral-500;
 
   .iconfont {
     @apply text-5xl mb-4;

@@ -23,7 +23,7 @@
               class="w-32 h-32 rounded-lg cursor-none"
               preview-disabled
             />
-            <span class="text-sm text-gray-700 dark:text-gray-200">{{
+            <span class="text-sm text-neutral-700 dark:text-neutral-200">{{
               t('comp.coffee.alipay')
             }}</span>
           </div>
@@ -34,7 +34,7 @@
               class="w-32 h-32 rounded-lg cursor-none"
               preview-disabled
             />
-            <span class="text-sm text-gray-700 dark:text-gray-200">{{
+            <span class="text-sm text-neutral-700 dark:text-neutral-200">{{
               t('comp.coffee.wechat')
             }}</span>
           </div>
@@ -42,7 +42,7 @@
 
         <div class="mt-4">
           <p
-            class="text-sm text-gray-700 dark:text-gray-200 text-center cursor-pointer hover:text-primary"
+            class="text-sm text-neutral-700 dark:text-neutral-200 text-center cursor-pointer hover:text-primary"
             @click="copyText"
           >
             {{ t('comp.coffee.groupText') }}
@@ -51,7 +51,7 @@
         <div class="mt-4">
           <!-- 赞赏列表地址 -->
           <p
-            class="text-sm text-primary dark:text-gray-200 text-center cursor-pointer hover:text-primary"
+            class="text-sm text-primary dark:text-neutral-200 text-center cursor-pointer hover:text-primary"
             @click="toDonateList"
           >
             {{ t('comp.coffee.donateList') }}
