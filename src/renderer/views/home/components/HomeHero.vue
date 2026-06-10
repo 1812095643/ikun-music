@@ -223,14 +223,18 @@
                 </div>
               </template>
               <template v-else>
-                <div class="col-span-2 row-span-2 flex h-full flex-col justify-center px-5">
-                  <div
-                    class="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary"
-                  >
-                    <i class="ri-play-list-2-line text-xl" />
+                <div class="col-span-2 row-span-2 flex h-full items-center px-5">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                    >
+                      <i class="ri-play-list-2-line text-xl" />
+                    </div>
+                    <div class="space-y-2">
+                      <div class="h-1.5 w-28 rounded-full bg-primary/15" />
+                      <div class="h-1.5 w-40 rounded-full bg-primary/10" />
+                    </div>
                   </div>
-                  <div class="h-2 w-24 rounded bg-primary/15" />
-                  <div class="mt-2 h-2 w-36 rounded bg-primary/10" />
                 </div>
               </template>
             </div>
@@ -243,7 +247,10 @@
               "
             />
             <!-- Content -->
-            <div class="relative flex h-full flex-col justify-between p-5">
+            <div
+              class="relative flex h-full flex-col justify-between p-5"
+              :class="{ 'pl-20': !hotPlaylists.length }"
+            >
               <span
                 :class="[
                   'inline-flex w-fit items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-semibold',
