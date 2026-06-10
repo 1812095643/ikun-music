@@ -23,7 +23,7 @@
               <div
                 v-for="(item, index) in hotSearchData?.data"
                 :key="index"
-                class="hot-search-card group flex items-center gap-4 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/50 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 cursor-pointer transition-all duration-300 animate-item"
+                class="hot-search-card group flex items-center gap-4 p-4 rounded-xl bg-neutral-50 dark:bg-neutral-900/50 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 cursor-pointer transition-all duration-300 animate-item"
                 :style="{ animationDelay: calculateAnimationDelay(index, 0.03) }"
                 @click="handleSearch(item.searchWord)"
               >
@@ -187,7 +187,16 @@ onMounted(() => {
 }
 
 .hot-search-card {
+  border: 1px solid var(--qqm-border);
+  background: color-mix(in srgb, var(--qqm-surface) 70%, transparent) !important;
+  box-shadow: 0 6px 16px rgba(20, 24, 31, 0.045);
+  backdrop-filter: blur(12px) saturate(1.04);
+
   &:hover {
+    border-color: rgba(30, 207, 115, 0.16);
+    background: color-mix(in srgb, var(--qqm-surface-muted) 72%, transparent) !important;
+    transform: translateY(-1px);
+
     .hot-search-item-count {
       @apply text-primary;
     }

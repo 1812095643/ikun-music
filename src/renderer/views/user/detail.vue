@@ -29,7 +29,7 @@
             <div class="h-10 w-48 mb-6 skeleton-shimmer rounded-xl" />
             <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               <div v-for="i in 10" :key="i" class="space-y-2">
-                <div class="aspect-square w-full skeleton-shimmer rounded-2xl" />
+                <div class="aspect-square w-full skeleton-shimmer rounded-xl" />
                 <div class="h-4 w-3/4 skeleton-shimmer rounded-lg" />
                 <div class="h-3 w-1/2 skeleton-shimmer rounded-lg" />
               </div>
@@ -50,7 +50,7 @@
                 }"
               />
               <div
-                class="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white dark:via-neutral-900/80 dark:to-neutral-900"
+                class="absolute inset-0 bg-gradient-to-b from-transparent via-white/75 to-white dark:via-neutral-900/75 dark:to-neutral-900"
               />
             </div>
 
@@ -60,15 +60,15 @@
                 <!-- User Avatar -->
                 <div class="relative group">
                   <div
-                    class="absolute -inset-2 rounded-full bg-gradient-to-br from-primary/30 via-primary/10 to-transparent blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    class="absolute -inset-1 rounded-full bg-primary/10 blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   />
                   <div
-                    class="relative w-28 h-28 md:w-40 md:h-40 rounded-full overflow-hidden shadow-2xl ring-4 ring-white/50 dark:ring-neutral-800/50"
+                    class="relative w-28 h-28 md:w-40 md:h-40 rounded-full overflow-hidden shadow-md ring-2 ring-white/60 dark:ring-neutral-800/60"
                   >
                     <img
                       :src="getImgUrl(userDetail.profile.avatarUrl, '300y300')"
                       :alt="userDetail.profile.nickname"
-                      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     />
                   </div>
                 </div>
@@ -189,12 +189,12 @@
                   @click="openPlaylist(item)"
                 >
                   <!-- Cover -->
-                  <div class="relative aspect-square overflow-hidden rounded-2xl shadow-lg">
+                  <div class="relative aspect-square overflow-hidden rounded-xl shadow-sm">
                     <n-image
                       :src="getImgUrl(item.coverImgUrl, '300y300')"
                       lazy
                       preview-disabled
-                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     />
                     <!-- Play Count Overlay -->
                     <div
@@ -208,7 +208,7 @@
                       class="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 group-hover:bg-black/20 group-hover:opacity-100 transition-all duration-300"
                     >
                       <div
-                        class="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center scale-75 group-hover:scale-100 transition-transform duration-300 shadow-xl"
+                        class="w-11 h-11 rounded-full bg-white/90 flex items-center justify-center scale-90 group-hover:scale-100 transition-transform duration-300 shadow-md"
                       >
                         <i class="ri-play-fill text-xl text-neutral-900 ml-0.5" />
                       </div>

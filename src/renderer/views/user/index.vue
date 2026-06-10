@@ -2,7 +2,7 @@
   <div class="user-page">
     <template v-if="infoLoading">
       <div
-        class="left-skeleton flex-1 max-w-[600px] rounded-2xl overflow-hidden p-4 bg-light-200 dark:bg-dark-100"
+        class="left-skeleton flex-1 max-w-[600px] rounded-xl overflow-hidden p-4 bg-light-200 dark:bg-dark-100"
       >
         <div class="flex flex-col gap-6">
           <div class="flex justify-between">
@@ -35,12 +35,12 @@
       </div>
       <div v-if="!isMobile" class="right">
         <div class="title"><div class="h-8 w-32 skeleton-shimmer rounded-lg" /></div>
-        <div class="rounded-2xl bg-light p-4 dark:bg-black">
+        <div class="rounded-xl bg-light p-4 dark:bg-black">
           <div class="space-y-2">
             <div
               v-for="i in 10"
               :key="i"
-              class="flex items-center gap-4 rounded-2xl bg-light-100 p-2 dark:bg-dark-100"
+              class="flex items-center gap-4 rounded-xl bg-light-100 p-2 dark:bg-dark-100"
             >
               <div class="h-10 w-10 skeleton-shimmer rounded-full flex-shrink-0" />
               <div class="h-10 w-10 skeleton-shimmer rounded-xl flex-shrink-0" />
@@ -468,12 +468,20 @@ const currentLoginType = computed(() => userStore.loginType);
   @apply flex h-full;
   .left {
     max-width: 600px;
-    @apply flex-1 rounded-2xl overflow-hidden relative bg-no-repeat h-full;
+    @apply flex-1 rounded-xl overflow-hidden relative bg-no-repeat h-full;
     @apply bg-gray-900 dark:bg-gray-800;
+    border: 1px solid var(--qqm-border);
+    box-shadow: var(--qqm-shadow);
 
     .page {
       @apply p-4 w-full z-10 flex flex-col h-full;
-      @apply bg-black bg-opacity-40;
+      background: linear-gradient(
+        180deg,
+        rgba(12, 16, 22, 0.46) 0%,
+        rgba(12, 16, 22, 0.34) 42%,
+        rgba(12, 16, 22, 0.5) 100%
+      );
+      backdrop-filter: blur(10px) saturate(1.08);
     }
     .title {
       @apply text-lg font-bold flex items-center justify-between;
@@ -481,19 +489,19 @@ const currentLoginType = computed(() => userStore.loginType);
     }
     .user-name {
       @apply text-xl font-bold mb-4 flex justify-between;
-      @apply text-white text-opacity-70;
+      @apply text-white;
     }
 
     .uesr-signature {
       @apply mt-4;
-      @apply text-white text-opacity-70;
+      @apply text-white/80;
     }
 
     .user-info {
       @apply flex items-center;
       &-list {
         @apply flex justify-around w-2/5 text-center;
-        @apply text-white text-opacity-70;
+        @apply text-white/80;
 
         .label {
           @apply text-xl font-bold text-white;
@@ -510,12 +518,27 @@ const currentLoginType = computed(() => userStore.loginType);
     @apply flex-1 ml-4 overflow-hidden h-full;
 
     .record-list {
-      @apply rounded-2xl;
-      @apply bg-light dark:bg-black;
+      @apply rounded-xl;
+      background: color-mix(in srgb, var(--qqm-surface) 64%, transparent);
+      border: 1px solid var(--qqm-border);
+      box-shadow: var(--qqm-shadow);
+      backdrop-filter: blur(16px) saturate(1.06);
       height: calc(100% - 60px);
 
       .record-item {
-        @apply flex items-center px-2 mb-2 rounded-2xl bg-light-100 dark:bg-dark-100;
+        @apply flex items-center px-2 mb-2 rounded-lg;
+        background: transparent;
+        border: 1px solid transparent;
+        transition:
+          background-color 180ms var(--qqm-ease),
+          border-color 180ms var(--qqm-ease),
+          transform 180ms var(--qqm-ease);
+
+        &:hover {
+          background: color-mix(in srgb, var(--qqm-surface-muted) 72%, transparent);
+          border-color: rgba(30, 207, 115, 0.14);
+          transform: translateY(-1px);
+        }
       }
 
       .song-item {
@@ -536,7 +559,10 @@ const currentLoginType = computed(() => userStore.loginType);
 
 .play-list {
   @apply mt-4 py-4 px-2 rounded-xl flex-1 overflow-hidden;
-  @apply bg-light dark:bg-black;
+  background: color-mix(in srgb, var(--qqm-surface) 68%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: var(--qqm-shadow);
+  backdrop-filter: blur(16px) saturate(1.08);
 
   &-title {
     @apply text-lg;
@@ -544,14 +570,20 @@ const currentLoginType = computed(() => userStore.loginType);
   }
 
   &-item {
-    @apply flex items-center px-2 py-2 rounded-xl cursor-pointer w-full;
+    @apply flex items-center px-2 py-2 rounded-lg cursor-pointer w-full;
     @apply transition-all duration-200;
     @apply hover:bg-light-200 dark:hover:bg-dark-200;
+    border: 1px solid transparent;
+
+    &:hover {
+      border-color: rgba(30, 207, 115, 0.14);
+      transform: translateY(-1px);
+    }
 
     &-img {
-      @apply flex items-center justify-center rounded-xl text-[40px] w-[60px] h-[60px] bg-light-300 dark:bg-dark-300;
+      @apply flex items-center justify-center rounded-lg text-[32px] w-[56px] h-[56px] bg-light-300 dark:bg-dark-300;
       .iconfont {
-        @apply text-[40px];
+        @apply text-[32px];
       }
     }
 

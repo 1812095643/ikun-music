@@ -420,10 +420,13 @@ onMounted(() => {
 <style scoped lang="scss">
 .heatmap-page {
   @apply h-full w-full flex flex-col;
-  @apply bg-light dark:bg-black;
+  background: var(--qqm-bg);
 
   .heatmap-header {
-    @apply flex items-center justify-between flex-shrink-0 px-6 py-2;
+    @apply flex items-center justify-between flex-shrink-0 px-6 py-3;
+    border-bottom: 1px solid var(--qqm-border);
+    background: color-mix(in srgb, var(--qqm-bg) 86%, transparent);
+    backdrop-filter: blur(16px) saturate(1.05);
 
     .header-left {
       @apply flex items-center gap-4;
@@ -437,7 +440,7 @@ onMounted(() => {
 
       h2 {
         @apply text-2xl font-bold;
-        @apply text-gray-900 dark:text-white;
+        color: var(--qqm-text);
       }
     }
 
@@ -447,16 +450,17 @@ onMounted(() => {
       .stat-item {
         @apply flex items-center gap-2 justify-center;
         @apply px-4 py-2 rounded-lg;
-        @apply bg-gray-50 dark:bg-gray-800;
+        background: color-mix(in srgb, var(--qqm-surface) 64%, transparent);
+        border: 1px solid var(--qqm-border);
 
         .stat-label {
           @apply text-sm;
-          @apply text-gray-500 dark:text-gray-400;
+          color: var(--qqm-muted);
         }
 
         .stat-value {
           @apply text-2xl font-bold;
-          @apply text-green-500 dark:text-green-400;
+          color: var(--qqm-primary-strong);
         }
       }
     }
@@ -478,7 +482,11 @@ onMounted(() => {
     }
 
     .heatmap-container {
-      @apply bg-white dark:bg-dark-300 rounded-2xl p-6 shadow-lg;
+      @apply rounded-xl p-6;
+      background: color-mix(in srgb, var(--qqm-surface) 70%, transparent);
+      border: 1px solid rgba(255, 255, 255, 0.58);
+      box-shadow: var(--qqm-shadow);
+      backdrop-filter: blur(18px) saturate(1.08);
 
       .color-theme-selector {
         @apply flex items-center gap-4 mb-6 pb-4;
@@ -578,16 +586,20 @@ onMounted(() => {
 
         .stat-card {
           @apply flex items-start gap-4 p-4 rounded-xl;
-          @apply bg-gradient-to-br from-gray-50 to-gray-100;
-          @apply dark:from-gray-800 dark:to-gray-900;
-          @apply border border-gray-200 dark:border-gray-700;
+          background: color-mix(in srgb, var(--qqm-surface-muted) 66%, transparent);
+          border: 1px solid var(--qqm-border);
           @apply transition-all duration-300;
-          @apply hover:shadow-lg hover:scale-105;
+
+          &:hover {
+            border-color: rgba(30, 207, 115, 0.16);
+            box-shadow: 0 8px 20px rgba(20, 24, 31, 0.06);
+            transform: translateY(-1px);
+          }
 
           .stat-icon {
             @apply flex items-center justify-center;
             @apply w-12 h-12 rounded-lg;
-            @apply bg-gradient-to-br from-green-400 to-green-600;
+            background: var(--qqm-primary);
             @apply text-white text-2xl;
             @apply shadow-md;
 
@@ -596,12 +608,9 @@ onMounted(() => {
             }
           }
 
-          &:nth-child(2) .stat-icon {
-            @apply from-orange-400 to-orange-600;
-          }
-
+          &:nth-child(2) .stat-icon,
           &:nth-child(3) .stat-icon {
-            @apply from-purple-400 to-purple-600;
+            background: var(--qqm-primary);
           }
 
           .stat-content {

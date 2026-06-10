@@ -27,7 +27,7 @@
                 class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap"
                 :class="
                   searchType === type.key
-                    ? 'bg-primary text-white shadow-lg shadow-primary/25'
+                    ? 'bg-primary text-white shadow-sm shadow-primary/20'
                     : 'bg-neutral-100 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-neutral-800'
                 "
                 @click="handleTypeChange(type.key)"
@@ -47,7 +47,7 @@
             <div class="flex items-center gap-3">
               <!-- Play All Button -->
               <button
-                class="play-all-btn flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-primary/25"
+                class="play-all-btn flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary hover:bg-primary/90 text-white font-semibold text-sm transition-all duration-200 hover:-translate-y-0.5 active:scale-95 shadow-sm shadow-primary/20"
                 @click="handlePlayAll"
               >
                 <i class="ri-play-circle-line text-lg" />
@@ -118,7 +118,7 @@
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
             >
               <div v-for="i in 12" :key="i" class="space-y-3">
-                <div class="aspect-square skeleton-shimmer rounded-2xl" />
+                <div class="aspect-square skeleton-shimmer rounded-xl" />
                 <div class="h-4 w-3/4 skeleton-shimmer rounded-lg" />
               </div>
             </div>
