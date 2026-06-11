@@ -99,11 +99,7 @@ const goToDetail = () => {
 }
 
 .radio-card-caption {
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    color-mix(in srgb, #0f172a 46%, transparent) 100%
-  );
+  background: color-mix(in srgb, var(--qqm-text, #0f172a) 32%, transparent);
   backdrop-filter: blur(4px) saturate(1.04);
 }
 

@@ -143,10 +143,6 @@ onMounted(() => {
 }
 
 .private-cover-overlay {
-  background: linear-gradient(
-    180deg,
-    transparent 12%,
-    color-mix(in srgb, #0f172a 34%, transparent) 100%
-  );
+  background: color-mix(in srgb, var(--qqm-text, #0f172a) 24%, transparent);
 }
 </style>

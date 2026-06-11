@@ -204,21 +204,17 @@ const handleLoginError = (error: string) => {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, transparent),
-    transparent 34%
-  );
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, transparent);
 }
 
 .login-title {
   @apply mb-5 text-2xl font-bold;
-  color: #111827;
+  color: var(--qqm-text, #111827);
 }
 
 .text {
   @apply mt-4 text-xs;
-  color: #737373;
+  color: var(--qqm-muted, #737373);
 }
 
 .phone-login {
@@ -235,7 +231,7 @@ const handleLoginError = (error: string) => {
   .bg {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, transparent 0%, rgba(34, 197, 94, 0.045) 100%);
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, transparent);
     opacity: 1;
   }
 
@@ -253,7 +249,7 @@ const handleLoginError = (error: string) => {
 
       .tab-item {
         @apply flex-1 cursor-pointer rounded-lg px-3 py-2 text-center text-sm transition-colors duration-200;
-        color: #525252;
+        color: var(--qqm-text-secondary, #525252);
         transform: translateY(0);
 
         &:hover {
@@ -265,7 +261,7 @@ const handleLoginError = (error: string) => {
         &.active {
           @apply font-medium;
           background-color: var(--qqm-primary, #22c55e);
-          color: #ffffff;
+          color: var(--qqm-on-primary, #ffffff);
           transform: translateY(0);
           box-shadow: none;
         }
@@ -327,30 +323,30 @@ const handleLoginError = (error: string) => {
 
 .dark {
   .login-title {
-    color: #f5f5f5;
+    color: var(--qqm-text, #f5f5f5);
   }
 
   .text {
-    color: #a3a3a3;
+    color: var(--qqm-muted, #a3a3a3);
   }
 
   .phone-login {
     border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, transparent);
-    background: color-mix(in srgb, #050505 92%, var(--qqm-primary, #22c55e) 8%);
+    background: color-mix(in srgb, var(--qqm-surface, #050505) 92%, var(--qqm-primary, #22c55e) 8%);
 
     .content {
       .login-tabs {
         border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 16%, transparent);
-        background: rgba(18, 18, 18, 0.88);
+        background: color-mix(in srgb, var(--qqm-surface, #121212) 88%, transparent);
 
         .tab-item {
-          color: #a3a3a3;
+          color: var(--qqm-muted, #a3a3a3);
         }
       }
 
       .phone-page {
         border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, transparent);
-        background: rgba(10, 10, 10, 0.95);
+        background: color-mix(in srgb, var(--qqm-surface, #101112) 95%, transparent);
       }
 
       .phone-input {

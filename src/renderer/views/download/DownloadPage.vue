@@ -1089,11 +1089,7 @@ onMounted(() => {
 .hero-section {
   min-height: 220px;
   border-bottom: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, var(--qqm-bg)),
-    var(--qqm-bg)
-  );
+  background: var(--qqm-bg);
 }
 
 .action-bar {
@@ -1125,8 +1121,8 @@ onMounted(() => {
 }
 
 .delete-action:hover {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.08);
+  color: var(--qqm-danger, #ef4444);
+  background: color-mix(in srgb, var(--qqm-danger, #ef4444) 8%, transparent);
 }
 
 .download-setting-input :deep(.n-input-wrapper) {

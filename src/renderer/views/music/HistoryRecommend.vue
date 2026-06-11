@@ -409,13 +409,7 @@ onMounted(() => {
   margin-top: 18px;
   border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
   border-radius: 12px;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--qqm-primary, #22c55e) 4%, transparent),
-      transparent 64%
-    ),
-    var(--qqm-surface, #ffffff);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, var(--qqm-surface, #ffffff));
   color: var(--qqm-muted, #7a828c);
 }
 

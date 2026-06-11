@@ -344,16 +344,16 @@ onMounted(() => {
     opacity 0.3s ease;
 
   /* 默认变量 */
-  --text-on-fill: #ffffff;
-  --high-contrast-color: #ffffff;
+  --text-on-fill: var(--qqm-on-primary, #ffffff);
+  --high-contrast-color: var(--qqm-on-primary, #ffffff);
 
   &.dark-theme {
-    --text-color: #333333;
+    --text-color: var(--qqm-text, #333333);
     --muted-color: rgba(0, 0, 0, 0.6);
     --track-color: rgba(0, 0, 0, 0.2);
     --track-color-hover: rgba(0, 0, 0, 0.4);
-    --fill-color: #1ed760;
-    --fill-color-alt: #1ed760;
+    --fill-color: var(--qqm-primary, #22c55e);
+    --fill-color-alt: var(--qqm-primary-strong, #16a34a);
     --fill-color-transparent: rgba(30, 215, 96, 0.25);
     --fill-color-light: rgba(30, 215, 96, 0.5);
     --button-bg: rgba(0, 0, 0, 0.1);
@@ -361,12 +361,12 @@ onMounted(() => {
   }
 
   &:not(.dark-theme) {
-    --text-color: #f1f1f1;
+    --text-color: var(--qqm-text, #f1f1f1);
     --muted-color: rgba(255, 255, 255, 0.6);
     --track-color: rgba(255, 255, 255, 0.1);
     --track-color-hover: rgba(255, 255, 255, 0.2);
-    --fill-color: #73e49a;
-    --fill-color-alt: #73e49a;
+    --fill-color: var(--qqm-primary, #22c55e);
+    --fill-color-alt: var(--qqm-primary-strong, #16a34a);
     --fill-color-transparent: rgba(115, 228, 154, 0.25);
     --fill-color-light: rgba(115, 228, 154, 0.5);
     --button-bg: rgba(255, 255, 255, 0.05);

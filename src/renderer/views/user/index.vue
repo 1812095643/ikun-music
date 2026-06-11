@@ -464,18 +464,10 @@ const currentLoginType = computed(() => userStore.loginType);
 
     .page {
       @apply p-4 w-full z-10 flex flex-col h-full;
-      background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--qqm-surface, #fff) 92%, transparent),
-        var(--qqm-surface, #fff)
-      );
+      background: color-mix(in srgb, var(--qqm-surface, #fff) 96%, transparent);
 
       :global(.dark) & {
-        background: linear-gradient(
-          180deg,
-          color-mix(in srgb, var(--qqm-surface, #050505) 90%, transparent),
-          var(--qqm-surface, #050505)
-        );
+        background: color-mix(in srgb, var(--qqm-surface, #050505) 94%, transparent);
       }
     }
     .title {

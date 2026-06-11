@@ -512,11 +512,7 @@ defineExpose({
 }
 
 .lyric-settings-tab-active {
-  background: linear-gradient(
-    180deg,
-    var(--qqm-primary, #22c55e),
-    var(--qqm-primary-strong, #16a34a)
-  );
+  background: var(--qqm-primary, #22c55e);
 }
 
 .lyric-settings-tab-idle {
@@ -524,7 +520,7 @@ defineExpose({
 }
 
 .lyric-settings-tab-idle:hover {
-  color: #ffffff;
+  color: var(--qqm-on-primary, #ffffff);
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, transparent);
 }
 
