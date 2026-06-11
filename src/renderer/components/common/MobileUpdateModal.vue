@@ -266,7 +266,7 @@ onMounted(() => {
 }
 
 :deep(a) {
-  color: #22c55e;
+  color: var(--qqm-primary, #22c55e);
 }
 
 .mobile-update-sheet,

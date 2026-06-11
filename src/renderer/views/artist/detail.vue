@@ -1104,7 +1104,7 @@ const formatSong = (item: any) => {
 }
 
 .artist-cover-surface {
-  border: 1px solid color-mix(in srgb, var(--qqm-border) 78%, #ffffff 22%);
+  border: 1px solid color-mix(in srgb, var(--qqm-border) 84%, transparent);
   background: var(--qqm-surface-2, var(--qqm-surface));
 }
 
@@ -1162,7 +1162,7 @@ input:focus-visible {
 }
 
 .play-icon {
-  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 68%, #fff 32%);
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 82%, transparent);
   background: color-mix(in srgb, var(--qqm-surface, #fff) 90%, transparent);
   color: var(--qqm-text, #1f2329);
 }

@@ -925,8 +925,8 @@ const props = defineProps({
 });
 
 const themeMusic = {
-  light: 'linear-gradient(to bottom, #ffffff, #f5f5f5)',
-  dark: 'linear-gradient(to bottom, #1a1a1a, #000000)'
+  light: 'var(--qqm-bg, #f7f8fa)',
+  dark: 'var(--qqm-bg, #050505)'
 };
 
 const emit = defineEmits(['update:modelValue']);
@@ -1312,7 +1312,7 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
       &::after {
         content: '';
         @apply absolute top-0 left-0 w-full h-full rounded-full z-[2];
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 56%);
+        background: color-mix(in srgb, #ffffff 7%, transparent);
         pointer-events: none;
       }
     }
@@ -1810,16 +1810,16 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
   @apply flex flex-col w-full h-full relative;
 
   &.light {
-    background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+    background: var(--qqm-bg, #f7f8fa);
   }
 
   &.dark {
-    background: linear-gradient(to bottom, #1a1a1a, #000000);
+    background: var(--qqm-bg, #050505);
   }
 
   .fullscreen-header {
     @apply pt-16 pb-4 px-6 flex flex-col items-center fixed top-0 left-0 w-full z-10;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%);
+    background: color-mix(in srgb, var(--qqm-bg, #050505) 18%, transparent);
     pointer-events: auto;
 
     .song-title {

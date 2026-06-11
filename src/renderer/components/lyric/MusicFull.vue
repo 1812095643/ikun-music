@@ -307,8 +307,8 @@ const props = defineProps({
 });
 
 const themeMusic = {
-  light: 'linear-gradient(to bottom, #ffffff, #f5f5f5)',
-  dark: 'linear-gradient(to bottom, #1a1a1a, #000000)'
+  light: 'var(--qqm-bg, #f7f8fa)',
+  dark: 'var(--qqm-bg, #050505)'
 };
 
 const emit = defineEmits(['update:modelValue']);
@@ -795,8 +795,9 @@ defineExpose({
       border-radius: 14px;
       padding: 8px;
       background: color-mix(in srgb, var(--qqm-surface, #fff) 76%, transparent);
-      border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 78%, #fff 22%);
-      box-shadow: 0 18px 46px rgba(15, 23, 42, 0.08);
+      border: 1px solid
+        color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 84%, transparent);
+      box-shadow: 0 12px 30px color-mix(in srgb, var(--qqm-text, #1f2329) 7%, transparent);
     }
 
     .music-info {
@@ -1051,7 +1052,7 @@ defineExpose({
 
 .control-btn {
   @apply w-9 h-9 flex items-center justify-center cursor-pointer;
-  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 70%, #fff 30%);
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 82%, transparent);
   border-radius: 10px;
   background: color-mix(in srgb, var(--qqm-surface, #fff) 72%, transparent);
   backdrop-filter: blur(14px) saturate(1.1);
