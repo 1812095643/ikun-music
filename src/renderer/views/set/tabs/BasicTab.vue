@@ -350,3 +350,10 @@ onUnmounted(() => {
   }
 });
 </script>
+<style scoped>
+.basic-option-row,
+.basic-option-icon {
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 96%, transparent);
+}
+</style>

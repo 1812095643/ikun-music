@@ -33,7 +33,7 @@ defineEmits<{ click: [event: MouseEvent] }>();
 const variantClass = computed(() => {
   switch (props.variant) {
     case 'primary':
-      return 'border-primary bg-primary text-white hover:bg-primary/85';
+      return 's-btn-primary text-white';
     case 'danger':
       return 's-btn-surface text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200';
     case 'ghost':
@@ -43,3 +43,38 @@ const variantClass = computed(() => {
   }
 });
 </script>
+
+<style scoped>
+.s-btn-primary {
+  border-color: var(--qqm-primary, #22c55e);
+  background: linear-gradient(
+    180deg,
+    var(--qqm-primary, #22c55e),
+    var(--qqm-primary-strong, #16a34a)
+  );
+}
+
+.s-btn-primary:hover:not(:disabled) {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--qqm-primary, #22c55e) 92%, #ffffff),
+    var(--qqm-primary-strong, #16a34a)
+  );
+}
+
+.s-btn-surface {
+  border-color: var(--qqm-border, rgba(15, 23, 42, 0.08));
+  background: var(--qqm-surface, #ffffff);
+}
+
+.s-btn-surface:hover:not(:disabled),
+.s-btn-ghost:hover:not(:disabled) {
+  color: var(--qqm-primary, #22c55e);
+  border-color: color-mix(
+    in srgb,
+    var(--qqm-primary, #22c55e) 22%,
+    var(--qqm-border, rgba(15, 23, 42, 0.08))
+  );
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface, #ffffff));
+}
+</style>

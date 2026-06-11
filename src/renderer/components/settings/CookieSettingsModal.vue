@@ -133,7 +133,7 @@ const handlePaste = async () => {
           />
 
           <!-- 工具按钮 -->
-          <div class="absolute top-2 right-2 flex gap-1">
+          <div class="cookie-tools absolute top-2 right-2 flex gap-1">
             <n-button
               size="tiny"
               quaternary
@@ -155,14 +155,14 @@ const handlePaste = async () => {
       </div>
 
       <!-- 帮助信息 -->
-      <div class="text-xs text-neutral-500 space-y-1">
+      <div class="cookie-help-card text-xs text-neutral-500 space-y-1">
         <p>• {{ t('settings.cookie.help.format') }}</p>
         <p>• {{ t('settings.cookie.help.source') }}</p>
         <p>• {{ t('settings.cookie.help.storage') }}</p>
       </div>
 
       <!-- Cookie长度提示 -->
-      <div v-if="tokenInput" class="text-xs text-neutral-400">
+      <div v-if="tokenInput" class="cookie-length-tip text-xs text-neutral-400">
         {{ t('settings.cookie.info.length', { length: tokenInput.length }) }}
       </div>
     </div>
@@ -193,5 +193,19 @@ const handlePaste = async () => {
       monospace;
     line-height: 1.4;
   }
+}
+
+.cookie-tools {
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 82%, transparent);
+  backdrop-filter: blur(10px) saturate(1.05);
+}
+
+.cookie-help-card,
+.cookie-length-tip {
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 96%, transparent);
 }
 </style>
