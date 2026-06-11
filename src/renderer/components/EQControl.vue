@@ -308,11 +308,15 @@ const formatFreq = (freq: number) => {
 
 :deep(.n-slider) {
   --n-rail-height: 4px;
-  --n-rail-color: #e5e7eb;
-  --n-rail-color-hover: #d1d5db;
-  --n-fill-color: #22c55e;
-  --n-fill-color-hover: #16a34a;
-  --n-handle-color: #22c55e;
+  --n-rail-color: var(--qqm-border, #e5e7eb);
+  --n-rail-color-hover: color-mix(
+    in srgb,
+    var(--qqm-primary, #22c55e) 14%,
+    var(--qqm-border, #d1d5db)
+  );
+  --n-fill-color: var(--qqm-primary, #22c55e);
+  --n-fill-color-hover: var(--qqm-primary-strong, #16a34a);
+  --n-handle-color: var(--qqm-primary, #22c55e);
   --n-handle-box-shadow: none;
 
   .n-slider-handle {

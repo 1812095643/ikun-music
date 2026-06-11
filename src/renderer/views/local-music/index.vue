@@ -377,19 +377,11 @@ onMounted(async () => {
 }
 
 .qqm-primary-button {
-  background: linear-gradient(
-    180deg,
-    var(--qqm-primary, #22c55e),
-    var(--qqm-primary-strong, #16a34a)
-  );
+  background: var(--qqm-primary, #22c55e);
 }
 
 .qqm-primary-button:hover:not(:disabled) {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--qqm-primary, #22c55e) 92%, white),
-    var(--qqm-primary-strong, #16a34a)
-  );
+  background: var(--qqm-primary-strong, #16a34a);
 }
 
 .local-remove-button:hover {

@@ -929,11 +929,7 @@ const formatSong = (item: any) => {
 .hero-section {
   min-height: 200px;
   border-bottom: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, var(--qqm-bg)),
-    var(--qqm-bg)
-  );
+  background: var(--qqm-bg);
 }
 
 /* Action Bar Sticky Behavior */
@@ -950,13 +946,7 @@ const formatSong = (item: any) => {
 }
 
 .artist-hero-wash {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--qqm-bg, #f7f8fa) 94%, transparent) 0%,
-      var(--qqm-bg, #f7f8fa) 72%
-    ),
-    color-mix(in srgb, var(--qqm-surface, #ffffff) 92%, transparent);
+  background: color-mix(in srgb, var(--qqm-bg, #f7f8fa) 94%, transparent);
   backdrop-filter: blur(14px) saturate(1.04);
 }
 
@@ -1001,21 +991,21 @@ const formatSong = (item: any) => {
 
 .dark .action-bar {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, transparent);
-  background: color-mix(in srgb, #050505 96%, var(--qqm-primary, #22c55e) 4%);
+  background: color-mix(in srgb, var(--qqm-surface, #050505) 96%, var(--qqm-primary, #22c55e) 4%);
 }
 
 .dark .artist-secondary-button,
 .dark .artist-tool-button {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, transparent);
-  background: rgba(10, 10, 10, 0.9);
-  color: #d4d4d4;
+  background: color-mix(in srgb, var(--qqm-surface, #101112) 90%, transparent);
+  color: var(--qqm-text, #d4d4d4);
 }
 
 .dark .artist-secondary-button:hover,
 .dark .artist-tool-button:hover,
 .dark .artist-tool-button-active {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);
-  background: color-mix(in srgb, #050505 86%, var(--qqm-primary, #22c55e) 14%);
+  background: color-mix(in srgb, var(--qqm-surface, #050505) 86%, var(--qqm-primary, #22c55e) 14%);
   color: var(--qqm-primary, #22c55e);
 }
 
@@ -1027,13 +1017,7 @@ const formatSong = (item: any) => {
 }
 
 .dark .artist-hero-wash {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--qqm-bg, #050505) 92%, transparent) 0%,
-      var(--qqm-bg, #050505) 72%
-    ),
-    color-mix(in srgb, var(--qqm-surface, #101112) 90%, transparent);
+  background: color-mix(in srgb, var(--qqm-bg, #050505) 92%, transparent);
 }
 
 .artist-tab-indicator {

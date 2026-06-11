@@ -407,11 +407,7 @@ const isArtist = (profile: any) => {
 .hero-section {
   min-height: 200px;
   border-bottom: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, var(--qqm-bg)),
-    var(--qqm-bg)
-  );
+  background: var(--qqm-bg);
 }
 
 .user-avatar-surface {

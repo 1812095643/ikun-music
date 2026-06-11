@@ -296,7 +296,7 @@ const selectSpeed = (speed: number) => {
   border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(20, 24, 31, 0.08)) 78%, #fff 22%);
   border-radius: 12px;
   background: color-mix(in srgb, var(--qqm-surface, #fff) 92%, transparent);
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 12px 30px color-mix(in srgb, var(--qqm-text, #1f2329) 7%, transparent);
   backdrop-filter: blur(14px) saturate(1.12);
   max-width: 600px;
   margin: 0 auto;
