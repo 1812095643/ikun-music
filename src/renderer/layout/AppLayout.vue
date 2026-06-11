@@ -167,8 +167,8 @@ provide('openPlaylistDrawer', openPlaylistDrawer);
 }
 
 .main {
-  @apply overflow-hidden flex-1 flex flex-col;
-  position: relative;
+  @apply min-w-0 flex-1 flex flex-col;
+  overflow: hidden;
   background: var(--layout-shell-bg);
 }
 
@@ -177,34 +177,12 @@ provide('openPlaylistDrawer', openPlaylistDrawer);
   position: relative;
   z-index: 1;
   background: var(--qqm-bg, #f7f8fa);
-  border-top-left-radius: 16px;
+  border-top: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  border-left: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  border-top-left-radius: 18px;
 }
 
-.main-content::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -16px;
-  width: 16px;
-  height: 16px;
-  background: var(--layout-shell-bg);
-  pointer-events: none;
-}
-
-.main-content::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -16px;
-  width: 16px;
-  height: 16px;
-  border-top-right-radius: 16px;
-  background: var(--qqm-bg, #f7f8fa);
-  pointer-events: none;
-}
-
-:global(.dark) .main-content,
-:global(.dark) .main-content::after {
+:global(.dark) .main-content {
   background: var(--qqm-bg, #050505);
 }
 
