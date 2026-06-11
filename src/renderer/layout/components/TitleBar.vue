@@ -193,6 +193,12 @@ const drag = (event: MouseEvent) => {
 #title-bar {
   -webkit-app-region: drag;
   z-index: 3000;
+  height: 40px;
+  align-items: center;
+  background: var(
+    --layout-shell-bg,
+    color-mix(in srgb, var(--qqm-bg, #f7f8fa) 92%, var(--qqm-surface, #ffffff))
+  );
 }
 
 #buttons {

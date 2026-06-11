@@ -141,27 +141,71 @@ provide('openPlaylistDrawer', openPlaylistDrawer);
 
 <style lang="scss" scoped>
 .layout-page {
-  @apply w-screen h-screen overflow-hidden bg-light dark:bg-black;
+  @apply w-screen h-screen overflow-hidden;
+  --layout-shell-bg: color-mix(in srgb, var(--qqm-bg, #f7f8fa) 92%, var(--qqm-surface, #ffffff));
+  background: var(--layout-shell-bg);
+}
+
+:global(.dark) .layout-page {
+  --layout-shell-bg: color-mix(in srgb, var(--qqm-bg, #050505) 88%, var(--qqm-surface, #101112));
 }
 
 .layout-main {
   @apply w-full h-full relative text-neutral-900 dark:text-neutral-100;
+  background: var(--layout-shell-bg);
 }
 
 .layout-main-page {
-  @apply flex h-full;
+  @apply flex;
+  height: calc(100% - 40px);
+  background: var(--layout-shell-bg);
 }
 
 .menu {
-  @apply h-full bg-light dark:bg-black;
+  @apply h-full;
+  background: var(--layout-shell-bg);
 }
 
 .main {
   @apply overflow-hidden flex-1 flex flex-col;
+  position: relative;
+  background: var(--layout-shell-bg);
 }
 
 .main-content {
   @apply flex-1 overflow-hidden;
+  position: relative;
+  z-index: 1;
+  background: var(--qqm-bg, #f7f8fa);
+  border-top-left-radius: 16px;
+}
+
+.main-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -16px;
+  width: 16px;
+  height: 16px;
+  background: var(--layout-shell-bg);
+  pointer-events: none;
+}
+
+.main-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -16px;
+  width: 16px;
+  height: 16px;
+  border-top-right-radius: 16px;
+  background: var(--qqm-bg, #f7f8fa);
+  pointer-events: none;
+}
+
+:global(.dark) .main-content,
+:global(.dark) .main-content::after {
+  background: var(--qqm-bg, #050505);
 }
 
 .main-page {

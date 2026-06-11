@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-2 pb-4 pr-4 pl-1">
+  <div class="flex items-center gap-2 px-4 search-bar-shell">
     <!-- ── LEFT: Tabs（搜索展开时隐藏）─────────────── -->
     <transition name="tab-slide">
       <div
@@ -516,6 +516,14 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.search-bar-shell {
+  min-height: 52px;
+  background: var(
+    --layout-shell-bg,
+    color-mix(in srgb, var(--qqm-bg, #f7f8fa) 92%, var(--qqm-surface, #ffffff))
+  );
+}
+
 /* ── Tab track ───────────────────────────────────────── */
 .tabs-track {
   position: relative;

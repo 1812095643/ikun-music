@@ -123,6 +123,10 @@ const toggleMenu = () => {
 <style lang="scss" scoped>
 .app-menu {
   width: 56px;
+  background: var(
+    --layout-shell-bg,
+    color-mix(in srgb, var(--qqm-bg, #f7f8fa) 92%, var(--qqm-surface, #ffffff))
+  );
   height: 100%;
   padding: 8px 6px 14px;
   display: flex;
@@ -185,7 +189,7 @@ const toggleMenu = () => {
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  color: #8b929c;
+  color: var(--qqm-muted, #8b929c);
   transition:
     background-color 0.24s cubic-bezier(0.2, 0.9, 0.2, 1),
     color 0.24s cubic-bezier(0.2, 0.9, 0.2, 1),
@@ -215,7 +219,7 @@ const toggleMenu = () => {
   width: 3px;
   height: 17px;
   border-radius: 999px;
-  background: #22c55e;
+  background: var(--qqm-primary, #22c55e);
   box-shadow: none;
   transform: translateY(-50%) scaleY(1);
   transform-origin: center;
