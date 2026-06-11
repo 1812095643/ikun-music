@@ -876,11 +876,7 @@ onMounted(checkCollectionStatus);
   border: 1px solid var(--qqm-border);
   border-right: 0;
   border-left: 0;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--qqm-primary, #22c55e) 3%, var(--qqm-bg)),
-    var(--qqm-bg)
-  );
+  background: var(--qqm-bg);
 }
 
 .cover-container {
@@ -924,12 +920,8 @@ onMounted(checkCollectionStatus);
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, #ffffff),
-    #ffffff
-  );
-  color: color-mix(in srgb, var(--qqm-primary, #22c55e) 72%, #111827 28%);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface, #ffffff));
+  color: color-mix(in srgb, var(--qqm-primary, #22c55e) 72%, var(--qqm-text, #111827) 28%);
 }
 
 .cover-empty-state i {
@@ -944,12 +936,8 @@ onMounted(checkCollectionStatus);
 }
 
 .dark .cover-empty-state {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, #101010),
-    #101010
-  );
-  color: color-mix(in srgb, var(--qqm-primary, #22c55e) 80%, #f5f5f5 20%);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 9%, var(--qqm-surface, #101010));
+  color: color-mix(in srgb, var(--qqm-primary, #22c55e) 80%, var(--qqm-text, #f5f5f5) 20%);
 }
 
 .action-bar {
@@ -1013,7 +1001,7 @@ onMounted(checkCollectionStatus);
   padding: 16px 18px;
   border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, transparent);
   border-radius: 12px;
-  background: color-mix(in srgb, #ffffff 95%, var(--qqm-primary, #22c55e) 5%);
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 95%, var(--qqm-primary, #22c55e) 5%);
 }
 
 .music-list-empty-icon {
@@ -1030,29 +1018,29 @@ onMounted(checkCollectionStatus);
 }
 
 .music-list-empty-title {
-  color: #262626;
+  color: var(--qqm-text, #262626);
   font-size: 15px;
   font-weight: 700;
 }
 
 .music-list-empty-desc {
   margin-top: 4px;
-  color: #737373;
+  color: var(--qqm-muted, #737373);
   font-size: 13px;
   line-height: 1.5;
 }
 
 .dark .music-list-empty-state {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent);
-  background: color-mix(in srgb, #050505 92%, var(--qqm-primary, #22c55e) 8%);
+  background: color-mix(in srgb, var(--qqm-surface, #050505) 92%, var(--qqm-primary, #22c55e) 8%);
 }
 
 .dark .music-list-empty-title {
-  color: #f5f5f5;
+  color: var(--qqm-text, #f5f5f5);
 }
 
 .dark .music-list-empty-desc {
-  color: #a3a3a3;
+  color: var(--qqm-muted, #a3a3a3);
 }
 
 .song-highlight {
@@ -1090,19 +1078,11 @@ onMounted(checkCollectionStatus);
 }
 
 .qqm-primary-button {
-  background: linear-gradient(
-    180deg,
-    var(--qqm-primary, #22c55e),
-    var(--qqm-primary-strong, #16a34a)
-  );
+  background: var(--qqm-primary, #22c55e);
 }
 
 .qqm-primary-button:hover:not(:disabled) {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--qqm-primary, #22c55e) 92%, white),
-    var(--qqm-primary-strong, #16a34a)
-  );
+  background: var(--qqm-primary-strong, #16a34a);
 }
 
 .qqm-subtle-button:hover:not(:disabled) {

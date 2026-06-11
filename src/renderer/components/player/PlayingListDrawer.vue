@@ -181,8 +181,8 @@ const handleDeleteSong = (song: SongResult) => {
 <style lang="scss" scoped>
 .fixed-overlay {
   @apply fixed inset-0 z-[999999];
-  background: rgba(15, 23, 42, 0.06);
-  backdrop-filter: blur(2px);
+  background: color-mix(in srgb, var(--qqm-bg, #f7f8fa) 20%, transparent);
+  backdrop-filter: blur(3px);
   pointer-events: auto; // 允许点击关闭
   cursor: default;
 }
@@ -203,16 +203,16 @@ const handleDeleteSong = (song: SongResult) => {
     opacity: 0;
   }
 
-  background: color-mix(in srgb, var(--qqm-surface, #fff) 88%, transparent);
-  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(20, 24, 31, 0.08)) 78%, #fff 22%);
-  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.1);
-  backdrop-filter: blur(18px) saturate(1.18);
+  background: color-mix(in srgb, var(--qqm-surface, #fff) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(20, 24, 31, 0.08)) 84%, #fff 16%);
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--qqm-text, #1f2329) 8%, transparent);
+  backdrop-filter: blur(22px) saturate(1.12);
 
   &-header {
     @apply flex items-center px-4 py-3;
     gap: 8px;
     border-bottom: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-    background: color-mix(in srgb, var(--qqm-surface, #fff) 82%, transparent);
+    background: color-mix(in srgb, var(--qqm-surface, #fff) 86%, transparent);
 
     .title {
       @apply text-base font-medium text-neutral-800 dark:text-neutral-200;

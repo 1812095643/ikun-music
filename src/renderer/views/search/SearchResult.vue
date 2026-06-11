@@ -498,14 +498,14 @@ watch(
   margin: 18px 0 8px;
   border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 12%, transparent);
   border-radius: 12px;
-  background: color-mix(in srgb, #ffffff 96%, var(--qqm-primary, #22c55e) 4%);
-  color: #737373;
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 96%, var(--qqm-primary, #22c55e) 4%);
+  color: var(--qqm-muted, #737373);
 }
 
 .dark .search-empty-state {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent);
-  background: color-mix(in srgb, #050505 94%, var(--qqm-primary, #22c55e) 6%);
-  color: #a3a3a3;
+  background: color-mix(in srgb, var(--qqm-surface, #050505) 94%, var(--qqm-primary, #22c55e) 6%);
+  color: var(--qqm-muted, #a3a3a3);
 }
 
 .search-empty-icon {
@@ -522,13 +522,13 @@ watch(
 
 .search-empty-title {
   margin-top: 16px;
-  color: #262626;
+  color: var(--qqm-text, #262626);
   font-size: 15px;
   font-weight: 600;
 }
 
 .dark .search-empty-title {
-  color: #f5f5f5;
+  color: var(--qqm-text, #f5f5f5);
 }
 
 .no-scrollbar {
@@ -578,19 +578,11 @@ watch(
 }
 
 .qqm-primary-button {
-  background: linear-gradient(
-    180deg,
-    var(--qqm-primary, #22c55e),
-    var(--qqm-primary-strong, #16a34a)
-  );
+  background: var(--qqm-primary, #22c55e);
 }
 
 .qqm-primary-button:hover:not(:disabled) {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--qqm-primary, #22c55e) 92%, white),
-    var(--qqm-primary-strong, #16a34a)
-  );
+  background: var(--qqm-primary-strong, #16a34a);
 }
 
 .qqm-subtle-button {

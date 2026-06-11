@@ -159,8 +159,10 @@ watch(
     @apply bg-transparent;
     height: auto; /* 自动适应内容高度 */
     max-height: 230px; /* 限制最大高度 */
-    background: color-mix(in srgb, var(--qqm-surface, #ffffff) 92%, transparent);
-    border-top: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+    background: color-mix(in srgb, var(--qqm-surface, #ffffff) 90%, transparent);
+    border-top: 1px solid
+      color-mix(in srgb, var(--qqm-border, rgba(20, 24, 31, 0.08)) 86%, transparent);
+    backdrop-filter: blur(18px) saturate(1.08);
   }
 
   &.play-bar-mini {
@@ -184,11 +186,15 @@ watch(
 
         :deep(.n-slider) {
           --n-rail-height: 3px;
-          --n-rail-color: rgba(255, 255, 255, 0.15);
-          --n-rail-color-dark: rgba(255, 255, 255, 0.15);
-          --n-fill-color: #22c55e;
+          --n-rail-color: color-mix(
+            in srgb,
+            var(--qqm-border, rgba(20, 24, 31, 0.08)) 82%,
+            transparent
+          );
+          --n-rail-color-dark: color-mix(in srgb, #ffffff 12%, transparent);
+          --n-fill-color: var(--qqm-primary, #22c55e);
           --n-handle-size: 0px; /* 隐藏滑块 */
-          --n-handle-color: #22c55e;
+          --n-handle-color: var(--qqm-primary, #22c55e);
 
           &:hover {
             --n-handle-size: 10px; /* 鼠标悬停时显示滑块 */

@@ -672,20 +672,20 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 :deep(.shortcut-modal .n-card) {
-  border-radius: 22px;
+  border-radius: 10px;
   max-height: min(86vh, 920px);
   overflow: hidden;
 }
 
 :deep(.shortcut-modal .n-card-header) {
   padding: 18px 22px 12px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
 }
 
 :deep(.shortcut-modal .n-card-header .n-card-header__main) {
   font-size: 19px;
   font-weight: 700;
-  color: #111827;
+  color: var(--qqm-text, #111827);
 }
 
 :deep(.shortcut-modal .n-card__content) {
@@ -709,9 +709,9 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 12px 14px;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-  background: #ffffff;
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  border-radius: 10px;
+  background: var(--qqm-surface, #ffffff);
   gap: 12px;
   margin-bottom: 12px;
 }
@@ -719,7 +719,7 @@ onUnmounted(() => {
 .shortcut-panel__summary {
   font-size: 13px;
   font-weight: 600;
-  color: #111827;
+  color: var(--qqm-text, #111827);
   margin: 0;
 }
 
@@ -733,7 +733,7 @@ onUnmounted(() => {
 
 .shortcut-panel__tips {
   font-size: 12px;
-  color: #4b5563;
+  color: var(--qqm-muted, #64748b);
   line-height: 1.4;
 }
 
@@ -741,9 +741,9 @@ onUnmounted(() => {
   flex: 1;
   min-height: 0;
   overflow: hidden;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
   border-radius: 10px;
-  background: #f8fafc;
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 94%, var(--qqm-bg, #f7f8fa));
 }
 
 .shortcut-scrollbar {
@@ -755,9 +755,9 @@ onUnmounted(() => {
 }
 
 .shortcut-section {
-  border: 1px solid #dbe2ea;
-  border-radius: 14px;
-  background: #ffffff;
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  border-radius: 10px;
+  background: var(--qqm-surface, #ffffff);
   margin-bottom: 12px;
   overflow: hidden;
   box-shadow: none;
@@ -772,9 +772,9 @@ onUnmounted(() => {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  color: #334155;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
+  color: color-mix(in srgb, var(--qqm-text, #111827) 76%, var(--qqm-muted, #64748b));
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 94%, var(--qqm-bg, #f7f8fa));
+  border-bottom: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
 }
 
 .shortcut-row {
@@ -783,7 +783,8 @@ onUnmounted(() => {
   gap: 12px;
   align-items: center;
   padding: 12px;
-  border-bottom: 1px dashed #e2e8f0;
+  border-bottom: 1px dashed
+    color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 88%, transparent);
 }
 
 .shortcut-row:last-child {
@@ -791,19 +792,19 @@ onUnmounted(() => {
 }
 
 .shortcut-row--error {
-  background: #fff7ed;
+  background: color-mix(in srgb, #f97316 8%, var(--qqm-surface, #ffffff));
 }
 
 .shortcut-row__name {
   font-size: 14px;
   font-weight: 600;
-  color: #111827;
+  color: var(--qqm-text, #111827);
 }
 
 .shortcut-row__desc {
   margin-top: 2px;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--qqm-muted, #64748b);
 }
 
 .shortcut-row__editor {
@@ -816,22 +817,26 @@ onUnmounted(() => {
   width: 100%;
   min-height: 52px;
   padding: 8px 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 12px;
-  background: #ffffff;
+  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  border-radius: 10px;
+  background: var(--qqm-surface, #ffffff);
   text-align: left;
   transition: all 0.2s ease;
 }
 
 .shortcut-recorder:hover,
 .shortcut-recorder:focus-visible {
-  border-color: #14b8a6;
+  border-color: color-mix(
+    in srgb,
+    var(--qqm-primary, #22c55e) 36%,
+    var(--qqm-border, rgba(15, 23, 42, 0.08))
+  );
   box-shadow: none;
   outline: none;
 }
 
 .shortcut-recorder--recording {
-  border-color: #2563eb;
+  border-color: var(--qqm-primary, #22c55e);
   box-shadow: none;
 }
 
@@ -839,14 +844,14 @@ onUnmounted(() => {
   display: block;
   font-size: 13px;
   font-weight: 600;
-  color: #111827;
+  color: var(--qqm-text, #111827);
 }
 
 .shortcut-recorder__hint {
   display: block;
   margin-top: 2px;
   font-size: 11px;
-  color: #6b7280;
+  color: var(--qqm-muted, #64748b);
 }
 
 .shortcut-row__controls {
@@ -864,7 +869,7 @@ onUnmounted(() => {
 .shortcut-panel__footer {
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
 }
 
 .shortcut-warning-list {
@@ -896,103 +901,111 @@ onUnmounted(() => {
 }
 
 :deep(.toolbar-btn--neutral.n-button) {
-  color: #1f2937;
-  background: #e5e7eb;
+  color: var(--qqm-text, #111827);
+  background: color-mix(
+    in srgb,
+    var(--qqm-surface, #ffffff) 88%,
+    var(--qqm-border, rgba(15, 23, 42, 0.08))
+  );
 }
 
 :deep(.toolbar-btn--neutral.n-button:hover) {
-  background: #d1d5db;
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface, #ffffff));
 }
 
 :deep(.toolbar-btn--danger.n-button) {
   color: #fff;
-  background: #ef4444;
+  background: var(--qqm-danger, #ef4444);
 }
 
 :deep(.toolbar-btn--danger.n-button:hover) {
-  background: #dc2626;
+  background: color-mix(in srgb, var(--qqm-danger, #ef4444) 88%, #7f1d1d);
 }
 
 :deep(.toolbar-btn--success.n-button) {
   color: #fff;
-  background: #10b981;
+  background: var(--qqm-primary, #22c55e);
 }
 
 :deep(.toolbar-btn--success.n-button:hover) {
-  background: #059669;
+  background: var(--qqm-primary-strong, #16a34a);
 }
 
 :deep(.footer-btn--cancel.n-button) {
-  color: #334155;
-  background: #e2e8f0;
+  color: color-mix(in srgb, var(--qqm-text, #111827) 76%, var(--qqm-muted, #64748b));
+  background: color-mix(
+    in srgb,
+    var(--qqm-surface, #ffffff) 88%,
+    var(--qqm-border, rgba(15, 23, 42, 0.08))
+  );
 }
 
 :deep(.footer-btn--cancel.n-button:hover) {
-  background: #cbd5e1;
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface, #ffffff));
 }
 
 :deep(.footer-btn--primary.n-button) {
   color: #fff;
-  background: #059669;
+  background: var(--qqm-primary-strong, #16a34a);
 }
 
 :deep(.footer-btn--primary.n-button:hover) {
-  background: #047857;
+  background: var(--qqm-primary-strong, #16a34a);
 }
 
 :deep(.footer-btn--primary.n-button.n-button--disabled) {
-  color: #d1fae5;
-  background: #9ca3af;
+  color: color-mix(in srgb, #ffffff 76%, var(--qqm-primary, #22c55e));
+  background: color-mix(in srgb, var(--qqm-muted, #64748b) 58%, var(--qqm-surface, #ffffff));
   box-shadow: none;
 }
 
 :deep(.dark) .shortcut-panel__summary {
-  color: #f9fafb;
+  color: var(--qqm-text, #f5f5f5);
 }
 
 :deep(.dark) .shortcut-panel__tips {
-  color: #9ca3af;
+  color: var(--qqm-muted, #a3a3a3);
 }
 
 :deep(.dark) .shortcut-modal .n-card {
-  background: #0f172a;
+  background: var(--qqm-surface, #101112);
 }
 
 :deep(.dark) .shortcut-modal .n-card-header {
-  border-bottom-color: #334155;
+  border-bottom-color: color-mix(in srgb, #ffffff 10%, transparent);
 }
 
 :deep(.dark) .shortcut-modal .n-card-header .n-card-header__main {
-  color: #f8fafc;
+  color: var(--qqm-text, #f5f5f5);
 }
 
 :deep(.dark) .shortcut-modal .n-card__content {
-  background: #0f172a;
+  background: var(--qqm-surface, #101112);
 }
 
 :deep(.dark) .shortcut-panel__header {
-  border-color: #334155;
-  background: #0f172a;
+  border-color: color-mix(in srgb, #ffffff 10%, transparent);
+  background: var(--qqm-surface, #101112);
 }
 
 :deep(.dark) .shortcut-panel__content {
-  border-color: #334155;
-  background: #0b1221;
+  border-color: color-mix(in srgb, #ffffff 10%, transparent);
+  background: color-mix(in srgb, var(--qqm-surface, #101112) 94%, #ffffff 3%);
 }
 
 :deep(.dark) .shortcut-section {
-  border-color: #334155;
-  background: #111827;
+  border-color: color-mix(in srgb, #ffffff 10%, transparent);
+  background: var(--qqm-surface, #101112);
 }
 
 :deep(.dark) .shortcut-section__title {
-  color: #cbd5e1;
-  background: #1f2937;
-  border-bottom-color: #334155;
+  color: color-mix(in srgb, var(--qqm-text, #f5f5f5) 76%, var(--qqm-muted, #a3a3a3));
+  background: color-mix(in srgb, var(--qqm-surface, #101112) 84%, var(--qqm-primary, #22c55e) 5%);
+  border-bottom-color: color-mix(in srgb, #ffffff 10%, transparent);
 }
 
 :deep(.dark) .shortcut-row {
-  border-bottom-color: #334155;
+  border-bottom-color: color-mix(in srgb, #ffffff 10%, transparent);
 }
 
 :deep(.dark) .shortcut-row--error {
@@ -1001,51 +1014,51 @@ onUnmounted(() => {
 
 :deep(.dark) .shortcut-row__name,
 :deep(.dark) .shortcut-recorder__value {
-  color: #f9fafb;
+  color: var(--qqm-text, #f5f5f5);
 }
 
 :deep(.dark) .shortcut-row__desc,
 :deep(.dark) .shortcut-recorder__hint {
-  color: #9ca3af;
+  color: var(--qqm-muted, #a3a3a3);
 }
 
 :deep(.dark) .shortcut-recorder {
-  border-color: #4b5563;
-  background: #0f172a;
+  border-color: color-mix(in srgb, #ffffff 12%, transparent);
+  background: color-mix(in srgb, var(--qqm-surface, #101112) 92%, #ffffff 4%);
   box-shadow: none;
 }
 
 :deep(.dark) .shortcut-panel__footer {
-  border-top-color: #334155;
+  border-top-color: color-mix(in srgb, #ffffff 10%, transparent);
 }
 
 :deep(.dark) .toolbar-btn--neutral.n-button {
-  color: #e2e8f0;
-  background: #334155;
+  color: var(--qqm-text, #f5f5f5);
+  background: color-mix(in srgb, var(--qqm-surface, #101112) 92%, #ffffff 6%);
 }
 
 :deep(.dark) .toolbar-btn--neutral.n-button:hover {
-  background: #475569;
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface, #101112));
 }
 
 :deep(.dark) .footer-btn--cancel.n-button {
-  color: #e2e8f0;
-  background: #334155;
+  color: var(--qqm-text, #f5f5f5);
+  background: color-mix(in srgb, var(--qqm-surface, #101112) 92%, #ffffff 6%);
 }
 
 :deep(.dark) .footer-btn--cancel.n-button:hover {
-  background: #475569;
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface, #101112));
 }
 
 :deep(.dark) .shortcut-count-tag {
-  background: rgba(16, 185, 129, 0.14);
-  color: #6ee7b7;
-  border-color: rgba(16, 185, 129, 0.36);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
+  color: var(--qqm-primary, #22c55e);
+  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 28%, transparent);
 }
 
 :deep(.dark) .footer-btn--primary.n-button.n-button--disabled {
-  color: #cbd5e1;
-  background: #475569;
+  color: color-mix(in srgb, var(--qqm-text, #f5f5f5) 76%, var(--qqm-muted, #a3a3a3));
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface, #101112));
 }
 
 @media (max-width: 900px) {

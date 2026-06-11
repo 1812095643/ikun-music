@@ -142,7 +142,7 @@ const onPlayMusic = () => {
 
 <style lang="scss" scoped>
 .list-song-item {
-  padding: 0.5rem; /* p-2 */
+  padding: 0.5rem;
   border-radius: 0.5rem;
   margin-bottom: 0.25rem;
   border-width: 1px;
@@ -157,10 +157,10 @@ const onPlayMusic = () => {
   }
 
   .song-item-img {
-    width: 2.5rem; /* w-10 */
-    height: 2.5rem; /* h-10 */
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 0.5rem;
-    margin-right: 0.75rem; /* mr-3 */
+    margin-right: 0.75rem;
   }
 
   .song-item-content {
@@ -172,33 +172,33 @@ const onPlayMusic = () => {
       display: flex;
       align-items: center;
       flex: 1;
-      font-size: 0.875rem; /* text-sm */
+      font-size: 0.875rem;
       line-height: 1.25rem;
     }
 
     &-title {
       flex-shrink: 0;
       max-width: 45%;
-      color: rgb(23 23 23); /* text-neutral-900 */
+      color: var(--qqm-text, rgb(23 23 23));
     }
 
     &-divider {
-      margin-left: 0.5rem; /* mx-2 */
+      margin-left: 0.5rem;
       margin-right: 0.5rem;
-      color: rgb(115 115 115); /* text-neutral-500 */
+      color: var(--qqm-muted, rgb(115 115 115));
     }
 
     &-name {
       flex: 1;
       min-width: 0;
-      color: rgb(115 115 115); /* text-neutral-500 */
+      color: var(--qqm-muted, rgb(115 115 115));
     }
   }
 
   .song-item-operating-list {
     display: flex;
     align-items: center;
-    gap: 0.5rem; /* gap-2 */
+    gap: 0.5rem;
 
     &-like {
       cursor: pointer;
@@ -211,21 +211,21 @@ const onPlayMusic = () => {
 
       .iconfont {
         font-size: 1rem;
-        color: rgb(115 115 115); /* text-neutral-500 */
+        color: var(--qqm-muted, rgb(115 115 115));
 
         &:hover {
-          color: rgb(239 68 68);
+          color: var(--qqm-danger, rgb(239 68 68));
         }
       }
 
       .like-active {
-        color: rgb(239 68 68) !important;
+        color: var(--qqm-danger, rgb(239 68 68)) !important;
       }
     }
 
     &-play {
-      width: 1.75rem; /* w-7 */
-      height: 1.75rem; /* h-7 */
+      width: 1.75rem;
+      height: 1.75rem;
       cursor: pointer;
       transition-property: transform;
       transition-duration: 0.15s;
@@ -239,12 +239,12 @@ const onPlayMusic = () => {
       }
 
       .iconfont {
-        font-size: 1rem; /* text-base */
+        font-size: 1rem;
       }
 
       &.bg-primary {
-        background-color: var(--qqm-primary, rgb(34 197 94));
-        color: rgb(245 245 245);
+        background-color: var(--qqm-primary, #22c55e);
+        color: var(--qqm-on-primary, rgb(245 245 245));
       }
     }
   }
@@ -261,17 +261,17 @@ const onPlayMusic = () => {
 
   .song-item-content {
     &-title {
-      color: rgb(245 245 245);
+      color: var(--qqm-on-primary, rgb(245 245 245));
     }
 
     &-divider,
     &-name {
-      color: rgb(163 163 163); /* dark:text-neutral-400 */
+      color: var(--qqm-muted, rgb(163 163 163));
     }
   }
 
   .song-item-operating-list-like .iconfont {
-    color: rgb(163 163 163); /* dark:text-neutral-400 */
+    color: var(--qqm-muted, rgb(163 163 163));
   }
 }
 

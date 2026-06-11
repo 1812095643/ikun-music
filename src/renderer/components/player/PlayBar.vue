@@ -377,14 +377,17 @@ const openPlayListDrawer = () => {
 
 .music-play-bar {
   @apply h-[76px] w-full absolute bottom-0 left-0 flex items-center box-border px-7 py-2 pt-3;
-  @apply bg-light dark:bg-dark;
-  border-top: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 92%, transparent);
+  border-top: 1px solid
+    color-mix(in srgb, var(--qqm-border, rgba(20, 24, 31, 0.08)) 86%, transparent);
   box-shadow: none;
+  backdrop-filter: blur(18px) saturate(1.08);
   z-index: 9999;
   animation-duration: 0.24s !important;
 
   &.play-bar-opcity {
     @apply bg-transparent !important;
+    backdrop-filter: none;
     box-shadow: none;
   }
 
@@ -444,11 +447,11 @@ const openPlayListDrawer = () => {
   &-play {
     @apply flex justify-center items-center w-11 h-11 rounded-lg transition-colors;
     color: var(--qqm-primary-strong, #0dbd62);
-    background: var(--qqm-primary-soft, rgba(30, 207, 115, 0.1));
-    border: 1px solid rgba(30, 207, 115, 0.18);
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent);
 
     &:hover {
-      background: rgba(30, 207, 115, 0.16);
+      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 15%, transparent);
     }
   }
 }
@@ -522,7 +525,7 @@ const openPlayListDrawer = () => {
 
     &:hover {
       color: var(--qqm-primary-strong, #0dbd62);
-      background: var(--qqm-primary-soft, rgba(30, 207, 115, 0.1));
+      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
     }
   }
 }
