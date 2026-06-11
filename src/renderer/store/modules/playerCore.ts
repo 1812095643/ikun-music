@@ -315,7 +315,7 @@ export const usePlayerCoreStore = defineStore(
           ''
         )}`;
       }
-      document.title = 'AlgerMusic - ' + title;
+      document.title = 'ikun音乐 - ' + title;
 
       try {
         // 添加到历史记录

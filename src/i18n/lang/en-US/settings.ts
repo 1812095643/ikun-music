@@ -9,7 +9,7 @@ export default {
     application: 'Application Settings',
     network: 'Network Settings',
     system: 'System Management',
-    donation: 'Donation',
+    donation: 'Support',
     about: 'About'
   },
   basic: {
@@ -278,9 +278,9 @@ export default {
     hasUpdate: 'New version available',
     gotoUpdate: 'Go to Update',
     manualUpdate: 'Manual Update',
-    gotoGithub: 'Go to Github',
-    author: 'Author',
-    authorDesc: 'algerkong Give a star🌟',
+    gotoGithub: 'View updates',
+    author: 'Brand',
+    authorDesc: 'ikun Music',
     messages: {
       checkError: 'Failed to check for updates, please try again later'
     }

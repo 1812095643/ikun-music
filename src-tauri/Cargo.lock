@@ -18,7 +18,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "alger-music-player-tauri"
+name = "ikun-music-tauri"
 version = "5.1.0"
 dependencies = [
  "serde",

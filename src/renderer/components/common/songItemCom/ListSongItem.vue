@@ -62,21 +62,20 @@
     <!-- 操作插槽 -->
     <template #operating>
       <div class="song-item-operating-list">
-        <div v-if="favorite" class="song-item-operating-list-like">
-          <i
-            class="iconfont icon-likefill"
-            :class="{ 'like-active': isFavorite }"
-            @click.stop="onToggleFavorite"
-          ></i>
-        </div>
-        <div
-          class="song-item-operating-list-play song-operating-surface"
-          :class="{ 'bg-primary': isPlaying, 'is-loading': playLoading }"
+        <button
+          class="song-action-btn"
+          :class="{ 'song-action-btn--playing': isPlaying }"
           @click="onPlayMusic"
         >
           <i v-if="isPlaying && play" class="iconfont icon-stop"></i>
           <i v-else class="iconfont icon-playfill"></i>
-        </div>
+        </button>
+        <button class="song-action-btn" @click.stop="onPlayNext">
+          <i class="ri-add-line"></i>
+        </button>
+        <button class="song-action-btn" @click.stop="onMenuClick">
+          <i class="ri-file-copy-line"></i>
+        </button>
       </div>
     </template>
   </base-song-item>
@@ -120,8 +119,6 @@ const baseItem = ref<InstanceType<typeof BaseSongItem>>();
 // 从基础组件获取响应式状态
 const play = computed(() => playerStore.isPlay);
 const isPlaying = computed(() => baseItem.value?.isPlaying || false);
-const playLoading = computed(() => baseItem.value?.playLoading || false);
-const isFavorite = computed(() => baseItem.value?.isFavorite || false);
 const artists = computed(() => baseItem.value?.artists || []);
 
 // 包装方法，避免直接访问可能为undefined的ref
@@ -131,13 +128,14 @@ const onToggleSelect = () => {
 };
 const onImageLoad = (event: Event) => baseItem.value?.imageLoad(event);
 const onArtistClick = (id: number) => baseItem.value?.handleArtistClick(id);
-const onToggleFavorite = (event: Event) => {
-  baseItem.value?.toggleFavorite(event);
-};
 const onPlayMusic = () => {
   baseItem.value?.playMusicEvent(props.item);
   emit('play', props.item);
 };
+const onPlayNext = () => {
+  baseItem.value?.handlePlayNext();
+};
+const onMenuClick = (event: MouseEvent) => baseItem.value?.handleMenuClick(event);
 </script>
 
 <style lang="scss" scoped>
@@ -196,57 +194,10 @@ const onPlayMusic = () => {
   }
 
   .song-item-operating-list {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-
-    &-like {
-      cursor: pointer;
-      transition-property: transform;
-      transition-duration: 0.15s;
-
-      &:hover {
-        background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, transparent);
-      }
-
-      .iconfont {
-        font-size: 1rem;
-        color: var(--qqm-muted, rgb(115 115 115));
-
-        &:hover {
-          color: var(--qqm-danger, rgb(239 68 68));
-        }
-      }
-
-      .like-active {
-        color: var(--qqm-danger, rgb(239 68 68)) !important;
-      }
-    }
-
-    &-play {
-      width: 1.75rem;
-      height: 1.75rem;
-      cursor: pointer;
-      transition-property: transform;
-      transition-duration: 0.15s;
-      border-radius: 9px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      &:hover {
-        background-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, transparent);
-      }
-
-      .iconfont {
-        font-size: 1rem;
-      }
-
-      &.bg-primary {
-        background-color: var(--qqm-primary, #22c55e);
-        color: var(--qqm-on-primary, rgb(245 245 245));
-      }
-    }
+    gap: 6px;
+    margin-left: clamp(24px, 5vw, 72px);
   }
 }
 
@@ -269,18 +220,32 @@ const onPlayMusic = () => {
       color: var(--qqm-muted, rgb(163 163 163));
     }
   }
-
-  .song-item-operating-list-like .iconfont {
-    color: var(--qqm-muted, rgb(163 163 163));
-  }
 }
 
-.is-loading {
-  opacity: 0.72;
+.song-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid color-mix(in srgb, var(--qqm-muted, #8a9099) 34%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--qqm-muted, #8a9099);
+  cursor: pointer;
+  font-size: 17px;
+  transition:
+    background-color 180ms var(--qqm-ease, ease),
+    border-color 180ms var(--qqm-ease, ease),
+    color 180ms var(--qqm-ease, ease),
+    transform 180ms var(--qqm-ease, ease);
 }
 
-.song-operating-surface {
-  border: 1px solid var(--qqm-border);
-  background: var(--qqm-surface);
+.song-action-btn:hover,
+.song-action-btn--playing {
+  border-color: var(--qqm-primary, #22c55e);
+  color: var(--qqm-primary-strong, #0dbd62);
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, transparent);
+  transform: translateY(-1px);
 }
 </style>

@@ -95,7 +95,7 @@ export default {
     wechatQR: 'Wechat QR code',
     coffeeDesc: 'A cup of coffee, a support',
     coffeeDescLinkText: 'View more',
-    groupText: 'Wechat Public Account: AlgerMusic',
+    groupText: 'Wechat Public Account: ikun Music',
     messages: {
       copySuccess: 'Copied to clipboard'
     },

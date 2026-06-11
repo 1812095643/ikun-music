@@ -215,9 +215,7 @@ const fetchDonors = async () => {
   }
 };
 
-const toDonateList = () => {
-  window.open('http://donate.alger.fun/download', '_blank');
-};
+const toDonateList = () => {};
 
 onMounted(() => fetchDonors());
 onActivated(() => fetchDonors());

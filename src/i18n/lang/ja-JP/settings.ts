@@ -9,7 +9,7 @@ export default {
     application: 'アプリケーション設定',
     network: 'ネットワーク設定',
     system: 'システム管理',
-    donation: '寄付サポート',
+    donation: 'プロジェクト支援',
     about: 'について'
   },
   basic: {
@@ -277,9 +277,9 @@ export default {
     hasUpdate: '新しいバージョンが見つかりました',
     gotoUpdate: '更新へ',
     manualUpdate: '手動更新',
-    gotoGithub: 'Githubへ',
-    author: '作者',
-    authorDesc: 'algerkong スターを付けてください🌟',
+    gotoGithub: '更新を表示',
+    author: '品牌',
+    authorDesc: 'ikun音楽',
     messages: {
       checkError: '更新確認に失敗しました。後でもう一度お試しください'
     }

@@ -177,7 +177,7 @@ const send = (channel: string, ...args: any[]) => {
       if ('Notification' in window) {
         void Notification.requestPermission().then((permission) => {
           if (permission === 'granted')
-            new Notification(args[0]?.title || 'AlgerMusicPlayer', { body: args[0]?.body });
+            new Notification(args[0]?.title || 'ikun音乐', { body: args[0]?.body });
         });
       }
       break;

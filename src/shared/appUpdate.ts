@@ -8,8 +8,7 @@ export const APP_UPDATE_STATUS = {
   error: 'error'
 } as const;
 
-export const APP_UPDATE_RELEASE_URL =
-  'https://github.com/algerkong/AlgerMusicPlayer/releases/latest';
+export const APP_UPDATE_RELEASE_URL = 'https://example.invalid/ikun-music/releases/latest';
 
 export type AppUpdateStatus = (typeof APP_UPDATE_STATUS)[keyof typeof APP_UPDATE_STATUS];
 

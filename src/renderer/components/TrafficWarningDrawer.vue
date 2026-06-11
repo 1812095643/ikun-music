@@ -9,7 +9,7 @@
     :mask-closable="false"
   >
     <n-drawer-content
-      title="欢迎使用 AlgerMusicPlayer"
+      title="欢迎使用 ikun音乐"
       closable
       :native-scrollbar="false"
       class="mac-style-drawer"
@@ -38,7 +38,7 @@
             >
               <i class="ri-file-text-line mr-1"></i> 查看使用文档
             </a>
-            <a href="http://donate.alger.fun/download" target="_blank" class="download-link">
+            <a href="#" target="_blank" class="download-link">
               <i class="ri-download-2-line mr-1"></i> 立即下载
             </a>
           </div>

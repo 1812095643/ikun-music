@@ -163,7 +163,7 @@ const handleUpdate = async () => {
   const version = updateInfo.value.latestVersion;
 
   // Android APK 下载地址
-  const downloadUrl = `https://github.com/algerkong/AlgerMusicPlayer/releases/download/v${version}/AlgerMusicPlayer-${version}.apk`;
+  const downloadUrl = `https://example.invalid/ikun-music/releases/download/v${version}/ikun-music-${version}.apk`;
 
   try {
     // 获取代理节点
@@ -183,7 +183,7 @@ const handleUpdate = async () => {
     // 回退到直接打开 GitHub Releases
     const releaseUrl =
       updateInfo.value.releaseInfo?.html_url ||
-      'https://github.com/algerkong/AlgerMusicPlayer/releases/latest';
+      'https://example.invalid/ikun-music/releases/latest';
     window.open(releaseUrl, '_blank');
     closeModal();
   }

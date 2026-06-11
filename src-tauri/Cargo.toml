@@ -1,8 +1,7 @@
 [package]
-name = "alger-music-player-tauri"
+name = "ikun-music-tauri"
 version = "5.1.0"
-description = "Alger Music Player Tauri"
-authors = ["Alger <algerkc@qq.com>"]
+description = "ikun音乐 Tauri"
 edition = "2021"
 
 [lib]

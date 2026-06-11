@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "AlgerMusicPlayer",
+  "productName": "ikun音乐",
   "version": "5.1.0",
-  "identifier": "com.alger.music",
+  "identifier": "com.ikun.music",
   "build": {
     "beforeDevCommand": "npm run dev:web",
     "beforeBuildCommand": "npm run build:web",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "AlgerMusicPlayer",
+        "title": "ikun音乐",
         "width": 1280,
         "height": 840,
         "minWidth": 960,

@@ -12,7 +12,7 @@
           <img src="@/assets/logo.png" alt="App Icon" />
         </div>
         <div class="app-info">
-          <h2 class="app-name">Alger Music Player {{ config.version }}</h2>
+          <h2 class="app-name">ikun音乐 {{ config.version }}</h2>
           <p class="app-desc mb-2">{{ t('comp.installApp.description') }}</p>
           <n-checkbox v-model:checked="noPrompt">{{ t('comp.installApp.noPrompt') }}</n-checkbox>
         </div>
@@ -24,18 +24,6 @@
         <n-button type="primary" class="install-btn" @click="handleInstall">{{
           t('comp.installApp.install')
         }}</n-button>
-      </div>
-      <div class="modal-desc mt-4 text-center">
-        <p class="text-xs text-neutral-400">
-          {{ t('comp.installApp.downloadProblem') }}
-          <a
-            class="text-primary"
-            target="_blank"
-            href="https://github.com/algerkong/AlgerMusicPlayer/releases"
-            >GitHub</a
-          >
-          {{ t('comp.installApp.downloadProblemLinkText') }}
-        </p>
       </div>
     </div>
   </n-modal>
@@ -76,7 +64,7 @@ onMounted(async () => {
 });
 
 const handleInstall = async (): Promise<void> => {
-  window.open('http://donate.alger.fun/download', '_blank');
+  closeModal();
 };
 </script>
 

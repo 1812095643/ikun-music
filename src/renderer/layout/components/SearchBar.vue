@@ -189,22 +189,9 @@
           <div class="menu-row" @click="selectItem('refresh')">
             <i class="ri-refresh-line" /><span>{{ t('comp.searchBar.refresh') }}</span>
           </div>
-          <div class="menu-sep" />
-          <div class="menu-row" @click="toGithubRelease">
-            <i class="ri-github-fill" /><span>{{ t('comp.searchBar.currentVersion') }}</span>
-            <span class="ver-chip ml-auto">{{ updateInfo.currentVersion }}</span>
-            <n-tag v-if="updateInfo.hasUpdate" type="success" size="small" class="ml-1">New</n-tag>
-          </div>
         </div>
       </div>
     </n-popover>
-
-    <!-- GitHub -->
-    <coffee :alipay-q-r="alipay" :wechat-q-r="wechat">
-      <button class="action-btn" @click="toGithub">
-        <i class="ri-github-fill" />
-      </button>
-    </coffee>
   </div>
 </template>
 
@@ -217,9 +204,6 @@ import { useRoute, useRouter } from 'vue-router';
 import { getSearchKeyword } from '@/api/home';
 import { getUserDetail } from '@/api/login';
 import { getSearchSuggestions } from '@/api/search';
-import alipay from '@/assets/alipay.png';
-import wechat from '@/assets/wechat.png';
-import Coffee from '@/components/Coffee.vue';
 import { SEARCH_TYPES, USER_SET_OPTIONS } from '@/const/bar-const';
 import { useDownloadStatus } from '@/hooks/useDownloadStatus';
 import { useZoom } from '@/hooks/useZoom';
@@ -465,10 +449,6 @@ watchEffect(() => {
 
 const restartApp = () => window.electron.ipcRenderer.send('restart');
 const toLogin = () => router.push('/user');
-const toGithub = () => window.open('http://donate.alger.fun/download', '_blank');
-const toGithubRelease = () => {
-  window.location.href = 'https://donate.alger.fun/download';
-};
 
 const isDark = computed({
   get: () => settingsStore.theme === 'dark',

@@ -71,13 +71,11 @@ const { t } = useI18n();
 
 const message = useMessage();
 const copyText = () => {
-  navigator.clipboard.writeText('AlgerMusic');
+  navigator.clipboard.writeText('ikun音乐');
   message.success(t('common.copySuccess'));
 };
 
-const toDonateList = () => {
-  window.open('http://donate.alger.fun/download', '_blank');
-};
+const toDonateList = () => {};
 
 defineProps({
   alipayQR: {

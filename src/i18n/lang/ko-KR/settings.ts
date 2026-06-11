@@ -9,7 +9,7 @@ export default {
     application: '애플리케이션 설정',
     network: '네트워크 설정',
     system: '시스템 관리',
-    donation: '후원 지원',
+    donation: '프로젝트 지원',
     about: '정보'
   },
   basic: {
@@ -278,9 +278,9 @@ export default {
     hasUpdate: '새 버전 발견',
     gotoUpdate: '업데이트하러 가기',
     manualUpdate: '수동 업데이트',
-    gotoGithub: 'Github로 이동',
-    author: '작성자',
-    authorDesc: 'algerkong 별점🌟 부탁드려요',
+    gotoGithub: '업데이트 보기',
+    author: '브랜드',
+    authorDesc: 'ikun 음악',
     messages: {
       checkError: '업데이트 확인 실패, 나중에 다시 시도하세요'
     }

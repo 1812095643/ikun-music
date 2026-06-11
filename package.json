@@ -1,9 +1,7 @@
 {
-  "name": "AlgerMusicPlayer",
+  "name": "ikun-music",
   "version": "5.1.0",
-  "description": "Alger Music Player",
-  "author": "Alger <algerkc@qq.com>",
-  "homepage": "https://github.com/algerkong/AlgerMusicPlayer",
+  "description": "ikun音乐",
   "scripts": {
     "prepare": "husky",
     "format": "prettier --write ./src/renderer",
