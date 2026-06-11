@@ -589,7 +589,6 @@ const currentLoginType = computed(() => userStore.loginType);
 
       .playlist-creator-tag {
         @apply inline-flex items-center justify-center px-2 rounded-md text-xs;
-        @apply bg-primary/10 dark:bg-primary/15;
         color: var(--qqm-primary, #22c55e);
         @apply border;
         border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, transparent);

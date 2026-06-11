@@ -80,7 +80,7 @@
               <n-button
                 quaternary
                 circle
-                class="!text-white hover:!bg-white/10"
+                class="mv-close-button !text-white"
                 @click.stop="handleClose"
               >
                 <template #icon>
@@ -588,5 +588,9 @@ onUnmounted(() => {
   border: 1px solid color-mix(in srgb, #ffffff 14%, transparent);
   background: color-mix(in srgb, #0f172a 46%, transparent);
   backdrop-filter: blur(12px) saturate(1.08);
+}
+
+.mv-close-button:hover {
+  background: color-mix(in srgb, #ffffff 10%, transparent) !important;
 }
 </style>

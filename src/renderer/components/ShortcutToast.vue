@@ -90,9 +90,10 @@ defineExpose({
 
   &-content {
     @apply flex flex-col items-center gap-2 p-4 rounded-lg;
-    @apply bg-light-200 bg-opacity-70 dark:bg-dark-200 dark:bg-opacity-90;
-    @apply text-dark-100 dark:text-light-100;
-    @apply border border-black/5 dark:border-white/10;
+    color: var(--qqm-text, #111827);
+    border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 84%, transparent);
+    background: color-mix(in srgb, var(--qqm-surface, #ffffff) 86%, transparent);
+    backdrop-filter: blur(14px) saturate(1.08);
     min-width: 120px;
   }
 
