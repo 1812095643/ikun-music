@@ -44,19 +44,32 @@ body {
   --qqm-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
 }
 
-.layout-page,
+.layout-page {
+  color: var(--qqm-text);
+  background: var(
+    --layout-shell-bg,
+    color-mix(in srgb, var(--qqm-bg, #f7f8fa) 92%, var(--qqm-surface, #ffffff))
+  ) !important;
+}
+
 .home-container {
   color: var(--qqm-text);
   background: var(--qqm-bg) !important;
 }
 
 .layout-main {
-  background: var(--qqm-bg);
+  background: var(
+    --layout-shell-bg,
+    color-mix(in srgb, var(--qqm-bg, #f7f8fa) 92%, var(--qqm-surface, #ffffff))
+  );
 }
 
 .menu {
-  background: var(--qqm-surface) !important;
-  border-right: 1px solid var(--qqm-border);
+  background: var(
+    --layout-shell-bg,
+    color-mix(in srgb, var(--qqm-bg, #f7f8fa) 92%, var(--qqm-surface, #ffffff))
+  ) !important;
+  border-right: 0 !important;
 }
 
 .app-menu-header {
@@ -127,8 +140,11 @@ body {
 .search-bar {
   margin: 8px 18px 0 14px;
   padding: 10px 12px 12px !important;
-  border-bottom: 1px solid var(--qqm-border);
-  background: var(--qqm-bg);
+  border-bottom: 0 !important;
+  background: var(
+    --layout-shell-bg,
+    color-mix(in srgb, var(--qqm-bg, #f7f8fa) 92%, var(--qqm-surface, #ffffff))
+  ) !important;
 }
 
 .tabs-track,
@@ -445,7 +461,7 @@ body {
 }
 
 .main-content {
-  background: var(--qqm-bg);
+  background: var(--qqm-bg) !important;
 }
 
 .home-content {
