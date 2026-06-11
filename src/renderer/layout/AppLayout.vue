@@ -177,8 +177,10 @@ provide('openPlaylistDrawer', openPlaylistDrawer);
   position: relative;
   z-index: 1;
   background: var(--qqm-bg, #f7f8fa);
-  border-left: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
+  border-top: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
+  border-left: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
   border-top-left-radius: 18px;
+  overflow: hidden;
 }
 
 :global(.dark) .main-content {
