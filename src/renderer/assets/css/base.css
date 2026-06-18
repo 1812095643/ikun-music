@@ -1187,8 +1187,7 @@ body {
 }
 
 .search-result-content,
-.album-page > div,
-.list-page > div {
+.sticky-tab-content {
   max-width: 1480px;
   margin: 0 auto;
 }

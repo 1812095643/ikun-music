@@ -251,6 +251,15 @@ const toggleMenu = () => {
   align-items: center;
   justify-content: center;
   color: currentColor;
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.app-menu-item-link:hover .app-menu-item-icon {
+  transform: scale(1.12);
+}
+
+.app-menu-item-link.router-link-active .app-menu-item-icon {
+  transform: scale(1.12);
 }
 
 .app-menu-item-icon :deep(svg) {

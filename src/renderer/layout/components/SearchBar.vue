@@ -1,12 +1,8 @@
 <template>
   <div class="flex items-center gap-2 px-4 search-bar-shell">
-    <!-- ── LEFT: Tabs（搜索展开时隐藏）─────────────── -->
+    <!-- ── LEFT: Tabs（无界设计顶部常驻）─────────────── -->
     <transition name="tab-slide">
-      <div
-        v-if="!isSearchExpanded && !showBackButton"
-        class="tabs-track flex-shrink-0"
-        ref="tabsTrackRef"
-      >
+      <div v-if="!showBackButton" class="tabs-track flex-shrink-0" ref="tabsTrackRef">
         <div class="tab-slider-bg" :style="sliderStyle" />
         <button
           v-for="(tab, i) in tabs"
@@ -34,10 +30,10 @@
       </div>
     </transition>
 
-    <!-- ── SPACER（搜索收起时撑开间距）─────────────── -->
-    <div v-if="!isSearchExpanded" class="flex-1" />
+    <!-- ── SPACER ─────────────── -->
+    <div class="flex-1" />
 
-    <!-- 搜索输入框（收起时固定宽，展开时 flex-1 撑满）-->
+    <!-- 搜索输入框 -->
     <div class="search-wrap" :class="isSearchExpanded ? 'search-wrap--open' : 'search-wrap--idle'">
       <n-popover
         trigger="manual"
@@ -124,33 +120,38 @@
     </n-tooltip>
 
     <!-- 用户 -->
-    <n-popover trigger="hover" placement="bottom-end" :show-arrow="false" raw>
+    <div v-if="!userStore.user" class="user-btn" @click="toLogin">
+      <span class="login-label">{{ t('comp.searchBar.login') }}</span>
+    </div>
+    <n-popover v-else trigger="hover" placement="bottom-end" :show-arrow="false" raw>
       <template #trigger>
-        <div class="user-btn">
-          <n-avatar
-            v-if="userStore.user"
-            circle
-            :size="26"
-            :src="getImgUrl(userStore.user.avatarUrl)"
-            class="cursor-pointer"
-            @click="selectItem('user')"
-          />
-          <span v-else class="login-label" @click="toLogin">{{ t('comp.searchBar.login') }}</span>
+        <div class="user-btn cursor-pointer" @click="selectItem('user')">
+          <n-avatar circle :size="26" :src="getImgUrl(userStore.user.avatarUrl)" />
         </div>
       </template>
       <div class="user-menu">
-        <div v-if="userStore.user" class="user-menu-top" @click="selectItem('user')">
+        <div class="user-menu-top" @click="selectItem('user')">
           <n-avatar circle :size="30" :src="getImgUrl(userStore.user?.avatarUrl)" />
           <span class="user-name">{{ userStore.user?.nickname }}</span>
         </div>
-        <div v-if="userStore.user" class="menu-sep" />
+        <div class="menu-sep" />
         <div class="menu-list">
-          <div v-if="!userStore.user" class="menu-row" @click="toLogin">
-            <i class="ri-login-box-line" /><span>{{ t('comp.searchBar.toLogin') }}</span>
-          </div>
-          <div v-if="userStore.user" class="menu-row" @click="selectItem('logout')">
+          <div class="menu-row" @click="selectItem('logout')">
             <i class="ri-logout-box-r-line" /><span>{{ t('comp.searchBar.logout') }}</span>
           </div>
+        </div>
+      </div>
+    </n-popover>
+
+    <!-- 更多设置 -->
+    <n-popover trigger="hover" placement="bottom-end" :show-arrow="false" raw>
+      <template #trigger>
+        <button class="action-btn">
+          <i class="ri-menu-line" />
+        </button>
+      </template>
+      <div class="user-menu">
+        <div class="menu-list">
           <div class="menu-row" @click="selectItem('set')">
             <i class="ri-settings-3-line" /><span>{{ t('comp.searchBar.set') }}</span>
           </div>
@@ -265,6 +266,8 @@ const tabs = computed(() => {
       path: '/toplist'
     },
     { key: 'mv', label: t('comp.mv'), path: '/mv' },
+    { key: 'podcast', label: t('podcast.podcast'), path: '/podcast' },
+    { key: 'history', label: t('comp.history'), path: '/history' },
     {
       key: 'localMusic',
       label: t('comp.localMusic'),
@@ -286,6 +289,10 @@ const tabIcons: Record<string, string> = {
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18V10m7 8V6m7 12v-5"/></svg>',
   '/mv':
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h10.5A2.5 2.5 0 0 1 18 10.5v3A2.5 2.5 0 0 1 15.5 16H5V8Zm13 3 3-1.8v5.6L18 13"/></svg>',
+  '/podcast':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14.5a3 3 0 0 0 3-3V8a3 3 0 0 0-6 0v3.5a3 3 0 0 0 3 3Zm-6-3a6 6 0 0 0 12 0M12 17.5V21"/></svg>',
+  '/history':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v6l4 2M4.8 8.2A8 8 0 1 1 4 12"/></svg>',
   '/local-music':
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 8h6l1.5 2h7.5v7.5A1.5 1.5 0 0 1 18 19H6a1.5 1.5 0 0 1-1.5-1.5V8Z"/></svg>'
 };
@@ -498,39 +505,34 @@ onMounted(() => {
 <style scoped>
 .search-bar-shell {
   min-height: 52px;
-  background: var(
-    --layout-shell-bg,
-    color-mix(in srgb, var(--qqm-bg, #f7f8fa) 92%, var(--qqm-surface, #ffffff))
-  );
+  background: transparent;
 }
 
-/* ── Tab track ───────────────────────────────────────── */
 .tabs-track {
   position: relative;
   display: inline-flex;
   align-items: center;
-  height: 34px;
-  background: #f3f4f6;
-  border-radius: 9999px;
-  padding: 3px;
-  gap: 0;
+  height: 40px;
+  background: transparent;
+  padding: 0;
+  gap: 4px;
   box-sizing: border-box;
 }
 .dark .tabs-track {
-  background: #1f2937;
+  background: transparent;
 }
 
 .tab-slider-bg {
   position: absolute;
-  top: 3px;
+  top: 4px;
   left: 0;
-  height: calc(100% - 6px);
-  border-radius: 10px;
-  background: #22c55e;
+  height: calc(100% - 8px);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 15%, transparent);
   box-shadow: none;
   transition:
-    transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
-    width 0.28s cubic-bezier(0.34, 1.4, 0.64, 1);
+    transform 0.3s cubic-bezier(0.34, 1.4, 0.64, 1),
+    width 0.3s cubic-bezier(0.34, 1.4, 0.64, 1);
   pointer-events: none;
   z-index: 0;
 }
@@ -540,19 +542,21 @@ onMounted(() => {
   z-index: 1;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 13px;
-  border-radius: 9999px;
-  font-size: 12.5px;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 600;
   border: none;
   background: transparent;
   cursor: pointer;
   white-space: nowrap;
-  transition: color 0.2s;
+  transition:
+    color 0.2s,
+    background 0.2s;
 }
 .tab-btn--on {
-  color: #fff;
+  color: var(--qqm-primary-strong, #13c76b);
 }
 .tab-btn--off {
   color: #6b7280;
@@ -562,9 +566,11 @@ onMounted(() => {
 }
 .tab-btn--off:hover {
   color: #111827;
+  background: rgba(24, 28, 34, 0.04);
 }
 .dark .tab-btn--off:hover {
   color: #f9fafb;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* ── Back button ─────────────────────────────────────── */
@@ -598,12 +604,12 @@ onMounted(() => {
     max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .search-wrap--idle {
-  flex: 0 0 240px;
-  max-width: 240px;
+  flex: 0 0 180px;
+  max-width: 180px;
 }
 .search-wrap--open {
-  flex: 1 1 0%;
-  max-width: 9999px;
+  flex: 0 0 260px;
+  max-width: 260px;
 }
 
 .search-inner {

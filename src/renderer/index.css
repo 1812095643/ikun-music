@@ -94,11 +94,14 @@
   --page-px: 1rem; /* 默认 16px，对应 px-4 */
   --page-pl: 1rem; /* 左边距，PC 端有菜单时为 0 */
   --page-pr: 1rem; /* 右边距 */
+
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* PC 端：有左侧菜单，左边距为 0 */
+/* PC 端：原来有左侧菜单时左边距为 0，现在无界设计后恢复对称边距 */
 .pc {
-  --page-pl: 0px;
+  --page-pl: var(--page-pr);
 }
 
 /* 响应式边距 */
@@ -181,4 +184,22 @@
   100% {
     transform: translateX(100%);
   }
+}
+
+/* --- 全局路由切换动画 --- */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition:
+    opacity 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(8px) scale(0.99);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.99);
 }

@@ -7,8 +7,6 @@
     <div id="layout-main" class="layout-main">
       <title-bar />
       <div class="layout-main-page">
-        <!-- 侧边菜单栏 -->
-        <app-menu v-if="!settingsStore.isMobile" class="menu" :menus="menuStore.menus" />
         <div class="main">
           <!-- 搜索栏 -->
           <search-bar class="search-bar" />
@@ -23,9 +21,11 @@
               class="main-page"
               :class="route.meta.noScroll && !settingsStore.isMobile ? 'pr-3' : ''"
             >
-              <keep-alive :include="keepAliveInclude">
-                <component :is="Component" />
-              </keep-alive>
+              <Transition name="fade-slide" mode="out-in">
+                <keep-alive :include="keepAliveInclude">
+                  <component :is="Component" />
+                </keep-alive>
+              </Transition>
             </router-view>
           </div>
           <play-bottom />
@@ -177,9 +177,6 @@ provide('openPlaylistDrawer', openPlaylistDrawer);
   position: relative;
   z-index: 1;
   background: var(--qqm-bg, #f7f8fa);
-  border-top: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  border-left: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  border-top-left-radius: 18px;
   overflow: hidden;
 }
 

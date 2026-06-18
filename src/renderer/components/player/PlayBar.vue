@@ -34,7 +34,7 @@
     <div class="play-bar-img-wrapper" @click="setMusicFull">
       <n-image
         :src="getImgUrl(playMusic?.picUrl, '100y100')"
-        class="play-bar-img"
+        :class="['play-bar-img', { 'is-playing': play }]"
         lazy
         preview-disabled
       />
@@ -376,12 +376,16 @@ const openPlayListDrawer = () => {
 }
 
 .music-play-bar {
-  @apply h-[76px] w-full absolute bottom-0 left-0 flex items-center box-border px-7 py-2 pt-3;
-  background: color-mix(in srgb, var(--qqm-surface, #ffffff) 92%, transparent);
+  @apply h-[76px] w-full absolute bottom-0 left-0 flex items-center box-border px-7 py-2 pt-3 transition-colors duration-500;
+  background: color-mix(
+    in srgb,
+    v-bind(background) 12%,
+    color-mix(in srgb, var(--qqm-surface, #ffffff) 92%, transparent)
+  );
   border-top: 1px solid
     color-mix(in srgb, var(--qqm-border, rgba(20, 24, 31, 0.08)) 86%, transparent);
   box-shadow: none;
-  backdrop-filter: blur(18px) saturate(1.08);
+  backdrop-filter: blur(24px) saturate(1.2);
   z-index: 9999;
   animation-duration: 0.24s !important;
 
@@ -414,24 +418,26 @@ const openPlayListDrawer = () => {
   }
 }
 
-.play-bar-img {
-  @apply w-12 h-12 rounded-lg;
-}
-
 .music-buttons {
   @apply mx-8 flex-1 flex justify-center items-center;
   gap: 24px;
 
   .iconfont {
-    @apply text-[24px] transition-colors cursor-pointer;
+    @apply text-[24px] cursor-pointer;
     color: var(--qqm-muted, rgba(107, 114, 128, 1));
     line-height: 1;
     transition:
       color 180ms var(--qqm-ease, ease),
-      background-color 180ms var(--qqm-ease, ease);
+      background-color 180ms var(--qqm-ease, ease),
+      transform 150ms cubic-bezier(0.34, 1.56, 0.64, 1);
 
     &:hover {
       color: var(--qqm-primary-strong, #0dbd62);
+      transform: scale(1.1);
+    }
+
+    &:active {
+      transform: scale(0.9);
     }
   }
 
@@ -445,13 +451,18 @@ const openPlayListDrawer = () => {
   }
 
   &-play {
-    @apply flex justify-center items-center w-11 h-11 rounded-lg transition-colors;
+    @apply flex justify-center items-center w-11 h-11 rounded-lg transition-all duration-200;
     color: var(--qqm-primary-strong, #0dbd62);
     background: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
     border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent);
 
     &:hover {
       background: color-mix(in srgb, var(--qqm-primary, #22c55e) 15%, transparent);
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
     }
   }
 }
@@ -462,6 +473,7 @@ const openPlayListDrawer = () => {
   &:hover {
     .volume-slider {
       @apply opacity-100 visible;
+      transform: translateX(-50%) translateY(0) scale(1);
     }
   }
   .volume-icon {
@@ -478,10 +490,15 @@ const openPlayListDrawer = () => {
   }
 
   .volume-slider {
-    @apply absolute opacity-0 invisible transition-opacity duration-200 bottom-[34px] left-1/2 -translate-x-1/2 h-[168px] px-2 py-4 rounded-lg;
+    @apply absolute opacity-0 invisible bottom-[34px] left-1/2 h-[168px] px-2 py-4 rounded-lg;
+    transform: translateX(-50%) translateY(12px) scale(0.9);
+    transition:
+      opacity 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+      visibility 300ms;
     background: var(--qqm-surface, #ffffff);
     border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-    box-shadow: none;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
 
     .volume-percentage {
       @apply absolute -top-7 left-1/2 -translate-x-1/2 text-xs font-medium px-2 py-1 rounded-md;
@@ -673,7 +690,13 @@ const openPlayListDrawer = () => {
 }
 
 .play-bar-img {
-  @apply w-12 h-12 rounded-lg;
+  @apply w-12 h-12 rounded-lg transition-all duration-300;
+  object-fit: cover;
+
+  &.is-playing {
+    border-radius: 50%;
+    animation: spin 15s linear infinite;
+  }
 }
 
 .like-active {
