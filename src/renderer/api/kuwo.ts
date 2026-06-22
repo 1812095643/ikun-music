@@ -154,7 +154,7 @@ const splitArtists = (artistText?: string, artistId?: string) => {
   const names = (artistText || '未知歌手')
     .split(/&|、|\/|;/)
     .map((name) => name.trim())
-    .filter(Boolean);
+    .filter((name): name is string => Boolean(name));
   const ids = (artistId || '').split(',');
   return names.map((name, index) => createArtist(parseNumber(ids[index], 0), name));
 };
@@ -304,8 +304,25 @@ export const searchKuwoSongs = async (params: {
       code: 200,
       result: {
         songs,
+        albums: [],
+        mvs: [],
+        playlists: [],
+        djRadios: [],
         songCount: parseNumber(response?.TOTAL, songs.length)
       }
     }
   };
+};
+
+export const getKuwoSearchSuggestions = async (keyword: string): Promise<string[]> => {
+  const normalizedKeyword = keyword.trim();
+  if (!normalizedKeyword) return [];
+
+  const { data } = await searchKuwoSongs({ keywords: normalizedKeyword, limit: 10, offset: 0 });
+  const songs = (data.result.songs || []) as SongResult[];
+  const names: string[] = songs
+    .map((song) => song.name)
+    .filter((name): name is string => Boolean(name));
+
+  return [...new Set<string>(names)].slice(0, 10);
 };

@@ -238,11 +238,17 @@ const searchStore = useSearchStore();
 
 const formatSong = (item: any) => {
   if (!item) return null;
+  const artists = item.ar || item.artists || item.song?.artists || [];
+  const album = item.al || item.album || { id: 0, name: '酷我音乐', picUrl: item.picUrl || '' };
   return {
     ...item,
-    picUrl: item.al?.picUrl || item.picUrl,
+    ar: artists,
+    artists,
+    al: album,
+    album,
+    picUrl: album.picUrl || item.picUrl || '',
     song: {
-      artists: item.ar || item.artists,
+      artists,
       name: item.name,
       id: item.id
     }
@@ -383,8 +389,8 @@ const loadSearch = async (isLoadMore = false) => {
     }));
 
     songs.forEach((item: any) => {
-      item.picUrl = item.al.picUrl;
-      item.artists = item.ar;
+      const formattedSong = formatSong(item);
+      Object.assign(item, formattedSong);
     });
     albums.forEach((item: any) => {
       item.type = '专辑';

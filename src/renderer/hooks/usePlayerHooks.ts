@@ -427,16 +427,8 @@ export const useSongDetail = () => {
       playMusic.createdAt = Date.now();
       // 半小时后过期
       playMusic.expiredAt = playMusic.createdAt + 1800000;
-      const { backgroundColor, primaryColor } =
-        playMusic.backgroundColor && playMusic.primaryColor
-          ? playMusic
-          : await getImageLinearBackground(getImgUrl(playMusic?.picUrl, '30y30'));
-
-      // 验证请求
-      if (requestId && !playbackRequestManager.isRequestValid(requestId)) {
-        console.log(`[getSongDetail] 背景色获取后请求已失效: ${requestId}`);
-        throw new Error('Request cancelled');
-      }
+      const backgroundColor = playMusic.backgroundColor || '';
+      const primaryColor = playMusic.primaryColor || '';
 
       playMusic.playLoading = false;
       return { ...playMusic, playMusicUrl, backgroundColor, primaryColor } as SongResult;

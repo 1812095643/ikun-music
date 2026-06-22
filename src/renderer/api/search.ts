@@ -1,7 +1,7 @@
 import { isElectron } from '@/utils';
 import request from '@/utils/request';
 
-import { searchKuwoSongs } from './kuwo';
+import { getKuwoSearchSuggestions, searchKuwoSongs } from './kuwo';
 
 interface IParams {
   keywords: string;
@@ -54,12 +54,18 @@ export const getSearchSuggestions = async (keyword: string) => {
   console.log(`[API] getSearchSuggestions: 准备请求，关键词: "${keyword}"`);
 
   try {
+    const kuwoSuggestions = await getKuwoSearchSuggestions(keyword);
+    if (kuwoSuggestions.length > 0) {
+      console.log('[API] getSearchSuggestions: 酷我建议解析成功:', kuwoSuggestions);
+      return kuwoSuggestions;
+    }
+
     let responseData: KugouSuggestionResponse;
     if (isElectron) {
-      console.log('[API] Running in Electron, using IPC proxy.');
+      console.log('[API] Running in desktop compatibility layer, using IPC proxy fallback.');
       responseData = await window.api.getSearchSuggestions(keyword);
     } else {
-      // 非 Electron 环境下，使用接口
+      // 非桌面环境下，使用网易云兜底接口
       const res = await request.get<NeteaseSuggestResult>('/search/suggest', {
         params: { keywords: keyword }
       });

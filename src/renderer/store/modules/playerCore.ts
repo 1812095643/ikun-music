@@ -273,32 +273,9 @@ export const usePlayerCoreStore = defineStore(
       const { loadLrc } = useLyrics();
       const { getSongDetail } = useSongDetail();
 
-      // 并行加载歌词和背景色
-      const [lyrics, { backgroundColor, primaryColor }] = await Promise.all([
-        (async () => {
-          if (music.lyric && music.lyric.lrcTimeArray.length > 0) {
-            return music.lyric;
-          }
-          return await loadLrc(music.id);
-        })(),
-        (async () => {
-          if (music.backgroundColor && music.primaryColor) {
-            return { backgroundColor: music.backgroundColor, primaryColor: music.primaryColor };
-          }
-          return await getImageLinearBackground(getImgUrl(music?.picUrl, '30y30'));
-        })()
-      ]);
-
-      // 在更新状态前再次验证请求
-      if (!playbackRequestManager.isRequestValid(requestId)) {
-        console.log(`[handlePlayMusic] 加载歌词/背景色后请求已失效: ${requestId}`);
-        return false;
-      }
-
-      // 设置歌词和背景色
-      music.lyric = lyrics;
-      music.backgroundColor = backgroundColor;
-      music.primaryColor = primaryColor;
+      // 根因：播放前同步等待歌词接口和封面取色，会把本来毫秒级的酷我直链播放拖慢，
+      // 甚至在歌词/图片接口不稳定时让用户感觉“点了没反应”。这里先进入播放链路，
+      // 歌词和主题色改为后台补齐，保证点击歌曲后优先出声。
       music.playLoading = true;
 
       // 更新 playMusic 和播放状态
@@ -338,8 +315,6 @@ export const usePlayerCoreStore = defineStore(
           return false;
         }
 
-        updatedPlayMusic.lyric = lyrics;
-
         playMusic.value = updatedPlayMusic;
         playMusicUrl.value = updatedPlayMusic.playMusicUrl as string;
         music.playMusicUrl = updatedPlayMusic.playMusicUrl as string;
@@ -364,6 +339,28 @@ export const usePlayerCoreStore = defineStore(
         } catch (e) {
           console.warn('预加载触发失败（可能是依赖未加载或循环依赖），已忽略:', e);
         }
+
+        void Promise.all([
+          music.lyric?.lrcTimeArray?.length ? Promise.resolve(music.lyric) : loadLrc(music.id),
+          music.backgroundColor && music.primaryColor
+            ? Promise.resolve({
+                backgroundColor: music.backgroundColor,
+                primaryColor: music.primaryColor
+              })
+            : getImageLinearBackground(getImgUrl(music?.picUrl, '30y30'))
+        ])
+          .then(([lyrics, colors]) => {
+            if (!playbackRequestManager.isRequestValid(requestId)) return;
+            playMusic.value = {
+              ...playMusic.value,
+              lyric: lyrics,
+              backgroundColor: colors.backgroundColor,
+              primaryColor: colors.primaryColor
+            };
+          })
+          .catch((error) => {
+            console.warn('后台加载歌词或主题色失败，已跳过:', error);
+          });
 
         try {
           const result = await playAudio(requestId);
