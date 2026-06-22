@@ -336,13 +336,23 @@ const setMusicFull = () => {
 
   &.mini-mode {
     -webkit-app-region: drag;
+    height: 100vh;
+    min-height: 64px;
+    border-radius: 0;
+    overflow: hidden;
 
     .mini-bar-container {
       @apply px-2;
+      gap: 8px;
+      min-width: 0;
     }
 
     .song-info {
-      width: 120px;
+      -webkit-app-region: no-drag;
+      flex: 1 1 auto;
+      min-width: 0;
+      width: auto;
+      margin-right: 2px;
 
       .song-title {
         @apply text-xs font-medium;
@@ -355,6 +365,7 @@ const setMusicFull = () => {
 
     .function-buttons {
       -webkit-app-region: no-drag;
+      flex-shrink: 0;
       @apply space-x-1 ml-1;
 
       .function-button {
@@ -370,6 +381,7 @@ const setMusicFull = () => {
     .control-buttons {
       @apply mx-1 space-x-0.5;
       -webkit-app-region: no-drag;
+      flex-shrink: 0;
       .control-button {
         width: 28px;
         height: 28px;
@@ -382,6 +394,7 @@ const setMusicFull = () => {
 
     .close-button {
       -webkit-app-region: no-drag;
+      flex-shrink: 0;
       width: 28px;
       height: 28px;
     }
@@ -406,6 +419,7 @@ const setMusicFull = () => {
 
 .mini-bar-container {
   @apply flex items-center px-3 h-full relative;
+  min-width: 0;
 }
 
 .album-cover {
@@ -585,7 +599,10 @@ const setMusicFull = () => {
   max-height: 330px;
 
   &.mini-mode-list {
-    width: 340px;
+    width: 100vw;
+    top: 64px;
+    height: calc(100vh - 64px);
+    max-height: calc(100vh - 64px);
     @apply bg-opacity-90 dark:bg-opacity-90;
   }
 }

@@ -2,7 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { open } from '@tauri-apps/plugin-dialog';
-import { BaseDirectory, exists, readTextFile,writeFile } from '@tauri-apps/plugin-fs';
+import { BaseDirectory, exists, readTextFile, writeFile } from '@tauri-apps/plugin-fs';
 import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
 import { openPath, openUrl } from '@tauri-apps/plugin-opener';
 import { Store } from '@tauri-apps/plugin-store';
@@ -197,13 +197,13 @@ const send = (channel: string, ...args: any[]) => {
   const currentWindow = getAppWindow();
   switch (channel) {
     case 'minimize-window':
-      void currentWindow?.minimize();
+      void invoke('minimize_window');
       break;
     case 'maximize-window':
-      void currentWindow?.toggleMaximize();
+      void invoke('maximize_window');
       break;
     case 'close-window':
-      void currentWindow?.close();
+      void invoke('close_window');
       break;
     case 'quit-app':
       void invoke('quit_app');
@@ -215,7 +215,7 @@ const send = (channel: string, ...args: any[]) => {
       void invoke('set_window_size', { width: args[0], height: args[1] });
       break;
     case 'resize-mini-window':
-      void invoke('set_window_size', { width: args[0] ? 420 : 360, height: args[0] ? 620 : 120 });
+      void invoke('resize_mini_window', { showPlaylist: Boolean(args[0]) });
       break;
     case 'set-content-zoom':
       document.documentElement.style.zoom = String(args[0] || 1);
@@ -237,12 +237,13 @@ const send = (channel: string, ...args: any[]) => {
       }
       break;
     case 'mini-window':
+      void invoke('mini_window');
+      break;
     case 'mini-tray':
-      emitLocal('mini-mode', true);
+      void invoke('mini_tray');
       break;
     case 'restore-window':
-      emitLocal('mini-mode', false);
-      void currentWindow?.show();
+      void invoke('restore_window');
       break;
     case 'set-store-value':
       void setStoreValue(args[0], args[1]);

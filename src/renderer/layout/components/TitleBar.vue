@@ -5,15 +5,34 @@
     @mousedown="drag"
   >
     <div id="title">ikun音乐</div>
-    <div id="buttons" class="flex gap-4">
+    <div id="buttons" class="flex gap-4" @mousedown.stop>
       <template v-if="isElectron">
-        <div class="text-neutral-600 dark:text-neutral-400 hover:text-primary" @click="miniWindow">
+        <div
+          class="window-action text-neutral-600 dark:text-neutral-400 hover:text-primary"
+          @mousedown.stop
+          @click.stop="miniWindow"
+        >
           <i class="iconfont ri-picture-in-picture-line"></i>
         </div>
-        <div class="text-neutral-600 dark:text-neutral-400 hover:text-primary" @click="minimize">
+        <div
+          class="window-action text-neutral-600 dark:text-neutral-400 hover:text-primary"
+          @mousedown.stop
+          @click.stop="minimize"
+        >
           <i class="iconfont icon-minisize"></i>
         </div>
-        <div class="text-neutral-600 dark:text-neutral-400 hover:text-primary" @click="handleClose">
+        <div
+          class="window-action text-neutral-600 dark:text-neutral-400 hover:text-primary"
+          @mousedown.stop
+          @click.stop="maximize"
+        >
+          <i class="iconfont ri-checkbox-blank-line"></i>
+        </div>
+        <div
+          class="window-action text-neutral-600 dark:text-neutral-400 hover:text-primary"
+          @mousedown.stop
+          @click.stop="handleClose"
+        >
           <i class="iconfont icon-close"></i>
         </div>
       </template>
@@ -127,6 +146,13 @@ const minimize = () => {
   window.api.minimize();
 };
 
+const maximize = () => {
+  if (!isElectron) {
+    return;
+  }
+  window.api.maximize();
+};
+
 const miniWindow = () => {
   if (!isElectron) return;
   window.api.miniWindow();
@@ -168,7 +194,15 @@ const drag = (event: MouseEvent) => {
   if (!isElectron) {
     return;
   }
-  window.api.dragStart(event as unknown as string);
+
+  const target = event.target as HTMLElement | null;
+  // 根因：无边框窗口的拖拽区域覆盖了标题栏按钮，点击按钮时可能先触发拖拽，导致最小化、最大化、托盘操作被系统拖窗行为打断。
+  // 解决：所有交互元素都明确排除拖拽，只让标题栏空白区域启动窗口拖动，保证桌面端窗口按钮响应稳定。
+  if (target?.closest('#buttons, button, input, textarea, select, [data-no-drag]')) {
+    return;
+  }
+
+  window.api.dragStart();
 };
 </script>
 
@@ -183,6 +217,11 @@ const drag = (event: MouseEvent) => {
 
 #buttons {
   -webkit-app-region: no-drag;
+}
+
+.window-action {
+  -webkit-app-region: no-drag;
+  cursor: pointer;
 }
 
 .title-dialog-card,
