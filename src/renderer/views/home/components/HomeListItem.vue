@@ -82,7 +82,7 @@
     </div>
 
     <!-- Info -->
-    <div class="home-list-info mt-3 flex min-h-[70px] flex-col px-0.5">
+    <div class="home-list-info flex min-h-[82px] flex-col px-3 pb-3 pt-3">
       <div
         class="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-neutral-400 dark:text-neutral-500"
       >

@@ -4,6 +4,9 @@ use std::process::{Child, Command, Stdio};
 use std::sync::{mpsc, Mutex};
 use std::thread;
 use std::time::Duration;
+
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{
@@ -11,6 +14,9 @@ use tauri::{
 };
 
 struct MusicApiProcess(Mutex<Option<Child>>);
+
+#[cfg(target_os = "windows")]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 const MAIN_WINDOW_LABEL: &str = "main";
 const NORMAL_WINDOW_WIDTH: f64 = 1280.0;
@@ -281,14 +287,23 @@ fn start_music_api(
         fallback_script_path
     };
 
-    let mut child = Command::new("node")
+    let mut command = Command::new("node");
+    command
         .arg(resolved_script_path)
         .arg("--port")
         .arg(port.to_string())
         .arg("--host")
         .arg("127.0.0.1")
         .stdout(Stdio::piped())
-        .stderr(Stdio::null())
+        .stderr(Stdio::null());
+
+    // 根因：Windows GUI 程序启动 Node 后端时，默认可能给子进程分配控制台窗口，
+    // 用户双击 exe 就会看到黑色 cmd 框。这里仅在 Windows 下使用 CREATE_NO_WINDOW，
+    // 保持 stdout 管道读取 ready 消息不变，同时彻底隐藏后端子进程控制台。
+    #[cfg(target_os = "windows")]
+    command.creation_flags(CREATE_NO_WINDOW);
+
+    let mut child = command
         .spawn()
         .map_err(|error| format!("启动音乐 API 子进程失败：{error}"))?;
 
