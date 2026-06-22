@@ -369,7 +369,7 @@ const loadSearch = async (isLoadMore = false) => {
       ...item,
       picUrl: item.cover,
       playCount: item.playCount,
-      desc: item.artists.map((artist: any) => artist.name).join('/'),
+      desc: (item.artists || []).map((artist: any) => artist.name).join('/'),
       type: 'mv'
     }));
 
@@ -377,14 +377,14 @@ const loadSearch = async (isLoadMore = false) => {
       ...item,
       picUrl: item.coverImgUrl,
       playCount: item.playCount,
-      desc: item.creator.nickname,
+      desc: item.creator?.nickname || '',
       type: 'playlist'
     }));
 
     const djRadios = (data.result.djRadios || []).map((item: any) => ({
       ...item,
       picUrl: item.picUrl,
-      desc: item.dj.nickname,
+      desc: item.dj?.nickname || '',
       type: 'djRadio'
     }));
 

@@ -573,7 +573,13 @@ export const usePlayerCoreStore = defineStore(
         console.log(`使用音源 ${sourcePlatform} 重新解析歌曲 ${numericId}`);
 
         const songData = cloneDeep(currentSong);
-        const res = await getParsingMusicUrl(numericId, songData);
+        const res =
+          sourcePlatform === 'kuwo'
+            ? await (async () => {
+                const { getKuwoMusicUrl } = await import('@/api/kuwo');
+                return await getKuwoMusicUrl(numericId);
+              })()
+            : await getParsingMusicUrl(numericId, songData);
 
         if (res && res.data && res.data.data && res.data.data.url) {
           const newUrl = res.data.data.url;

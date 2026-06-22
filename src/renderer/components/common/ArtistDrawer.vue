@@ -203,7 +203,7 @@ const loadSongs = async () => {
       const newSongs = songsDetail.data.songs.map((item) => {
         return {
           ...item,
-          picUrl: item.al.picUrl,
+          picUrl: item.al?.picUrl || item.picUrl || '',
           song: {
             artists: item.ar,
             name: item.name,
@@ -272,7 +272,7 @@ const handlePlay = () => {
   playerStore.setPlayList(
     songs.value.map((item) => ({
       ...item,
-      picUrl: item.al.picUrl
+      picUrl: item.al?.picUrl || item.picUrl || ''
     }))
   );
 };

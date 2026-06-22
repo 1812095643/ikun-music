@@ -93,7 +93,9 @@ export const isMobile = computed(() => {
   return settingsStore.isMobile;
 });
 
-export const isElectron = (window as any).electron !== undefined;
+export const isElectron = Boolean(
+  (window as any).electron || (window as any).api || (window as any).__TAURI_INTERNALS__
+);
 
 export const isLyricWindow = computed(() => {
   return window.location.hash.includes('lyric');

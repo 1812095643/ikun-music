@@ -121,15 +121,6 @@ export const usePlaylistStore = defineStore(
         );
 
         const nextSong = detailedSongs[0];
-        if (nextSong && !(nextSong.lyric && nextSong.lyric.lrcTimeArray.length > 0)) {
-          try {
-            const { useLyrics } = await import('@/hooks/usePlayerHooks');
-            const { loadLrc } = useLyrics();
-            nextSong.lyric = await loadLrc(nextSong.id);
-          } catch (error) {
-            console.error('加载歌词失败:', error);
-          }
-        }
 
         detailedSongs.forEach((song, index) => {
           if (song && startIndex + index < playList.value.length) {
@@ -142,7 +133,9 @@ export const usePlaylistStore = defineStore(
         // 预加载下一首歌曲的音频和封面
         if (nextSong) {
           if (nextSong.playMusicUrl) {
-            preloadService.load(nextSong);
+            void preloadService.load(nextSong).catch((error) => {
+              console.warn('预加载下一首音频失败，播放时会重新加载:', error);
+            });
           }
           if (nextSong.picUrl) {
             preloadCoverImage(nextSong.picUrl, getImgUrl);

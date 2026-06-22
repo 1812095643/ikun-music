@@ -313,7 +313,7 @@ const loadData = async () => {
     recordList.value = results[1].data.allData.map((item: any) => ({
       ...item,
       ...item.song,
-      picUrl: item.song.al.picUrl
+      picUrl: item.song?.al?.picUrl || item.song?.picUrl || ''
     }));
 
     // 如果加载了歌单，更新 store

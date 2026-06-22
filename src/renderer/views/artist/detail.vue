@@ -597,7 +597,7 @@ const loadSongs = async () => {
       const newSongs = songsDetail.data.songs.map((item) => {
         return {
           ...item,
-          picUrl: item.al.picUrl,
+          picUrl: item.al?.picUrl || item.picUrl || '',
           song: {
             artists: item.ar,
             name: item.name,
@@ -727,7 +727,7 @@ const handlePlayAll = () => {
   playerStore.setPlayList(
     filteredSongs.value.map((song) => ({
       ...song,
-      picUrl: song.al.picUrl
+      picUrl: song.al?.picUrl || song.picUrl || ''
     }))
   );
 
@@ -759,7 +759,7 @@ const addToPlaylist = () => {
     ...currentList,
     ...newSongs.map((song) => ({
       ...song,
-      picUrl: song.al.picUrl
+      picUrl: song.al?.picUrl || song.picUrl || ''
     }))
   ];
 

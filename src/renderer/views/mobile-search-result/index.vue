@@ -141,11 +141,24 @@ const performSearch = async (isLoadMore = false) => {
         offset: (page.value - 1) * ITEMS_PER_PAGE
       });
 
-      const songs = (data.result.songs || []).map((item: any) => ({
-        ...item,
-        picUrl: item.al?.picUrl,
-        artists: item.ar
-      }));
+      const songs = (data.result.songs || []).map((item: any) => {
+        const artists = item.ar || item.artists || item.song?.artists || [];
+        const album = item.al ||
+          item.album || { id: 0, name: '酷我音乐', picUrl: item.picUrl || '' };
+        return {
+          ...item,
+          ar: artists,
+          artists,
+          al: album,
+          album,
+          picUrl: album.picUrl || item.picUrl || '',
+          song: {
+            artists,
+            name: item.name,
+            id: item.id
+          }
+        };
+      });
 
       if (isLoadMore) {
         results.value = [...results.value, ...songs];

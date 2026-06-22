@@ -335,7 +335,7 @@ const loadUserData = async () => {
         recordList.value = recordRes.data.allData.map((item: any) => ({
           ...item,
           ...item.song,
-          picUrl: item.song.al.picUrl
+          picUrl: item.song?.al?.picUrl || item.song?.picUrl || ''
         }));
       }
     } catch (error: any) {

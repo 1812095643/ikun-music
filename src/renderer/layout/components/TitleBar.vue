@@ -6,36 +6,34 @@
   >
     <div id="title">ikun音乐</div>
     <div id="buttons" class="flex gap-4" @mousedown.stop>
-      <template v-if="isElectron">
-        <div
-          class="window-action text-neutral-600 dark:text-neutral-400 hover:text-primary"
-          @mousedown.stop
-          @click.stop="miniWindow"
-        >
-          <i class="iconfont ri-picture-in-picture-line"></i>
-        </div>
-        <div
-          class="window-action text-neutral-600 dark:text-neutral-400 hover:text-primary"
-          @mousedown.stop
-          @click.stop="minimize"
-        >
-          <i class="iconfont icon-minisize"></i>
-        </div>
-        <div
-          class="window-action text-neutral-600 dark:text-neutral-400 hover:text-primary"
-          @mousedown.stop
-          @click.stop="maximize"
-        >
-          <i class="iconfont ri-checkbox-blank-line"></i>
-        </div>
-        <div
-          class="window-action text-neutral-600 dark:text-neutral-400 hover:text-primary"
-          @mousedown.stop
-          @click.stop="handleClose"
-        >
-          <i class="iconfont icon-close"></i>
-        </div>
-      </template>
+      <div
+        class="window-action text-neutral-600 dark:text-neutral-400 hover:text-primary"
+        @mousedown.stop
+        @click.stop="miniWindow"
+      >
+        <i class="iconfont ri-picture-in-picture-line"></i>
+      </div>
+      <div
+        class="window-action text-neutral-600 dark:text-neutral-400 hover:text-primary"
+        @mousedown.stop
+        @click.stop="minimize"
+      >
+        <i class="iconfont icon-minisize"></i>
+      </div>
+      <div
+        class="window-action text-neutral-600 dark:text-neutral-400 hover:text-primary"
+        @mousedown.stop
+        @click.stop="maximize"
+      >
+        <i class="iconfont ri-checkbox-blank-line"></i>
+      </div>
+      <div
+        class="window-action text-neutral-600 dark:text-neutral-400 hover:text-primary"
+        @mousedown.stop
+        @click.stop="handleClose"
+      >
+        <i class="iconfont icon-close"></i>
+      </div>
     </div>
   </div>
 

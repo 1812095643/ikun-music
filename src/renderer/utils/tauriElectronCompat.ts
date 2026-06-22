@@ -365,7 +365,11 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         ...(options.headers || {})
       };
-      const fetchOptions: RequestInit = { method: options.method || 'GET', headers };
+      const fetchOptions: RequestInit = {
+        method: options.method || 'GET',
+        headers,
+        signal: AbortSignal.timeout(options.timeout || 15000)
+      };
       if (options.body) fetchOptions.body = options.body;
       else if (options.form) {
         fetchOptions.body = new URLSearchParams(options.form).toString();
