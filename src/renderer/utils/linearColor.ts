@@ -160,7 +160,7 @@ export const getTextColors = (gradient: string = ''): ITextColors => {
   const defaultColors = {
     primary: 'rgba(255, 255, 255, 0.54)',
     active: '#ffffff',
-    theme: 'light'
+    theme: 'dark'
   };
 
   if (!gradient) return defaultColors;
@@ -175,7 +175,7 @@ export const getTextColors = (gradient: string = ''): ITextColors => {
   return {
     primary: isDark ? 'rgba(0, 0, 0, 0.54)' : 'rgba(255, 255, 255, 0.54)',
     active: isDark ? '#000000' : '#ffffff',
-    theme: isDark ? 'dark' : 'light'
+    theme: isDark ? 'light' : 'dark'
   };
 };
 

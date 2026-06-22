@@ -2,6 +2,8 @@ import { IList } from '@/types/list';
 import type { IListDetail } from '@/types/listDetail';
 import request from '@/utils/request';
 
+import { getKuwoPlaylistDetail } from './kuwo';
+
 interface IListByTagParams {
   tag: string;
   before: number;
@@ -32,7 +34,10 @@ export function getRecommendList(limit: number = 30) {
 }
 
 // 获取歌单详情
-export function getListDetail(id: number | string) {
+export function getListDetail(id: number | string, source?: string) {
+  if (source === 'kuwo') {
+    return getKuwoPlaylistDetail(id) as unknown as Promise<{ data: IListDetail }>;
+  }
   return request.get<IListDetail>('/playlist/detail', { params: { id } });
 }
 

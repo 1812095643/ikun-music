@@ -7,6 +7,8 @@ import { IHotSearch, ISearchKeyword } from '@/types/search';
 import { IHotSinger } from '@/types/singer';
 import request from '@/utils/request';
 
+import { getKuwoRecommendPlaylists } from './kuwo';
+
 interface IHotSingerParams {
   offset: number;
   limit: number;
@@ -58,7 +60,7 @@ export const getBanners = (type: number = 0) => {
 
 // 获取推荐歌单
 export const getPersonalizedPlaylist = (limit: number = 30) => {
-  return request.get<any>('/personalized', { params: { limit } });
+  return getKuwoRecommendPlaylists(limit);
 };
 
 // 获取私人漫游（request 拦截器已自动添加 timestamp）

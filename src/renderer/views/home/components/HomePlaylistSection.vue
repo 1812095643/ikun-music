@@ -37,6 +37,7 @@
         :tracks="isElectron ? playlistTracksMap[item.id] || [] : []"
         :show-hover-tracks="isElectron"
         :play-count="item.playCount"
+        :playing="playingPlaylistId === item.id"
         @click="handlePlaylistClick(item)"
         @play="playPlaylist(item)"
         @mouseenter="isElectron && loadTracksOnHover(item.id)"
@@ -87,7 +88,9 @@ const { t } = useI18n();
 const router = useRouter();
 const playlists = ref<any[]>([]);
 const loading = ref(true);
+const playingPlaylistId = ref<number | null>(null);
 const playlistTracksMap = reactive<Record<number, any[]>>({});
+const loadingTracksMap = reactive<Record<number, boolean>>({});
 
 const effectiveColumns = computed(() =>
   isMobile.value ? Math.min(2, props.columns) : props.columns
@@ -121,9 +124,10 @@ const fetchPlaylists = async () => {
 
 /** Lazy load tracks for a single playlist on hover */
 const loadTracksOnHover = async (id: number) => {
-  if (playlistTracksMap[id]) return;
+  if (playlistTracksMap[id] || loadingTracksMap[id]) return;
+  loadingTracksMap[id] = true;
   try {
-    const { data } = await getListDetail(id);
+    const { data } = await getListDetail(id, 'kuwo');
     if (data.playlist?.tracks) {
       playlistTracksMap[id] = data.playlist.tracks.slice(0, 3).map((s: any) => ({
         id: s.id,
@@ -132,6 +136,8 @@ const loadTracksOnHover = async (id: number) => {
     }
   } catch {
     // silent — user can retry by hovering again
+  } finally {
+    loadingTracksMap[id] = false;
   }
 };
 
@@ -150,8 +156,10 @@ const handlePlaylistClick = async (item: any) => {
 };
 
 const playPlaylist = async (item: any) => {
+  if (playingPlaylistId.value === item.id) return;
+  playingPlaylistId.value = item.id;
   try {
-    const { data } = await getListDetail(item.id);
+    const { data } = await getListDetail(item.id, 'kuwo');
     if (data.playlist?.tracks?.length > 0) {
       const playerCore = usePlayerCoreStore();
       const playlistStore = usePlaylistStore();
@@ -160,7 +168,7 @@ const playPlaylist = async (item: any) => {
         id: s.id,
         name: s.name,
         picUrl: s.al?.picUrl || item.picUrl,
-        source: 'netease',
+        source: 'kuwo',
         song: s,
         ...s,
         playLoading: false
@@ -171,6 +179,8 @@ const playPlaylist = async (item: any) => {
     }
   } catch (error) {
     console.error('Failed to play playlist:', error);
+  } finally {
+    playingPlaylistId.value = null;
   }
 };
 

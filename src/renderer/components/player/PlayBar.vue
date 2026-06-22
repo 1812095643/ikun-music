@@ -43,9 +43,8 @@
       </div>
       <div class="hover-arrow">
         <div class="hover-content">
-          <!-- <i class="ri-arrow-up-s-line text-3xl" :class="{ 'ri-arrow-down-s-line': musicFullVisible }"></i> -->
           <i
-            class="text-3xl"
+            class="text-[22px] leading-none"
             :class="musicFullVisible ? 'ri-arrow-down-s-line' : 'ri-arrow-up-s-line'"
           ></i>
           <span class="hover-text">{{
@@ -659,21 +658,24 @@ const openPlayListDrawer = () => {
 }
 
 .play-bar-img-wrapper {
-  @apply relative cursor-pointer w-12 h-12 shrink-0;
+  @apply relative cursor-pointer w-12 h-12 shrink-0 overflow-hidden rounded-lg;
 
   .hover-arrow {
     @apply absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 rounded-lg;
-    background: rgba(0, 0, 0, 0.5);
+    background: linear-gradient(180deg, rgba(8, 12, 20, 0.74), rgba(8, 12, 20, 0.62));
+    backdrop-filter: blur(2px);
+    z-index: 3;
 
     .hover-content {
-      @apply flex flex-col items-center justify-center;
+      @apply flex h-full w-full flex-col items-center justify-center gap-0.5 overflow-hidden px-1.5 text-center;
 
       i {
-        @apply text-white mb-0.5;
+        @apply text-white;
+        line-height: 1;
       }
 
       .hover-text {
-        @apply text-white text-xs;
+        @apply max-w-full truncate text-[10px] font-medium leading-none text-white;
       }
     }
   }

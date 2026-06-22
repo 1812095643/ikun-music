@@ -2,7 +2,8 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { open } from '@tauri-apps/plugin-dialog';
-import { readTextFile } from '@tauri-apps/plugin-fs';
+import { BaseDirectory, exists, readTextFile,writeFile } from '@tauri-apps/plugin-fs';
+import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
 import { openPath, openUrl } from '@tauri-apps/plugin-opener';
 import { Store } from '@tauri-apps/plugin-store';
 
@@ -129,6 +130,60 @@ const emitLocal = (channel: string, ...args: any[]) => {
   listeners.get(channel)?.forEach((listener) => listener({ sender: null }, ...args));
 };
 
+const sanitizeFilename = (filename: string) =>
+  filename
+    .replace(/[\\/:*?"<>|]/g, '_')
+    .replace(/\s+/g, ' ')
+    .trim() || `音乐_${Date.now()}`;
+
+const getDownloadExtension = (url: string, type?: string) => {
+  if (type) return type.startsWith('.') ? type : `.${type}`;
+  const matched = new URL(url).pathname.match(/\.(mp3|flac|m4a|aac|ogg|wav)(?:$|\?)/i);
+  return matched?.[0] || '.mp3';
+};
+
+const downloadMusicFile = async (payload: any) => {
+  const { url, filename, songInfo, type } = payload || {};
+  if (!url || !filename) {
+    emitLocal('music-download-error', { filename, error: '下载参数不完整' });
+    return;
+  }
+
+  const safeName = sanitizeFilename(filename);
+  const extension = getDownloadExtension(url, type);
+  const relativePath = `${safeName}${extension}`;
+  try {
+    emitLocal('music-download-queued', { filename: safeName, songInfo });
+    const response = await (isTauriRuntime ? tauriFetch : fetch)(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0' }
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const buffer = new Uint8Array(await response.arrayBuffer());
+    if (isTauriRuntime) {
+      await writeFile(relativePath, buffer, { baseDir: BaseDirectory.Download });
+    } else {
+      const blob = new Blob([buffer]);
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.download = relativePath;
+      link.click();
+      URL.revokeObjectURL(objectUrl);
+    }
+    emitLocal('music-download-complete', {
+      filename: safeName,
+      filePath: relativePath,
+      songInfo,
+      status: 'completed'
+    });
+  } catch (error) {
+    emitLocal('music-download-error', {
+      filename: safeName,
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+};
+
 const ensureTauriListener = async (channel: string) => {
   if (!isTauriRuntime) return;
   if (unlisteners.has(channel)) return;
@@ -191,6 +246,9 @@ const send = (channel: string, ...args: any[]) => {
       break;
     case 'set-store-value':
       void setStoreValue(args[0], args[1]);
+      break;
+    case 'download-music':
+      void downloadMusicFile(args[0]);
       break;
     case 'change-language':
       void setStoreValue('set.language', args[0]);
@@ -282,6 +340,11 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
     case 'open-path':
       if (!isTauriRuntime) return false;
       return openPath(String(args[0]));
+    case 'check-music-downloaded':
+      if (!isTauriRuntime) return false;
+      return exists(`${sanitizeFilename(String(args[0]))}.mp3`, {
+        baseDir: BaseDirectory.Download
+      });
     case 'get-system-fonts':
       return ['Microsoft YaHei UI', 'SimHei', 'SimSun', 'Arial'];
     case 'get-search-suggestions': {
@@ -308,7 +371,7 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
         (fetchOptions.headers as Record<string, string>)['Content-Type'] =
           'application/x-www-form-urlencoded';
       }
-      const response = await fetch(request.url, fetchOptions);
+      const response = await (isTauriRuntime ? tauriFetch : fetch)(request.url, fetchOptions);
       const rawBody = await response.text();
       let body: any = rawBody;
       const contentType = response.headers.get('content-type') || '';

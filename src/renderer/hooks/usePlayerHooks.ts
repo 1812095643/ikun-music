@@ -84,6 +84,28 @@ export const getSongUrl = async (
       return await resolveCachedPlaybackUrl(songData.playMusicUrl, songData);
     }
 
+    if (songData.source === 'kuwo') {
+      try {
+        const { getKuwoMusicUrl } = await import('@/api/kuwo');
+        const kuwoResult = await getKuwoMusicUrl(numericId);
+
+        if (requestId && !playbackRequestManager.isRequestValid(requestId)) {
+          console.log(`[getSongUrl] 酷我直链接析后请求已失效: ${requestId}`);
+          throw new Error('Request cancelled');
+        }
+
+        if (kuwoResult.data?.data?.url) {
+          if (isDownloaded) return kuwoResult.data.data as any;
+          return await resolveCachedPlaybackUrl(kuwoResult.data.data.url, songData);
+        }
+      } catch (error) {
+        if ((error as Error).message === 'Request cancelled') {
+          throw error;
+        }
+        console.warn('酷我直链接析失败，继续进入备用解析流程:', error);
+      }
+    }
+
     // ==================== 自定义API最优先 ====================
     const globalSources = settingsStore.setData.enabledMusicSources || [];
     const useCustomApiGlobally = globalSources.includes('custom');

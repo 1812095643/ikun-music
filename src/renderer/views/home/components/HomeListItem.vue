@@ -5,20 +5,31 @@
       class="home-list-cover relative aspect-square overflow-hidden rounded-lg transition-colors duration-200 ease-out"
     >
       <img
-        ref="coverRef"
+        v-if="!imageFailed"
         :src="getImgUrl(cover, '512y512')"
-        class="h-full w-full object-cover"
+        class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
         loading="lazy"
-        :alt="title"
+        alt=""
         crossorigin="anonymous"
-        @load="extractColor"
+        @error="imageFailed = true"
       />
+
+      <div
+        v-else
+        class="home-list-cover-fallback absolute inset-0 flex flex-col items-center justify-center gap-2"
+      >
+        <i class="ri-music-2-line text-3xl text-primary/70" />
+        <span
+          class="text-xs font-medium tracking-[0.18em] text-neutral-500/80 dark:text-neutral-300/70"
+        >
+          歌单封面
+        </span>
+      </div>
 
       <!-- Hover Overlay with Song Preview -->
       <div
         v-if="showHoverTracks"
-        class="absolute inset-0 flex items-end opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100"
-        :style="overlayStyle"
+        class="home-list-overlay absolute inset-0 flex items-end opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100"
       >
         <!-- Song Preview + Play Button Container -->
         <div class="flex w-full items-end justify-between gap-3 p-4">
@@ -27,12 +38,12 @@
             <div
               v-for="(track, idx) in displayTracks"
               :key="idx"
-              class="flex items-center gap-2.5 text-white/95"
+              class="flex items-center gap-2.5 text-white/95 drop-shadow-sm"
             >
-              <span class="w-5 flex-shrink-0 text-center text-xs font-bold text-white/40">{{
+              <span class="w-5 flex-shrink-0 text-center text-xs font-bold text-white/45">{{
                 idx + 1
               }}</span>
-              <span class="truncate text-sm font-semibold tracking-wide">{{ track.name }}</span>
+              <span class="truncate text-[13px] font-semibold tracking-wide">{{ track.name }}</span>
             </div>
             <div v-if="tracks.length === 0" class="py-4 text-center text-xs text-white/50">
               {{ t('comp.homeListItem.loading') }}
@@ -41,10 +52,13 @@
 
           <!-- Play Button -->
           <button
-            class="home-list-play flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[10px] transition-opacity duration-200 ease-out"
-            @click.stop="$emit('play')"
+            class="home-list-play flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[14px] transition-all duration-200 ease-out"
+            :class="{ 'is-loading': playing }"
+            :disabled="playing"
+            @click.stop="handlePlayClick"
           >
-            <i class="ri-play-fill ml-0.5 text-lg" />
+            <i v-if="playing" class="ri-loader-4-line text-lg" />
+            <i v-else class="ri-play-fill ml-0.5 text-lg" />
           </button>
         </div>
       </div>
@@ -52,7 +66,7 @@
       <!-- Badge -->
       <div
         v-if="badge"
-        class="absolute left-3 top-3 rounded-md px-2.5 py-1 text-[11px] font-bold text-white"
+        class="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[11px] font-bold text-white shadow-sm"
         :class="badgeClass"
       >
         {{ badge }}
@@ -61,7 +75,7 @@
       <!-- Play Count (for playlists) -->
       <div
         v-if="playCount"
-        class="qqm-cover-badge absolute right-3 top-3 flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold text-white"
+        class="qqm-cover-badge absolute right-3 top-3 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold text-white"
       >
         <i class="ri-play-fill text-[10px]" />
         <span>{{ formatNumber(playCount) }}</span>
@@ -69,15 +83,21 @@
     </div>
 
     <!-- Info -->
-    <div class="mt-3 px-0.5">
+    <div class="home-list-info mt-3 flex min-h-[70px] flex-col px-0.5">
+      <div
+        class="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold text-neutral-400 dark:text-neutral-500"
+      >
+        <span class="h-1.5 w-1.5 rounded-full bg-primary/70" />
+        <span class="tracking-[0.16em]">精选歌单</span>
+      </div>
       <h3
-        class="truncate text-base font-bold tracking-tight text-neutral-900 transition-colors duration-200 group-hover:text-primary dark:text-neutral-50 dark:group-hover:text-white"
+        class="home-list-title text-[15px] font-semibold leading-[1.38] tracking-[-0.01em] text-neutral-900 transition-colors duration-200 group-hover:text-primary dark:text-neutral-50 dark:group-hover:text-white"
       >
         {{ title }}
       </h3>
       <p
         v-if="subtitle"
-        class="mt-1.5 truncate text-sm font-medium text-neutral-500 transition-colors duration-200 group-hover:text-neutral-600 dark:text-neutral-400 dark:group-hover:text-neutral-300"
+        class="home-list-subtitle mt-1.5 text-[12px] font-medium leading-[1.45] text-neutral-500 transition-colors duration-200 group-hover:text-neutral-600 dark:text-neutral-400 dark:group-hover:text-neutral-300"
       >
         {{ subtitle }}
       </p>
@@ -86,11 +106,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, shallowRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { formatNumber, getImgUrl } from '@/utils';
-import { getImageBackground } from '@/utils/linearColor';
 
 interface Track {
   id: number;
@@ -107,23 +126,22 @@ const props = withDefaults(
     badgeType?: 'new' | 'hot' | 'recommend';
     playCount?: number;
     showHoverTracks?: boolean;
+    playing?: boolean;
   }>(),
   {
     tracks: () => [],
-    showHoverTracks: true
+    showHoverTracks: true,
+    playing: false
   }
 );
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'click'): void;
   (e: 'play'): void;
 }>();
 
 const { t } = useI18n();
-const coverRef = ref<HTMLImageElement | null>(null);
-const backgroundGradient = ref(
-  'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%)'
-);
+const imageFailed = shallowRef(false);
 
 const displayTracks = computed(() => props.tracks.slice(0, 3));
 
@@ -140,49 +158,9 @@ const badgeClass = computed(() => {
   }
 });
 
-const overlayStyle = computed(() => ({
-  background: backgroundGradient.value
-}));
-
-const extractColor = async () => {
-  const img = coverRef.value;
-  if (!img) return;
-
-  try {
-    const { primaryColor } = await getImageBackground(img);
-    if (primaryColor) {
-      // 使用 tinycolor 来创建更自然的渐变效果
-      const tinycolor = (await import('tinycolor2')).default;
-      const baseColor = tinycolor(primaryColor);
-      const hsl = baseColor.toHsl();
-
-      // 创建深色渐变，确保文字可读性
-      const darkColor = tinycolor({
-        h: hsl.h,
-        s: Math.min(hsl.s * 1.3, 1),
-        l: Math.max(hsl.l * 0.15, 0.05)
-      }).setAlpha(0.95);
-
-      const midColor = tinycolor({
-        h: hsl.h,
-        s: Math.min(hsl.s * 1.1, 1),
-        l: Math.max(hsl.l * 0.4, 0.1)
-      }).setAlpha(0.85);
-
-      const topColor = tinycolor({
-        h: hsl.h,
-        s: hsl.s * 0.8,
-        l: Math.min(hsl.l * 0.6, 0.2)
-      }).setAlpha(0.3);
-
-      backgroundGradient.value = `linear-gradient(to top, ${darkColor.toRgbString()} 0%, ${midColor.toRgbString()} 60%, ${topColor.toRgbString()} 100%)`;
-    }
-  } catch (error) {
-    console.debug('Color extraction failed:', error);
-    // 使用深色fallback
-    backgroundGradient.value =
-      'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.75) 60%, rgba(0,0,0,0.3) 100%)';
-  }
+const handlePlayClick = () => {
+  if (props.playing) return;
+  emit('play');
 };
 </script>
 
@@ -205,11 +183,51 @@ const extractColor = async () => {
 .home-list-cover {
   border: 1px solid var(--qqm-border);
   background: var(--qqm-surface-2, var(--qqm-surface));
+  box-shadow: 0 12px 28px color-mix(in srgb, #0f172a 8%, transparent);
 }
 
 .home-list-card:hover .home-list-cover {
   border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
   background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+}
+
+.home-list-cover-fallback {
+  background:
+    radial-gradient(
+      circle at 28% 18%,
+      color-mix(in srgb, var(--qqm-primary, #22c55e) 18%, transparent),
+      transparent 34%
+    ),
+    linear-gradient(
+      145deg,
+      var(--qqm-surface-2, #f6f7f8),
+      color-mix(in srgb, var(--qqm-primary, #22c55e) 8%, var(--qqm-surface, #ffffff))
+    );
+}
+
+.home-list-overlay {
+  /* 图片加载很多时不再逐张取色，避免主线程被 Canvas 与动态 import 占用导致按钮响应慢。 */
+  background: linear-gradient(
+    to top,
+    rgba(10, 14, 20, 0.92) 0%,
+    rgba(10, 14, 20, 0.58) 56%,
+    rgba(10, 14, 20, 0.08) 100%
+  );
+}
+
+.home-list-title,
+.home-list-subtitle {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+}
+
+.home-list-title {
+  -webkit-line-clamp: 2;
+}
+
+.home-list-subtitle {
+  -webkit-line-clamp: 1;
 }
 
 .home-list-play {
@@ -220,11 +238,27 @@ const extractColor = async () => {
 
 .home-list-play:hover {
   color: var(--qqm-primary, #22c55e);
+  transform: translateY(-1px) scale(1.04);
+}
+
+.home-list-play:disabled {
+  cursor: wait;
+  opacity: 0.88;
+}
+
+.home-list-play.is-loading i {
+  animation: playLoadingRotate 0.9s linear infinite;
 }
 
 .qqm-cover-badge {
   border: 1px solid color-mix(in srgb, #ffffff 14%, transparent);
   background: color-mix(in srgb, #0f172a 42%, transparent);
   backdrop-filter: blur(8px) saturate(1.06);
+}
+
+@keyframes playLoadingRotate {
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

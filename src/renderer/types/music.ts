@@ -11,7 +11,7 @@ export type Platform =
   | 'custom';
 
 // 默认平台列表
-export const DEFAULT_PLATFORMS: Platform[] = ['lxMusic', 'migu', 'kugou', 'kuwo', 'pyncmd'];
+export const DEFAULT_PLATFORMS: Platform[] = ['kuwo', 'migu', 'kugou', 'pyncmd'];
 
 export interface IRecommendMusic {
   code: number;
@@ -63,7 +63,7 @@ export interface SongResult {
   lyric?: ILyric;
   backgroundColor?: string;
   primaryColor?: string;
-  source?: 'netease';
+  source?: 'netease' | Platform;
   // 过期时间
   expiredAt?: number;
   // 获取时间

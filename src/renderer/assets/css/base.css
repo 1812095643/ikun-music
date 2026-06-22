@@ -1818,7 +1818,6 @@ body {
   color: var(--qqm-text) !important;
 }
 
-#drawer-target .control-btn,
 #mobile-drawer-target .control-btn,
 #mobile-drawer-target .favorite-icon,
 #mobile-drawer-target .function-button,
@@ -1833,7 +1832,6 @@ body {
   backdrop-filter: none;
 }
 
-#drawer-target .control-btn:hover,
 #mobile-drawer-target .control-btn:hover,
 #mobile-drawer-target .favorite-icon:hover,
 .mini-play-bar .control-button:hover,
@@ -1857,8 +1855,6 @@ body {
   overflow: hidden;
 }
 
-#drawer-target .music-info,
-#drawer-target .music-lrc,
 #mobile-drawer-target .lyrics-container,
 #mobile-drawer-target .landscape-progress-container,
 .mini-play-bar .playlist-container,
@@ -1879,7 +1875,11 @@ body {
     transform 180ms var(--qqm-ease) !important;
 }
 
-#drawer-target .music-lrc-text.now-text,
+#drawer-target .music-lrc-text.now-text {
+  color: var(--qqm-primary-strong) !important;
+  background: transparent !important;
+}
+
 #mobile-drawer-target .lyric-line.active,
 #mobile-drawer-target .lyric-line.current {
   color: var(--qqm-primary-strong) !important;
@@ -1915,7 +1915,6 @@ body {
   background: var(--qqm-primary) !important;
 }
 
-.dark #drawer-target .control-btn,
 .dark #mobile-drawer-target .control-btn,
 .dark #mobile-drawer-target .favorite-icon,
 .dark .mini-play-bar .control-button,

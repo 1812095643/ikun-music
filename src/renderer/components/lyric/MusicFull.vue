@@ -8,13 +8,10 @@
     :z-index="9998"
   >
     <!-- 背景层（用于图片模糊和明暗效果） -->
-    <div
-      v-if="
-        config.useCustomBackground && config.backgroundMode === 'image' && config.backgroundImage
-      "
-      class="background-layer"
-      :style="backgroundImageStyle"
-    ></div>
+    <div class="background-layer" :style="dynamicBackgroundStyle"></div>
+    <!-- 遮罩层，确保文本可读 -->
+    <!-- isDark 为 true 说明字体颜色被计算为黑色（即背景很亮），为了在任何情况下都能看清黑字，我们给背景盖一层亮色遮罩 -->
+    <div class="background-overlay" :class="isDark ? 'light-overlay' : 'dark-overlay'"></div>
     <div id="drawer-target" :class="[config.theme]" class="relative z-10">
       <!-- 左侧关闭按钮 -->
       <div
@@ -45,79 +42,123 @@
         </div>
       </div>
 
-      <div class="content-wrapper" :style="{ width: `${config.contentWidth}%` }">
-        <!-- 左侧：封面区域 -->
-        <div
-          v-if="!config.hideCover"
-          class="left-side"
-          :class="{ 'only-cover': config.hideLyrics }"
-        >
-          <div class="img-container">
-            <cover3-d
-              ref="PicImgRef"
-              :src="getImgUrl(playMusic?.picUrl, '500y500')"
-              :loading="playMusic?.playLoading"
-              :max-tilt="12"
-              :scale="1.03"
-              :shine-intensity="0.25"
-            />
-          </div>
-          <div class="music-info">
-            <div class="music-content-name" v-html="playMusic.name"></div>
-            <div class="music-content-singer">
-              <n-ellipsis
-                class="text-ellipsis"
-                line-clamp="2"
-                :tooltip="{
-                  contentStyle: { maxWidth: '600px' },
-                  zIndex: 99999
-                }"
-              >
-                <span
-                  v-for="(item, index) in artistList"
-                  :key="index"
-                  class="cursor-pointer hover:text-primary"
-                  @click="handleArtistClick(item.id)"
-                >
-                  {{ item.name }}
-                  {{ index < artistList.length - 1 ? ' / ' : '' }}
-                </span>
-              </n-ellipsis>
-            </div>
-            <simple-play-bar
-              v-if="!config.hideMiniPlayBar"
-              class="mt-4"
-              :pure-mode-enabled="config.pureModeEnabled"
-              :isDark="textColors.theme === 'dark'"
-            />
-          </div>
-        </div>
-
-        <!-- 右侧：歌词区域 -->
-        <div
-          class="right-side"
-          :class="{
-            center: config.centerLyrics,
-            hide: config.hideLyrics,
-            'full-width': config.hideCover
-          }"
-        >
-          <n-layout
-            ref="lrcSider"
-            class="music-lrc"
-            :native-scrollbar="false"
-            @mouseover="mouseOverLayout"
-            @mouseleave="mouseLeaveLayout"
+      <div class="player-layout-container" :style="{ width: `${config.contentWidth}%` }">
+        <div class="content-wrapper">
+          <!-- 左侧：封面区域 (黑胶唱片模式) -->
+          <div
+            v-if="!config.hideCover"
+            class="left-side"
+            :class="{ 'only-cover': config.hideLyrics }"
           >
-            <!-- 歌曲信息 -->
-            <div class="music-lrc-container">
-              <div
-                v-if="config.hideCover"
-                class="music-info-header"
-                :style="{ textAlign: config.centerLyrics ? 'center' : 'left' }"
-              >
-                <div class="music-info-name" v-html="playMusic.name"></div>
-                <div class="music-info-singer">
+            <div class="vinyl-stage">
+              <div class="vinyl-cd-container relative">
+                <!-- Tonearm (Needle) -->
+                <div class="tonearm-wrapper" :class="{ playing: playerStore.isPlay }">
+                  <svg
+                    class="tonearm-svg"
+                    viewBox="0 0 100 150"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <!-- Tonearm Pivot Base -->
+                    <circle
+                      cx="50"
+                      cy="20"
+                      r="12"
+                      fill="url(#metalGrad)"
+                      stroke="#1a1a1a"
+                      stroke-width="1.5"
+                    />
+                    <circle cx="50" cy="20" r="5" fill="#555" />
+
+                    <!-- Tonearm Arm -->
+                    <path
+                      d="M50 20 L55 85 L38 120"
+                      stroke="url(#metalGradArm)"
+                      stroke-width="4.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                    <path
+                      d="M50 20 L55 85 L38 120"
+                      stroke="#111"
+                      stroke-width="1"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+
+                    <!-- Needle Head -->
+                    <rect
+                      x="29"
+                      y="116"
+                      width="18"
+                      height="10"
+                      rx="2"
+                      transform="rotate(-15 38 121)"
+                      fill="#1c1c1c"
+                      stroke="#444"
+                      stroke-width="1"
+                    />
+                    <rect
+                      x="33"
+                      y="119"
+                      width="10"
+                      height="4"
+                      rx="0.5"
+                      transform="rotate(-15 38 121)"
+                      fill="#1ecf73"
+                    />
+
+                    <defs>
+                      <linearGradient id="metalGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#cccccc" />
+                        <stop offset="50%" stop-color="#888888" />
+                        <stop offset="100%" stop-color="#aaaaaa" />
+                      </linearGradient>
+                      <linearGradient id="metalGradArm" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#e0e0e0" />
+                        <stop offset="50%" stop-color="#999999" />
+                        <stop offset="100%" stop-color="#555555" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                </div>
+
+                <!-- Rotating Vinyl Disc -->
+                <div class="vinyl-disc-outer">
+                  <div class="vinyl-disc" :class="{ playing: playerStore.isPlay }">
+                    <!-- Vinyl Grooves Shine Overlay -->
+                    <div class="vinyl-shine"></div>
+                    <!-- Center Album Art Cover -->
+                    <div class="vinyl-cover-wrap">
+                      <img
+                        v-if="vinylCoverUrl && !vinylCoverLoadFailed"
+                        :src="vinylCoverUrl"
+                        class="vinyl-cover"
+                        alt=""
+                        @error="vinylCoverLoadFailed = true"
+                      />
+                      <div v-else class="vinyl-cover-fallback">
+                        <i class="ri-music-2-line"></i>
+                      </div>
+                    </div>
+                    <!-- Vinyl Center Spindle Hole -->
+                    <div class="vinyl-center-hole"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="music-info">
+              <div class="music-content-name" v-html="playMusic.name"></div>
+              <div class="music-content-singer">
+                <n-ellipsis
+                  class="text-ellipsis"
+                  line-clamp="2"
+                  :tooltip="{
+                    contentStyle: { maxWidth: '600px' },
+                    zIndex: 99999
+                  }"
+                >
                   <span
                     v-for="(item, index) in artistList"
                     :key="index"
@@ -127,55 +168,110 @@
                     {{ item.name }}
                     {{ index < artistList.length - 1 ? ' / ' : '' }}
                   </span>
-                </div>
-              </div>
-              <!-- 无时间戳歌词提示 -->
-              <div v-if="!supportAutoScroll" class="music-lrc-text no-scroll-tip">
-                <span>{{ t('player.lrc.noAutoScroll') }}</span>
-              </div>
-              <div
-                v-for="(item, index) in lrcArray"
-                :id="`music-lrc-text-${index}`"
-                :key="index"
-                class="music-lrc-text"
-                :class="{
-                  'now-text': index === nowIndex,
-                  'hover-text': item.text && item.startTime !== -1
-                }"
-                @click="item.startTime !== -1 ? setAudioTime(index) : null"
-              >
-                <!-- 逐字歌词显示 -->
-                <div
-                  v-if="item.hasWordByWord && item.words && item.words.length > 0"
-                  class="word-by-word-lyric"
-                >
-                  <template v-for="(word, wordIndex) in item.words" :key="wordIndex">
-                    <span class="lyric-word" :style="getWordStyle(index, wordIndex, word)">
-                      {{ word.text }} </span
-                    ><span class="lyric-word" v-if="word.space">&nbsp;</span></template
-                  >
-                </div>
-                <!-- 普通歌词显示 -->
-                <span v-else :style="getLrcStyle(index)">{{ item.text }}</span>
-                <div v-show="config.showTranslation" class="music-lrc-text-tr">
-                  {{ item.trText }}
-                </div>
-              </div>
-
-              <!-- 无歌词 -->
-              <div v-if="!lrcArray.length" class="music-lrc-text">
-                <span>{{ t('player.lrc.noLrc') }}</span>
+                </n-ellipsis>
               </div>
             </div>
-            <!-- 歌词右下角矫正按钮组件 -->
-            <lyric-correction-control
-              v-if="!isMobile"
-              :correction-time="correctionTime"
-              @adjust="adjustCorrectionTime"
-            />
-          </n-layout>
+          </div>
+
+          <!-- 右侧：歌词区域 -->
+          <div
+            class="right-side"
+            :class="{
+              center: config.centerLyrics,
+              hide: config.hideLyrics,
+              'full-width': config.hideCover
+            }"
+          >
+            <n-layout
+              ref="lrcSider"
+              class="music-lrc"
+              :native-scrollbar="false"
+              @mouseover="mouseOverLayout"
+              @mouseleave="mouseLeaveLayout"
+            >
+              <!-- 歌曲信息 -->
+              <div class="music-lrc-container">
+                <div
+                  v-if="config.hideCover"
+                  class="music-info-header"
+                  :style="{ textAlign: config.centerLyrics ? 'center' : 'left' }"
+                >
+                  <div class="music-info-name" v-html="playMusic.name"></div>
+                  <div class="music-info-singer">
+                    <span
+                      v-for="(item, index) in artistList"
+                      :key="index"
+                      class="cursor-pointer hover:text-primary"
+                      @click="handleArtistClick(item.id)"
+                    >
+                      {{ item.name }}
+                      {{ index < artistList.length - 1 ? ' / ' : '' }}
+                    </span>
+                  </div>
+                </div>
+                <!-- 无时间戳歌词提示 -->
+                <div
+                  v-if="lrcArray.length > 0 && !supportAutoScroll"
+                  class="music-lrc-text no-scroll-tip"
+                >
+                  <span>{{ t('player.lrc.noAutoScroll') }}</span>
+                </div>
+                <div
+                  v-for="(item, index) in lrcArray"
+                  :id="`music-lrc-text-${index}`"
+                  :key="index"
+                  class="music-lrc-text"
+                  :class="{
+                    'now-text': index === nowIndex,
+                    'hover-text': item.text && item.startTime !== -1
+                  }"
+                  @click="item.startTime !== -1 ? setAudioTime(index) : null"
+                >
+                  <!-- 逐字歌词显示 -->
+                  <div
+                    v-if="item.hasWordByWord && item.words && item.words.length > 0"
+                    class="word-by-word-lyric"
+                  >
+                    <template v-for="(word, wordIndex) in item.words" :key="wordIndex">
+                      <span class="lyric-word" :style="getWordStyle(index, wordIndex, word)">
+                        {{ word.text }} </span
+                      ><span class="lyric-word" v-if="word.space">&nbsp;</span></template
+                    >
+                  </div>
+                  <!-- 普通歌词显示 -->
+                  <span v-else :style="getLrcStyle(index)">{{ item.text }}</span>
+                  <div v-show="config.showTranslation" class="music-lrc-text-tr">
+                    {{ item.trText }}
+                  </div>
+                </div>
+
+                <!-- 无歌词 -->
+                <div v-if="!lrcArray.length" class="music-lrc-text">
+                  <span>{{ t('player.lrc.noLrc') }}</span>
+                </div>
+              </div>
+              <!-- 歌词右下角矫正按钮组件 -->
+              <lyric-correction-control
+                v-if="!isMobile"
+                :correction-time="correctionTime"
+                @adjust="adjustCorrectionTime"
+              />
+            </n-layout>
+          </div>
+        </div>
+        <!-- End of content-wrapper -->
+
+        <!-- 底部控制栏 -->
+        <div class="bottom-controls" :class="{ 'pure-mode': config.pureModeEnabled }">
+          <simple-play-bar
+            v-if="!config.hideMiniPlayBar"
+            :pure-mode-enabled="config.pureModeEnabled"
+            :isDark="textColors.theme === 'dark'"
+            class="full-width-play-bar"
+          />
         </div>
       </div>
+      <!-- End of player-layout-container -->
     </div>
   </n-drawer>
 </template>
@@ -262,12 +358,40 @@ const backgroundImageStyle = computed(() => {
     filter: `blur(${blur}px) brightness(${brightness}%)`
   };
 });
+
+// 新的动态背景样式
+const dynamicBackgroundStyle = computed(() => {
+  // 如果开启了自定义背景且模式为 image
+  if (
+    config.value.useCustomBackground &&
+    config.value.backgroundMode === 'image' &&
+    config.value.backgroundImage
+  ) {
+    return backgroundImageStyle.value;
+  }
+  // 否则默认使用当前歌曲封面的深度模糊作为背景（QQ音乐沉浸式效果）
+  const imgUrl = getImgUrl(playMusic.value?.picUrl, '1024y1024');
+  return {
+    backgroundImage: `url("${imgUrl}")`, // ADD QUOTES TO FIX SPACES IN URL
+    filter: 'blur(80px) saturate(150%)',
+    transform: 'scale(1.2)' // 稍微放大以隐藏模糊边缘
+  };
+});
 const showStickyHeader = ref(false);
 const lyricSettingsRef = ref<InstanceType<typeof LyricSettings>>();
 const isSongChanging = ref(false);
 const isFullScreen = ref(false);
+const vinylCoverLoadFailed = ref(false);
 
 const config = ref<LyricConfig>({ ...DEFAULT_LYRIC_CONFIG });
+const vinylCoverUrl = computed(() => {
+  const picUrl = playMusic.value?.picUrl;
+  return picUrl ? getImgUrl(picUrl, '300y300') : '';
+});
+
+watch(vinylCoverUrl, () => {
+  vinylCoverLoadFailed.value = false;
+});
 
 watch(
   () => lyricSettingsRef.value?.config,
@@ -417,16 +541,29 @@ const setTextColors = (background: string) => {
   }
 };
 
+const settingsStore = useSettingsStore();
 const targetBackground = computed(() => {
-  if (config.value.useCustomBackground && customBackgroundStyle.value) {
+  if (
+    config.value.useCustomBackground &&
+    config.value.backgroundMode === 'image' &&
+    config.value.backgroundImage
+  ) {
     if (typeof customBackgroundStyle.value === 'string') {
       return customBackgroundStyle.value;
     }
   }
+  // 核心修复：如果是沉浸式毛玻璃背景（即没有使用自定义图片），歌词颜色应该跟随当前封面主色调
+  if (!config.value.useCustomBackground || config.value.backgroundMode !== 'image') {
+    if (playMusic.value?.primaryColor) {
+      return playMusic.value.primaryColor;
+    }
+  }
+
   if (config.value.theme !== 'default') {
     return themeMusic[config.value.theme] || props.background;
   }
-  return props.background;
+  // 核心修复：如果没有主色调，且主题是跟随系统，使用全局设置的主题背景色计算文字，防止 props.background 因为 mock 数据传错导致白色背景白色文字
+  return settingsStore.theme === 'dark' ? themeMusic.dark : themeMusic.light;
 });
 
 // 监听目标背景变化并更新文字颜色
@@ -529,8 +666,6 @@ onBeforeUnmount(() => {
     cancelAnimationFrame(animationFrame.value);
   }
 });
-
-const settingsStore = useSettingsStore();
 
 const { navigateToArtist } = useArtist();
 
@@ -708,6 +843,58 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
+.background-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 0;
+  transition: background-image 0.8s ease-in-out;
+}
+
+.background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  transition: background-color 0.8s ease-in-out;
+}
+
+.dark-overlay {
+  background-color: rgba(0, 0, 0, 0.65);
+}
+
+.light-overlay {
+  background-color: rgba(255, 255, 255, 0.55);
+}
+
+.bottom-controls {
+  @apply w-full flex-shrink-0 mt-8;
+  height: 100px;
+  z-index: 10;
+  transition: opacity 0.3s ease;
+
+  &.pure-mode {
+    opacity: 0;
+    pointer-events: none;
+    &:hover {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+}
+
+.full-width-play-bar {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
 @keyframes round {
   0% {
     transform: rotate(0deg);
@@ -746,21 +933,21 @@ defineExpose({
 #drawer-target {
   @apply top-0 left-0 absolute overflow-hidden rounded w-full h-full;
   animation-duration: 300ms;
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, transparent),
-      transparent 42%
-    ),
-    color-mix(in srgb, var(--qqm-bg, #f7f8fa) 76%, transparent);
+  /* 移除原本的渐变背景，完全依赖 background-layer */
+  background: transparent;
+
+  .player-layout-container {
+    @apply mx-auto h-full flex flex-col;
+    max-width: 1360px;
+    padding: 2.6rem 3rem 1.5rem;
+    transition: width 0.3s ease;
+  }
 
   .content-wrapper {
-    @apply grid items-center mx-auto h-full;
+    @apply grid items-center flex-1;
     grid-template-columns: minmax(300px, 40%) 1fr;
     gap: 3.2rem;
-    max-width: 1360px;
-    padding: 2.6rem 3rem;
-    transition: width 0.3s ease;
+    min-height: 0; /* 允许内部滚动区域正常工作 */
 
     @media (max-width: 1024px) {
       grid-template-columns: 1fr;
@@ -778,8 +965,13 @@ defineExpose({
     &.only-cover {
       @apply col-span-2;
 
-      .img-container {
-        @apply w-[60vh] aspect-square;
+      .vinyl-stage {
+        height: min(66vh, 560px) !important;
+      }
+
+      .vinyl-cd-container {
+        width: 60vh !important;
+        height: 60vh !important;
       }
 
       .music-info {
@@ -787,28 +979,50 @@ defineExpose({
       }
     }
 
-    .img-container {
-      width: min(42vh, 360px);
+    .vinyl-stage {
+      /* 固定黑胶舞台高度，避免歌曲名/歌手名行数变化把唱片整体顶高或压低。 */
+      width: 100%;
+      height: min(52vh, 470px);
+      min-height: 360px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .vinyl-cd-container {
+      position: relative;
+      width: min(46vh, 420px);
+      height: min(46vh, 420px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       max-width: 100%;
-      margin-bottom: 26px;
       aspect-ratio: 1;
-      border-radius: 14px;
-      padding: 8px;
-      background: color-mix(in srgb, var(--qqm-surface, #fff) 76%, transparent);
-      border: 1px solid
-        color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 84%, transparent);
-      box-shadow: 0 12px 30px color-mix(in srgb, var(--qqm-text, #1f2329) 7%, transparent);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover {
+        transform: scale(1.02);
+      }
     }
 
     .music-info {
       @apply w-full text-center max-w-[400px];
+      height: 96px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      flex-shrink: 0;
+      margin-top: 12px;
 
       .music-content-name {
         @apply mb-2 line-clamp-2;
         color: var(--qqm-text, var(--text-color-active));
         font-size: 26px;
         font-weight: 650;
+        line-height: 1.25;
         letter-spacing: -0.03em;
+        min-height: 32px;
       }
 
       .music-content-singer {
@@ -816,6 +1030,7 @@ defineExpose({
         font-weight: 500;
         opacity: 0.78;
         color: var(--qqm-muted, var(--text-color-primary));
+        min-height: 22px;
       }
     }
   }
@@ -848,8 +1063,8 @@ defineExpose({
 
     .music-lrc {
       @apply w-full h-full;
-      border-radius: 14px;
-      background: color-mix(in srgb, var(--qqm-surface, #fff) 58%, transparent);
+      border-radius: 0;
+      background: transparent !important;
       mask-image: linear-gradient(
         to bottom,
         transparent 0%,
@@ -902,7 +1117,8 @@ defineExpose({
 
       &.now-text {
         opacity: 1;
-        transform: none;
+        transform: scale(1.1);
+        text-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
       }
 
       &.no-scroll-tip {
@@ -1081,6 +1297,162 @@ defineExpose({
   .music-lrc:hover & {
     opacity: 1 !important;
     pointer-events: auto !important;
+  }
+}
+
+/* Vinyl CD & Tonearm Styles */
+.tonearm-wrapper {
+  position: absolute;
+  top: -10%;
+  left: 56%;
+  width: 19%;
+  height: 30%;
+  z-index: 10;
+  transform-origin: 50% 13%;
+  transform: rotate(-32deg);
+  transition: transform 0.9s cubic-bezier(0.25, 1, 0.2, 1);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+.tonearm-wrapper.playing {
+  transform: rotate(-2deg);
+}
+
+.tonearm-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.vinyl-disc-outer {
+  width: 94%;
+  height: 94%;
+  border-radius: 9999px;
+  padding: 5px;
+  background: linear-gradient(135deg, #1f1f1f 0%, #000000 100%);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.5),
+    0 0 40px var(--hover-bg-color),
+    inset 0 1.5px 3px rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vinyl-disc {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    #202020 30%,
+    #0c0c0c 38%,
+    #141414 40%,
+    #0a0a0a 55%,
+    #181818 57%,
+    #020202 68%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.85);
+  animation: spin-cd 18s linear infinite;
+  animation-play-state: paused;
+}
+
+.vinyl-disc.playing {
+  animation-play-state: running;
+}
+
+.vinyl-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 90deg at 50% 50%,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 12%,
+    transparent 24%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.05) 62%,
+    transparent 74%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.vinyl-cover-wrap {
+  position: relative;
+  width: 54%;
+  height: 54%;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: radial-gradient(circle, #111 0%, #030303 68%);
+  border: 4px solid #0d0d0d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 0 18px rgba(0, 0, 0, 0.72);
+}
+
+.vinyl-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 9999px;
+  transform: translateZ(0);
+}
+
+.vinyl-cover-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  color: rgba(255, 255, 255, 0.42);
+  background:
+    conic-gradient(
+      from 35deg,
+      rgba(255, 255, 255, 0.06),
+      transparent 18%,
+      rgba(255, 255, 255, 0.035) 42%,
+      transparent 70%
+    ),
+    radial-gradient(circle, #050505 0%, #000 72%);
+}
+
+.vinyl-cover-fallback i {
+  font-size: 42px;
+  opacity: 0.7;
+}
+
+.vinyl-center-hole {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: var(--qqm-bg, #f7f8fa);
+  border: 3px solid #1a1a1a;
+  z-index: 3;
+  box-shadow: inset 0 1px 1.5px rgba(0, 0, 0, 0.65);
+}
+
+.dark .vinyl-center-hole {
+  background: var(--qqm-bg, #111315);
+}
+
+@keyframes spin-cd {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>

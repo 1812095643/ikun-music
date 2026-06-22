@@ -650,7 +650,7 @@ const saveScriptName = (apiId: string) => {
  * 确认选择
  */
 const handleConfirm = () => {
-  const defaultPlatforms: Platform[] = ['migu', 'kugou', 'kuwo', 'pyncmd'];
+  const defaultPlatforms: Platform[] = ['kuwo', 'migu', 'kugou', 'pyncmd'];
   const valuesToEmit =
     selectedSources.value.length > 0 ? [...new Set(selectedSources.value)] : defaultPlatforms;
   emit('update:sources', valuesToEmit);

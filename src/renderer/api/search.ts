@@ -1,6 +1,8 @@
 import { isElectron } from '@/utils';
 import request from '@/utils/request';
 
+import { searchKuwoSongs } from './kuwo';
+
 interface IParams {
   keywords: string;
   type: number;
@@ -9,6 +11,9 @@ interface IParams {
 }
 // 搜索内容
 export const getSearch = (params: IParams) => {
+  if (params.type === 1) {
+    return searchKuwoSongs(params);
+  }
   return request.get<any>('/cloudsearch', {
     params
   });

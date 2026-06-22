@@ -7,9 +7,9 @@
           <!-- Hero Section -->
           <section class="hero-section relative overflow-hidden rounded-tl-md">
             <!-- Background Image with Blur -->
-            <div class="hero-bg absolute inset-0 -top-20">
+            <div class="hero-bg absolute inset-0 -top-20 overflow-hidden">
               <div
-                class="absolute inset-0 bg-cover bg-center opacity-[0.025] dark:opacity-[0.035]"
+                class="absolute inset-0 bg-cover bg-center scale-110 opacity-[0.25] dark:opacity-[0.32] blur-[64px] saturate-[140%]"
                 :style="{
                   backgroundImage: `url(${getImgUrl(getCoverImgUrl, '800y800')})`
                 }"
@@ -374,7 +374,7 @@ const fetchData = async () => {
         message.error(t('common.loadFailed'));
       }
     } else if (type === 'playlist') {
-      const res = await getListDetail(id.toString());
+      const res = await getListDetail(id.toString(), musicStore.currentListInfo?.source);
       data = res.data;
       if (data.code === 200) {
         const playlist = data.playlist;
@@ -1068,7 +1068,12 @@ onMounted(checkCollectionStatus);
 }
 
 .music-hero-mask {
-  background: color-mix(in srgb, var(--qqm-bg, #f7f8fa) 98%, transparent);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--qqm-bg) 28%, transparent) 0%,
+    color-mix(in srgb, var(--qqm-bg) 82%, transparent) 75%,
+    var(--qqm-bg) 100%
+  );
 }
 
 .music-list-badge,

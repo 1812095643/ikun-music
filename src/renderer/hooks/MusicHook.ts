@@ -668,7 +668,7 @@ export const getLrcStyle = (index: number) => {
     // 当前句，显示进度
     const progress = ((currentTime - start) / (end - start)) * 100;
     return {
-      backgroundImage: `linear-gradient(to right, #ffffff ${progress}%, #ffffff8a ${progress}%)`,
+      backgroundImage: `linear-gradient(to right, var(--text-color-active) ${progress}%, var(--text-color-primary) ${progress}%)`,
       backgroundClip: 'text',
       WebkitBackgroundClip: 'text',
       color: 'transparent',

@@ -1,9 +1,9 @@
 <template>
-  <div class="play-bar" :class="{ 'dark-theme': isDarkMode }" ref="playBarRef">
+  <div class="simple-play-bar" :class="{ 'dark-theme': isDarkMode }" ref="playBarRef">
     <div class="container">
-      <!-- 顶部进度条和时间 -->
-      <div class="top-section">
-        <!-- 进度条 -->
+      <!-- 进度条区域 -->
+      <div class="progress-wrapper">
+        <span class="time current-time">{{ formatTime(displayTime) }}</span>
         <div
           class="progress-bar"
           :class="{ 'is-dragging': isDragging }"
@@ -11,20 +11,17 @@
           @click.stop="handleProgressClick"
         >
           <div class="progress-track"></div>
-          <div class="progress-fill" :style="{ width: `${progressPercentage}%` }"></div>
+          <div class="progress-fill" :style="{ width: `${progressPercentage}%` }">
+            <div class="progress-handle"></div>
+          </div>
         </div>
-
-        <!-- 时间显示 -->
-        <div class="time-display">
-          <span class="current-time">{{ formatTime(displayTime) }}</span>
-          <span class="total-time">{{ formatTime(allTime) }}</span>
-        </div>
+        <span class="time total-time">{{ formatTime(allTime) }}</span>
       </div>
 
-      <!-- 主控制区域 -->
-      <div class="controls-section">
+      <!-- 控制区域 -->
+      <div class="controls-wrapper">
         <div class="left-controls">
-          <button class="control-btn small-btn" @click="togglePlayMode">
+          <button class="control-btn small-btn" @click="togglePlayMode" title="播放模式">
             <i
               class="iconfont"
               :class="[playModeIcon, { 'intelligence-active': playMode === 3 }]"
@@ -33,44 +30,32 @@
         </div>
 
         <div class="center-controls">
-          <!-- 上一首 -->
-          <button class="control-btn" @click="handlePrev">
+          <button class="control-btn" @click="handlePrev" title="上一首">
             <i class="iconfont icon-prev"></i>
           </button>
-
-          <!-- 播放/暂停 -->
-          <button class="control-btn play-btn" @click="playMusicEvent">
+          <button class="control-btn play-btn" @click="playMusicEvent" title="播放/暂停">
             <i class="iconfont" :class="play ? 'icon-stop' : 'icon-play'"></i>
           </button>
-
-          <!-- 下一首 -->
-          <button class="control-btn" @click="handleNext">
+          <button class="control-btn" @click="handleNext" title="下一首">
             <i class="iconfont icon-next"></i>
           </button>
         </div>
 
         <div class="right-controls">
-          <!-- 播放列表按钮 -->
-          <button class="control-btn small-btn" @click="openPlayListDrawer">
+          <div class="volume-control" title="音量">
+            <i class="iconfont" :class="getVolumeIcon" @click="mute"></i>
+            <div class="volume-slider">
+              <n-slider
+                v-model:value="volumeSlider"
+                :step="1"
+                :tooltip="false"
+                @wheel.prevent="handleVolumeWheel"
+              ></n-slider>
+            </div>
+          </div>
+          <button class="control-btn small-btn" @click="openPlayListDrawer" title="播放列表">
             <i class="iconfont icon-list"></i>
           </button>
-        </div>
-      </div>
-
-      <!-- 底部控制区域 -->
-      <div class="bottom-section">
-        <div class="spacer"></div>
-        <!-- 音量控制 -->
-        <div class="volume-control">
-          <i class="iconfont" :class="getVolumeIcon" @click="mute"></i>
-          <div class="volume-slider">
-            <n-slider
-              v-model:value="volumeSlider"
-              :step="1"
-              :tooltip="false"
-              @wheel.prevent="handleVolumeWheel"
-            ></n-slider>
-          </div>
         </div>
       </div>
     </div>
@@ -335,181 +320,163 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.play-bar {
+.simple-play-bar {
   @apply w-full;
-  border-radius: 12px;
-  transition:
-    background 0.3s ease,
-    border-color 0.3s ease,
-    opacity 0.3s ease;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  padding: 0 20px;
+  transition: opacity 0.3s ease;
 
   /* 默认变量 */
   --text-on-fill: var(--qqm-on-primary, #ffffff);
   --high-contrast-color: var(--qqm-on-primary, #ffffff);
 
   &.dark-theme {
-    --text-color: var(--qqm-text, #333333);
-    --muted-color: rgba(0, 0, 0, 0.6);
-    --track-color: rgba(0, 0, 0, 0.2);
-    --track-color-hover: rgba(0, 0, 0, 0.4);
-    --fill-color: var(--qqm-primary, #22c55e);
-    --fill-color-alt: var(--qqm-primary-strong, #16a34a);
-    --fill-color-transparent: rgba(30, 215, 96, 0.25);
-    --fill-color-light: rgba(30, 215, 96, 0.5);
-    --button-bg: rgba(0, 0, 0, 0.1);
-    --button-hover: rgba(0, 0, 0, 0.2);
-  }
-
-  &:not(.dark-theme) {
     --text-color: var(--qqm-text, #f1f1f1);
-    --muted-color: rgba(255, 255, 255, 0.6);
+    --muted-color: rgba(255, 255, 255, 0.5);
     --track-color: rgba(255, 255, 255, 0.1);
     --track-color-hover: rgba(255, 255, 255, 0.2);
     --fill-color: var(--qqm-primary, #22c55e);
     --fill-color-alt: var(--qqm-primary-strong, #16a34a);
-    --fill-color-transparent: rgba(115, 228, 154, 0.25);
-    --fill-color-light: rgba(115, 228, 154, 0.5);
-    --button-bg: rgba(255, 255, 255, 0.05);
-    --button-hover: rgba(255, 255, 255, 0.1);
+    --button-bg: rgba(255, 255, 255, 0.06);
+    --button-hover: rgba(255, 255, 255, 0.12);
   }
 
-  /* 极亮主题色适配 */
+  &:not(.dark-theme) {
+    --text-color: var(--qqm-text, #111111);
+    --muted-color: rgba(0, 0, 0, 0.5);
+    --track-color: rgba(0, 0, 0, 0.08);
+    --track-color-hover: rgba(0, 0, 0, 0.15);
+    --fill-color: var(--qqm-primary, #22c55e);
+    --fill-color-alt: var(--qqm-primary-strong, #16a34a);
+    --button-bg: rgba(0, 0, 0, 0.04);
+    --button-hover: rgba(0, 0, 0, 0.08);
+  }
+
   &.light-theme-color {
-    .progress-fill {
-      box-shadow: none;
-    }
-
     .control-btn.play-btn {
-      box-shadow: none;
       color: var(--text-on-fill);
-    }
-
-    .volume-control .iconfont:hover {
-      color: var(--fill-color-alt);
-    }
-  }
-
-  /* 极暗主题色适配 */
-  &.dark-theme-color {
-    .progress-fill {
-      box-shadow: none;
-    }
-
-    .control-btn.play-btn {
-      box-shadow: none;
-    }
-
-    .volume-control .iconfont:hover {
-      color: var(--fill-color-light);
     }
   }
 }
 
 .container {
-  @apply flex flex-col;
+  @apply flex flex-col w-full max-w-[1000px] mx-auto;
 }
 
-.top-section {
-  @apply mb-3;
+/* 进度条区域 */
+.progress-wrapper {
+  @apply flex items-center justify-between w-full mb-3;
+
+  .time {
+    @apply text-sm font-medium w-12 text-center;
+    color: var(--muted-color);
+    font-variant-numeric: tabular-nums;
+  }
 
   .progress-bar {
-    @apply relative cursor-pointer h-2 mb-2 w-full;
+    @apply relative cursor-pointer h-1.5 flex-1 mx-4;
     user-select: none;
+    transition: height 0.2s ease;
 
     .progress-track {
-      @apply absolute inset-0 rounded-full transition-colors duration-150;
+      @apply absolute inset-0 rounded-full transition-colors duration-200;
       background-color: var(--track-color);
     }
 
     .progress-fill {
-      @apply absolute top-0 left-0 h-full rounded-full transition-[width] duration-150;
+      @apply absolute top-0 left-0 h-full rounded-full;
       background: var(--fill-color);
-      box-shadow: none;
+
+      .progress-handle {
+        @apply absolute right-0 top-1/2 rounded-full opacity-0 transition-opacity duration-200;
+        width: 10px;
+        height: 10px;
+        background: white;
+        transform: translate(50%, -50%);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
     }
 
-    &:hover {
+    &:hover,
+    &.is-dragging {
+      height: 6px;
       .progress-track {
         background-color: var(--track-color-hover);
       }
-
-      .progress-fill {
-        box-shadow: none;
-      }
-    }
-  }
-
-  .time-display {
-    @apply flex justify-between text-base;
-    color: var(--muted-color);
-
-    .time-separator {
-      @apply mx-1;
-    }
-
-    .current-time {
-      opacity: 0.8;
-      transition: opacity 0.18s ease;
-
-      &:hover {
+      .progress-handle {
         opacity: 1;
       }
     }
   }
 }
 
-.controls-section {
-  @apply flex items-center justify-between mb-4;
-
-  .left-controls,
-  .right-controls {
-    @apply flex items-center;
-  }
-
-  .center-controls {
-    @apply flex items-center justify-center space-x-6;
-  }
+/* 控制区域 */
+.controls-wrapper {
+  @apply flex items-center justify-between w-full h-14;
 }
 
-.bottom-section {
-  @apply flex items-center justify-between mt-2;
+.left-controls,
+.right-controls {
+  @apply flex items-center gap-4 w-[160px];
+}
+
+.right-controls {
+  @apply justify-end;
+}
+
+.center-controls {
+  @apply flex items-center justify-center gap-6;
 }
 
 .control-btn {
-  @apply flex items-center justify-center rounded-lg outline-none border-0 transition-colors duration-200;
+  @apply flex items-center justify-center rounded-full outline-none border-0 transition-all duration-200;
   color: var(--text-color);
   background: transparent;
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   cursor: pointer;
 
   &:hover {
     background-color: var(--button-bg);
+    transform: scale(1.05);
   }
 
   &:active {
     background-color: var(--button-hover);
-    transform: translateY(0);
+    transform: scale(0.95);
   }
 
   &.play-btn {
     background: var(--fill-color);
     color: var(--text-on-fill);
-    width: 46px;
-    height: 46px;
-    box-shadow: none;
+    width: 58px;
+    height: 58px;
+    box-shadow: 0 6px 18px var(--fill-color-transparent);
 
     &:hover {
+      background: var(--fill-color-alt);
+      transform: scale(1.1);
+      box-shadow: 0 8px 24px var(--fill-color-light);
+    }
+
+    &:active {
+      transform: scale(0.94);
     }
 
     .iconfont {
-      font-size: 1.25rem;
+      font-size: 1.8rem;
+    }
+    .icon-play {
+      margin-left: 4px; /* 播放图标视觉居中调整 */
     }
   }
 
   &.small-btn {
-    @apply text-2xl;
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
   }
 
   .iconfont {
@@ -518,43 +485,37 @@ onMounted(() => {
 }
 
 .volume-control {
-  @apply flex items-center space-x-2;
+  @apply flex items-center space-x-2 relative;
   color: var(--text-color);
 
   .iconfont {
-    @apply cursor-pointer text-base;
-    transition:
-      transform 0.2s ease,
-      color 0.2s ease;
-
+    @apply cursor-pointer;
+    font-size: 1.25rem;
     &:hover {
       color: var(--fill-color);
     }
   }
 
   .volume-slider {
-    @apply w-24;
+    @apply w-20;
 
     :deep(.n-slider) {
-      --n-rail-height: 3px;
+      --n-rail-height: 4px;
       --n-fill-color: var(--fill-color);
       --n-rail-color: var(--track-color);
-      --n-handle-size: 12px;
+      --n-handle-size: 10px;
 
       .n-slider-rail {
         @apply rounded-full;
       }
-
       .n-slider-rail__fill {
         background: var(--fill-color);
-        box-shadow: none;
       }
-
       .n-slider-handle {
         @apply opacity-0 transition-opacity duration-200;
         background: white;
-        box-shadow: none;
         border: 2px solid var(--fill-color);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
 
       &:hover .n-slider-handle {
@@ -562,15 +523,6 @@ onMounted(() => {
       }
     }
   }
-}
-
-.spacer {
-  flex: 1;
-}
-
-.like-active {
-  color: var(--fill-color);
-  text-shadow: none;
 }
 
 .intelligence-active {
