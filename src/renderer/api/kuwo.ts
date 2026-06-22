@@ -90,8 +90,14 @@ const parseNumber = (value: unknown, fallback = 0) => {
 
 const normalizeImageUrl = (url?: string) => {
   if (!url) return '';
-  if (url.startsWith('//')) return `https:${url}`;
-  return url.replace(/^http:/, 'https:');
+  const trimmedUrl = url.trim();
+
+  // 根因：酷我部分封面来自 img*.kwcdn.kuwo.cn，该 CDN 的 HTTPS 证书在桌面端校验失败，
+  // 之前统一把 http 改成 https 会让这些封面直接加载失败；因此 kwcdn 保留原始 HTTP，
+  // 其它可正常走 HTTPS 的酷我图片仍升级协议，兼顾可用性与安全性。
+  if (trimmedUrl.startsWith('//')) return `https:${trimmedUrl}`;
+  if (/^http:\/\/img\d+\.kwcdn\.kuwo\.cn/i.test(trimmedUrl)) return trimmedUrl;
+  return trimmedUrl.replace(/^http:/, 'https:');
 };
 
 const getKuwoSongId = (song: KuwoSongItem) => {

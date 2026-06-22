@@ -5,13 +5,12 @@
       class="home-list-cover relative aspect-square overflow-hidden rounded-lg transition-colors duration-200 ease-out"
     >
       <img
-        v-if="!imageFailed"
-        :src="getImgUrl(cover, '512y512')"
+        v-if="coverUrl && !imageFailed"
+        :src="coverUrl"
         class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.035]"
         loading="lazy"
         alt=""
-        crossorigin="anonymous"
-        @error="imageFailed = true"
+        @error="handleImageError"
       />
 
       <div
@@ -22,7 +21,7 @@
         <span
           class="text-xs font-medium tracking-[0.18em] text-neutral-500/80 dark:text-neutral-300/70"
         >
-          歌单封面
+          暂无封面
         </span>
       </div>
 
@@ -106,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, shallowRef } from 'vue';
+import { computed, shallowRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { formatNumber, getImgUrl } from '@/utils';
@@ -143,7 +142,20 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const imageFailed = shallowRef(false);
 
+const coverUrl = computed(() => getImgUrl(props.cover, '512y512'));
+
+watch(
+  () => props.cover,
+  () => {
+    imageFailed.value = false;
+  }
+);
+
 const displayTracks = computed(() => props.tracks.slice(0, 3));
+
+const handleImageError = () => {
+  imageFailed.value = true;
+};
 
 const badgeClass = computed(() => {
   switch (props.badgeType) {
