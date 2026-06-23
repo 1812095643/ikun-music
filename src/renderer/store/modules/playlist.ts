@@ -628,7 +628,7 @@ export const usePlaylistStore = defineStore(
           if (playerCore.play) {
             playerCore.setPlayMusic(false);
             const { audioService } = await import('@/services/audioService');
-            audioService.getCurrentSound()?.pause();
+            audioService.pause();
             playerCore.userPlayIntent = false;
           } else {
             playerCore.setPlayMusic(true);
@@ -636,7 +636,7 @@ export const usePlaylistStore = defineStore(
             const { audioService } = await import('@/services/audioService');
             const sound = audioService.getCurrentSound();
             if (sound) {
-              sound.play();
+              audioService.resume();
               // 在恢复播放时也进行状态检测，防止URL已过期导致无声
               playerCore.checkPlaybackState(playerCore.playMusic);
             } else {

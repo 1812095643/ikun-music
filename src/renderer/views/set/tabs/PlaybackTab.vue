@@ -58,6 +58,16 @@
       </setting-item>
 
       <setting-item
+        :title="t('settings.playback.playbackFade')"
+        :description="t('settings.playback.playbackFadeDesc')"
+      >
+        <n-switch v-model:value="setData.enablePlaybackFade">
+          <template #checked>{{ t('common.on') }}</template>
+          <template #unchecked>{{ t('common.off') }}</template>
+        </n-switch>
+      </setting-item>
+
+      <setting-item
         v-if="isElectron"
         :title="t('settings.playback.audioDevice')"
         :description="t('settings.playback.audioDeviceDesc')"

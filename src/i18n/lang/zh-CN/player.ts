@@ -53,6 +53,7 @@ export default {
     lyric: '歌词',
     noSongPlaying: '没有正在播放的歌曲',
     eq: '均衡器',
+    effects: '音效',
     playList: '播放列表',
     reparse: '重新解析',
     playMode: {

@@ -230,22 +230,29 @@ const quitApp = () => {
   window.api?.quitApp?.();
 };
 
-const handlePanelState = (_event: unknown, payload: TrayPanelState) => {
-  if (!payload) return;
-  externalState.song = payload.song;
-  externalState.isPlaying = Boolean(payload.isPlaying);
-  externalState.volume = Number(payload.volume || 0);
-  externalState.muted = Boolean(payload.muted);
-  externalState.favoriteIds = Array.isArray(payload.favoriteIds) ? payload.favoriteIds : [];
-  externalState.playMode = Number(payload.playMode || 0);
-  externalState.playListCount = Number(payload.playListCount || 0);
-  externalState.playListIndex = Number(payload.playListIndex || 0);
-  externalState.currentTime = Number(payload.currentTime || 0);
-  externalState.duration = Number(payload.duration || 0);
+const getPanelStatePayload = (eventOrPayload: unknown, payload?: TrayPanelState) => {
+  if (payload) return payload;
+  return eventOrPayload as TrayPanelState;
+};
+
+const handlePanelState = (eventOrPayload: unknown, payload?: TrayPanelState) => {
+  const state = getPanelStatePayload(eventOrPayload, payload);
+  if (!state) return;
+  externalState.song = state.song;
+  externalState.isPlaying = Boolean(state.isPlaying);
+  externalState.volume = Number(state.volume || 0);
+  externalState.muted = Boolean(state.muted);
+  externalState.favoriteIds = Array.isArray(state.favoriteIds) ? state.favoriteIds : [];
+  externalState.playMode = Number(state.playMode || 0);
+  externalState.playListCount = Number(state.playListCount || 0);
+  externalState.playListIndex = Number(state.playListIndex || 0);
+  externalState.currentTime = Number(state.currentTime || 0);
+  externalState.duration = Number(state.duration || 0);
   syncProgressFromState();
 };
 
 const handlePanelOpened = () => {
+  sendPanelCommand('requestState');
   syncProgressFromState();
 };
 
@@ -272,6 +279,10 @@ onMounted(() => {
       handlePanelOpened
     );
   }
+  // 根因：托盘面板是独立 WebView，不能直接读取主窗口播放器状态。
+  // 面板创建和主窗口广播事件存在时序差，首次打开时容易错过状态同步，表现为歌曲、进度和按钮都像失效。
+  // 这里在监听绑定完成后主动向主窗口请求一次状态，后续仍由主窗口定时推送保持实时进度。
+  sendPanelCommand('requestState');
 });
 
 onUnmounted(() => {
@@ -570,7 +581,7 @@ onUnmounted(() => {
 }
 
 .progress-block {
-  margin-top: 18px;
+  margin-top: 14px;
 }
 
 .range {
@@ -614,7 +625,7 @@ onUnmounted(() => {
 .time-row {
   display: flex;
   justify-content: space-between;
-  margin-top: 5px;
+  margin-top: 3px;
   color: rgba(247, 250, 248, 0.5);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
@@ -623,7 +634,7 @@ onUnmounted(() => {
 .main-controls {
   justify-content: center;
   gap: 18px;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 .icon-button,
@@ -697,7 +708,7 @@ button:disabled:hover {
 
 .quick-actions {
   gap: 8px;
-  margin-top: 18px;
+  margin-top: 14px;
 }
 
 .quick-action {
@@ -732,7 +743,7 @@ button:disabled:hover {
 
 .volume-block {
   gap: 10px;
-  margin-top: 14px;
+  margin-top: 12px;
   padding: 11px;
   border-radius: 9px;
   background: rgba(255, 255, 255, 0.06);
@@ -752,7 +763,7 @@ button:disabled:hover {
 
 .window-actions {
   gap: 8px;
-  margin-top: 14px;
+  margin-top: 12px;
 }
 
 .window-action {

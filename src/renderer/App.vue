@@ -178,6 +178,9 @@ const handleTrayPanelCommand = async (payload: any) => {
   if (!action) return;
 
   switch (action) {
+    case 'requestState':
+      broadcastTrayPanelState();
+      return;
     case 'setVolume': {
       const nextVolume = Number(payload?.value);
       if (Number.isFinite(nextVolume)) {

@@ -38,7 +38,7 @@ const MINI_PLAYLIST_WINDOW_WIDTH: f64 = 420.0;
 const MINI_PLAYLIST_WINDOW_HEIGHT: f64 = 620.0;
 const MINI_WINDOW_MARGIN: f64 = 20.0;
 const TRAY_PANEL_WIDTH: f64 = 336.0;
-const TRAY_PANEL_HEIGHT: f64 = 438.0;
+const TRAY_PANEL_HEIGHT: f64 = 492.0;
 const TRAY_PANEL_MARGIN: f64 = 12.0;
 const EMBEDDED_MUSIC_API_RUNTIME: &[u8] =
     include_bytes!("../embedded-runtime/music-api-runtime.zip");
@@ -340,6 +340,13 @@ fn hide_to_tray(window: &WebviewWindow) -> Result<(), String> {
         .map_err(|error| format!("隐藏到系统托盘失败：{error}"))
 }
 
+fn emit_to_window(app: &AppHandle, label: &str, event: &str, payload: Value) -> Result<(), String> {
+    let window = app
+        .get_webview_window(label)
+        .ok_or_else(|| format!("没有找到 {label} 窗口，无法发送事件 {event}"))?;
+    window.emit(event, payload).map_err(|error| error.to_string())
+}
+
 fn show_main_window(app: &AppHandle) -> Result<(), String> {
     let window = main_window(app)?;
     show_normal_window(&window)
@@ -426,9 +433,17 @@ fn show_tray_panel(app: &AppHandle, click_position: PhysicalPosition<f64>) -> Re
     window
         .set_focus()
         .map_err(|error| format!("聚焦托盘控制面板失败：{error}"))?;
-    app
-        .emit("tray-panel-opened", json!({ "openedAt": chrono_free_timestamp() }))
-        .map_err(|error| format!("同步托盘控制面板状态失败：{error}"))
+    // 根因：托盘控制面板是独立 WebView，不能读取主窗口 Pinia/Howler 状态。
+    // 之前用 app.emit 广播事件，窗口创建、监听绑定和广播时序不稳定，导致面板经常拿不到
+    // 当前歌曲、进度和播放状态；按钮命令也可能没有被主窗口消费。这里改成定向通知主窗口：
+    // 面板打开后由主窗口立刻回推状态到托盘窗口，形成稳定的主窗口单一真源。
+    emit_to_window(
+        app,
+        MAIN_WINDOW_LABEL,
+        "tray-panel-opened",
+        json!({ "openedAt": chrono_free_timestamp() }),
+    )
+    .map_err(|error| format!("同步托盘控制面板状态失败：{error}"))
 }
 
 fn hide_tray_panel(app: &AppHandle) {
@@ -591,7 +606,12 @@ fn restore_window(window: WebviewWindow) -> Result<(), String> {
 
 #[tauri::command]
 fn emit_to_main(app: AppHandle, event: String, payload: Value) -> Result<(), String> {
-    app.emit(&event, payload).map_err(|error| error.to_string())
+    let target_label = match event.as_str() {
+        "tray-panel-state" => TRAY_PANEL_WINDOW_LABEL,
+        "tray-panel-command" | "tray-panel-opened" => MAIN_WINDOW_LABEL,
+        _ => MAIN_WINDOW_LABEL,
+    };
+    emit_to_window(&app, target_label, &event, payload)
 }
 
 #[tauri::command]

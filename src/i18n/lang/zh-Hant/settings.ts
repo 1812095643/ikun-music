@@ -84,6 +84,8 @@ export default {
     gdmusicInfo: 'GD音樂台可自動解析多個平台音源，自動選擇最佳結果',
     autoPlay: '自動播放',
     autoPlayDesc: '重新開啟應用程式時是否自動繼續播放',
+    playbackFade: '播放淡入淡出',
+    playbackFadeDesc: '播放、暫停和切歌時柔和過渡，減少突然出聲或斷聲',
     audioDevice: '音訊輸出裝置',
     audioDeviceDesc: '選擇音訊輸出裝置，如揚聲器、耳機或藍牙裝置',
     testAudio: '測試',

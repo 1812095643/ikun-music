@@ -88,6 +88,8 @@ export default {
       'GD Music Station intelligently resolves music from multiple platforms automatically',
     autoPlay: 'Auto Play',
     autoPlayDesc: 'Auto resume playback when reopening the app',
+    playbackFade: 'Fade in/out',
+    playbackFadeDesc: 'Smoothly fade playback when playing, pausing or switching songs',
     audioDevice: 'Audio Output Device',
     audioDeviceDesc: 'Select audio output device such as speakers, headphones or Bluetooth devices',
     testAudio: 'Test',

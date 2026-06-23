@@ -1,9 +1,72 @@
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { Howl, Howler } from 'howler';
+import Tuna from 'tunajs';
 
 import type { AudioOutputDevice } from '@/types/audio';
 import type { SongResult } from '@/types/music';
 import { isElectron } from '@/utils'; // 导入isElectron常量
+
+export type AudioEffectPreset = 'off' | 'ktv' | 'studio' | 'spatial3d' | 'concert';
+
+export type AudioEffectPresetOption = {
+  value: AudioEffectPreset;
+  label: string;
+  description: string;
+  icon: string;
+};
+
+export const AUDIO_EFFECT_PRESET_OPTIONS: AudioEffectPresetOption[] = [
+  {
+    value: 'off',
+    label: '原声',
+    description: '不添加空间音效',
+    icon: 'ri-volume-up-line'
+  },
+  {
+    value: 'ktv',
+    label: 'KTV',
+    description: '增强回声和人声空间感',
+    icon: 'ri-mic-line'
+  },
+  {
+    value: 'studio',
+    label: '录音棚',
+    description: '轻压缩和短混响，声音更稳',
+    icon: 'ri-record-circle-line'
+  },
+  {
+    value: 'spatial3d',
+    label: '3D环绕',
+    description: '左右声场轻微游移，提升包围感',
+    icon: 'ri-surround-sound-line'
+  },
+  {
+    value: 'concert',
+    label: '演唱会',
+    description: '大空间混响和延迟',
+    icon: 'ri-live-line'
+  }
+];
+
+type TunaEffectNode = {
+  input: AudioNode;
+  output: AudioNode;
+  disconnect?: () => void;
+};
+
+type EffectNode = AudioNode | TunaEffectNode;
+
+type ReverbEffectNode = TunaEffectNode & {
+  convolver: ConvolverNode;
+  dry: GainNode;
+  wet: GainNode;
+};
+
+const DEFAULT_PLAYBACK_FADE_DURATION_MS = 650;
+
+const isTunaEffectNode = (node: EffectNode): node is TunaEffectNode => {
+  return Boolean((node as TunaEffectNode).input && (node as TunaEffectNode).output);
+};
 
 function normalizeAudioUrl(url: string): string {
   if (!url.startsWith('local:///')) return url;
@@ -44,7 +107,19 @@ class AudioService {
 
   private gainNode: GainNode | null = null;
 
+  private tuna: any = null;
+
+  private effectNodes: EffectNode[] = [];
+
+  private pannerAutomationTimer: NodeJS.Timeout | null = null;
+
+  private fadeTimer: NodeJS.Timeout | null = null;
+
   private bypass = false;
+
+  private audioGraphBypassed = false;
+
+  private effectPreset: AudioEffectPreset = 'off';
 
   private playbackRate = 1.0; // 添加播放速度属性
 
@@ -82,6 +157,47 @@ class AudioService {
   private operationLockStartTime: number = 0;
   private operationLockId: string = '';
 
+  private getSavedVolume(): number {
+    const savedVolume = Number.parseFloat(localStorage.getItem('volume') || '1');
+    return Number.isFinite(savedVolume) ? Math.max(0, Math.min(1, savedVolume)) : 1;
+  }
+
+  private getStoredSettings(): Record<string, any> {
+    try {
+      const electronSettings = window.electron?.ipcRenderer?.sendSync('get-store-value', 'set');
+      if (electronSettings && typeof electronSettings === 'object') return electronSettings;
+    } catch {
+      // 非 Electron/Tauri 兼容层时继续读取 localStorage
+    }
+
+    const rawSettings = localStorage.getItem('appSettings');
+    if (!rawSettings) return {};
+
+    try {
+      return JSON.parse(rawSettings);
+    } catch (error) {
+      console.warn('读取播放设置失败，已使用默认播放设置:', error);
+      return {};
+    }
+  }
+
+  private isPlaybackFadeEnabled(): boolean {
+    return Boolean(this.getStoredSettings().enablePlaybackFade);
+  }
+
+  private getPlaybackFadeDurationMs(): number {
+    const duration = Number(this.getStoredSettings().playbackFadeDurationMs);
+    if (Number.isFinite(duration) && duration > 0) return duration;
+    return DEFAULT_PLAYBACK_FADE_DURATION_MS;
+  }
+
+  private cancelFadeTimer() {
+    if (this.fadeTimer) {
+      clearTimeout(this.fadeTimer);
+      this.fadeTimer = null;
+    }
+  }
+
   constructor() {
     if ('mediaSession' in navigator) {
       this.initMediaSession();
@@ -89,6 +205,7 @@ class AudioService {
     // 从本地存储加载 EQ 开关状态
     const bypassState = localStorage.getItem('eqBypass');
     this.bypass = bypassState ? JSON.parse(bypassState) : false;
+    this.effectPreset = this.loadEffectPreset();
 
     // 页面加载时立即强制重置操作锁
     this.forceResetOperationLock();
@@ -101,11 +218,11 @@ class AudioService {
 
   private initMediaSession() {
     navigator.mediaSession.setActionHandler('play', () => {
-      this.currentSound?.play();
+      this.resume();
     });
 
     navigator.mediaSession.setActionHandler('pause', () => {
-      this.currentSound?.pause();
+      this.pause();
     });
 
     navigator.mediaSession.setActionHandler('stop', () => {
@@ -230,6 +347,32 @@ class AudioService {
     }
   }
 
+  public getEffectPreset(): AudioEffectPreset {
+    return this.effectPreset;
+  }
+
+  public setEffectPreset(preset: AudioEffectPreset) {
+    this.effectPreset = AUDIO_EFFECT_PRESET_OPTIONS.some((option) => option.value === preset)
+      ? preset
+      : 'off';
+    localStorage.setItem('audioEffectPreset', this.effectPreset);
+
+    if (this.source && this.gainNode && this.context) {
+      this.applyBypassState();
+    }
+  }
+
+  public isAudioEffectAvailable(): boolean {
+    return Boolean(this.source && this.gainNode && this.context && !this.audioGraphBypassed);
+  }
+
+  private loadEffectPreset(): AudioEffectPreset {
+    const savedPreset = localStorage.getItem('audioEffectPreset') as AudioEffectPreset | null;
+    return AUDIO_EFFECT_PRESET_OPTIONS.some((option) => option.value === savedPreset)
+      ? (savedPreset as AudioEffectPreset)
+      : 'off';
+  }
+
   public setEQFrequencyGain(frequency: string, gain: number) {
     const filterIndex = this.frequencies.findIndex((f) => f.toString() === frequency);
     if (filterIndex !== -1 && this.filters[filterIndex]) {
@@ -262,6 +405,9 @@ class AudioService {
 
   private async disposeEQ(keepContext = false) {
     try {
+      this.cancelFadeTimer();
+      this.disposeAudioEffects();
+
       // 清理音频节点连接
       if (this.source) {
         this.source.disconnect();
@@ -283,6 +429,7 @@ class AudioService {
         this.gainNode.disconnect();
         this.gainNode = null;
       }
+      this.audioGraphBypassed = false;
 
       // 如果不需要保持上下文，则关闭它
       if (!keepContext && this.context) {
@@ -296,6 +443,203 @@ class AudioService {
     } catch (error) {
       console.error('清理EQ资源时出错:', error);
     }
+  }
+
+  private disposeAudioEffects() {
+    if (this.pannerAutomationTimer) {
+      clearInterval(this.pannerAutomationTimer);
+      this.pannerAutomationTimer = null;
+    }
+
+    this.effectNodes.forEach((node) => {
+      try {
+        if (isTunaEffectNode(node)) {
+          node.disconnect?.();
+        } else {
+          node.disconnect();
+        }
+      } catch (error) {
+        console.warn('清理音效节点时出错:', error);
+      }
+    });
+
+    this.effectNodes = [];
+    this.tuna = null;
+  }
+
+  private connectEffectNode(input: AudioNode, effect: EffectNode): AudioNode {
+    if (isTunaEffectNode(effect)) {
+      input.connect(effect.input);
+      return effect.output;
+    }
+
+    input.connect(effect);
+    return effect;
+  }
+
+  private createConvolverReverb({
+    duration,
+    decay,
+    wetGain
+  }: {
+    duration: number;
+    decay: number;
+    wetGain: number;
+  }): ReverbEffectNode {
+    const input = this.context!.createGain();
+    const output = this.context!.createGain();
+    const convolver = this.context!.createConvolver();
+    const dry = this.context!.createGain();
+    const wet = this.context!.createGain();
+    const sampleRate = this.context!.sampleRate;
+    const length = Math.max(1, Math.floor(sampleRate * duration));
+    const impulse = this.context!.createBuffer(2, length, sampleRate);
+
+    for (let channel = 0; channel < impulse.numberOfChannels; channel++) {
+      const channelData = impulse.getChannelData(channel);
+      for (let index = 0; index < length; index++) {
+        const progress = index / length;
+        channelData[index] = (Math.random() * 2 - 1) * Math.pow(1 - progress, decay);
+      }
+    }
+
+    convolver.buffer = impulse;
+    dry.gain.value = 1 - wetGain * 0.38;
+    wet.gain.value = wetGain;
+
+    // 根因：Tuna 的 Convolver 默认通过 XHR 加载 node_modules 内的 impulse 文件，
+    // 打包到 Tauri 后这个相对路径并不稳定，容易出现开发环境有混响、便携版没有混响。
+    // 解决：这里用原生 AudioBuffer 生成短脉冲响应，节点不依赖外部文件，便携版也能稳定工作。
+    input.connect(dry);
+    input.connect(convolver);
+    convolver.connect(wet);
+    dry.connect(output);
+    wet.connect(output);
+
+    return {
+      input,
+      output,
+      convolver,
+      dry,
+      wet,
+      disconnect: () => {
+        input.disconnect();
+        output.disconnect();
+        convolver.disconnect();
+        dry.disconnect();
+        wet.disconnect();
+      }
+    };
+  }
+
+  private connectGeneratedReverb(
+    input: AudioNode,
+    options: { duration: number; decay: number; wetGain: number }
+  ): AudioNode {
+    const reverb = this.createConvolverReverb(options);
+    this.effectNodes.push(reverb);
+    return this.connectEffectNode(input, reverb);
+  }
+
+  private connectAudioEffects(input: AudioNode): AudioNode {
+    if (!this.context || this.effectPreset === 'off') return input;
+
+    try {
+      this.tuna = new Tuna(this.context);
+      let chainTail = input;
+
+      switch (this.effectPreset) {
+        case 'ktv': {
+          const delay = new this.tuna.Delay({
+            delayTime: 145,
+            feedback: 0.28,
+            wetLevel: 0.24,
+            dryLevel: 1,
+            cutoff: 4200
+          }) as TunaEffectNode;
+          this.effectNodes.push(delay);
+          chainTail = this.connectEffectNode(chainTail, delay);
+          chainTail = this.connectGeneratedReverb(chainTail, {
+            duration: 1.25,
+            decay: 2.4,
+            wetGain: 0.2
+          });
+          break;
+        }
+        case 'studio': {
+          const compressor = new this.tuna.Compressor({
+            threshold: -18,
+            makeupGain: 1.15,
+            attack: 2,
+            release: 180,
+            ratio: 3.2,
+            knee: 9,
+            automakeup: false
+          }) as TunaEffectNode;
+          this.effectNodes.push(compressor);
+          chainTail = this.connectEffectNode(chainTail, compressor);
+          chainTail = this.connectGeneratedReverb(chainTail, {
+            duration: 0.55,
+            decay: 3.2,
+            wetGain: 0.1
+          });
+          break;
+        }
+        case 'spatial3d': {
+          const chorus = new this.tuna.Chorus({
+            rate: 0.55,
+            feedback: 0.08,
+            delay: 0.0032,
+            depth: 0.24,
+            wetLevel: 0.18
+          }) as TunaEffectNode;
+          this.effectNodes.push(chorus);
+          chainTail = this.connectEffectNode(chainTail, chorus);
+
+          const panner = new this.tuna.Panner({ pan: 0 }) as TunaEffectNode;
+          this.effectNodes.push(panner);
+          chainTail = this.connectEffectNode(chainTail, panner);
+          this.startPannerAutomation(panner);
+          break;
+        }
+        case 'concert': {
+          const delay = new this.tuna.Delay({
+            delayTime: 235,
+            feedback: 0.34,
+            wetLevel: 0.2,
+            dryLevel: 1,
+            cutoff: 5200
+          }) as TunaEffectNode;
+          this.effectNodes.push(delay);
+          chainTail = this.connectEffectNode(chainTail, delay);
+          chainTail = this.connectGeneratedReverb(chainTail, {
+            duration: 2.4,
+            decay: 2.05,
+            wetGain: 0.3
+          });
+          break;
+        }
+      }
+
+      return chainTail;
+    } catch (error) {
+      console.warn('音效链路初始化失败，已回退到原声输出:', error);
+      this.disposeAudioEffects();
+      return input;
+    }
+  }
+
+  private startPannerAutomation(panner: TunaEffectNode) {
+    const panParam = (panner as any).pan as AudioParam | undefined;
+    if (!panParam || !this.context) return;
+
+    let phase = 0;
+    this.pannerAutomationTimer = setInterval(() => {
+      if (!this.context || this.context.state === 'closed') return;
+      phase += 0.16;
+      const panValue = Math.sin(phase) * 0.34;
+      panParam.setTargetAtTime(panValue, this.context.currentTime, 0.16);
+    }, 140);
   }
 
   private async setupEQ(sound: Howl) {
@@ -403,10 +747,72 @@ class AudioService {
     });
   }
 
+  private setOutputVolume(volume: number, sound: Howl | null = this.currentSound) {
+    const normalizedVolume = Math.max(0, Math.min(1, volume));
+
+    if (this.gainNode && this.context) {
+      this.gainNode.gain.cancelScheduledValues(this.context.currentTime);
+      this.gainNode.gain.setValueAtTime(normalizedVolume, this.context.currentTime);
+      return;
+    }
+
+    if (sound) this.applyDirectElementVolume(sound, normalizedVolume);
+  }
+
+  private fadeOutputVolume(
+    toVolume: number,
+    durationMs: number,
+    onDone?: () => void,
+    sound: Howl | null = this.currentSound
+  ) {
+    this.cancelFadeTimer();
+    const targetVolume = Math.max(0, Math.min(1, toVolume));
+    const safeDuration = Math.max(80, durationMs);
+
+    if (this.gainNode && this.context) {
+      const now = this.context.currentTime;
+      const fromVolume = this.gainNode.gain.value;
+      this.gainNode.gain.cancelScheduledValues(now);
+      this.gainNode.gain.setValueAtTime(fromVolume, now);
+      this.gainNode.gain.linearRampToValueAtTime(targetVolume, now + safeDuration / 1000);
+      this.fadeTimer = setTimeout(() => {
+        this.fadeTimer = null;
+        onDone?.();
+      }, safeDuration + 30);
+      return;
+    }
+
+    if (sound) {
+      const fromVolume = Number(sound.volume()) || 0;
+      sound.fade(fromVolume, targetVolume, safeDuration);
+      this.fadeTimer = setTimeout(() => {
+        this.fadeTimer = null;
+        if (this.currentSound === sound) this.applyDirectElementVolume(sound, targetVolume);
+        onDone?.();
+      }, safeDuration + 30);
+      return;
+    }
+
+    onDone?.();
+  }
+
+  private fadeInIfNeeded(sound: Howl | null = this.currentSound) {
+    if (!sound || !this.isPlaybackFadeEnabled()) return;
+
+    const targetVolume = this.getSavedVolume();
+    this.setOutputVolume(0, sound);
+    // 根因：WebAudio 模式下 Howler 的 group volume 一直保持 1，真实响度由 gainNode 控制；
+    // 而酷我等跨域直链会绕过 WebAudio 图，只能调 HTMLAudioElement/Howl 音量。
+    // 解决：统一封装 output fade，优先调 gainNode，降级时调 Howler/媒体元素音量。
+    this.fadeOutputVolume(targetVolume, this.getPlaybackFadeDurationMs(), undefined, sound);
+  }
+
   private applyBypassState() {
     if (!this.source || !this.gainNode || !this.context) return;
 
     try {
+      this.audioGraphBypassed = false;
+
       // 断开所有现有连接（捕获已断开的错误）
       try {
         this.source.disconnect();
@@ -425,24 +831,29 @@ class AudioService {
       } catch {
         /* already disconnected */
       }
+      this.disposeAudioEffects();
 
+      let chainTail: AudioNode = this.source;
       if (this.bypass) {
-        // EQ被禁用时，直接连接到输出
-        this.source.connect(this.gainNode);
-        this.gainNode.connect(this.context.destination);
+        // EQ被禁用时，直接进入后续音效链；音效仍可独立使用。
+        chainTail = this.source;
       } else {
-        // EQ启用时，通过滤波器链连接
+        // EQ启用时，通过滤波器链连接，再进入混响/空间效果链。
         this.source.connect(this.filters[0]);
         this.filters.forEach((filter, index) => {
           if (index < this.filters.length - 1) {
             filter.connect(this.filters[index + 1]);
           }
         });
-        this.filters[this.filters.length - 1].connect(this.gainNode);
-        this.gainNode.connect(this.context.destination);
+        chainTail = this.filters[this.filters.length - 1];
       }
+
+      chainTail = this.connectAudioEffects(chainTail);
+      chainTail.connect(this.gainNode);
+      this.gainNode.connect(this.context.destination);
     } catch (error) {
       console.error('Error applying EQ state, attempting fallback:', error);
+      this.audioGraphBypassed = true;
       // Fallback: connect source directly to destination
       try {
         if (this.source && this.context) {
@@ -625,6 +1036,7 @@ class AudioService {
           // 非热切换模式下，先停止并清理现有的音频实例
           if (!isHotSwap && this.currentSound) {
             console.log('audioService: 停止并清理现有的音频实例');
+            this.cancelFadeTimer();
             // 确保任何进行中的seek操作被取消
             if (this.seekLock && this.seekDebounceTimer) {
               clearTimeout(this.seekDebounceTimer);
@@ -713,6 +1125,7 @@ class AudioService {
                 // 如果是热切换，现在执行切换逻辑
                 if (isHotSwap) {
                   console.log('audioService: 执行无缝切换');
+                  const oldSound = this.currentSound;
 
                   // 1. 获取当前播放进度或使用指定的 seekTime
                   let targetPos = 0;
@@ -736,21 +1149,25 @@ class AudioService {
                     await this.setupEQ(newSound);
                   }
 
-                  // 4. 播放新音频
-                  if (isPlay) {
-                    newSound.play();
-                  }
-
-                  // 5. 停止旧音频
-                  if (this.currentSound) {
-                    this.currentSound.stop();
-                    this.currentSound.unload();
-                  }
-
-                  // 6. 更新引用
+                  // 4. 先更新当前实例，再执行播放渐入。
+                  // 根因：热切换时旧实现先 newSound.play() 再 fadeInIfNeeded()，
+                  // 但 currentSound 仍指向旧音频，导致渐入/音量恢复打到旧实例上，
+                  // 用户会看到按钮状态变化却听不到新音频的渐入效果。
+                  // 解决：把新实例设为当前播放源，之后所有状态、音量和事件判断都落在新实例。
                   this.currentSound = newSound;
                   this.currentTrack = track;
                   this.pendingSound = null;
+
+                  if (isPlay) {
+                    newSound.play();
+                    this.fadeInIfNeeded(newSound);
+                  }
+
+                  // 5. 停止旧音频
+                  if (oldSound && oldSound !== newSound) {
+                    oldSound.stop();
+                    oldSound.unload();
+                  }
 
                   console.log(`audioService: 无缝切换完成，进度同步至 ${targetPos}s`);
                 } else {
@@ -786,6 +1203,7 @@ class AudioService {
                       if (isPlay) {
                         console.log('audioService: 开始播放');
                         this.currentSound.play();
+                        this.fadeInIfNeeded();
                       }
                     }
 
@@ -878,6 +1296,7 @@ class AudioService {
   stop() {
     // 强制重置操作锁并继续执行
     this.forceResetOperationLock();
+    this.cancelFadeTimer();
 
     try {
       if (this.currentSound) {
@@ -936,11 +1355,78 @@ class AudioService {
           clearTimeout(this.seekDebounceTimer);
           this.seekLock = false;
         }
-        this.currentSound.pause();
+        const sound = this.currentSound;
+        const pauseNow = () => {
+          try {
+            sound.pause();
+            if (this.currentSound === sound) {
+              this.applyVolume(this.getSavedVolume());
+            }
+          } catch (error) {
+            console.error('暂停当前音频实例失败:', error);
+          }
+        };
+
+        if (this.isPlaybackFadeEnabled() && sound.playing()) {
+          this.fadeOutputVolume(0, this.getPlaybackFadeDurationMs(), pauseNow, sound);
+        } else {
+          pauseNow();
+        }
       } catch (error) {
         console.error('暂停音频失败:', error);
       }
     }
+  }
+
+  resume() {
+    this.forceResetOperationLock();
+
+    if (!this.currentSound) return;
+
+    try {
+      if (this.isPlaybackFadeEnabled()) {
+        this.setOutputVolume(0);
+      }
+      this.currentSound.play();
+      this.fadeInIfNeeded();
+    } catch (error) {
+      console.error('恢复播放失败:', error);
+    }
+  }
+
+  public stopAndUnloadCurrent(useFade: boolean = false): Promise<void> {
+    this.forceResetOperationLock();
+
+    return new Promise((resolve) => {
+      const sound = this.currentSound;
+      if (!sound) {
+        resolve();
+        return;
+      }
+
+      const cleanup = () => {
+        try {
+          if (this.currentSound === sound) {
+            sound.stop();
+            sound.unload();
+            this.currentSound = null;
+          } else {
+            sound.stop();
+            sound.unload();
+          }
+        } catch (error) {
+          console.error('停止并卸载音频失败:', error);
+        } finally {
+          resolve();
+        }
+      };
+
+      if (useFade && this.isPlaybackFadeEnabled() && sound.playing()) {
+        this.fadeOutputVolume(0, this.getPlaybackFadeDurationMs(), cleanup);
+      } else {
+        cleanup();
+      }
+    });
   }
 
   clearAllListeners() {

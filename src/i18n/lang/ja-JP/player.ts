@@ -54,6 +54,7 @@ export default {
     lyric: '歌詞',
     noSongPlaying: '再生中の楽曲がありません',
     eq: 'イコライザー',
+    effects: 'エフェクト',
     playList: 'プレイリスト',
     reparse: '再解析',
     playMode: {

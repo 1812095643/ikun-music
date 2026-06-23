@@ -169,6 +169,12 @@ onMounted(() => {
   if (!['lru', 'fifo'].includes(setData.value.diskCacheCleanupPolicy)) {
     setData.value = { ...setData.value, diskCacheCleanupPolicy: 'lru' };
   }
+  if (setData.value.enablePlaybackFade === undefined) {
+    setData.value = { ...setData.value, enablePlaybackFade: false };
+  }
+  if (!setData.value.playbackFadeDurationMs) {
+    setData.value = { ...setData.value, playbackFadeDurationMs: 650 };
+  }
 });
 </script>
 

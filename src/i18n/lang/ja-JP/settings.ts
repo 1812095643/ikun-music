@@ -87,6 +87,8 @@ export default {
     gdmusicInfo: 'GD音楽台は複数のプラットフォーム音源を自動解析し、最適な結果を自動選択できます',
     autoPlay: '自動再生',
     autoPlayDesc: 'アプリを再起動した際に自動的に再生を継続するかどうか',
+    playbackFade: 'フェード再生',
+    playbackFadeDesc: '再生、一時停止、曲切り替え時に音量をなめらかに変化させます',
     audioDevice: 'オーディオ出力デバイス',
     audioDeviceDesc: 'スピーカー、ヘッドホン、Bluetoothデバイスなどの出力先を選択',
     testAudio: 'テスト',

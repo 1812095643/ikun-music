@@ -54,6 +54,7 @@ export default {
     lyric: 'Lyric',
     noSongPlaying: 'No song playing',
     eq: 'Equalizer',
+    effects: 'Effects',
     playList: 'Play List',
     reparse: 'Reparse',
     miniPlayBar: 'Mini Play Bar',

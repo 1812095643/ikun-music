@@ -17,6 +17,8 @@
   "fontFamily": "system-ui",
   "fontScope": "global",
   "autoPlay": false,
+  "enablePlaybackFade": false,
+  "playbackFadeDurationMs": 650,
   "downloadPath": "",
   "language": "zh-CN",
   "alwaysShowDownloadButton": false,

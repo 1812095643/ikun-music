@@ -54,6 +54,7 @@ export default {
     lyric: '가사',
     noSongPlaying: '재생 중인 곡이 없습니다',
     eq: '이퀄라이저',
+    effects: '효과',
     playList: '재생 목록',
     reparse: '재분석',
     playMode: {

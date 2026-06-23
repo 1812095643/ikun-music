@@ -254,8 +254,7 @@ export const usePlayerCoreStore = defineStore(
       const currentSound = audioService.getCurrentSound();
       if (currentSound) {
         console.log('主动停止并卸载当前音频实例');
-        currentSound.stop();
-        currentSound.unload();
+        await audioService.stopAndUnloadCurrent(true);
       }
 
       // 验证请求是否仍然有效
@@ -549,7 +548,7 @@ export const usePlayerCoreStore = defineStore(
       try {
         const currentSound = audioService.getCurrentSound();
         if (currentSound) {
-          currentSound.pause();
+          audioService.pause();
         }
         setPlayMusic(false);
         userPlayIntent.value = false;
@@ -593,7 +592,7 @@ export const usePlayerCoreStore = defineStore(
 
         const currentSound = audioService.getCurrentSound();
         if (currentSound) {
-          currentSound.pause();
+          audioService.pause();
         }
 
         const numericId =

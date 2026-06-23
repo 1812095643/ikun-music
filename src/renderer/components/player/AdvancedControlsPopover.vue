@@ -40,6 +40,21 @@
     </div>
   </n-modal>
 
+  <!-- 音效设置弹窗 -->
+  <n-modal
+    v-model:show="showAudioEffectsModal"
+    :mask-closable="true"
+    :unstable-show-mask="false"
+    :z-index="9999999"
+  >
+    <div class="effects-modal-content">
+      <div class="modal-close" @click="showAudioEffectsModal = false">
+        <i class="ri-close-line"></i>
+      </div>
+      <audio-effects-panel />
+    </div>
+  </n-modal>
+
   <!-- 定时关闭弹窗 -->
   <n-modal
     v-model:show="playerStore.showSleepTimer"
@@ -99,7 +114,9 @@ import { computed, h, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import EqControl from '@/components/EQControl.vue';
+import AudioEffectsPanel from '@/components/player/AudioEffectsPanel.vue';
 import SleepTimer from '@/components/player/SleepTimer.vue';
+import { audioService } from '@/services/audioService';
 import { usePlayerStore } from '@/store/modules/player';
 
 const { t } = useI18n();
@@ -108,8 +125,10 @@ const playerStore = usePlayerStore();
 // 下拉菜单状态
 const showDropdown = ref(false);
 const showEQModal = ref(false);
+const showAudioEffectsModal = ref(false);
 const showSpeedModal = ref(false);
 const isEQVisible = ref(false);
+const currentEffectPreset = ref(audioService.getEffectPreset());
 
 // 监听弹窗状态，确保互斥
 watch(showEQModal, (newValue) => {
@@ -117,6 +136,17 @@ watch(showEQModal, (newValue) => {
     // 如果EQ弹窗打开，关闭其他弹窗
     playerStore.showSleepTimer = false;
     showSpeedModal.value = false;
+    showAudioEffectsModal.value = false;
+  }
+});
+
+watch(showAudioEffectsModal, (newValue) => {
+  if (newValue) {
+    showEQModal.value = false;
+    playerStore.showSleepTimer = false;
+    showSpeedModal.value = false;
+  } else {
+    currentEffectPreset.value = audioService.getEffectPreset();
   }
 });
 
@@ -127,6 +157,7 @@ watch(
       // 如果睡眠定时器弹窗打开，关闭其他弹窗
       showEQModal.value = false;
       showSpeedModal.value = false;
+      showAudioEffectsModal.value = false;
     }
   }
 );
@@ -136,6 +167,7 @@ watch(showSpeedModal, (newValue) => {
     // 如果播放速度弹窗打开，关闭其他弹窗
     showEQModal.value = false;
     playerStore.showSleepTimer = false;
+    showAudioEffectsModal.value = false;
   }
 });
 
@@ -157,7 +189,12 @@ const hasActiveSleepTimer = computed(() => playerStore.hasSleepTimerActive);
 
 // 检查是否有任何高级设置是激活状态
 const hasActiveSettings = computed(() => {
-  return playbackRate.value !== 1.0 || hasActiveSleepTimer.value || isEQVisible.value;
+  return (
+    playbackRate.value !== 1.0 ||
+    hasActiveSleepTimer.value ||
+    isEQVisible.value ||
+    currentEffectPreset.value !== 'off'
+  );
 });
 
 // 下拉菜单选项
@@ -166,6 +203,15 @@ const dropdownOptions = computed<DropdownOption[]>(() => [
     label: t('player.playBar.eq'),
     key: 'eq',
     icon: () => h('i', { class: 'ri-equalizer-line' })
+  },
+  {
+    label: t('player.playBar.effects'),
+    key: 'effects',
+    icon: () => h('i', { class: 'ri-surround-sound-line' }),
+    suffix: () =>
+      currentEffectPreset.value !== 'off'
+        ? h('span', { class: 'active-option-mark' }, '已开')
+        : null
   },
   {
     label: t('player.sleepTimer.title'),
@@ -192,11 +238,15 @@ const handleSelect = (key: string) => {
   showEQModal.value = false;
   playerStore.showSleepTimer = false;
   showSpeedModal.value = false;
+  showAudioEffectsModal.value = false;
 
   // 然后仅打开所选弹窗
   switch (key) {
     case 'eq':
       showEQModal.value = true;
+      break;
+    case 'effects':
+      showAudioEffectsModal.value = true;
       break;
     case 'timer':
       playerStore.showSleepTimer = true;
@@ -290,6 +340,7 @@ const selectSpeed = (speed: number) => {
 }
 
 .eq-modal-content,
+.effects-modal-content,
 .timer-modal-content,
 .speed-modal-content {
   @apply p-6;
