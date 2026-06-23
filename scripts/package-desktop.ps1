@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path,
   [string]$OutputRoot = '',
   [ValidateSet('portable', 'all')]
@@ -39,27 +39,40 @@ $setupCopiedText = Join-Chars @(0x5B89, 0x88C5, 0x7248, 0x5DF2, 0x590D, 0x5236, 
 $portableMissingText = Join-Chars @(0x672A, 0x627E, 0x5230, 0x4FBF, 0x643A, 0x7248, 0x0020, 0x0065, 0x0078, 0x0065, 0xFF1A)
 $setupMissingText = Join-Chars @(0x672A, 0x627E, 0x5230, 0x5B89, 0x88C5, 0x7248, 0x0020, 0x0073, 0x0065, 0x0074, 0x0075, 0x0070, 0x0020, 0x0065, 0x0078, 0x0065, 0xFF1A)
 
+function Stop-DesktopProcess {
+  Get-Process 'ikun-music-tauri', $appProcessName, $portableProcessName -ErrorAction SilentlyContinue | Stop-Process -Force
+  Get-CimInstance Win32_Process |
+    Where-Object {
+      $_.ExecutablePath -in @($portableSource, $portableTarget) -or
+      ($_.Name -eq 'node.exe' -and $_.CommandLine -like '*alger-music-api.js*')
+    } |
+    ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+}
+
+Stop-DesktopProcess
+Start-Sleep -Seconds 1
+
+if (Test-Path -LiteralPath $portableSource) {
+  Remove-Item -LiteralPath $portableSource -Force
+}
+
 Push-Location $ProjectRoot
 try {
-  npm run build:desktop
+  # 根本原因：旧脚本先构建前端，再直接执行 cargo build --release 复制 release exe。
+  # 这种方式绕过了 Tauri CLI 的正式生产构建流程，devUrl 会被编译进 exe，
+  # 用户双击便携版时窗口就会访问 http://localhost:5173，导致没有本地 Vite 服务时白屏/拒绝连接。
+  # 这里按 D:\scada-modbus-simulator 的方式统一走 tauri build；
+  # 便携版使用 --no-bundle，只生成正式 release exe，不再额外产出安装包。
+  if ($Target -eq 'all') {
+    & npm.cmd run 'tauri:build'
+  } else {
+    & npm.cmd run 'tauri:build' '--' '--no-bundle'
+  }
 } finally {
   Pop-Location
 }
 
-Push-Location (Join-Path $ProjectRoot 'src-tauri')
-try {
-  cargo build --release
-} finally {
-  Pop-Location
-}
-
-Get-Process 'ikun-music-tauri', $appProcessName, $portableProcessName -ErrorAction SilentlyContinue | Stop-Process -Force
-Get-CimInstance Win32_Process |
-  Where-Object {
-    $_.ExecutablePath -in @($portableSource, $portableTarget) -or
-    ($_.Name -eq 'node.exe' -and $_.CommandLine -like '*alger-music-api.js*')
-  } |
-  ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+Stop-DesktopProcess
 Start-Sleep -Seconds 1
 
 if (!(Test-Path -LiteralPath $portableSource)) {
@@ -72,13 +85,6 @@ Copy-Item -LiteralPath $portableSource -Destination $portableTarget -Force
 Write-Host ($portableCopiedText + $portableTarget)
 
 if ($Target -eq 'all') {
-  Push-Location $ProjectRoot
-  try {
-    npm run tauri:build
-  } finally {
-    Pop-Location
-  }
-
   $setupSource = Get-ChildItem -Path $bundleDir -Filter '*setup.exe' -File |
     Sort-Object LastWriteTime -Descending |
     Select-Object -First 1
