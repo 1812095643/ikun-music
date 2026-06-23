@@ -50,5 +50,6 @@ src/renderer/auto-imports.d.ts
 src/renderer/components.d.ts
 
 src-tauri/target
+src-tauri/embedded-runtime
 
 src-tauri/gen

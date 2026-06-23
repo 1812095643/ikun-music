@@ -109,6 +109,8 @@ const gridStyle = computed(() => ({
   gridTemplateColumns: `repeat(${effectiveColumns.value}, minmax(0, 1fr))`
 }));
 
+const getPlaylistSource = (item: any) => (item?.source === 'kuwo' ? 'kuwo' : undefined);
+
 const fetchPlaylists = async () => {
   try {
     const { data } = await getPersonalizedPlaylist(props.limit || displayCount.value + 5);
@@ -127,7 +129,8 @@ const loadTracksOnHover = async (id: number) => {
   if (playlistTracksMap[id] || loadingTracksMap[id]) return;
   loadingTracksMap[id] = true;
   try {
-    const { data } = await getListDetail(id, 'kuwo');
+    const item = playlists.value.find((playlist) => playlist.id === id);
+    const { data } = await getListDetail(id, getPlaylistSource(item));
     if (data.playlist?.tracks) {
       playlistTracksMap[id] = data.playlist.tracks.slice(0, 3).map((s: any) => ({
         id: s.id,
@@ -159,7 +162,7 @@ const playPlaylist = async (item: any) => {
   if (playingPlaylistId.value === item.id) return;
   playingPlaylistId.value = item.id;
   try {
-    const { data } = await getListDetail(item.id, 'kuwo');
+    const { data } = await getListDetail(item.id, getPlaylistSource(item));
     if (data.playlist?.tracks?.length > 0) {
       const playerCore = usePlayerCoreStore();
       const playlistStore = usePlaylistStore();
@@ -168,7 +171,7 @@ const playPlaylist = async (item: any) => {
         id: s.id,
         name: s.name,
         picUrl: s.al?.picUrl || item.picUrl,
-        source: 'kuwo',
+        source: item.source === 'kuwo' ? 'kuwo' : s.source || 'netease',
         song: s,
         ...s,
         playLoading: false

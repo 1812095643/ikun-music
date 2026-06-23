@@ -1,8 +1,12 @@
 import type { SongResult } from '@/types/music';
 import { isElectron } from '@/utils';
+import { ensureMusicApiReady } from '@/utils/tauriElectronCompat';
 
 const KUWO_USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36';
+const KUWO_MAX_ATTEMPTS = 3;
+const KUWO_RETRY_BASE_DELAY = 700;
+const KUWO_MIN_PLAYABLE_BYTES = 1024 * 1024;
 
 interface KuwoHttpResponse<T = any> {
   statusCode: number;
@@ -49,8 +53,12 @@ interface KuwoSongItem {
 
 const buildRequestId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
-const kuwoRequest = async <T = any>(url: string, timeout = 15000): Promise<T> => {
+const waitForRetry = (attempt: number) =>
+  new Promise((resolve) => setTimeout(resolve, KUWO_RETRY_BASE_DELAY * attempt));
+
+const requestKuwoOnce = async <T = any>(url: string, timeout = 15000): Promise<T> => {
   if (isElectron && window.api?.lxMusicHttpRequest) {
+    await ensureMusicApiReady();
     const response = (await window.api.lxMusicHttpRequest({
       url,
       requestId: buildRequestId(),
@@ -83,6 +91,60 @@ const kuwoRequest = async <T = any>(url: string, timeout = 15000): Promise<T> =>
   return (await response.json()) as T;
 };
 
+const requestKuwoHead = async (url: string, timeout = 8000) => {
+  if (isElectron && window.api?.lxMusicHttpRequest) {
+    await ensureMusicApiReady();
+    return (await window.api.lxMusicHttpRequest({
+      url,
+      requestId: buildRequestId(),
+      options: {
+        method: 'HEAD',
+        timeout,
+        headers: {
+          Referer: 'http://www.kuwo.cn/',
+          'User-Agent': KUWO_USER_AGENT
+        }
+      }
+    })) as KuwoHttpResponse;
+  }
+
+  const response = await fetch(url, {
+    method: 'HEAD',
+    headers: {
+      Referer: 'http://www.kuwo.cn/',
+      'User-Agent': KUWO_USER_AGENT
+    },
+    signal: AbortSignal.timeout(timeout)
+  });
+
+  return {
+    statusCode: response.status,
+    body: undefined,
+    headers: Object.fromEntries(response.headers.entries())
+  } as KuwoHttpResponse & { headers?: Record<string, string> };
+};
+
+const kuwoRequest = async <T = any>(
+  url: string,
+  timeout = 15000,
+  maxAttempts = KUWO_MAX_ATTEMPTS
+): Promise<T> => {
+  let lastError: unknown;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await requestKuwoOnce<T>(url, timeout);
+    } catch (error) {
+      lastError = error;
+      if (attempt < maxAttempts) {
+        console.warn(`酷我接口请求第 ${attempt} 次失败，准备重试。`, error);
+        await waitForRetry(attempt);
+      }
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error(String(lastError));
+};
+
 const parseNumber = (value: unknown, fallback = 0) => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
@@ -98,6 +160,38 @@ const normalizeImageUrl = (url?: string) => {
   if (trimmedUrl.startsWith('//')) return `https:${trimmedUrl}`;
   if (/^http:\/\/img\d+\.kwcdn\.kuwo\.cn/i.test(trimmedUrl)) return trimmedUrl;
   return trimmedUrl.replace(/^http:/, 'https:');
+};
+
+const normalizePlaybackUrl = (url?: string) => {
+  if (!url) return '';
+  const trimmedUrl = url.trim();
+  if (trimmedUrl.startsWith('//')) return `https:${trimmedUrl}`;
+  return trimmedUrl;
+};
+
+const extractKuwoPlaybackUrl = (response: any) => {
+  const payload = typeof response === 'string' ? JSON.parse(response) : response;
+  return normalizePlaybackUrl(payload?.data?.url || payload?.url);
+};
+
+const assertPlayableKuwoUrl = async (url: string) => {
+  try {
+    const response = await requestKuwoHead(url, 8000);
+    const contentLength = Number((response as any)?.headers?.['content-length']);
+    if (
+      Number.isFinite(contentLength) &&
+      contentLength > 0 &&
+      contentLength < KUWO_MIN_PLAYABLE_BYTES
+    ) {
+      throw new Error(`酷我播放地址疑似试听或错误文件，大小仅 ${contentLength} 字节`);
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('疑似试听或错误文件')) {
+      throw error;
+    }
+    // HEAD/Range 校验失败不能直接否定可播性，网络/CDN 偶发拒绝探测时仍交给播放器尝试。
+    console.warn('酷我播放地址大小校验失败，继续尝试播放。', error);
+  }
 };
 
 const getKuwoSongId = (song: KuwoSongItem) => {
@@ -197,20 +291,51 @@ export const mapKuwoSong = (song: KuwoSongItem): SongResult => {
 
 export const getKuwoMusicUrl = async (id: number | string) => {
   const rid = String(id).replace(/^MUSIC_/i, '');
-  const url = `https://antiserver.kuwo.cn/anti.s?type=convert_url3&rid=MUSIC_${rid}&format=mp3&response=json`;
-  const response = await kuwoRequest<any>(url, 12000);
-  const musicUrl = typeof response === 'string' ? JSON.parse(response)?.url : response?.url;
+  const documentedUrl = `https://api.kuwo.cn/api/v1/www/music/playUrl?mid=${rid}&type=320kmp3&httpsStatus=1&plat=pc`;
+  const fallbackUrl = `https://antiserver.kuwo.cn/anti.s?type=convert_url3&rid=MUSIC_${rid}&format=mp3&response=json`;
+  let musicUrl = '';
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= KUWO_MAX_ATTEMPTS; attempt++) {
+    try {
+      // 根因：用户给的逆向接口文档明确要求酷我播放地址优先走
+      // /api/v1/www/music/playUrl，但该外站接口现场验证存在偶发 502。
+      // 每轮先试文档接口；如果文档接口不可用，马上切到已验证可返回真实 mp3 的
+      // anti.s 兼容接口，避免用户点歌后长时间无声。
+      const documentedResponse = await kuwoRequest<any>(documentedUrl, 5000, 1);
+      musicUrl = extractKuwoPlaybackUrl(documentedResponse);
+    } catch (error) {
+      lastError = error;
+      console.warn(`酷我文档播放地址接口第 ${attempt} 次不可用，准备切换兼容接口。`, error);
+    }
+
+    if (musicUrl) break;
+
+    try {
+      const fallbackResponse = await kuwoRequest<any>(fallbackUrl, 12000, 1);
+      musicUrl = extractKuwoPlaybackUrl(fallbackResponse);
+    } catch (error) {
+      lastError = error;
+      console.warn(`酷我兼容播放地址接口第 ${attempt} 次不可用。`, error);
+    }
+
+    if (musicUrl) break;
+    if (attempt < KUWO_MAX_ATTEMPTS) await waitForRetry(attempt);
+  }
 
   if (!musicUrl) {
+    if (lastError) console.warn('酷我播放地址三次解析后仍不可用。', lastError);
     throw new Error(`酷我播放地址解析失败：${rid}`);
   }
+
+  await assertPlayableKuwoUrl(musicUrl);
 
   return {
     data: {
       code: 200,
       message: 'success',
       data: {
-        url: normalizeImageUrl(musicUrl),
+        url: musicUrl,
         type: 'mp3',
         source: 'kuwo'
       }
@@ -236,7 +361,7 @@ const mapKuwoPlaylist = (item: KuwoPlaylistItem) => ({
 });
 
 export const getKuwoRecommendPlaylists = async (limit = 30) => {
-  const url = `http://wapi.kuwo.cn/api/pc/classify/playlist/getRcmPlayList?pn=1&rn=${limit}&order=hot`;
+  const url = `https://wapi.kuwo.cn/api/pc/classify/playlist/getRcmPlayList?pn=1&rn=${limit}&order=hot`;
   const response = await kuwoRequest<any>(url);
   const list = Array.isArray(response?.data?.data) ? response.data.data : [];
   return {

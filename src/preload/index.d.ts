@@ -7,6 +7,15 @@ interface CompatIpcRenderer {
   removeAllListeners: (channel: string) => void;
 }
 
+type TrayStatePayload = {
+  title?: string;
+  artist?: string;
+  isPlaying: boolean;
+  hasSong: boolean;
+  volume: number;
+  muted: boolean;
+};
+
 interface CompatApi {
   minimize: () => void;
   maximize: () => void;
@@ -35,6 +44,8 @@ interface CompatApi {
   onAppUpdateState: (callback: (state: any) => void) => any;
   removeAppUpdateListeners: () => void;
   onLanguageChanged: (callback: (locale: string) => void) => any;
+  updateTrayState: (state: TrayStatePayload) => void;
+  onTrayControl: (callback: (action: string) => void) => () => void;
   invoke: (channel: string, ...args: any[]) => Promise<any>;
   getSearchSuggestions: (keyword: string) => Promise<any>;
   lxMusicHttpRequest: (request: { url: string; options: any; requestId: string }) => Promise<any>;

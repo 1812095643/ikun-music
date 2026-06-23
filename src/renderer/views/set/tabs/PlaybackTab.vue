@@ -139,7 +139,11 @@ const musicSources = computed({
     return setData.value.enabledMusicSources as Platform[];
   },
   set: (newValue: Platform[]) => {
-    const valuesToSet = newValue.length > 0 ? [...new Set(newValue)] : ALL_PLATFORMS;
+    // 根因：桌面端播放最终按 enabledMusicSources 顺序调用解析器，旧配置或界面操作
+    // 把酷我移除/后置后，会导致“默认酷我音源”失效。这里在设置入口统一兜正顺序，
+    // 保证用户不需要理解音源优先级也能默认走酷我，失败后再进入其它本地解析。
+    const baseValues = newValue.length > 0 ? newValue : ALL_PLATFORMS;
+    const valuesToSet = [...new Set(['kuwo', ...baseValues.filter((source) => source !== 'kuwo')])];
     setData.value = { ...setData.value, enabledMusicSources: valuesToSet };
   }
 });

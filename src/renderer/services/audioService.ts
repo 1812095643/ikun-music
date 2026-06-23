@@ -12,6 +12,24 @@ function normalizeAudioUrl(url: string): string {
   return convertFileSrc(filePath);
 }
 
+function shouldBypassAudioGraph(url: string, track?: SongResult | null): boolean {
+  if (track?.source === 'kuwo') return true;
+  const normalizedUrl = normalizeAudioUrl(url);
+  if (!/^https?:\/\//i.test(normalizedUrl)) return false;
+
+  try {
+    const hostname = new URL(normalizedUrl).hostname.toLowerCase();
+    if (hostname === '127.0.0.1' || hostname === 'localhost') return false;
+    // 根因：酷我、米咕、酷狗等在线直链通常没有 Access-Control-Allow-Origin。
+    // HTMLAudioElement 可以直接播放这种跨域媒体，但一旦接入 createMediaElementSource
+    // 做 EQ/WebAudio 处理，浏览器会把输出静音，表现就是“按钮变暂停但没有声音”。
+    // 桌面端播放在线直链时默认绕过 WebAudio 图，优先保证用户点歌能听。
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 class AudioService {
   private currentSound: Howl | null = null;
   private pendingSound: Howl | null = null;
@@ -375,6 +393,16 @@ class AudioService {
     }
   }
 
+  private applyDirectElementVolume(sound: Howl, volume: number) {
+    sound.volume(volume);
+    const sounds = (sound as any)._sounds as any[] | undefined;
+    sounds?.forEach(({ _node }) => {
+      if (_node instanceof HTMLMediaElement) {
+        _node.volume = volume;
+      }
+    });
+  }
+
   private applyBypassState() {
     if (!this.source || !this.gainNode || !this.context) return;
 
@@ -618,6 +646,7 @@ class AudioService {
             this.currentTrack = track;
           }
 
+          const bypassAudioGraph = shouldBypassAudioGraph(url, track);
           let newSound: Howl;
 
           if (existingSound) {
@@ -699,9 +728,13 @@ class AudioService {
                   // 2. 同步新音频进度
                   newSound.seek(targetPos);
 
-                  // 3. 初始化新音频的 EQ
+                  // 3. 初始化新音频的输出链路
                   await this.disposeEQ(true);
-                  await this.setupEQ(newSound);
+                  if (bypassAudioGraph) {
+                    console.warn('audioService: 远程音频缺少跨域授权，已绕过 EQ 音频图。');
+                  } else {
+                    await this.setupEQ(newSound);
+                  }
 
                   // 4. 播放新音频
                   if (isPlay) {
@@ -722,7 +755,12 @@ class AudioService {
                   console.log(`audioService: 无缝切换完成，进度同步至 ${targetPos}s`);
                 } else {
                   // 普通加载逻辑
-                  await this.setupEQ(newSound);
+                  if (bypassAudioGraph) {
+                    await this.disposeEQ(true);
+                    console.warn('audioService: 远程音频缺少跨域授权，已绕过 EQ 音频图。');
+                  } else {
+                    await this.setupEQ(newSound);
+                  }
                   this.currentSound = newSound;
                 }
 
@@ -738,7 +776,7 @@ class AudioService {
                       this.currentSound.seek(seekTime);
                     }
 
-                    console.log('audioService: 音频加载成功，设置 EQ');
+                    console.log('audioService: 音频加载成功');
                     this.updateMediaSessionMetadata(track);
                     this.updateMediaSessionPositionState();
                     this.emit('load');
@@ -1093,7 +1131,7 @@ class AudioService {
       this.gainNode.gain.cancelScheduledValues(this.context!.currentTime);
       this.gainNode.gain.setValueAtTime(linearVolume, this.context!.currentTime);
     } else {
-      this.currentSound?.volume(linearVolume);
+      if (this.currentSound) this.applyDirectElementVolume(this.currentSound, linearVolume);
     }
 
     // 保存值
@@ -1123,7 +1161,10 @@ class AudioService {
       // source/gainNode 会暂时为 null，导致误判为未播放
       const isPlaying = this.currentSound.playing();
       const isLoading = this.isLoading();
-      const contextRunning = Howler.ctx && Howler.ctx.state === 'running';
+      const usesDirectElementOutput =
+        this.currentTrack?.source === 'kuwo' || shouldBypassAudioGraph('', this.currentTrack);
+      const contextRunning =
+        usesDirectElementOutput || !Howler.ctx || Howler.ctx.state === 'running';
 
       return isPlaying && !isLoading && contextRunning;
     } catch (error) {

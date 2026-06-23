@@ -129,6 +129,11 @@ const onToggleSelect = () => {
 const onImageLoad = (event: Event) => baseItem.value?.imageLoad(event);
 const onArtistClick = (id: number) => baseItem.value?.handleArtistClick(id);
 const onPlayMusic = () => {
+  if (props.isNext) {
+    // 搜索页通过 isNext 标记接管播放，先建队列再播放当前项。
+    emit('play', props.item);
+    return;
+  }
   baseItem.value?.playMusicEvent(props.item);
   emit('play', props.item);
 };

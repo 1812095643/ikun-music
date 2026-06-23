@@ -22,12 +22,22 @@ type CompatStore = {
   save(): Promise<void>;
 };
 
+type TrayStatePayload = {
+  title?: string;
+  artist?: string;
+  isPlaying: boolean;
+  hasSong: boolean;
+  volume: number;
+  muted: boolean;
+};
+
 const isTauriRuntime = Boolean((window as any).__TAURI_INTERNALS__);
 const BROWSER_STORE_KEY = 'alger-music-tauri-browser-store';
 const listeners = new Map<string, Set<Listener>>();
 const unlisteners = new Map<string, UnlistenFn>();
 let appWindow: ReturnType<typeof getCurrentWindow> | null = null;
 let storePromise: Promise<CompatStore> | null = null;
+let musicApiReadyPromise: Promise<number | null> | null = null;
 let storeCache: StoreData = {
   set: { ...(defaultSettings as Record<string, any>) },
   shortcuts: {}
@@ -82,18 +92,29 @@ const getStore = async (): Promise<CompatStore> => {
   return storePromise;
 };
 
-const startMusicApiService = async () => {
-  if (!isTauriRuntime) return;
-  await getStore();
-  const result = await invoke<{ port?: number }>('start_music_api', {
-    port: storeCache.set.musicApiPort || 30488
-  }).catch((error) => {
-    console.error('启动音乐 API 服务失败:', error);
-    return null;
+export const ensureMusicApiReady = async () => {
+  if (!isTauriRuntime) return null;
+  if (musicApiReadyPromise) return musicApiReadyPromise;
+
+  musicApiReadyPromise = (async () => {
+    await getStore();
+    const result = await invoke<{ port?: number }>('start_music_api', {
+      port: storeCache.set.musicApiPort || 30488
+    }).catch((error) => {
+      const message = error instanceof Error ? error.message : String(error);
+      console.error('启动音乐 API 服务失败:', message);
+      throw new Error(`音乐 API 服务没有启动起来：${message}`);
+    });
+    if (result?.port && result.port !== storeCache.set.musicApiPort) {
+      await setStoreValue('set.musicApiPort', result.port);
+    }
+    return result?.port || storeCache.set.musicApiPort || 30488;
+  })().catch((error) => {
+    musicApiReadyPromise = null;
+    throw error;
   });
-  if (result?.port && result.port !== storeCache.set.musicApiPort) {
-    await setStoreValue('set.musicApiPort', result.port);
-  }
+
+  return musicApiReadyPromise;
 };
 
 const getByPath = (path: string) => {
@@ -117,8 +138,14 @@ const setByPath = (path: string, value: any) => {
 };
 
 const postToMusicApi = async (path: string, body: Record<string, any>) => {
-  await startMusicApiService();
-  const response = await fetch(`http://127.0.0.1:${storeCache.set.musicApiPort}${path}`, {
+  await ensureMusicApiReady();
+  const url = new URL(`http://127.0.0.1:${storeCache.set.musicApiPort}${path}`);
+  // 根因：内置 NCM API 在全局层面对所有路由启用了 2 分钟缓存，缓存 key 只包含
+  // method + originalUrl，不包含 POST body。自定义解析接口如果固定访问同一路径，
+  // 搜索后播放不同歌曲时可能拿到上一首歌的解析结果，表现为按钮进入播放态但无声。
+  // 每次 POST 增加唯一参数，让扫描本地音乐、元数据解析和 unblockMusic 都按真实请求执行。
+  url.searchParams.set('_tauriRequestId', `${Date.now()}-${Math.random().toString(16).slice(2)}`);
+  const response = await fetch(url.toString(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
@@ -244,6 +271,13 @@ const send = (channel: string, ...args: any[]) => {
       break;
     case 'restore-window':
       void invoke('restore_window');
+      break;
+    case 'update-tray-state':
+      if (isTauriRuntime) {
+        void invoke('update_tray_state', { state: args[0] }).catch((error) => {
+          console.warn('更新系统托盘状态失败:', error);
+        });
+      }
       break;
     case 'set-store-value':
       void setStoreValue(args[0], args[1]);
@@ -507,6 +541,12 @@ const api = {
   removeAppUpdateListeners: () => removeAllListeners('app-update:state'),
   onLanguageChanged: (callback: (locale: string) => void) =>
     on('language-changed', (_event: any, locale: string) => callback(locale)),
+  updateTrayState: (state: TrayStatePayload) => send('update-tray-state', state),
+  onTrayControl: (callback: (action: string) => void) =>
+    on('tray-control', (_event: any, payload: any) => {
+      const action = typeof payload === 'string' ? payload : payload?.action;
+      if (action) callback(action);
+    }),
   invoke: invokeChannel,
   getSearchSuggestions: (keyword: string) => invokeChannel('get-search-suggestions', keyword),
   lxMusicHttpRequest: (request: any) => invokeChannel('lx-music-http-request', request),

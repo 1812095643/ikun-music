@@ -143,6 +143,12 @@ const onToggleSelect = () => {
 const onImageLoad = (event: Event) => baseItem.value?.imageLoad(event);
 const onArtistClick = (id: number) => baseItem.value?.handleArtistClick(id);
 const onPlayMusic = () => {
+  if (props.isNext) {
+    // 根因：搜索页需要先由父组件设置“搜索结果列表”作为播放上下文，
+    // 再播放当前歌曲；如果这里也直接 setPlay，会和父组件形成两个播放请求。
+    emit('play', props.item);
+    return;
+  }
   baseItem.value?.playMusicEvent(props.item);
   emit('play', props.item);
 };

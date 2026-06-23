@@ -132,6 +132,11 @@ const onToggleFavorite = (event: Event) => {
   baseItem.value?.toggleFavorite(event);
 };
 const onPlayMusic = () => {
+  if (props.isNext) {
+    // 搜索页的单曲播放由父组件统一设置播放列表上下文，避免重复 setPlay。
+    emit('play', props.item);
+    return;
+  }
   baseItem.value?.playMusicEvent(props.item);
   emit('play', props.item);
 };

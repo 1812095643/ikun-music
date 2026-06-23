@@ -5,7 +5,7 @@
   "identifier": "com.ikun.music",
   "build": {
     "beforeDevCommand": "npm run dev:web",
-    "beforeBuildCommand": "npm run build:web",
+    "beforeBuildCommand": "npm run build:desktop",
     "devUrl": "http://localhost:5173",
     "frontendDist": "../dist"
   },
@@ -30,8 +30,8 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["nsis"],
     "icon": ["icons/icon.ico", "icons/icon.png"],
-    "resources": ["../resources/html/**/*", "bin/alger-music-api.js"]
+    "resources": ["../resources/html/**/*"]
   }
 }

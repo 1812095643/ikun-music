@@ -10,9 +10,21 @@ interface IParams {
   offset?: number;
 }
 // 搜索内容
-export const getSearch = (params: IParams) => {
+export const getSearch = async (params: IParams): Promise<any> => {
   if (params.type === 1) {
-    return searchKuwoSongs(params);
+    try {
+      const response = await searchKuwoSongs(params);
+      const songs = response.data?.result?.songs || [];
+      if (songs.length > 0) return response;
+      console.warn('酷我搜索返回为空，已切换到本地后端搜索。');
+    } catch (error) {
+      // 根因：歌曲搜索是用户播放链路的入口，必须默认优先返回酷我结果，才能让
+      // 后续播放命中酷我直链接口；但酷我接口偶发超时或为空时，不能让用户完全搜不到。
+      // 酷我请求层已经连续尝试三次，这里只在三次都失败后回退本地后端搜索。
+      console.warn('酷我搜索三次尝试后仍不可用，已切换到本地后端搜索。', error);
+    }
+
+    return request.get<any>('/cloudsearch', { params });
   }
   return request.get<any>('/cloudsearch', {
     params

@@ -293,7 +293,7 @@ import {
 } from '@/services/LxMusicSourceRunner';
 import { useSettingsStore } from '@/store';
 import type { LxMusicScriptConfig, LxScriptInfo, LxSourceKey } from '@/types/lxMusic';
-import { type Platform } from '@/types/music';
+import { DEFAULT_PLATFORMS, type Platform } from '@/types/music';
 import { useMusicSources } from '@/utils/musicSourceConfig';
 
 // ==================== Props & Emits ====================
@@ -304,7 +304,7 @@ const props = defineProps({
   },
   sources: {
     type: Array as () => Platform[],
-    default: () => ['migu', 'kugou', 'kuwo', 'pyncmd'] as Platform[]
+    default: () => DEFAULT_PLATFORMS
   }
 });
 
@@ -324,6 +324,11 @@ const tabs = computed(() => [
   { key: 'lxMusic', label: t('settings.playback.lxMusic.tabs.lxMusic') },
   { key: 'customApi', label: t('settings.playback.lxMusic.tabs.customApi') }
 ]);
+
+const normalizeSelectedSources = (sources: Platform[]) => {
+  const values = sources.length > 0 ? sources : DEFAULT_PLATFORMS;
+  return ['kuwo', ...values.filter((source) => source !== 'kuwo')] as Platform[];
+};
 
 // 落雪音源列表（从 store 中的脚本解析）
 const lxMusicApis = computed<LxMusicScriptConfig[]>(() => {
@@ -650,9 +655,10 @@ const saveScriptName = (apiId: string) => {
  * 确认选择
  */
 const handleConfirm = () => {
-  const defaultPlatforms: Platform[] = ['kuwo', 'migu', 'kugou', 'pyncmd'];
-  const valuesToEmit =
-    selectedSources.value.length > 0 ? [...new Set(selectedSources.value)] : defaultPlatforms;
+  // 根因：旧配置或用户在弹窗里调整顺序后，enabledMusicSources 可能把酷我排到后面，
+  // 播放失败时就会先尝试其它音源，和“默认走酷我”的产品要求相反。保存时统一把
+  // 酷我补回并放到第一位，后续搜索结果、歌单歌曲和手动重解析都能优先命中酷我。
+  const valuesToEmit = [...new Set(normalizeSelectedSources(selectedSources.value))];
   emit('update:sources', valuesToEmit);
   visible.value = false;
 };
@@ -714,7 +720,7 @@ watch(
 watch(
   () => props.sources,
   (newVal: Platform[]) => {
-    selectedSources.value = [...newVal];
+    selectedSources.value = [...new Set(normalizeSelectedSources(newVal))];
   },
   { deep: true }
 );

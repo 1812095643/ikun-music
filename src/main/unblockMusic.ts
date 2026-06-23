@@ -30,7 +30,7 @@ interface UnblockResult {
 }
 
 // 所有可用平台
-export const ALL_PLATFORMS: Platform[] = ['migu', 'kugou', 'kuwo', 'pyncmd'];
+export const ALL_PLATFORMS: Platform[] = ['kuwo', 'migu', 'kugou', 'pyncmd'];
 
 /**
  * 确保对象数据结构完整，处理null或undefined的情况

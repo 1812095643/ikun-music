@@ -8,7 +8,7 @@ import { getSongUrl } from '@/store/modules/player';
 import type { SongResult } from '@/types/music';
 import { isElectron } from '@/utils';
 
-const ipcRenderer = isElectron ? window.electron.ipcRenderer : null;
+const getIpcRenderer = () => (isElectron ? window.electron?.ipcRenderer || null : null);
 
 // 全局下载管理（闭包模式）
 const createDownloadManager = () => {
@@ -62,11 +62,11 @@ const createDownloadManager = () => {
 
       // 移除可能存在的旧监听器
       if (completeListener) {
-        ipcRenderer?.removeListener('music-download-complete', completeListener);
+        getIpcRenderer()?.removeListener('music-download-complete', completeListener);
       }
 
       if (errorListener) {
-        ipcRenderer?.removeListener('music-download-error', errorListener);
+        getIpcRenderer()?.removeListener('music-download-error', errorListener);
       }
 
       // 创建新的监听器
@@ -105,8 +105,8 @@ const createDownloadManager = () => {
       };
 
       // 添加监听器
-      ipcRenderer?.on('music-download-complete', completeListener);
-      ipcRenderer?.on('music-download-error', errorListener);
+      getIpcRenderer()?.on('music-download-complete', completeListener);
+      getIpcRenderer()?.on('music-download-error', errorListener);
 
       isInitialized = true;
     },
@@ -116,12 +116,12 @@ const createDownloadManager = () => {
       if (!isInitialized) return;
 
       if (completeListener) {
-        ipcRenderer?.removeListener('music-download-complete', completeListener);
+        getIpcRenderer()?.removeListener('music-download-complete', completeListener);
         completeListener = null;
       }
 
       if (errorListener) {
-        ipcRenderer?.removeListener('music-download-error', errorListener);
+        getIpcRenderer()?.removeListener('music-download-error', errorListener);
         errorListener = null;
       }
 
@@ -187,7 +187,7 @@ export const useDownload = () => {
       songData.ar = songData.ar || songData.song?.artists;
 
       // 发送下载请求
-      ipcRenderer?.send('download-music', {
+      getIpcRenderer()?.send('download-music', {
         url: typeof musicUrl === 'string' ? musicUrl : musicUrl.url,
         filename,
         songInfo: {
@@ -283,7 +283,7 @@ export const useDownload = () => {
           downloadTime: Date.now()
         };
 
-        ipcRenderer?.send('download-music', {
+        getIpcRenderer()?.send('download-music', {
           url,
           filename,
           songInfo,
@@ -327,7 +327,7 @@ export const useDownload = () => {
       const artistNames = (song.ar || song.song?.artists)?.map((a) => a.name).join(',');
       const filename = `${song.name} - ${artistNames}`;
 
-      const result = await ipcRenderer?.invoke('save-lyric-file', { filename, lrcContent });
+      const result = await getIpcRenderer()?.invoke('save-lyric-file', { filename, lrcContent });
 
       if (result?.success) {
         message.success(t('songItem.message.lyricDownloaded'));

@@ -10,6 +10,8 @@
     "typecheck": "npm run typecheck:web",
     "dev:web": "vite dev",
     "dev": "tauri dev",
+    "prepare:music-api-runtime": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-music-api-runtime.ps1",
+    "build:desktop": "npm run prepare:music-api-runtime && npm run build:web",
     "build:web": "vue-tsc --noEmit -p tsconfig.web.json --composite false && vite build",
     "build": "tauri build",
     "tauri": "tauri",

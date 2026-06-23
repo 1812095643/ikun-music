@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import { cloneDeep } from 'lodash';
 import { darkTheme, lightTheme } from 'naive-ui';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
@@ -35,6 +35,7 @@ import { usePlayerStore } from '@/store/modules/player';
 import { usePlayerCoreStore } from '@/store/modules/playerCore';
 import { useSettingsStore } from '@/store/modules/settings';
 import { useUserStore } from '@/store/modules/user';
+import type { Artist, SongResult } from '@/types/music';
 import { isElectron, isLyricWindow } from '@/utils';
 import { checkLoginStatus } from '@/utils/auth';
 
@@ -42,7 +43,7 @@ import { initAudioListeners, initMusicHook } from './hooks/MusicHook';
 import { audioService } from './services/audioService';
 import { initLxMusicRunner } from './services/LxMusicSourceRunner';
 import { isMobile } from './utils';
-import { useAppShortcuts } from './utils/appShortcuts';
+import { handleShortcutAction, useAppShortcuts } from './utils/appShortcuts';
 
 const { locale } = useI18n();
 const settingsStore = useSettingsStore();
@@ -52,6 +53,88 @@ const userStore = useUserStore();
 const router = useRouter();
 
 const showSplash = ref(true);
+let removeTrayControlListener: (() => void) | null = null;
+
+const getArtistText = (song: SongResult | Record<string, any> | null | undefined) => {
+  const artistGroups = [
+    song?.ar,
+    song?.artists,
+    song?.song?.artists,
+    song?.song?.ar,
+    song?.album?.artists
+  ];
+  const artists = artistGroups.find((item) => Array.isArray(item)) as Artist[] | undefined;
+
+  if (artists?.length) {
+    return artists
+      .map((artist) => artist?.name)
+      .filter(Boolean)
+      .join(' / ');
+  }
+
+  return '';
+};
+
+const getTrayVolume = () => {
+  const volume = playerStore.getVolume();
+  return Number.isFinite(volume) ? Math.max(0, Math.min(1, volume)) : 0;
+};
+
+/**
+ * 同步系统托盘状态。
+ * 根本原因：Tauri 原生托盘菜单由 Rust 创建，不会自动知道前端当前播放的歌曲、播放状态和音量。
+ * 解决思路：把播放器 Pinia 状态作为唯一真源，主窗口每次播放/歌曲/音量变化时主动刷新托盘菜单文案。
+ */
+const syncTrayState = () => {
+  if (!isElectron || isLyricWindow.value || !window.api?.updateTrayState) {
+    return;
+  }
+
+  const song = playerStore.playMusic as SongResult | undefined;
+  const volume = getTrayVolume();
+
+  window.api.updateTrayState({
+    title: song?.name || '',
+    artist: getArtistText(song),
+    isPlaying: Boolean(playerStore.play),
+    hasSong: Boolean(song?.id),
+    volume,
+    muted: volume <= 0
+  });
+};
+
+const toggleTrayMute = () => {
+  const currentVolume = getTrayVolume();
+
+  if (currentVolume > 0) {
+    localStorage.setItem('trayPreviousVolume', String(currentVolume));
+    playerStore.setVolume(0);
+    return;
+  }
+
+  const savedVolume = Number(localStorage.getItem('trayPreviousVolume') || '0.7');
+  const nextVolume = Number.isFinite(savedVolume) ? Math.max(0.1, Math.min(1, savedVolume)) : 0.7;
+  playerStore.setVolume(nextVolume);
+};
+
+const handleTrayControl = async (action: string) => {
+  if (action === 'toggleMute') {
+    toggleTrayMute();
+    syncTrayState();
+    return;
+  }
+
+  if (
+    action === 'togglePlay' ||
+    action === 'prevPlay' ||
+    action === 'nextPlay' ||
+    action === 'volumeUp' ||
+    action === 'volumeDown'
+  ) {
+    await handleShortcutAction(action);
+    syncTrayState();
+  }
+};
 
 // 监听语言变化
 watch(
@@ -108,7 +191,7 @@ if (!isLyricWindow.value) {
 handleSetLanguage(settingsStore.setData.language);
 
 // 监听迷你模式状态
-if (isElectron) {
+if (isElectron && window.api && window.electron?.ipcRenderer) {
   window.api.onLanguageChanged(handleSetLanguage);
   window.electron.ipcRenderer.on('mini-mode', (_, value) => {
     settingsStore.setMiniMode(value);
@@ -128,6 +211,26 @@ if (isElectron) {
     }
   });
 }
+
+if (isElectron && !isLyricWindow.value && window.api?.onTrayControl) {
+  removeTrayControlListener = window.api.onTrayControl((action) => {
+    void handleTrayControl(action);
+  });
+}
+
+watch(
+  () => [
+    playerStore.play,
+    playerStore.playMusic?.id,
+    playerStore.playMusic?.name,
+    playerStore.playMusic?.ar,
+    playerStore.playMusic?.artists,
+    playerStore.playMusic?.song?.artists,
+    playerStore.volume
+  ],
+  () => syncTrayState(),
+  { immediate: true, deep: true }
+);
 
 // 使用应用内快捷键
 useAppShortcuts();
@@ -182,12 +285,17 @@ onMounted(async () => {
     // 使用 nextTick 确保 DOM 更新后再初始化
     await nextTick();
     initAudioListeners();
-    if (isElectron) {
+    if (isElectron && window.api) {
       window.api.sendSong(cloneDeep(playerStore.playMusic));
     }
   }
 
   audioService.releaseOperationLock();
+});
+
+onUnmounted(() => {
+  removeTrayControlListener?.();
+  removeTrayControlListener = null;
 });
 </script>
 

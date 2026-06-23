@@ -50,6 +50,15 @@ const api = {
       callback(locale);
     });
   },
+  updateTrayState: (state) => ipcRenderer.send('update-tray-state', state),
+  onTrayControl: (callback: (action: string) => void) => {
+    const wrappedListener = (_event: IpcRendererEvent, payload: any) => {
+      const action = typeof payload === 'string' ? payload : payload?.action;
+      if (action) callback(action);
+    };
+    ipcRenderer.on('tray-control', wrappedListener);
+    return () => ipcRenderer.removeListener('tray-control', wrappedListener);
+  },
   // 歌词缓存相关
   invoke: (channel: string, ...args: any[]) => {
     const validChannels = [

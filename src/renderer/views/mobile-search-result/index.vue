@@ -84,6 +84,7 @@ import SongItem from '@/components/common/SongItem.vue';
 import { SEARCH_TYPE, SEARCH_TYPES } from '@/const/bar-const';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSearchStore } from '@/store/modules/search';
+import type { SongResult } from '@/types/music';
 
 const { t, locale } = useI18n();
 const route = useRoute();
@@ -156,7 +157,8 @@ const performSearch = async (isLoadMore = false) => {
             artists,
             name: item.name,
             id: item.id
-          }
+          },
+          source: item.source || 'netease'
         };
       });
 
@@ -281,7 +283,12 @@ const handleScroll = (e: Event) => {
 
 // 播放音乐
 const handlePlay = (item: any) => {
-  playerStore.addToNextPlay(item);
+  const songs = results.value.filter(Boolean) as SongResult[];
+  if (songs.length > 0) {
+    // 移动搜索页同桌面搜索页保持一致：单曲按钮就是立即播放，不是插入下一首。
+    playerStore.setPlayList(songs);
+  }
+  playerStore.setPlay(item as SongResult);
 };
 
 // 返回

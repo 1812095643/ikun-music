@@ -184,16 +184,17 @@ export function setAppShortcutsSuspended(suspended: boolean) {
  * 初始化应用内快捷键
  */
 export function initAppShortcuts() {
-  if (!isElectron || appShortcutsInitialized) {
+  const ipcRenderer = window.electron?.ipcRenderer;
+  if (!isElectron || !ipcRenderer || appShortcutsInitialized) {
     return;
   }
 
   appShortcutsInitialized = true;
 
-  window.electron.ipcRenderer.on('global-shortcut', onGlobalShortcut);
-  window.electron.ipcRenderer.on('update-app-shortcuts', onUpdateAppShortcuts);
+  ipcRenderer.on('global-shortcut', onGlobalShortcut);
+  ipcRenderer.on('update-app-shortcuts', onUpdateAppShortcuts);
 
-  const storedShortcuts = window.electron.ipcRenderer.sendSync('get-store-value', 'shortcuts');
+  const storedShortcuts = ipcRenderer.sendSync('get-store-value', 'shortcuts');
   updateAppShortcuts(storedShortcuts);
 
   document.addEventListener('keydown', handleKeyDown);
@@ -203,14 +204,15 @@ export function initAppShortcuts() {
  * 清理应用内快捷键
  */
 export function cleanupAppShortcuts() {
-  if (!isElectron || !appShortcutsInitialized) {
+  const ipcRenderer = window.electron?.ipcRenderer;
+  if (!isElectron || !ipcRenderer || !appShortcutsInitialized) {
     return;
   }
 
   appShortcutsInitialized = false;
 
-  window.electron.ipcRenderer.removeListener('global-shortcut', onGlobalShortcut);
-  window.electron.ipcRenderer.removeListener('update-app-shortcuts', onUpdateAppShortcuts);
+  ipcRenderer.removeListener('global-shortcut', onGlobalShortcut);
+  ipcRenderer.removeListener('update-app-shortcuts', onUpdateAppShortcuts);
 
   document.removeEventListener('keydown', handleKeyDown);
 }

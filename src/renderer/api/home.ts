@@ -18,6 +18,37 @@ interface IRecommendMusicParams {
   limit: number;
 }
 
+interface PersonalizedPlaylistPayload {
+  code?: number;
+  result?: any[];
+  [key: string]: any;
+}
+
+const normalizePersonalizedPlaylistResponse = (payload: PersonalizedPlaylistPayload) => {
+  const result = Array.isArray(payload?.result) ? payload.result : [];
+  return {
+    data: {
+      ...payload,
+      result
+    },
+    result
+  };
+};
+
+const normalizeFallbackPlaylistResponse = (payload: PersonalizedPlaylistPayload) => {
+  const result = Array.isArray(payload?.result)
+    ? payload.result.map((item) => ({
+        ...item,
+        source: item.source || 'netease'
+      }))
+    : [];
+
+  return normalizePersonalizedPlaylistResponse({
+    ...payload,
+    result
+  });
+};
+
 // 获取热门歌手
 export const getHotSinger = (params: IHotSingerParams) => {
   return request.get<IHotSinger>('/top/artists', { params });
@@ -59,8 +90,25 @@ export const getBanners = (type: number = 0) => {
 };
 
 // 获取推荐歌单
-export const getPersonalizedPlaylist = (limit: number = 30) => {
-  return getKuwoRecommendPlaylists(limit);
+export const getPersonalizedPlaylist = async (limit: number = 30) => {
+  try {
+    const kuwoResponse = await getKuwoRecommendPlaylists(limit);
+    if (Array.isArray(kuwoResponse.data?.result) && kuwoResponse.data.result.length > 0) {
+      return normalizePersonalizedPlaylistResponse(kuwoResponse.data);
+    }
+    console.warn('酷我推荐歌单返回为空，已切换到本地后端推荐歌单。');
+  } catch (error) {
+    // 根因：首页歌单之前只依赖酷我推荐歌单接口，酷我外站偶发超时或返回空数组时，
+    // 首页会直接进入空态，用户看到的就是“后端启动了但歌单区域没有内容”。酷我请求层
+    // 已经连续尝试三次；三次都不行才回退到本地后端 /personalized，既保证酷我优先，
+    // 又避免首页因为单个外部音源波动而空白。
+    console.warn('酷我推荐歌单三次尝试后仍不可用，已切换到本地后端推荐歌单。', error);
+  }
+
+  const fallbackResponse = await request.get<PersonalizedPlaylistPayload>('/personalized', {
+    params: { limit }
+  });
+  return normalizeFallbackPlaylistResponse(fallbackResponse.data);
 };
 
 // 获取私人漫游（request 拦截器已自动添加 timestamp）

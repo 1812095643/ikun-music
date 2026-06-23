@@ -251,7 +251,8 @@ const formatSong = (item: any) => {
       artists,
       name: item.name,
       id: item.id
-    }
+    },
+    source: item.source || 'netease'
   };
 };
 
@@ -444,7 +445,15 @@ const handleScroll = (e: any) => {
 const dateFormat = (time: any) => useDateFormat(time, 'YYYY.MM.DD').value;
 
 const handlePlay = (item: any) => {
-  playerStore.addToNextPlay(item);
+  const songs = (searchDetail.value?.songs || []).map(formatSong).filter(Boolean) as SongResult[];
+  const currentSong = formatSong(item) as SongResult;
+  if (songs.length > 0) {
+    // 根因：搜索结果页之前把单曲按钮配置成“下一首播放”，用户点播放只会插队，
+    // 当前没有歌曲时看起来就是完全没反应。这里先把搜索结果作为当前播放队列，
+    // 再显式播放用户点击的歌曲，确保搜索 -> 点播放 -> 出声是单步完成。
+    playerStore.setPlayList(songs);
+  }
+  playerStore.setPlay(currentSong);
 };
 
 const handlePlayAll = () => {

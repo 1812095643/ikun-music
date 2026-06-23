@@ -11,6 +11,8 @@ import { getTextColors } from '@/utils/linearColor';
 import { parseLyrics } from '@/utils/yrcParser';
 
 const windowData = window as any;
+const getCompatApi = () => (isElectron ? window.api || null : null);
+const getCompatIpcRenderer = () => (isElectron ? windowData.electron?.ipcRenderer || null : null);
 
 // 全局 playerStore 引用，通过 initMusicHook 函数注入
 let playerStore: ReturnType<typeof usePlayerStore> | null = null;
@@ -302,7 +304,7 @@ const setupAudioListeners = () => {
         lyricThrottleCounter++;
         if (isElectron && isLyricWindowOpen.value && lyricThrottleCounter % 4 === 0) {
           try {
-            window.api.sendLyric(
+            getCompatApi()?.sendLyric(
               JSON.stringify({
                 type: 'update',
                 nowIndex: nowIndex.value,
@@ -418,7 +420,7 @@ const setupAudioListeners = () => {
   audioService.on('play', () => {
     getPlayerStore().setPlayMusic(true);
     if (isElectron) {
-      window.api.sendSong(cloneDeep(getPlayerStore().playMusic));
+      getCompatApi()?.sendSong(cloneDeep(getPlayerStore().playMusic));
     }
     // 启动进度更新
     startProgressInterval();
@@ -751,7 +753,7 @@ export const sendLyricToWin = () => {
       };
 
       // 发送数据到歌词窗口
-      window.api.sendLyric(JSON.stringify(updateData));
+      getCompatApi()?.sendLyric(JSON.stringify(updateData));
     } else {
       console.log('No lyric data available, sending empty lyric message');
 
@@ -768,7 +770,7 @@ export const sendLyricToWin = () => {
         allTime: allTime.value,
         playMusic: playMusic.value
       };
-      window.api.sendLyric(JSON.stringify(emptyLyricData));
+      getCompatApi()?.sendLyric(JSON.stringify(emptyLyricData));
     }
   } catch (error) {
     console.error('Error sending lyric update:', error);
@@ -796,7 +798,7 @@ const startLyricSync = () => {
           nowTime: nowTime.value,
           isPlay: getPlayerStore().play
         };
-        window.api.sendLyric(JSON.stringify(updateData));
+        getCompatApi()?.sendLyric(JSON.stringify(updateData));
       } catch (error) {
         console.error('发送歌词进度更新失败:', error);
       }
@@ -827,7 +829,7 @@ export const openLyric = () => {
   isLyricWindowOpen.value = !isLyricWindowOpen.value;
   if (isLyricWindowOpen.value) {
     // 立即打开窗口
-    window.api.openLyric();
+    getCompatApi()?.openLyric();
 
     // 确保有歌词数据，如果没有，则使用默认的"无歌词"提示
     if (!lrcArray.value || lrcArray.value.length === 0) {
@@ -846,7 +848,7 @@ export const openLyric = () => {
         allTime: allTime.value,
         playMusic: playMusic.value
       };
-      window.api.sendLyric(JSON.stringify(emptyLyricData));
+      getCompatApi()?.sendLyric(JSON.stringify(emptyLyricData));
     } else {
       // 发送完整歌词数据
       sendLyricToWin();
@@ -870,9 +872,10 @@ export const openLyric = () => {
 
 // 修改closeLyric函数，确保停止定时同步
 export const closeLyric = () => {
-  if (!isElectron) return;
+  const ipcRenderer = getCompatIpcRenderer();
+  if (!ipcRenderer) return;
   isLyricWindowOpen.value = false; // 确保状态更新
-  windowData.electron.ipcRenderer.send('close-lyric');
+  ipcRenderer.send('close-lyric');
 
   // 停止歌词同步
   stopLyricSync();
@@ -894,7 +897,7 @@ const setupPlayStateWatcher = () => {
             type: 'update',
             isPlay: false
           };
-          window.api.sendLyric(JSON.stringify(pauseData));
+          getCompatApi()?.sendLyric(JSON.stringify(pauseData));
         }
       }
     }
@@ -910,8 +913,9 @@ onUnmounted(() => {
 export { parseLyricsString };
 
 // 添加播放控制命令监听
-if (isElectron) {
-  windowData.electron.ipcRenderer.on('lyric-control-back', (_, command: string) => {
+const lyricControlIpcRenderer = getCompatIpcRenderer();
+if (lyricControlIpcRenderer) {
+  lyricControlIpcRenderer.on('lyric-control-back', (_, command: string) => {
     switch (command) {
       case 'playpause':
         if (getPlayerStore().playMusic?.id) {
@@ -970,12 +974,13 @@ export const initAudioListeners = async () => {
     setupAudioListeners();
 
     // 监听歌词窗口事件
-    if (isElectron) {
-      window.api.onLyricWindowClosed(() => {
+    const compatApi = getCompatApi();
+    if (compatApi) {
+      compatApi.onLyricWindowClosed(() => {
         isLyricWindowOpen.value = false;
       });
       // 歌词窗口 Vue 加载完成后，发送完整歌词数据
-      window.api.onLyricWindowReady(() => {
+      compatApi.onLyricWindowReady(() => {
         if (isLyricWindowOpen.value) {
           sendLyricToWin();
         }

@@ -5,6 +5,7 @@ const os = require('os');
 const path = require('path');
 const express = require('express');
 const mm = require('music-metadata');
+const request = require('@unblockneteasemusic/server/src/request');
 
 if (!fs.existsSync(path.resolve(os.tmpdir(), 'anonymous_token'))) {
   fs.writeFileSync(path.resolve(os.tmpdir(), 'anonymous_token'), '', 'utf-8');
@@ -13,10 +14,11 @@ if (!fs.existsSync(path.resolve(os.tmpdir(), 'anonymous_token'))) {
 const { serveNcmApi, getModulesDefinitions } = require('netease-cloud-music-api-alger/server');
 const match = require('@unblockneteasemusic/server');
 
-const ALL_PLATFORMS = ['migu', 'kugou', 'kuwo', 'pyncmd'];
+const ALL_PLATFORMS = ['kuwo', 'migu', 'kugou', 'pyncmd'];
 const SUPPORTED_AUDIO_FORMATS = ['.mp3', '.flac', '.wav', '.ogg', '.m4a', '.aac'];
 const METADATA_PARSE_CONCURRENCY = Math.min(8, Math.max(2, os.cpus().length));
 const MAX_COVER_BYTES = 1024 * 1024;
+const MIN_PLAYABLE_AUDIO_BYTES = 1024 * 1024;
 
 function parseArgs() {
   const args = process.argv.slice(2);
@@ -57,6 +59,37 @@ function ensureDataStructure(data) {
   return data;
 }
 
+function getResponseAudioSize(response) {
+  const contentRange = String(response.headers?.['content-range'] || '');
+  const rangeSize = Number(contentRange.split('/').pop());
+  if (Number.isFinite(rangeSize) && rangeSize > 0) return rangeSize;
+
+  const contentLength = Number(response.headers?.['content-length']);
+  if (Number.isFinite(contentLength) && contentLength > 0) return contentLength;
+
+  return 0;
+}
+
+async function assertPlayableAudioUrl(url) {
+  if (!url || !/^https?:\/\//i.test(url)) return;
+
+  const response = await request('GET', url, {
+    range: 'bytes=0-8191',
+    'accept-encoding': 'identity'
+  });
+  const statusCode = Number(response.statusCode || 0);
+  if (statusCode < 200 || statusCode > 299) {
+    throw new Error(`播放地址探测失败：HTTP ${statusCode}`);
+  }
+
+  const audioSize = getResponseAudioSize(response);
+  await response.body(true).catch(() => Buffer.alloc(0));
+
+  if (audioSize > 0 && audioSize < MIN_PLAYABLE_AUDIO_BYTES) {
+    throw new Error(`播放地址疑似试听或错误文件，大小仅 ${audioSize} 字节`);
+  }
+}
+
 async function unblockMusic(id, songData, retryCount = 1, enabledPlatforms) {
   const filteredPlatforms = enabledPlatforms
     ? enabledPlatforms.filter((platform) => ALL_PLATFORMS.includes(platform))
@@ -66,8 +99,26 @@ async function unblockMusic(id, songData, retryCount = 1, enabledPlatforms) {
 
   const retry = async (attempt) => {
     try {
-      const data = await match(parsedId, filteredPlatforms, processedSongData);
-      return { data: { data, params: { id: parsedId, type: 'song' } } };
+      let lastError = null;
+      // 根因：@unblockneteasemusic 默认并发抢最快音源，并且 NCM API 外层会缓存相同路由。
+      // 这样酷我坏链或上一首歌的 POST 结果可能被复用，用户看到按钮进入暂停态却没有声音。
+      // 这里在我们的胶水层逐个音源串行解析，并对每个候选 URL 做体积探测；小于 1MB 的
+      // 试听/错误文件直接丢弃，继续尝试下一个音源。
+      for (const platform of filteredPlatforms) {
+        try {
+          const data = await match(parsedId, [platform], processedSongData);
+          await assertPlayableAudioUrl(data.url);
+          return { data: { data, params: { id: parsedId, type: 'song' } } };
+        } catch (error) {
+          lastError = error;
+          console.warn(
+            `音源 ${platform} 解析或可播校验失败，继续尝试下一个音源。`,
+            error instanceof Error ? error.message : error
+          );
+        }
+      }
+
+      throw lastError || new Error('没有可用音源');
     } catch (error) {
       if (attempt < retryCount) {
         await new Promise((resolve) => setTimeout(resolve, 100 * attempt));
@@ -233,7 +284,7 @@ async function main() {
       route: '/alger-tauri/unblock-music',
       module: async (query) => {
         const result = await unblockMusic(query.id, query.songData, 1, query.enabledSources);
-        return { status: 200, body: result };
+        return { status: 200, body: { ...result, noCache: Date.now() } };
       }
     },
     ...(await getDefaultModuleDefinitions())

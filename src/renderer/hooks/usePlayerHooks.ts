@@ -8,9 +8,12 @@ import { SongSourceConfigManager } from '@/services/SongSourceConfigManager';
 import type { ILyric, ILyricText, IWordData, SongResult } from '@/types/music';
 import { getImgUrl, isElectron } from '@/utils';
 import { getImageLinearBackground } from '@/utils/linearColor';
+import request from '@/utils/request';
 import { parseLyrics as parseYrcLyrics } from '@/utils/yrcParser';
 
 const { message } = createDiscreteApi(['message']);
+const MIN_PLAYABLE_AUDIO_BYTES = 1024 * 1024;
+const MIN_PLAYABLE_AUDIO_SECONDS = 60;
 
 type DiskCacheResolveResult = {
   url?: string;
@@ -28,6 +31,81 @@ const getSongArtistText = (songData: SongResult): string => {
   }
 
   return '';
+};
+
+const normalizeMatchText = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/[《》<>「」『』"'“”‘’()[\]（）【】\-_.·]/g, '');
+
+const mapNeteaseSongResult = (song: any): SongResult => {
+  const artists = song.ar || song.artists || song.song?.artists || [];
+  const album = song.al || song.album || { id: 0, name: '', picUrl: song.picUrl || '' };
+  return {
+    ...song,
+    picUrl: album.picUrl || song.picUrl || '',
+    ar: artists,
+    artists,
+    al: album,
+    album,
+    song: {
+      ...(song.song || {}),
+      id: song.id,
+      name: song.name,
+      artists,
+      album
+    },
+    source: 'netease',
+    count: song.count || 0,
+    duration: song.duration || song.dt,
+    dt: song.dt || song.duration
+  };
+};
+
+const resolveNeteaseFallbackSong = async (songData: SongResult): Promise<SongResult | null> => {
+  if (songData.source !== 'kuwo') return null;
+
+  const artistText = getSongArtistText(songData);
+  const keyword = [songData.name, artistText].filter(Boolean).join(' ').trim();
+  if (!keyword) return null;
+
+  try {
+    const response = await request.get<any>('/cloudsearch', {
+      params: {
+        keywords: keyword,
+        type: 1,
+        limit: 10,
+        offset: 0
+      }
+    });
+    const songs = response.data?.result?.songs || [];
+    if (!Array.isArray(songs) || songs.length === 0) return null;
+
+    const sourceName = normalizeMatchText(songData.name || '');
+    const sourceArtist = normalizeMatchText(artistText);
+    const matched =
+      songs.find((song: any) => {
+        const targetName = normalizeMatchText(song.name || '');
+        const targetArtist = normalizeMatchText(
+          (song.ar || song.artists || []).map((artist: any) => artist.name).join('')
+        );
+        return (
+          (targetName.includes(sourceName) || sourceName.includes(targetName)) &&
+          (!sourceArtist ||
+            targetArtist.includes(sourceArtist) ||
+            sourceArtist.includes(targetArtist))
+        );
+      }) || songs[0];
+
+    // 根因：酷我搜索结果的 id 是酷我曲库 id，不是网易云 id。酷我直链被判定为
+    // 试听/错误文件后，如果继续拿酷我 id 调 /song/url 或 GD/pyncmd 这类网易源，
+    // 必然拿不到可播地址。这里用歌名 + 歌手回查本地后端，拿到网易云等价歌曲后再兜底解析。
+    return mapNeteaseSongResult(matched);
+  } catch (error) {
+    console.warn('酷我歌曲回查网易云等价歌曲失败，继续使用原始歌曲信息兜底。', error);
+    return null;
+  }
 };
 
 const resolveCachedPlaybackUrl = async (
@@ -57,6 +135,29 @@ const resolveCachedPlaybackUrl = async (
   return url;
 };
 
+const isPlaybackDetailPlayable = (detail: any) => {
+  if (!detail?.url) return false;
+  const size = Number(detail.size || 0);
+  const durationSeconds = Number(detail.time || 0) / 1000;
+  const hasTrialFlag = Boolean(detail.freeTrialInfo || detail.freeTrialPrivilege?.resConsumable);
+
+  return !(
+    hasTrialFlag ||
+    (Number.isFinite(size) && size > 0 && size < MIN_PLAYABLE_AUDIO_BYTES) ||
+    (Number.isFinite(durationSeconds) &&
+      durationSeconds > 0 &&
+      durationSeconds < MIN_PLAYABLE_AUDIO_SECONDS)
+  );
+};
+
+const resolvePlayableUrl = async (
+  detail: any,
+  songData: SongResult
+): Promise<string | null | undefined> => {
+  if (!isPlaybackDetailPlayable(detail)) return null;
+  return await resolveCachedPlaybackUrl(detail.url, songData);
+};
+
 /**
  * 获取歌曲播放URL（独立函数）
  */
@@ -71,6 +172,58 @@ export const getSongUrl = async (
   // 动态导入 settingsStore
   const { useSettingsStore } = await import('@/store/modules/settings');
   const settingsStore = useSettingsStore();
+  let skipKuwoForFallback = false;
+  const runFallbackParsing = async () => {
+    const previousConfig = SongSourceConfigManager.getConfig(id);
+    const configuredFallbackSources = (
+      previousConfig?.sources ||
+      settingsStore.setData.enabledMusicSources ||
+      []
+    ).filter((source: string) => source !== 'kuwo');
+    const baseFallbackSources =
+      configuredFallbackSources.length > 0
+        ? configuredFallbackSources
+        : ['migu', 'kugou', 'pyncmd'];
+    const fallbackSources = [
+      'gdmusic',
+      ...baseFallbackSources.filter((source: string) => source !== 'gdmusic')
+    ];
+    const neteaseFallbackSong =
+      skipKuwoForFallback && songData.source === 'kuwo'
+        ? await resolveNeteaseFallbackSong(songData)
+        : null;
+    const fallbackSongData: SongResult =
+      skipKuwoForFallback && neteaseFallbackSong
+        ? neteaseFallbackSong
+        : skipKuwoForFallback
+          ? {
+              ...songData,
+              source: 'netease'
+            }
+          : songData;
+    const fallbackId = skipKuwoForFallback && neteaseFallbackSong ? neteaseFallbackSong.id : id;
+    const fallbackNumericId =
+      typeof fallbackId === 'string' ? parseInt(fallbackId, 10) : fallbackId;
+    const previousFallbackConfig = SongSourceConfigManager.getConfig(fallbackId);
+    // 根因：酷我搜索结果的 id 不是网易云 id，且网易官方接口也可能只返回 30 秒试听。
+    // 如果备用解析仍按用户全局配置从酷我或单一 unblock 源开始，就会反复拿到坏 URL。
+    // 这里临时把本次歌曲的备用解析顺序固定为 GD 音乐台优先，再试其它解析源；
+    // 解析完成后恢复用户原来的单曲配置，避免污染手动音源设置。
+    SongSourceConfigManager.setConfig(fallbackId, fallbackSources as any, 'auto');
+    try {
+      return await getParsingMusicUrl(fallbackNumericId, cloneDeep(fallbackSongData));
+    } finally {
+      if (previousFallbackConfig) {
+        SongSourceConfigManager.setConfig(
+          fallbackId,
+          previousFallbackConfig.sources,
+          previousFallbackConfig.type
+        );
+      } else {
+        SongSourceConfigManager.clearConfig(fallbackId);
+      }
+    }
+  };
 
   try {
     // 在开始处理前验证请求
@@ -103,6 +256,7 @@ export const getSongUrl = async (
           throw error;
         }
         console.warn('酷我直链接析失败，继续进入备用解析流程:', error);
+        skipKuwoForFallback = true;
       }
     }
 
@@ -138,7 +292,9 @@ export const getSongUrl = async (
         ) {
           console.log('自定义API解析成功！');
           if (isDownloaded) return customResult.data.data as any;
-          return await resolveCachedPlaybackUrl(customResult.data.data.url, songData);
+          const playableUrl = await resolvePlayableUrl(customResult.data.data, songData);
+          if (playableUrl) return playableUrl;
+          console.warn('自定义API返回疑似试听或错误文件，继续使用默认降级流程。');
         } else {
           console.log('自定义API解析失败，将使用默认降级流程...');
           message.warning(i18n.global.t('player.reparse.customApiFailed'));
@@ -156,7 +312,7 @@ export const getSongUrl = async (
     if (songConfig) {
       try {
         console.log(`使用自定义音源解析歌曲 ID: ${id}`);
-        const res = await getParsingMusicUrl(numericId, cloneDeep(songData));
+        const res = await runFallbackParsing();
         console.log('res', res);
 
         // 验证请求
@@ -166,7 +322,9 @@ export const getSongUrl = async (
         }
 
         if (res && res.data && res.data.data && res.data.data.url) {
-          return await resolveCachedPlaybackUrl(res.data.data.url, songData);
+          const playableUrl = await resolvePlayableUrl(res.data.data, songData);
+          if (playableUrl) return playableUrl;
+          console.warn('自定义音源返回疑似试听或错误文件，使用默认音源。');
         }
         console.warn('自定义音源解析失败，使用默认音源');
       } catch (error) {
@@ -190,19 +348,19 @@ export const getSongUrl = async (
     if (data && data.data && data.data[0]) {
       const songDetail = data.data[0];
       const hasNoUrl = !songDetail.url;
-      const isTrial = !!songDetail.freeTrialInfo;
+      const isTrial = !isPlaybackDetailPlayable(songDetail);
 
       if (hasNoUrl || isTrial) {
         console.log(`官方URL无效 (无URL: ${hasNoUrl}, 试听: ${isTrial})，进入内置备用解析...`);
-        const res = await getParsingMusicUrl(numericId, cloneDeep(songData));
+        const res = await runFallbackParsing();
         // 验证请求
         if (requestId && !playbackRequestManager.isRequestValid(requestId)) {
           console.log(`[getSongUrl] 备用解析后请求已失效: ${requestId}`);
           throw new Error('Request cancelled');
         }
         if (isDownloaded) return res?.data?.data as any;
-        const parsedUrl = res?.data?.data?.url || null;
-        return await resolveCachedPlaybackUrl(parsedUrl, songData);
+        const playableUrl = await resolvePlayableUrl(res?.data?.data, songData);
+        return playableUrl || null;
       }
 
       console.log('官方API解析成功！');
@@ -211,24 +369,24 @@ export const getSongUrl = async (
     }
 
     console.log('官方API返回数据结构异常，进入内置备用解析...');
-    const res = await getParsingMusicUrl(numericId, cloneDeep(songData));
+    const res = await runFallbackParsing();
     // 验证请求
     if (requestId && !playbackRequestManager.isRequestValid(requestId)) {
       console.log(`[getSongUrl] 备用解析后请求已失效: ${requestId}`);
       throw new Error('Request cancelled');
     }
     if (isDownloaded) return res?.data?.data as any;
-    const parsedUrl = res?.data?.data?.url || null;
-    return await resolveCachedPlaybackUrl(parsedUrl, songData);
+    const playableUrl = await resolvePlayableUrl(res?.data?.data, songData);
+    return playableUrl || null;
   } catch (error) {
     if ((error as Error).message === 'Request cancelled') {
       throw error;
     }
     console.error('官方API请求失败，进入内置备用解析流程:', error);
-    const res = await getParsingMusicUrl(numericId, cloneDeep(songData));
+    const res = await runFallbackParsing();
     if (isDownloaded) return res?.data?.data as any;
-    const parsedUrl = res?.data?.data?.url || null;
-    return await resolveCachedPlaybackUrl(parsedUrl, songData);
+    const playableUrl = await resolvePlayableUrl(res?.data?.data, songData);
+    return playableUrl || null;
   }
 };
 

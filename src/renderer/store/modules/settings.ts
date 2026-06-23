@@ -5,6 +5,7 @@ import { ref, watch } from 'vue';
 import setDataDefault from '@/../main/set.json';
 import homeRouter from '@/router/home';
 import { useMenuStore } from '@/store/modules/menu';
+import { DEFAULT_PLATFORMS } from '@/types/music';
 import { isElectron } from '@/utils';
 import {
   applyTheme,
@@ -14,7 +15,25 @@ import {
   watchSystemTheme
 } from '@/utils/theme';
 
-import { type AppUpdateState,createDefaultAppUpdateState } from '../../../shared/appUpdate';
+import { type AppUpdateState, createDefaultAppUpdateState } from '../../../shared/appUpdate';
+
+const getSafeIpcRenderer = () => (isElectron ? window.electron?.ipcRenderer || null : null);
+
+const getLocalSettings = () => {
+  try {
+    return JSON.parse(localStorage.getItem('appSettings') || '{}');
+  } catch (error) {
+    console.warn('读取本地设置失败，已使用默认设置兜底:', error);
+    return {};
+  }
+};
+
+const normalizeEnabledMusicSources = (sources: unknown) => {
+  if (!Array.isArray(sources)) return DEFAULT_PLATFORMS;
+  const values = sources.filter((source): source is string => typeof source === 'string');
+  const result = ['kuwo', ...values.filter((source) => source !== 'kuwo')];
+  return result.length > 0 ? [...new Set(result)] : DEFAULT_PLATFORMS;
+};
 
 export const useSettingsStore = defineStore('settings', () => {
   const theme = ref<ThemeType>(getCurrentTheme());
@@ -43,8 +62,10 @@ export const useSettingsStore = defineStore('settings', () => {
       ...data
     };
 
-    if (isElectron) {
-      window.electron.ipcRenderer.send('set-store-value', 'set', cloneDeep(mergedData));
+    const ipcRenderer = getSafeIpcRenderer();
+
+    if (ipcRenderer) {
+      ipcRenderer.send('set-store-value', 'set', cloneDeep(mergedData));
     } else {
       localStorage.setItem('appSettings', JSON.stringify(cloneDeep(mergedData)));
     }
@@ -54,9 +75,10 @@ export const useSettingsStore = defineStore('settings', () => {
   // 初始化时先从存储中读取设置
   const getInitialSettings = () => {
     // 从存储中获取保存的设置
-    const savedSettings = isElectron
-      ? window.electron.ipcRenderer.sendSync('get-store-value', 'set')
-      : JSON.parse(localStorage.getItem('appSettings') || '{}');
+    const ipcRenderer = getSafeIpcRenderer();
+    const savedSettings = ipcRenderer
+      ? ipcRenderer.sendSync('get-store-value', 'set')
+      : getLocalSettings();
 
     // 自定义合并策略：如果是数组，直接使用源数组（覆盖默认值）
     const customizer = (_objValue: any, srcValue: any) => {
@@ -68,6 +90,9 @@ export const useSettingsStore = defineStore('settings', () => {
 
     // 合并默认设置和保存的设置
     const mergedSettings = mergeWith({}, setDataDefault, savedSettings, customizer);
+    mergedSettings.enabledMusicSources = normalizeEnabledMusicSources(
+      mergedSettings.enabledMusicSources
+    );
 
     // 更新设置并返回
     setSetData(mergedSettings);
@@ -181,9 +206,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
   const setLanguage = (language: string) => {
     setSetData({ language });
-    if (isElectron) {
-      window.electron.ipcRenderer.send('change-language', language);
-    }
+    getSafeIpcRenderer()?.send('change-language', language);
   };
 
   const initializeSettings = () => {
@@ -203,7 +226,7 @@ export const useSettingsStore = defineStore('settings', () => {
   };
 
   const initializeSystemFonts = async () => {
-    if (!isElectron) return;
+    if (!isElectron || !window.api?.invoke) return;
     if (systemFonts.value.length > 1) return;
 
     try {

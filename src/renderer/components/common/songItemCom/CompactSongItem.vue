@@ -151,6 +151,11 @@ const onToggleFavorite = (event: Event) => {
   // 可选：emit 收藏事件
 };
 const onPlayMusic = () => {
+  if (props.isNext) {
+    // 搜索页的紧凑列表同样交给父组件统一播放，避免按钮点击后只插队或重复解析。
+    emit('play', props.item);
+    return;
+  }
   baseItem.value?.playMusicEvent(props.item);
   emit('play', props.item);
 };

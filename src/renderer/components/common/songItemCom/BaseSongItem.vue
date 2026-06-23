@@ -4,7 +4,7 @@
     @contextmenu.prevent="handleContextMenu"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
-    @dblclick.stop="playMusicEvent(item)"
+    @dblclick.stop="requestPlay(item)"
   >
     <slot name="index"></slot>
     <slot name="select" v-if="selectable"></slot>
@@ -22,7 +22,7 @@
       :is-dislike="isDislike"
       :can-remove="canRemove"
       @update:show="showDropdown = $event"
-      @play="playMusicEvent(item)"
+      @play="requestPlay(item)"
       @play-next="handlePlayNext"
       @download="downloadMusic(item)"
       @download-lyric="downloadLyric(item)"
@@ -76,6 +76,16 @@ const {
   downloadLyric
 } = useSongItem(props);
 
+const requestPlay = async (song: SongResult) => {
+  if (props.isNext) {
+    // 搜索结果页通过 isNext 标记接管播放，先建队列再播放当前项。
+    // 否则双击/菜单播放会绕过父组件，重新出现“只插队或重复解析”的问题。
+    emits('play', song);
+    return;
+  }
+  await playMusicEvent(song);
+};
+
 // 处理图片加载
 const imageLoad = async (event: Event) => {
   const target = event.target as HTMLImageElement;
@@ -95,6 +105,7 @@ defineExpose({
   handleArtistClick,
   handleMenuClick,
   playMusicEvent,
+  requestPlay,
   toggleFavorite,
   handlePlayNext,
   playLoading,
