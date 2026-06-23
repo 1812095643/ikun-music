@@ -1045,6 +1045,7 @@ class AudioService {
             this.currentSound.stop();
             this.currentSound.unload();
             this.currentSound = null;
+            this.currentTrack = null;
           }
 
           // 清理 EQ 但保持上下文 (热切换时暂时不清理，等切换完成后再处理)
@@ -1179,6 +1180,7 @@ class AudioService {
                     await this.setupEQ(newSound);
                   }
                   this.currentSound = newSound;
+                  this.currentTrack = track;
                 }
 
                 // 重新应用已保存的音量

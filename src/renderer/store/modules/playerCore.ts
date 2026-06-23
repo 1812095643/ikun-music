@@ -56,6 +56,49 @@ export const usePlayerCoreStore = defineStore(
     // ==================== Actions ====================
 
     /**
+     * 清理指定歌曲的易失播放状态。
+     *
+     * 根因：原 Android App 的酷我链路是“点歌 -> OkHttp 现取 URL -> 直接交给播放器”，
+     * 不会把播放 URL、失败的 Howl 实例、播放进度跨请求复用。桌面端为了加快体验增加了
+     * Pinia 持久化、预加载和 IndexedDB URL 缓存；当上一首坏链/过期链失败后，这些状态
+     * 会在下一次播放时被继续命中，表现成“重新播放加载很久然后失败”。
+     * 解决：失败或切歌时只清理这首歌的易失播放产物，保留播放列表和歌曲元数据。
+     */
+    const clearVolatilePlaybackState = (song?: SongResult | null) => {
+      if (!song?.id) return;
+
+      preloadService.cancel(song.id);
+      SongSourceConfigManager.clearTriedSources(song.id);
+
+      if (!song.playMusicUrl?.startsWith('local://')) {
+        song.playMusicUrl = undefined;
+        song.expiredAt = undefined;
+      }
+
+      const isCurrentSong =
+        playMusic.value?.id === song.id && playMusic.value.source === song.source;
+      if (isCurrentSong) {
+        if (!playMusic.value.playMusicUrl?.startsWith('local://')) {
+          playMusic.value.playMusicUrl = undefined;
+          playMusic.value.expiredAt = undefined;
+          playMusicUrl.value = '';
+        }
+        play.value = false;
+        isPlay.value = false;
+        userPlayIntent.value = false;
+      }
+
+      try {
+        const savedProgress = JSON.parse(localStorage.getItem('playProgress') || '{}');
+        if (savedProgress.songId === song.id) {
+          localStorage.removeItem('playProgress');
+        }
+      } catch {
+        localStorage.removeItem('playProgress');
+      }
+    };
+
+    /**
      * 设置播放状态
      */
     const setIsPlay = (value: boolean) => {
@@ -151,6 +194,7 @@ export const usePlayerCoreStore = defineStore(
         if (checkPlaybackRetryCount >= MAX_CHECKPLAYBACK_RETRIES) {
           console.warn(`播放重试已达上限 (${MAX_CHECKPLAYBACK_RETRIES} 次)，停止重试`);
           checkPlaybackRetryCount = 0;
+          clearVolatilePlaybackState(playMusic.value);
           setPlayMusic(false);
           return;
         }
@@ -213,6 +257,7 @@ export const usePlayerCoreStore = defineStore(
           if (checkPlaybackRetryCount >= MAX_CHECKPLAYBACK_RETRIES) {
             console.warn(`超时重试已达上限 (${MAX_CHECKPLAYBACK_RETRIES} 次)，停止重试`);
             checkPlaybackRetryCount = 0;
+            clearVolatilePlaybackState(playMusic.value);
             setPlayMusic(false);
             return;
           }
@@ -243,6 +288,7 @@ export const usePlayerCoreStore = defineStore(
     const handlePlayMusic = async (music: SongResult, shouldPlay: boolean = true) => {
       // 如果是新歌曲，重置已尝试的音源和重试计数
       if (music.id !== playMusic.value.id) {
+        clearVolatilePlaybackState(playMusic.value);
         SongSourceConfigManager.clearTriedSources(music.id);
         checkPlaybackRetryCount = 0;
       }
@@ -397,11 +443,13 @@ export const usePlayerCoreStore = defineStore(
             playbackRequestManager.completeRequest(requestId);
             return true;
           } else {
+            clearVolatilePlaybackState(playMusic.value);
             playbackRequestManager.failRequest(requestId);
             return false;
           }
         } catch (error) {
           console.error('自动播放音频失败:', error);
+          clearVolatilePlaybackState(playMusic.value);
           playbackRequestManager.failRequest(requestId);
           return false;
         }
@@ -413,6 +461,7 @@ export const usePlayerCoreStore = defineStore(
         if (playMusic.value) {
           playMusic.value.playLoading = false;
         }
+        clearVolatilePlaybackState(playMusic.value);
         playbackRequestManager.failRequest(requestId);
 
         return false;
@@ -455,7 +504,7 @@ export const usePlayerCoreStore = defineStore(
         let sound: Howl;
         try {
           // 先尝试消耗预加载的 sound
-          const preloadedSound = preloadService.consume(playMusic.value.id);
+          const preloadedSound = preloadService.consume(playMusic.value);
           if (preloadedSound && preloadedSound.state() === 'loaded') {
             console.log(`[playAudio] 使用预加载的音频: ${playMusic.value.name}`);
             sound = preloadedSound;
@@ -532,6 +581,7 @@ export const usePlayerCoreStore = defineStore(
           }, 1000);
         } else {
           // 非操作锁错误，停止播放并通知用户
+          clearVolatilePlaybackState(playMusic.value);
           setPlayMusic(false);
           console.warn('播放音频失败（非操作锁错误），由调用方处理重试');
           message.error(i18n.global.t('player.playFailed'));
@@ -743,6 +793,7 @@ export const usePlayerCoreStore = defineStore(
       handlePause,
       checkPlaybackState,
       reparseCurrentSong,
+      clearVolatilePlaybackState,
       initializePlayState,
       refreshAudioDevices,
       setAudioOutputDevice,
@@ -753,7 +804,7 @@ export const usePlayerCoreStore = defineStore(
     persist: {
       key: 'player-core-store',
       storage: localStorage,
-      pick: ['playMusic', 'playMusicUrl', 'playbackRate', 'volume', 'isPlay', 'audioOutputDeviceId']
+      pick: ['playMusic', 'playbackRate', 'volume', 'audioOutputDeviceId']
     }
   }
 );

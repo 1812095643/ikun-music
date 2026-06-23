@@ -454,10 +454,23 @@ const setupAudioListeners = () => {
       sound.value = null;
 
       // 重新播放当前歌曲
-      if (getPlayerStore().playMusicUrl && playMusic.value) {
-        const newSound = await audioService.play(getPlayerStore().playMusicUrl, playMusic.value);
-        sound.value = newSound as Howl;
-        setupAudioListeners();
+      if (playMusic.value?.id) {
+        // 根因：单曲循环旧逻辑直接复用 playerStore.playMusicUrl。酷我等直链过期或上一轮
+        // 播放失败后，这里会反复把同一个坏 URL 交给 Howler，表现为循环/重新播放卡很久。
+        // 解决：单曲循环也走统一播放链路，在线歌曲先清掉易失 URL，让酷我接口重新现取。
+        const store = getPlayerStore();
+        const song = {
+          ...playMusic.value,
+          isFirstPlay: true,
+          playMusicUrl: playMusic.value.playMusicUrl?.startsWith('local://')
+            ? playMusic.value.playMusicUrl
+            : undefined,
+          expiredAt: playMusic.value.playMusicUrl?.startsWith('local://')
+            ? playMusic.value.expiredAt
+            : undefined
+        };
+        const success = await store.handlePlayMusic(song, true);
+        if (!success) throw new Error('单曲循环重建播放链路失败');
       } else {
         console.error('单曲循环：无可用 URL 或歌曲数据');
         getPlayerStore().nextPlay();

@@ -7,7 +7,7 @@
 
           <!-- Splash Screen Overlay -->
           <transition name="splash-fade">
-            <div v-if="showSplash && !isLyricWindow" class="splash-screen">
+            <div v-if="showSplash && !isLyricWindow && !isTrayPanelWindow" class="splash-screen">
               <div class="splash-content">
                 <div class="splash-logo-container">
                   <img src="@/assets/logo.png" class="splash-logo" alt="logo" />
@@ -43,7 +43,22 @@ import { allTime, initAudioListeners, initMusicHook, nowTime, openLyric } from '
 import { audioService } from './services/audioService';
 import { initLxMusicRunner } from './services/LxMusicSourceRunner';
 import { isMobile } from './utils';
-import { handleShortcutAction, useAppShortcuts } from './utils/appShortcuts';
+import { useAppShortcuts } from './utils/appShortcuts';
+
+type TrayPanelStatePayload = {
+  song?: SongResult;
+  isPlaying: boolean;
+  volume: number;
+  muted: boolean;
+  favoriteIds: Array<number | string>;
+  playMode: number;
+  playListCount: number;
+  playListIndex: number;
+  currentTime: number;
+  duration: number;
+  theme: 'light' | 'dark';
+  updatedAt: number;
+};
 
 const { locale } = useI18n();
 const settingsStore = useSettingsStore();
@@ -82,6 +97,23 @@ const getArtistText = (song: SongResult | Record<string, any> | null | undefined
 const getTrayVolume = () => {
   const volume = playerStore.getVolume();
   return Number.isFinite(volume) ? Math.max(0, Math.min(1, volume)) : 0;
+};
+
+const normalizeFavoriteSongId = (id: number | string | undefined) => {
+  if (typeof id === 'string' && id.includes('--')) return id;
+  const numericId = Number(id);
+  return Number.isFinite(numericId) ? numericId : id;
+};
+
+const getSoundTimeSnapshot = () => {
+  const currentSound = audioService.getCurrentSound();
+  const currentTime = currentSound ? Number(currentSound.seek() || 0) : nowTime.value || 0;
+  const duration = currentSound ? Number(currentSound.duration() || 0) : allTime.value || 0;
+
+  return {
+    currentTime: Number.isFinite(currentTime) ? currentTime : 0,
+    duration: Number.isFinite(duration) ? duration : 0
+  };
 };
 
 /**
@@ -126,22 +158,118 @@ const toggleTrayMute = () => {
   playerStore.setVolume(nextVolume);
 };
 
-const handleTrayControl = async (action: string) => {
-  if (action === 'toggleMute') {
-    toggleTrayMute();
-    syncTrayState();
-    return;
+const resumeCurrentSongFromTray = async () => {
+  if (!playerStore.playMusic?.id) return false;
+
+  const currentSound = audioService.getCurrentSound();
+  const currentTrack = audioService.getCurrentTrack();
+  const soundState =
+    currentSound && typeof currentSound.state === 'function' ? currentSound.state() : '';
+  const isSameSoundTrack =
+    currentTrack?.id === playerStore.playMusic.id &&
+    currentTrack?.source === playerStore.playMusic.source;
+
+  // 根因：托盘面板与原生托盘以前复用了快捷键播放逻辑，暂停后再点播放会重新走解析链路，
+  // 在线歌曲容易碰到上一次过期 URL 或加载中的 Howl 实例，表现为托盘按钮按了但主窗口不出声。
+  // 解决：如果当前 Howler 实例仍可用，托盘恢复播放只调用 resume；只有实例丢失时才重建播放链路。
+  if (currentSound && soundState === 'loaded' && isSameSoundTrack) {
+    audioService.resume();
+    await playerStore.setPlayMusic(true);
+    playerStore.checkPlaybackState(playerStore.playMusic);
+    return true;
   }
 
-  if (
-    action === 'togglePlay' ||
-    action === 'prevPlay' ||
-    action === 'nextPlay' ||
-    action === 'volumeUp' ||
-    action === 'volumeDown'
-  ) {
-    await handleShortcutAction(action);
+  const recovered = await playerStore.handlePlayMusic(
+    {
+      ...playerStore.playMusic,
+      isFirstPlay: true,
+      playMusicUrl: playerStore.playMusic.playMusicUrl?.startsWith('local://')
+        ? playerStore.playMusic.playMusicUrl
+        : undefined,
+      expiredAt: playerStore.playMusic.playMusicUrl?.startsWith('local://')
+        ? playerStore.playMusic.expiredAt
+        : undefined
+    },
+    true
+  );
+
+  if (!recovered) {
+    playerStore.setIsPlay(false);
+  }
+
+  return recovered;
+};
+
+const executeTrayPlaybackCommand = async (payload: any) => {
+  const action = typeof payload === 'string' ? payload : payload?.action;
+  if (!action) return false;
+
+  switch (action) {
+    case 'requestState':
+      return true;
+    case 'setVolume': {
+      const nextVolume = Number(payload?.value);
+      if (Number.isFinite(nextVolume)) {
+        playerStore.setVolume(Math.max(0, Math.min(1, nextVolume)));
+      }
+      return true;
+    }
+    case 'seek': {
+      const nextTime = Number(payload?.value);
+      if (Number.isFinite(nextTime) && nextTime >= 0) {
+        audioService.seek(nextTime);
+        nowTime.value = nextTime;
+      }
+      return true;
+    }
+    case 'toggleMute':
+      toggleTrayMute();
+      return true;
+    case 'togglePlay':
+      if (playerStore.play) {
+        await playerStore.handlePause();
+      } else {
+        await resumeCurrentSongFromTray();
+      }
+      return true;
+    case 'togglePlayMode':
+      playerStore.togglePlayMode();
+      return true;
+    case 'openLyric':
+      openLyric();
+      return true;
+    case 'prevPlay':
+      await playerStore.prevPlay();
+      return true;
+    case 'nextPlay':
+      await playerStore.nextPlay();
+      return true;
+    case 'volumeUp':
+      playerStore.increaseVolume(0.1);
+      return true;
+    case 'volumeDown':
+      playerStore.decreaseVolume(0.1);
+      return true;
+    case 'toggleFavorite': {
+      const favoriteId = normalizeFavoriteSongId(playerStore.playMusic?.id);
+      if (favoriteId == null) return true;
+      if (playerStore.favoriteList.includes(favoriteId)) {
+        await playerStore.removeFromFavorite(favoriteId);
+      } else {
+        await playerStore.addToFavorite(favoriteId);
+      }
+      return true;
+    }
+    default:
+      return false;
+  }
+};
+
+const handleTrayControl = async (action: string) => {
+  const handled = await executeTrayPlaybackCommand(action);
+  if (handled) {
     syncTrayState();
+    broadcastTrayPanelState();
   }
 };
 
@@ -156,71 +284,30 @@ const broadcastTrayPanelState = () => {
   }
 
   const song = playerStore.playMusic as SongResult | undefined;
-  const currentSound = audioService.getCurrentSound();
-  const currentTime = currentSound ? Number(currentSound.seek() || 0) : nowTime.value || 0;
-  const duration = currentSound ? Number(currentSound.duration() || 0) : allTime.value || 0;
-  window.electron.ipcRenderer.send('tray-panel-state', {
-    song,
+  const timeSnapshot = getSoundTimeSnapshot();
+  const state: TrayPanelStatePayload = {
+    song: song?.id ? cloneDeep(song) : undefined,
     isPlaying: Boolean(playerStore.play),
     volume: getTrayVolume(),
     muted: getTrayVolume() <= 0,
-    favoriteIds: playerStore.favoriteList,
+    favoriteIds: [...(playerStore.favoriteList || [])],
     playMode: playerStore.playMode,
     playListCount: playerStore.playList?.length || 0,
     playListIndex: playerStore.playListIndex || 0,
-    currentTime: Number.isFinite(currentTime) ? currentTime : 0,
-    duration: Number.isFinite(duration) ? duration : 0
-  });
+    currentTime: timeSnapshot.currentTime,
+    duration: timeSnapshot.duration,
+    theme: theme.value,
+    updatedAt: Date.now()
+  };
+
+  window.electron.ipcRenderer.send('tray-panel-state', state);
 };
 
 const handleTrayPanelCommand = async (payload: any) => {
   const action = typeof payload === 'string' ? payload : payload?.action;
   if (!action) return;
 
-  switch (action) {
-    case 'requestState':
-      broadcastTrayPanelState();
-      return;
-    case 'setVolume': {
-      const nextVolume = Number(payload?.value);
-      if (Number.isFinite(nextVolume)) {
-        playerStore.setVolume(Math.max(0, Math.min(1, nextVolume)));
-      }
-      break;
-    }
-    case 'seek': {
-      const nextTime = Number(payload?.value);
-      if (Number.isFinite(nextTime) && nextTime >= 0) {
-        audioService.seek(nextTime);
-        nowTime.value = nextTime;
-      }
-      break;
-    }
-    case 'toggleMute':
-      toggleTrayMute();
-      break;
-    case 'togglePlay':
-      if (playerStore.play) {
-        await playerStore.handlePause();
-      } else if (playerStore.playMusic?.id) {
-        await playerStore.setPlay({ ...playerStore.playMusic });
-      }
-      break;
-    case 'togglePlayMode':
-      playerStore.togglePlayMode();
-      break;
-    case 'openLyric':
-      openLyric();
-      break;
-    case 'prevPlay':
-    case 'nextPlay':
-    case 'toggleFavorite':
-      await handleShortcutAction(action);
-      break;
-    default:
-      break;
-  }
-
+  await executeTrayPlaybackCommand(payload);
   broadcastTrayPanelState();
 };
 
@@ -328,10 +415,16 @@ watch(
     playerStore.play,
     playerStore.playMusic?.id,
     playerStore.playMusic?.name,
+    playerStore.playMusic?.picUrl,
     playerStore.playMusic?.ar,
     playerStore.playMusic?.artists,
     playerStore.playMusic?.song?.artists,
-    playerStore.volume
+    playerStore.volume,
+    playerStore.playMode,
+    playerStore.playListIndex,
+    playerStore.playList?.length,
+    playerStore.favoriteList,
+    theme.value
   ],
   () => {
     syncTrayState();

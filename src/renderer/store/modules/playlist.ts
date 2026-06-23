@@ -478,6 +478,7 @@ export const usePlaylistStore = defineStore(
           sleepTimerStore.handleSongChange();
         } else {
           console.error(`[nextPlay] 播放失败: ${nextSong.name}`);
+          playerCore.clearVolatilePlaybackState(nextSong);
 
           // 单曲重试逻辑
           if (singleTrackRetryCount < SINGLE_TRACK_MAX_RETRIES) {
@@ -549,6 +550,7 @@ export const usePlaylistStore = defineStore(
           if (!success) {
             retryCount++;
             console.error(`播放上一首失败，尝试 ${retryCount}/${maxRetries}`);
+            playerCore.clearVolatilePlaybackState(prevSong);
 
             if (retryCount >= maxRetries) {
               console.error('多次尝试播放失败，将从播放列表中移除此歌曲');

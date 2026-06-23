@@ -2,9 +2,47 @@ import { Howl } from 'howler';
 
 import type { SongResult } from '@/types/music';
 
+const getSongArtistText = (song: SongResult) => {
+  const artists = song.ar?.length ? song.ar : song.artists || song.song?.artists || [];
+  return artists
+    .map((artist: any) => artist?.name)
+    .filter(Boolean)
+    .join('/');
+};
+
+const normalizeFingerprintText = (value: unknown) =>
+  String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+
+const buildPreloadKey = (song: SongResult) => {
+  const source = song.source || 'netease';
+  const title = normalizeFingerprintText(song.name);
+  const artist = normalizeFingerprintText(getSongArtistText(song));
+  const url = song.playMusicUrl || '';
+  return [source, song.id, title, artist, url].join('|');
+};
+
 class PreloadService {
-  private loadingPromises: Map<string | number, Promise<Howl>> = new Map();
-  private preloadedSounds: Map<string | number, Howl> = new Map();
+  private songKeyMap: Map<string | number, Set<string>> = new Map();
+  private loadingPromises: Map<string, Promise<Howl>> = new Map();
+  private preloadedSounds: Map<string, Howl> = new Map();
+  private canceledKeys: Set<string> = new Set();
+  private cacheGenerations: Map<string, number> = new Map();
+
+  private bindSongKey(songId: string | number, cacheKey: string) {
+    if (!this.songKeyMap.has(songId)) this.songKeyMap.set(songId, new Set());
+    this.songKeyMap.get(songId)!.add(cacheKey);
+  }
+
+  private getCacheGeneration(cacheKey: string) {
+    return this.cacheGenerations.get(cacheKey) || 0;
+  }
+
+  private bumpCacheGeneration(cacheKey: string) {
+    this.cacheGenerations.set(cacheKey, this.getCacheGeneration(cacheKey) + 1);
+  }
 
   /**
    * 加载并验证音频
@@ -17,33 +55,45 @@ class PreloadService {
     }
 
     // 1. 检查是否有正在进行的加载
-    if (this.loadingPromises.has(song.id)) {
+    const cacheKey = buildPreloadKey(song);
+    this.bindSongKey(song.id, cacheKey);
+    this.canceledKeys.delete(cacheKey);
+    const generation = this.getCacheGeneration(cacheKey);
+
+    if (this.loadingPromises.has(cacheKey)) {
       console.log(`[PreloadService] 歌曲 ${song.name} 正在加载中，复用现有请求`);
-      return this.loadingPromises.get(song.id)!;
+      return this.loadingPromises.get(cacheKey)!;
     }
 
     // 2. 检查是否有已完成的缓存
-    if (this.preloadedSounds.has(song.id)) {
-      const sound = this.preloadedSounds.get(song.id)!;
+    if (this.preloadedSounds.has(cacheKey)) {
+      const sound = this.preloadedSounds.get(cacheKey)!;
       if (sound.state() === 'loaded') {
         console.log(`[PreloadService] 歌曲 ${song.name} 已预加载完成，直接使用`);
         return sound;
       } else {
         // 如果缓存的音频状态不正常，清理并重新加载
-        this.preloadedSounds.delete(song.id);
+        this.preloadedSounds.delete(cacheKey);
       }
     }
 
     // 3. 开始新的加载过程
     const loadPromise = this._performLoad(song);
-    this.loadingPromises.set(song.id, loadPromise);
+    this.loadingPromises.set(cacheKey, loadPromise);
 
     try {
       const sound = await loadPromise;
-      this.preloadedSounds.set(song.id, sound);
+      if (this.canceledKeys.has(cacheKey) || generation !== this.getCacheGeneration(cacheKey)) {
+        sound.unload();
+        this.canceledKeys.delete(cacheKey);
+        throw new Error(`预加载已取消: ${song.name}`);
+      }
+      this.preloadedSounds.set(cacheKey, sound);
       return sound;
     } finally {
-      this.loadingPromises.delete(song.id);
+      if (this.loadingPromises.get(cacheKey) === loadPromise) {
+        this.loadingPromises.delete(cacheKey);
+      }
     }
   }
 
@@ -110,11 +160,18 @@ class PreloadService {
    * 注意：Promise 无法真正取消，但我们可以清理结果
    */
   public cancel(songId: string | number) {
-    if (this.preloadedSounds.has(songId)) {
-      const sound = this.preloadedSounds.get(songId)!;
-      sound.unload();
-      this.preloadedSounds.delete(songId);
-    }
+    const cacheKeys = this.songKeyMap.get(songId);
+    cacheKeys?.forEach((cacheKey) => {
+      if (this.preloadedSounds.has(cacheKey)) {
+        const sound = this.preloadedSounds.get(cacheKey)!;
+        sound.unload();
+        this.preloadedSounds.delete(cacheKey);
+      }
+      this.loadingPromises.delete(cacheKey);
+      this.canceledKeys.add(cacheKey);
+      this.bumpCacheGeneration(cacheKey);
+    });
+    this.songKeyMap.delete(songId);
     // loadingPromises 中的任务会继续执行，但因为 preloadedSounds 中没有记录，
     // 下次请求时会重新加载（或者我们可以让 _performLoad 检查一个取消标记，但这增加了复杂性）
   }
@@ -123,7 +180,15 @@ class PreloadService {
    * 获取已预加载的音频实例（如果存在）
    */
   public getPreloadedSound(songId: string | number): Howl | undefined {
-    return this.preloadedSounds.get(songId);
+    const cacheKeys = this.songKeyMap.get(songId);
+    if (!cacheKeys) return undefined;
+
+    for (const cacheKey of cacheKeys) {
+      const sound = this.preloadedSounds.get(cacheKey);
+      if (sound?.state() === 'loaded') return sound;
+    }
+
+    return undefined;
   }
 
   /**
@@ -131,11 +196,12 @@ class PreloadService {
    * 从缓存中移除但不 unload（由调用方管理生命周期）
    * @returns 预加载的 Howl 实例，如果没有则返回 undefined
    */
-  public consume(songId: string | number): Howl | undefined {
-    const sound = this.preloadedSounds.get(songId);
+  public consume(song: SongResult): Howl | undefined {
+    const cacheKey = buildPreloadKey(song);
+    const sound = this.preloadedSounds.get(cacheKey);
     if (sound) {
-      this.preloadedSounds.delete(songId);
-      console.log(`[PreloadService] 消耗预加载的歌曲: ${songId}`);
+      this.preloadedSounds.delete(cacheKey);
+      console.log(`[PreloadService] 消耗预加载的歌曲: ${song.id}`);
       return sound;
     }
     return undefined;
@@ -148,6 +214,9 @@ class PreloadService {
     this.preloadedSounds.forEach((sound) => sound.unload());
     this.preloadedSounds.clear();
     this.loadingPromises.clear();
+    this.songKeyMap.clear();
+    this.canceledKeys.clear();
+    this.cacheGenerations.clear();
   }
 }
 

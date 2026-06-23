@@ -14,6 +14,8 @@ import { parseLyrics as parseYrcLyrics } from '@/utils/yrcParser';
 const { message } = createDiscreteApi(['message']);
 const MIN_PLAYABLE_AUDIO_BYTES = 1024 * 1024;
 const MIN_PLAYABLE_AUDIO_SECONDS = 60;
+const STABLE_URL_TTL_MS = 30 * 60 * 1000;
+const TEMPORARY_URL_TTL_MS = 3 * 60 * 1000;
 
 type DiskCacheResolveResult = {
   url?: string;
@@ -38,6 +40,38 @@ const normalizeMatchText = (value: string) =>
     .toLowerCase()
     .replace(/\s+/g, '')
     .replace(/[《》<>「」『』"'“”‘’()[\]（）【】\-_.·]/g, '');
+
+const isTemporaryPlaybackUrl = (url?: string) => {
+  if (!url || !/^https?:\/\//i.test(url)) return false;
+
+  try {
+    const parsedUrl = new URL(url);
+    const hostname = parsedUrl.hostname.toLowerCase();
+    return (
+      hostname.includes('kuwo.cn') ||
+      hostname.includes('kwcdn.kuwo.cn') ||
+      hostname.includes('migu') ||
+      hostname.includes('kugou') ||
+      hostname.includes('bilivideo.com') ||
+      parsedUrl.searchParams.has('token') ||
+      parsedUrl.searchParams.has('expires') ||
+      parsedUrl.searchParams.has('expire') ||
+      parsedUrl.searchParams.has('auth_key')
+    );
+  } catch {
+    return true;
+  }
+};
+
+const getPlaybackUrlTtl = (song: SongResult, url?: string) =>
+  song.source === 'kuwo' || isTemporaryPlaybackUrl(url) ? TEMPORARY_URL_TTL_MS : STABLE_URL_TTL_MS;
+
+const shouldReuseExistingPlaybackUrl = (song: SongResult) => {
+  if (!song.playMusicUrl) return false;
+  if (song.playMusicUrl.startsWith('local://')) return true;
+  if (!song.expiredAt) return false;
+  return song.expiredAt > Date.now();
+};
 
 const mapNeteaseSongResult = (song: any): SongResult => {
   const artists = song.ar || song.artists || song.song?.artists || [];
@@ -232,7 +266,7 @@ export const getSongUrl = async (
       throw new Error('Request cancelled');
     }
 
-    if (songData.playMusicUrl) {
+    if (shouldReuseExistingPlaybackUrl(songData)) {
       if (isDownloaded) return songData.playMusicUrl;
       return await resolveCachedPlaybackUrl(songData.playMusicUrl, songData);
     }
@@ -583,8 +617,7 @@ export const useSongDetail = () => {
       }
 
       playMusic.createdAt = Date.now();
-      // 半小时后过期
-      playMusic.expiredAt = playMusic.createdAt + 1800000;
+      playMusic.expiredAt = playMusic.createdAt + getPlaybackUrlTtl(playMusic, playMusicUrl);
       const backgroundColor = playMusic.backgroundColor || '';
       const primaryColor = playMusic.primaryColor || '';
 

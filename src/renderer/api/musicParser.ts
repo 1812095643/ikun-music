@@ -46,6 +46,50 @@ const CACHE_CONFIG = {
  */
 const failedCacheMap = new Map<string, number>();
 
+const getSongArtistText = (song: SongResult) => {
+  const artists = song.ar?.length ? song.ar : song.artists || song.song?.artists || [];
+  return artists
+    .map((artist: any) => artist?.name)
+    .filter(Boolean)
+    .join('/');
+};
+
+const normalizeCacheText = (value: unknown) =>
+  String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+
+const buildMusicCacheKey = (id: number | string, song: SongResult, musicSources?: string[]) => {
+  const source = song.source || 'netease';
+  const sourceKey = (musicSources || []).join(',');
+  const title = normalizeCacheText(song.name);
+  const artist = normalizeCacheText(getSongArtistText(song));
+  return [source, id, title, artist, sourceKey].join('|');
+};
+
+const isTemporaryPlaybackUrl = (url?: string) => {
+  if (!url || !/^https?:\/\//i.test(url)) return false;
+
+  try {
+    const parsedUrl = new URL(url);
+    const hostname = parsedUrl.hostname.toLowerCase();
+    return (
+      hostname.includes('kuwo.cn') ||
+      hostname.includes('kwcdn.kuwo.cn') ||
+      hostname.includes('migu') ||
+      hostname.includes('kugou') ||
+      hostname.includes('bilivideo.com') ||
+      parsedUrl.searchParams.has('token') ||
+      parsedUrl.searchParams.has('expires') ||
+      parsedUrl.searchParams.has('expire') ||
+      parsedUrl.searchParams.has('auth_key')
+    );
+  } catch {
+    return true;
+  }
+};
+
 /**
  * 缓存管理器
  */
@@ -55,10 +99,12 @@ export class CacheManager {
    */
   static async getCachedMusicUrl(
     id: number,
+    song: SongResult,
     musicSources?: string[]
   ): Promise<MusicParseResult | null> {
     try {
-      const cached = await getData('music_url_cache', id);
+      const cacheKey = buildMusicCacheKey(id, song, musicSources);
+      const cached = await getData('music_url_cache', cacheKey);
       if (
         cached?.createTime &&
         Date.now() - cached.createTime < CACHE_CONFIG.MUSIC_URL_CACHE_TIME
@@ -70,7 +116,7 @@ export class CacheManager {
         // 如果音源配置不一致，清除缓存
         if (JSON.stringify(cachedSources.sort()) !== JSON.stringify(currentSources.sort())) {
           console.log(`音源配置已变更，清除歌曲 ${id} 的缓存`);
-          await deleteData('music_url_cache', id);
+          await deleteData('music_url_cache', cacheKey);
           return null;
         }
 
@@ -79,7 +125,7 @@ export class CacheManager {
       }
       // 清理过期缓存
       if (cached) {
-        await deleteData('music_url_cache', id);
+        await deleteData('music_url_cache', cacheKey);
       }
     } catch (error) {
       console.warn('获取缓存失败:', error);
@@ -92,13 +138,27 @@ export class CacheManager {
    */
   static async setCachedMusicUrl(
     id: number,
+    song: SongResult,
     result: MusicParseResult,
     musicSources?: string[]
   ): Promise<void> {
     try {
+      const url = result.data?.data?.url;
+      if (song.source === 'kuwo' || isTemporaryPlaybackUrl(url)) {
+        // 根因：酷我等接口返回的是临时 CDN 直链，原 Android App 是每次点击现取，
+        // 不会把旧直链跨会话复用。桌面端之前把 URL 按数字 id 缓存 30 分钟，
+        // 当直链过期或不同平台 id 撞车时，就会反复加载旧地址并最终播放失败。
+        // 解决：临时直链只进入本次播放，不落 IndexedDB；稳定源才允许短期缓存。
+        console.log(`跳过临时播放URL缓存: ${id}`);
+        return;
+      }
+
+      const cacheKey = buildMusicCacheKey(id, song, musicSources);
       // 深度克隆数据，确保可以被 IndexedDB 存储
       await saveData('music_url_cache', {
-        id,
+        id: cacheKey,
+        songId: id,
+        source: song.source || 'netease',
         data: cloneDeep(result),
         musicSources: cloneDeep(musicSources || []),
         createTime: Date.now()
@@ -520,7 +580,7 @@ export class MusicParser {
 
       // 检查缓存（传入音源配置用于验证缓存有效性）
       console.log(`检查歌曲 ${id} 的缓存...`);
-      const cachedResult = await CacheManager.getCachedMusicUrl(id, musicSources);
+      const cachedResult = await CacheManager.getCachedMusicUrl(id, data, musicSources);
       if (cachedResult) {
         const endTime = performance.now();
         console.log(`✅ 命中缓存，歌曲 ${id}，耗时: ${(endTime - startTime).toFixed(2)}ms`);
@@ -572,7 +632,7 @@ export class MusicParser {
             );
 
             // 缓存成功结果（包含音源配置）
-            await CacheManager.setCachedMusicUrl(id, result, musicSources);
+            await CacheManager.setCachedMusicUrl(id, data, result, musicSources);
 
             return result;
           }
@@ -596,7 +656,7 @@ export class MusicParser {
       // 如果后备方案成功，也进行缓存
       if (result?.data?.data?.url) {
         console.log('后备方案成功，缓存结果');
-        await CacheManager.setCachedMusicUrl(id, result, []);
+        await CacheManager.setCachedMusicUrl(id, data, result, []);
       }
 
       return result;

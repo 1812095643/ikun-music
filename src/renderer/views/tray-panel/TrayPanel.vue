@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 
-import { usePlayerStore } from '@/store/modules/player';
 import type { SongResult } from '@/types/music';
 import { getImgUrl, secondToMinute } from '@/utils';
 
@@ -16,16 +15,34 @@ type TrayPanelState = {
   playListIndex: number;
   currentTime: number;
   duration: number;
+  theme: 'light' | 'dark';
+  updatedAt: number;
 };
 
-const playerStore = usePlayerStore();
 const nowTime = ref(0);
 const allTime = ref(0);
 const isDraggingProgress = ref(false);
 const dragProgress = ref(0);
+const pendingCommand = ref<string | null>(null);
 const previousVolume = ref(Number(localStorage.getItem('trayPreviousVolume') || '0.7'));
 const removeTrayPanelStateListener = ref<(() => void) | null>(null);
 const removeTrayPanelOpenedListener = ref<(() => void) | null>(null);
+
+const getInitialTheme = (): 'light' | 'dark' => {
+  const storedTheme = localStorage.getItem('theme');
+  return storedTheme === 'dark' ? 'dark' : 'light';
+};
+
+const blockingCommandActions = new Set([
+  'togglePlay',
+  'prevPlay',
+  'nextPlay',
+  'toggleFavorite',
+  'togglePlayMode',
+  'openLyric'
+]);
+
+const transportCommandActions = new Set(['togglePlay', 'prevPlay', 'nextPlay']);
 
 const externalState = reactive<TrayPanelState>({
   song: undefined,
@@ -37,28 +54,30 @@ const externalState = reactive<TrayPanelState>({
   playListCount: 0,
   playListIndex: 0,
   currentTime: 0,
-  duration: 0
+  duration: 0,
+  theme: getInitialTheme(),
+  updatedAt: 0
 });
 
-const currentSong = computed(() => {
-  return (externalState.song?.id ? externalState.song : playerStore.playMusic) as
-    | SongResult
-    | undefined;
-});
-
+const currentSong = computed(() => externalState.song as SongResult | undefined);
 const hasSong = computed(() => Boolean(currentSong.value?.id));
-const isPlaying = computed(() => Boolean(externalState.isPlaying || playerStore.play));
+const isPlaying = computed(() => Boolean(externalState.isPlaying));
+const isDarkTheme = computed(() => externalState.theme === 'dark');
+const isCommandPending = computed(() => Boolean(pendingCommand.value));
+const isTransportCommandPending = computed(
+  () => Boolean(pendingCommand.value) && transportCommandActions.has(pendingCommand.value as string)
+);
 const volume = computed(() => {
-  const currentVolume = Number.isFinite(externalState.volume)
-    ? externalState.volume
-    : playerStore.volume;
+  const currentVolume = Number.isFinite(externalState.volume) ? externalState.volume : 1;
   return Math.max(0, Math.min(1, currentVolume || 0));
 });
 const volumePercent = computed(() => Math.round(volume.value * 100));
 const isFavorite = computed(() => {
   const songId = currentSong.value?.id;
   if (!songId) return false;
-  return playerStore.favoriteList.includes(songId) || externalState.favoriteIds.includes(songId);
+  return (
+    externalState.favoriteIds.includes(songId) || externalState.favoriteIds.includes(Number(songId))
+  );
 });
 const coverUrl = computed(() => getImgUrl(currentSong.value?.picUrl, '160y160'));
 const artistText = computed(() => getArtistText(currentSong.value) || '未知歌手');
@@ -95,11 +114,8 @@ const playModeText = computed(() => {
   }
 });
 const playlistMeta = computed(() => {
-  const count = externalState.playListCount || playerStore.playList?.length || 0;
-  const index = Math.min(
-    Math.max((externalState.playListIndex || playerStore.playListIndex || 0) + 1, 1),
-    Math.max(count, 1)
-  );
+  const count = externalState.playListCount || 0;
+  const index = Math.min(Math.max((externalState.playListIndex || 0) + 1, 1), Math.max(count, 1));
   return count > 0 ? `${index} / ${count}` : '播放列表为空';
 });
 
@@ -139,20 +155,31 @@ const closeTrayPanel = () => {
 };
 
 const sendPanelCommand = (action: string, value?: number) => {
+  // 根因：托盘面板以前把 requestState、音量拖动、进度拖动都当作“需要等待回包”的命令，
+  // 第一次打开面板会被 requestState 锁住，用户马上点播放/拖音量就会被本地拦截，看起来像按钮失效。
+  // 解决：只有播放、切歌、收藏、播放模式、打开歌词这类离散动作进入等待态；连续控制直接发送给主窗口。
+  if (blockingCommandActions.has(action)) {
+    pendingCommand.value = action;
+  }
   window.api?.sendTrayPanelCommand?.({
     action,
     value
   });
+  if (!blockingCommandActions.has(action)) return;
+  window.setTimeout(() => {
+    if (pendingCommand.value === action) pendingCommand.value = null;
+  }, 1200);
 };
 
 const runPanelAction = (action: 'togglePlay' | 'prevPlay' | 'nextPlay' | 'toggleFavorite') => {
+  if (isCommandPending.value) return;
   if (!hasSong.value && action !== 'togglePlay') return;
   sendPanelCommand(action);
 };
 
 const handlePlayToggle = () => {
+  if (isCommandPending.value) return;
   if (!hasSong.value) return;
-  externalState.isPlaying = !externalState.isPlaying;
   sendPanelCommand('togglePlay');
 };
 
@@ -193,6 +220,7 @@ const handleProgressInput = (event: Event) => {
 };
 
 const handleProgressCommit = () => {
+  if (isTransportCommandPending.value) return;
   if (!hasSong.value || !allTime.value) return;
   isDraggingProgress.value = false;
   nowTime.value = dragProgress.value;
@@ -216,13 +244,14 @@ const enterMiniMode = () => {
 };
 
 const openLyricWindow = () => {
+  if (isCommandPending.value) return;
   if (!hasSong.value) return;
   sendPanelCommand('openLyric');
   closeTrayPanel();
 };
 
 const togglePlayMode = () => {
-  externalState.playMode = (externalState.playMode + 1) % 3;
+  if (isCommandPending.value) return;
   sendPanelCommand('togglePlayMode');
 };
 
@@ -248,6 +277,11 @@ const handlePanelState = (eventOrPayload: unknown, payload?: TrayPanelState) => 
   externalState.playListIndex = Number(state.playListIndex || 0);
   externalState.currentTime = Number(state.currentTime || 0);
   externalState.duration = Number(state.duration || 0);
+  externalState.theme = state.theme === 'dark' ? 'dark' : 'light';
+  externalState.updatedAt = Number(state.updatedAt || Date.now());
+  pendingCommand.value = null;
+  localStorage.setItem('theme', externalState.theme);
+  document.documentElement.classList.toggle('dark', externalState.theme === 'dark');
   syncProgressFromState();
 };
 
@@ -266,6 +300,7 @@ watch(
 
 onMounted(() => {
   document.documentElement.classList.add('tray-panel-root');
+  document.documentElement.classList.toggle('dark', externalState.theme === 'dark');
   syncProgressFromState();
   progressTimer = window.setInterval(syncProgressFromState, 500);
 
@@ -297,7 +332,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <main class="tray-panel-shell">
+  <main class="tray-panel-shell" :class="{ 'is-dark': isDarkTheme, 'is-light': !isDarkTheme }">
     <section class="tray-panel-card">
       <div class="tray-header">
         <div class="brand-mark">
@@ -337,7 +372,7 @@ onUnmounted(() => {
           max="100"
           step="0.1"
           :value="progressPercent"
-          :disabled="!hasSong || !allTime"
+          :disabled="!hasSong || !allTime || isTransportCommandPending"
           :style="{ '--range-value': `${progressPercent}%` }"
           @pointerdown="handleProgressStart"
           @input="handleProgressInput"
@@ -352,7 +387,7 @@ onUnmounted(() => {
       <div class="main-controls">
         <button
           class="icon-button"
-          :disabled="!hasSong"
+          :disabled="!hasSong || isCommandPending"
           title="上一首"
           @click="runPanelAction('prevPlay')"
         >
@@ -360,7 +395,7 @@ onUnmounted(() => {
         </button>
         <button
           class="play-button"
-          :disabled="!hasSong"
+          :disabled="!hasSong || isCommandPending"
           :title="isPlaying ? '暂停' : '播放'"
           @click="handlePlayToggle"
         >
@@ -368,7 +403,7 @@ onUnmounted(() => {
         </button>
         <button
           class="icon-button"
-          :disabled="!hasSong"
+          :disabled="!hasSong || isCommandPending"
           title="下一首"
           @click="runPanelAction('nextPlay')"
         >
@@ -380,18 +415,28 @@ onUnmounted(() => {
         <button
           class="quick-action"
           :class="{ active: isFavorite }"
-          :disabled="!hasSong"
+          :disabled="!hasSong || isCommandPending"
           title="收藏"
           @click="runPanelAction('toggleFavorite')"
         >
           <i :class="isFavorite ? 'ri-heart-3-fill' : 'ri-heart-3-line'"></i>
           <span>{{ isFavorite ? '已喜欢' : '喜欢' }}</span>
         </button>
-        <button class="quick-action" title="播放模式" @click="togglePlayMode">
+        <button
+          class="quick-action"
+          :disabled="isCommandPending"
+          title="播放模式"
+          @click="togglePlayMode"
+        >
           <i :class="playModeIcon"></i>
           <span>{{ playModeText }}</span>
         </button>
-        <button class="quick-action" :disabled="!hasSong" title="歌词" @click="openLyricWindow">
+        <button
+          class="quick-action"
+          :disabled="!hasSong || isCommandPending"
+          title="歌词"
+          @click="openLyricWindow"
+        >
           <i class="ri-netease-cloud-music-line"></i>
           <span>歌词</span>
         </button>
@@ -438,24 +483,72 @@ onUnmounted(() => {
 
 <style scoped>
 .tray-panel-shell {
+  --tray-bg: #f6f7f8;
+  --tray-card-bg:
+    radial-gradient(circle at 18% 8%, rgba(30, 207, 115, 0.1), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #f7f8fa 48%, #eef1f3 100%);
+  --tray-text: #151922;
+  --tray-muted: rgba(64, 70, 78, 0.62);
+  --tray-subtle: rgba(21, 25, 34, 0.07);
+  --tray-subtle-hover: rgba(21, 25, 34, 0.11);
+  --tray-border: rgba(21, 25, 34, 0.08);
+  --tray-thumb-border: #eef1f3;
+  --tray-panel-shadow: 0 18px 48px rgba(11, 17, 24, 0.16);
+  --tray-primary: #1ecf73;
+  --tray-primary-hover: #17bd66;
+  --tray-primary-text: #0d1d13;
+  --tray-primary-soft: #dff8e9;
+  --tray-primary-soft-hover: #ccf2dc;
+  --tray-danger: #ff637d;
+  --tray-danger-hover: #e65065;
+  --tray-danger-soft-hover: rgba(255, 99, 125, 0.12);
+  --tray-cover-bg: linear-gradient(135deg, #e4e8ec, #f7f9fa);
+  --tray-cover-shadow: 0 10px 22px rgba(11, 17, 24, 0.18);
+  --tray-cover-border: rgba(21, 25, 34, 0.08);
+  --tray-cover-playing-shadow: 0 14px 28px rgba(11, 17, 24, 0.2);
+  --tray-cover-fallback: rgba(21, 25, 34, 0.36);
+  --tray-thumb-bg: #ffffff;
+  --tray-thumb-shadow: 0 3px 10px rgba(11, 17, 24, 0.18);
+  --tray-primary-shadow: 0 12px 26px rgba(30, 207, 115, 0.26);
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  color: #f7faf8;
-  background: #101112;
+  color: var(--tray-text);
+  background: var(--tray-bg);
   font-family: 'Microsoft YaHei UI', 'Microsoft YaHei', system-ui, sans-serif;
   font-weight: 500;
+}
+
+.tray-panel-shell.is-dark {
+  --tray-bg: #101112;
+  --tray-card-bg:
+    radial-gradient(circle at 18% 8%, rgba(30, 207, 115, 0.18), transparent 34%),
+    linear-gradient(180deg, #2a2c2e 0%, #171819 48%, #121314 100%);
+  --tray-text: #f7faf8;
+  --tray-muted: rgba(247, 250, 248, 0.58);
+  --tray-subtle: rgba(255, 255, 255, 0.07);
+  --tray-subtle-hover: rgba(255, 255, 255, 0.13);
+  --tray-border: rgba(255, 255, 255, 0.08);
+  --tray-thumb-border: #121314;
+  --tray-panel-shadow: 0 18px 48px rgba(0, 0, 0, 0.38);
+  --tray-primary-hover: #32de84;
+  --tray-primary-soft: rgba(30, 207, 115, 0.17);
+  --tray-primary-soft-hover: rgba(30, 207, 115, 0.24);
+  --tray-cover-bg: linear-gradient(135deg, #3a3d3f, #171819);
+  --tray-cover-shadow: 0 10px 22px rgba(0, 0, 0, 0.34);
+  --tray-cover-border: rgba(255, 255, 255, 0.08);
+  --tray-cover-playing-shadow: 0 14px 28px rgba(0, 0, 0, 0.36);
+  --tray-cover-fallback: rgba(255, 255, 255, 0.55);
+  --tray-thumb-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
 }
 
 .tray-panel-card {
   width: 100%;
   height: 100%;
   padding: 14px;
-  background:
-    radial-gradient(circle at 18% 8%, rgba(30, 207, 115, 0.18), transparent 34%),
-    linear-gradient(180deg, #2a2c2e 0%, #171819 48%, #121314 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.38);
+  background: var(--tray-card-bg);
+  border: 1px solid var(--tray-border);
+  box-shadow: var(--tray-panel-shadow);
 }
 
 .tray-header,
@@ -477,7 +570,7 @@ onUnmounted(() => {
 
 .brand-mark {
   gap: 8px;
-  color: rgba(247, 250, 248, 0.82);
+  color: color-mix(in srgb, var(--tray-text) 82%, transparent);
   font-size: 13px;
 }
 
@@ -500,16 +593,16 @@ onUnmounted(() => {
   flex: 0 0 auto;
   overflow: hidden;
   border-radius: 10px;
-  background: linear-gradient(135deg, #3a3d3f, #171819);
+  background: var(--tray-cover-bg);
   box-shadow:
-    0 10px 22px rgba(0, 0, 0, 0.34),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    var(--tray-cover-shadow),
+    inset 0 0 0 1px var(--tray-cover-border);
 }
 
 .cover-wrap.playing {
   box-shadow:
     0 0 0 1px rgba(30, 207, 115, 0.36),
-    0 14px 28px rgba(0, 0, 0, 0.36);
+    var(--tray-cover-playing-shadow);
 }
 
 .cover-img,
@@ -527,7 +620,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--tray-cover-fallback);
   font-size: 34px;
 }
 
@@ -546,14 +639,14 @@ onUnmounted(() => {
 .song-title {
   max-width: 206px;
   margin-bottom: 8px;
-  color: #ffffff;
+  color: var(--tray-text);
   font-size: 17px;
   line-height: 1.25;
 }
 
 .song-artist {
   max-width: 206px;
-  color: rgba(247, 250, 248, 0.58);
+  color: var(--tray-muted);
   font-size: 12px;
 }
 
@@ -571,13 +664,13 @@ onUnmounted(() => {
   border-radius: 6px;
   display: inline-flex;
   align-items: center;
-  color: rgba(247, 250, 248, 0.64);
-  background: rgba(255, 255, 255, 0.07);
+  color: color-mix(in srgb, var(--tray-text) 64%, transparent);
+  background: var(--tray-subtle);
 }
 
 .status-pill.active {
-  color: #102016;
-  background: #1ecf73;
+  color: var(--tray-primary-text);
+  background: var(--tray-primary);
 }
 
 .progress-block {
@@ -604,10 +697,10 @@ onUnmounted(() => {
   border-radius: 999px;
   background: linear-gradient(
     90deg,
-    #1ecf73 0%,
-    #1ecf73 var(--range-value),
-    rgba(255, 255, 255, 0.14) var(--range-value),
-    rgba(255, 255, 255, 0.14) 100%
+    var(--tray-primary) 0%,
+    var(--tray-primary) var(--range-value),
+    color-mix(in srgb, var(--tray-text) 14%, transparent) var(--range-value),
+    color-mix(in srgb, var(--tray-text) 14%, transparent) 100%
   );
 }
 
@@ -616,17 +709,17 @@ onUnmounted(() => {
   height: 13px;
   margin-top: -4.5px;
   appearance: none;
-  border: 2px solid #121314;
+  border: 2px solid var(--tray-thumb-border);
   border-radius: 999px;
-  background: #ffffff;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  background: var(--tray-thumb-bg);
+  box-shadow: var(--tray-thumb-shadow);
 }
 
 .time-row {
   display: flex;
   justify-content: space-between;
   margin-top: 3px;
-  color: rgba(247, 250, 248, 0.5);
+  color: color-mix(in srgb, var(--tray-text) 50%, transparent);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
@@ -660,8 +753,8 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(247, 250, 248, 0.78);
+  background: var(--tray-subtle);
+  color: color-mix(in srgb, var(--tray-text) 78%, transparent);
   font-size: 20px;
 }
 
@@ -669,7 +762,7 @@ onUnmounted(() => {
   width: 30px;
   height: 30px;
   font-size: 17px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--tray-subtle);
 }
 
 .play-button {
@@ -679,22 +772,22 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #0d1d13;
-  background: #1ecf73;
+  color: var(--tray-primary-text);
+  background: var(--tray-primary);
   font-size: 30px;
-  box-shadow: 0 12px 26px rgba(30, 207, 115, 0.26);
+  box-shadow: var(--tray-primary-shadow);
 }
 
 .icon-button:hover,
 .quick-action:hover,
 .window-action:hover {
   transform: translateY(-1px);
-  background: rgba(255, 255, 255, 0.13);
+  background: var(--tray-subtle-hover);
 }
 
 .play-button:hover {
   transform: translateY(-1px) scale(1.02);
-  background: #32de84;
+  background: var(--tray-primary-hover);
 }
 
 button:disabled {
@@ -720,8 +813,8 @@ button:disabled:hover {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  color: rgba(247, 250, 248, 0.75);
-  background: rgba(255, 255, 255, 0.07);
+  color: color-mix(in srgb, var(--tray-text) 75%, transparent);
+  background: var(--tray-subtle);
   font-size: 12px;
 }
 
@@ -737,7 +830,7 @@ button:disabled:hover {
 }
 
 .quick-action.active {
-  color: #ff637d;
+  color: var(--tray-danger);
   background: rgba(255, 99, 125, 0.12);
 }
 
@@ -746,7 +839,7 @@ button:disabled:hover {
   margin-top: 12px;
   padding: 11px;
   border-radius: 9px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--tray-subtle);
 }
 
 .volume-range {
@@ -755,7 +848,7 @@ button:disabled:hover {
 
 .volume-text {
   width: 42px;
-  color: rgba(247, 250, 248, 0.68);
+  color: color-mix(in srgb, var(--tray-text) 68%, transparent);
   font-size: 12px;
   text-align: right;
   font-variant-numeric: tabular-nums;
@@ -775,8 +868,8 @@ button:disabled:hover {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  color: rgba(247, 250, 248, 0.74);
-  background: rgba(255, 255, 255, 0.07);
+  color: color-mix(in srgb, var(--tray-text) 74%, transparent);
+  background: var(--tray-subtle);
   font-size: 12px;
 }
 
@@ -785,16 +878,16 @@ button:disabled:hover {
 }
 
 .window-action.primary {
-  color: #102016;
-  background: #e8fff0;
+  color: var(--tray-primary-text);
+  background: var(--tray-primary-soft);
 }
 
 .window-action.primary:hover {
-  background: #ffffff;
+  background: var(--tray-primary-soft-hover);
 }
 
 .window-action.danger:hover {
-  color: #ff7b88;
-  background: rgba(255, 123, 136, 0.12);
+  color: var(--tray-danger-hover);
+  background: var(--tray-danger-soft-hover);
 }
 </style>
