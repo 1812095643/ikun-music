@@ -147,14 +147,45 @@ const parseLyricsString = async (
   }
 };
 
+const applyCurrentLyricData = async () => {
+  const lyricData = playMusic.value?.lyric;
+  if (lyricData && typeof lyricData === 'string') {
+    const {
+      lrcArray: parsedLrcArray,
+      lrcTimeArray: parsedTimeArray,
+      hasWordByWord
+    } = await parseLyricsString(lyricData);
+    lrcArray.value = parsedLrcArray;
+    lrcTimeArray.value = parsedTimeArray;
+
+    if (playMusic.value.lyric && typeof playMusic.value.lyric === 'object') {
+      playMusic.value.lyric.hasWordByWord = hasWordByWord;
+    }
+    return;
+  }
+
+  const rawLrc = lyricData?.lrcArray || [];
+  lrcTimeArray.value = lyricData?.lrcTimeArray || [];
+
+  try {
+    const { translateLyrics } = await import('@/services/lyricTranslation');
+    lrcArray.value = await translateLyrics(rawLrc as any);
+  } catch (e) {
+    console.error('翻译歌词失败，使用原始歌词：', e);
+    lrcArray.value = rawLrc as any;
+  }
+};
+
 // 设置音乐相关的监听器
 const setupMusicWatchers = () => {
   const store = getPlayerStore();
 
   // 监听 playerStore.playMusic 的变化以更新歌词数据
   watch(
-    () => store.playMusic.id,
-    async (newId, oldId) => {
+    () => [store.playMusic.id, store.playMusic.lyric] as const,
+    async (newValue, oldValue) => {
+      const [newId, newLyric] = newValue;
+      const [oldId, oldLyric] = oldValue || [];
       // 如果没有歌曲ID，清空歌词
       if (!newId) {
         lrcArray.value = [];
@@ -163,8 +194,11 @@ const setupMusicWatchers = () => {
         return;
       }
 
-      // 避免相同ID的重复执行(但允许初始化时执行)
-      if (newId === oldId && lrcArray.value.length > 0) return;
+      // 根因：播放器为了保证“点歌先出声”，歌词是在后台异步补齐的。
+      // 旧逻辑只监听歌曲 id，后台把 lyric 写回同一首歌时 id 不变，页面不会刷新，
+      // 表现为播放成功但歌词一直空。这里同时监听 lyric 引用，既保留切歌重置，
+      // 也保证候选歌词、用户手动切换歌词能立即同步到全屏歌词和桌面歌词窗口。
+      if (newId === oldId && newLyric === oldLyric && lrcArray.value.length > 0) return;
 
       // 歌曲切换时重置歌词索引
       if (newId !== oldId) {
@@ -174,35 +208,7 @@ const setupMusicWatchers = () => {
       await nextTick(async () => {
         console.log('歌曲切换，更新歌词数据');
 
-        // 检查是否有原始歌词字符串需要解析
-        const lyricData = playMusic.value.lyric;
-        if (lyricData && typeof lyricData === 'string') {
-          // 如果歌词是字符串格式，使用新的解析器
-          const {
-            lrcArray: parsedLrcArray,
-            lrcTimeArray: parsedTimeArray,
-            hasWordByWord
-          } = await parseLyricsString(lyricData);
-          lrcArray.value = parsedLrcArray;
-          lrcTimeArray.value = parsedTimeArray;
-
-          // 更新歌曲的歌词数据结构
-          if (playMusic.value.lyric && typeof playMusic.value.lyric === 'object') {
-            playMusic.value.lyric.hasWordByWord = hasWordByWord;
-          }
-        } else {
-          // 使用现有的歌词数据结构
-          const rawLrc = lyricData?.lrcArray || [];
-          lrcTimeArray.value = lyricData?.lrcTimeArray || [];
-
-          try {
-            const { translateLyrics } = await import('@/services/lyricTranslation');
-            lrcArray.value = await translateLyrics(rawLrc as any);
-          } catch (e) {
-            console.error('翻译歌词失败，使用原始歌词：', e);
-            lrcArray.value = rawLrc as any;
-          }
-        }
+        await applyCurrentLyricData();
         // 当歌词数据更新时，如果歌词窗口打开，则发送数据
         if (isElectron && isLyricWindowOpen.value) {
           console.log('歌词窗口已打开，同步最新歌词数据');

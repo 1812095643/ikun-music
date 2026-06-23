@@ -415,9 +415,11 @@ import { useRoute } from 'vue-router';
 
 import { getArtistAlbums, getArtistDetail, getArtistTopSongs } from '@/api/artist';
 import { getMusicDetail } from '@/api/music';
+import { getSearch } from '@/api/search';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
 import PlayBottom from '@/components/common/PlayBottom.vue';
 import SongItem from '@/components/common/SongItem.vue';
+import { SEARCH_TYPE } from '@/const/bar-const';
 import { useScrollTitle } from '@/hooks/useScrollTitle';
 import router from '@/router';
 import { usePlayerStore } from '@/store';
@@ -434,6 +436,16 @@ const playerStore = usePlayerStore();
 const message = useMessage();
 
 const artistId = computed(() => Number(route.params.id));
+const routeArtistKeyword = computed(() => {
+  const keyword = route.query.keyword;
+  return typeof keyword === 'string' ? keyword.trim() : '';
+});
+const isSearchPoweredArtistEntry = computed(
+  () => route.query.source === 'home-artist-search' && Boolean(routeArtistKeyword.value)
+);
+const artistSongSearchKeyword = computed(() =>
+  isSearchPoweredArtistEntry.value ? routeArtistKeyword.value : ''
+);
 const activeTab = ref('songs');
 
 const scrollbarRef = ref<any>(null);
@@ -478,14 +490,62 @@ const albumsLoadMoreRef = ref<HTMLElement | null>(null);
 let songsObserver: IntersectionObserver | null = null;
 let albumsObserver: IntersectionObserver | null = null;
 
-// 添加上一个ID的引用，用于比较
+// 添加上一个路由签名的引用，用于比较歌手 ID 和首页搜索入口关键词是否变化
 const previousId = ref<string | null>(null);
 
-// 简化缓存机制
+// 简化缓存机制：首页搜索入口和普通入口的歌曲来源不同，缓存键必须隔离
 const artistDataCache = new Map();
 
 // 单个缓存键函数
-const getCacheKey = (id: string | number) => `artist_${id}`;
+const getCacheKey = (id: string | number) =>
+  `artist_${id}_${artistSongSearchKeyword.value || 'native'}`;
+
+const getCurrentArtistRouteKey = () =>
+  `${route.params.id || ''}_${artistSongSearchKeyword.value || 'native'}`;
+
+const normalizeArtistSearchText = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/[《》<>「」『』"'“”‘’()[\]（）【】\-_.·]/g, '');
+
+const getSongArtists = (song: any) => song.ar || song.artists || song.song?.artists || [];
+
+const formatSearchSong = (item: any) => {
+  const artists = getSongArtists(item);
+  const album = item.al || item.album || { id: 0, name: '酷我音乐', picUrl: item.picUrl || '' };
+
+  return {
+    ...item,
+    ar: artists,
+    artists,
+    al: album,
+    album,
+    picUrl: album.picUrl || item.picUrl || '',
+    song: {
+      ...(item.song || {}),
+      artists,
+      name: item.name,
+      id: item.id
+    },
+    source: item.source || 'netease'
+  };
+};
+
+const filterSongsByArtistKeyword = (songList: any[], keyword: string) => {
+  const normalizedKeyword = normalizeArtistSearchText(keyword);
+  if (!normalizedKeyword) return songList;
+
+  const matchedSongs = songList.filter((song) => {
+    const artists = getSongArtists(song);
+    return artists.some((artist: any) => {
+      const artistName = normalizeArtistSearchText(artist?.name || '');
+      return artistName.includes(normalizedKeyword) || normalizedKeyword.includes(artistName);
+    });
+  });
+
+  return matchedSongs.length > 0 ? matchedSongs : songList;
+};
 
 // 搜索和布局相关
 const searchKeyword = ref('');
@@ -584,6 +644,27 @@ const loadSongs = async () => {
   try {
     songLoading.value = true;
     const { page, pageSize } = songPage.value;
+
+    if (artistSongSearchKeyword.value) {
+      const { data } = await getSearch({
+        keywords: artistSongSearchKeyword.value,
+        type: SEARCH_TYPE.MUSIC,
+        limit: pageSize,
+        offset: (page - 1) * pageSize
+      });
+      const searchSongs = (data?.result?.songs || []).map(formatSearchSong);
+      const matchedSongs = filterSongsByArtistKeyword(searchSongs, artistSongSearchKeyword.value);
+
+      // 根因：首页歌手点击进入详情页后，页面仍直接调用歌手热门歌曲接口，
+      // 这会绕过“酷我优先搜索三次重试”的稳定链路，用户在歌手详情里点播放仍可能无声。
+      // 解决思路：只对首页歌手搜索入口启用这条路径，先用歌手名执行单曲搜索，
+      // getSearch(type=单曲) 会优先走酷我并在三次失败后回退本地后端；然后把结果仍展示在歌手详情页。
+      songs.value = page === 1 ? matchedSongs : [...songs.value, ...matchedSongs];
+      songPage.value.hasMore = searchSongs.length === pageSize;
+      songPage.value.page++;
+      return;
+    }
+
     const res = await getArtistTopSongs({
       id: artistId.value,
       limit: pageSize,
@@ -856,20 +937,34 @@ watch(searchKeyword, () => {
   });
 });
 
+watch(
+  () => getCurrentArtistRouteKey(),
+  (currentRouteKey) => {
+    if (route.name !== 'artistDetail' || !currentRouteKey || previousId.value === currentRouteKey) {
+      return;
+    }
+
+    previousId.value = currentRouteKey;
+    activeTab.value = 'songs';
+    loadArtistInfo();
+    setupObservers();
+  }
+);
+
 onActivated(() => {
   // 确保当前路由是艺术家详情页
   if (route.name === 'artistDetail') {
-    const currentId = route.params.id as string;
+    const currentRouteKey = getCurrentArtistRouteKey();
 
     // 滚动到顶部
     nextTick(() => {
       scrollbarRef.value?.scrollTo(0, 0);
     });
 
-    // 首次加载或ID变化时加载数据
-    if (!previousId.value || previousId.value !== currentId) {
-      console.log('ID已变化，加载新数据');
-      previousId.value = currentId;
+    // 首次加载、ID 变化或首页搜索入口关键词变化时加载数据
+    if (!previousId.value || previousId.value !== currentRouteKey) {
+      console.log('歌手路由签名已变化，加载新数据');
+      previousId.value = currentRouteKey;
       activeTab.value = 'songs';
       loadArtistInfo();
     }
@@ -882,7 +977,7 @@ onActivated(() => {
 onMounted(() => {
   // 首次挂载时加载数据
   if (route.params.id) {
-    previousId.value = route.params.id as string;
+    previousId.value = getCurrentArtistRouteKey();
     loadArtistInfo();
     setupObservers();
   }

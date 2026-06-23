@@ -400,7 +400,7 @@ export const useSongUrl = () => {
 /**
  * 使用新的yrcParser解析歌词（独立函数）
  */
-const parseLyrics = (lyricsString: string): { lyrics: ILyricText[]; times: number[] } => {
+export const parseRawLyrics = (lyricsString: string): { lyrics: ILyricText[]; times: number[] } => {
   if (!lyricsString || typeof lyricsString !== 'string') {
     return { lyrics: [], times: [] };
   }
@@ -469,7 +469,7 @@ export const loadLrc = async (id: string | number): Promise<ILyric> => {
     }
 
     const data = lyricData ?? {};
-    const { lyrics, times } = parseLyrics(data?.yrc?.lyric || data?.lrc?.lyric);
+    const { lyrics, times } = parseRawLyrics(data?.yrc?.lyric || data?.lrc?.lyric);
 
     // 检查是否有逐字歌词
     let hasWordByWord = false;
@@ -481,7 +481,7 @@ export const loadLrc = async (id: string | number): Promise<ILyric> => {
     }
 
     if (data.tlyric && data.tlyric.lyric) {
-      const { lyrics: tLyrics } = parseLyrics(data.tlyric.lyric);
+      const { lyrics: tLyrics } = parseRawLyrics(data.tlyric.lyric);
 
       // 按索引顺序一一对应翻译歌词
       if (tLyrics.length === lyrics.length) {
@@ -548,7 +548,7 @@ export const loadLrc = async (id: string | number): Promise<ILyric> => {
  * useLyrics hook（兼容旧代码）
  */
 export const useLyrics = () => {
-  return { loadLrc, parseLyrics };
+  return { loadLrc, parseLyrics: parseRawLyrics };
 };
 
 /**

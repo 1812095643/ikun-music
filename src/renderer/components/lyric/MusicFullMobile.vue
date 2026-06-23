@@ -50,6 +50,22 @@
         </div>
       </div>
 
+      <n-popover trigger="click" placement="bottom" raw>
+        <template #trigger>
+          <div class="control-btn lyric-source-mobile absolute right-16">
+            <i class="ri-file-list-3-line" :class="{ spinning: lyricStore.loading }"></i>
+          </div>
+        </template>
+        <lyric-source-selector
+          :candidates="lyricStore.candidates"
+          :active-key="lyricStore.activeCandidateKey"
+          :loading="lyricStore.loading"
+          :error-message="lyricStore.errorMessage"
+          @select="handleSelectLyricCandidate"
+          @refresh="handleRefreshLyricCandidates"
+        />
+      </n-popover>
+
       <!-- 播放设置弹窗 -->
       <mobile-player-settings v-model:visible="showPlayerSettings" />
 
@@ -393,6 +409,7 @@ import { useWindowSize } from '@vueuse/core';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import LyricSourceSelector from '@/components/lyric/LyricSourceSelector.vue';
 import MobilePlayerSettings from '@/components/player/MobilePlayerSettings.vue';
 import {
   allTime,
@@ -409,6 +426,8 @@ import {
 } from '@/hooks/MusicHook';
 import { useArtist } from '@/hooks/useArtist';
 import { usePlayMode } from '@/hooks/usePlayMode';
+import { loadLyricCandidates } from '@/services/lyricCandidateService';
+import { useLyricStore } from '@/store/modules/lyric';
 import { usePlayerStore } from '@/store/modules/player';
 import { DEFAULT_LYRIC_CONFIG, LyricConfig } from '@/types/lyric';
 import { getImgUrl, secondToMinute } from '@/utils';
@@ -417,6 +436,7 @@ import { showBottomToast } from '@/utils/shortcutToast';
 
 const { t } = useI18n();
 const playerStore = usePlayerStore();
+const lyricStore = useLyricStore();
 
 // 播放控制相关
 const play = computed(() => playerStore.isPlay);
@@ -488,6 +508,43 @@ const toggleFavorite = () => {
     playerStore.removeFromFavorite(playMusic.value.id as number);
   } else {
     playerStore.addToFavorite(playMusic.value.id as number);
+  }
+};
+
+const handleSelectLyricCandidate = (key: string) => {
+  const candidate = lyricStore.selectCandidate(key);
+  if (!candidate) return;
+  playerStore.playMusic = {
+    ...playerStore.playMusic,
+    lyric: candidate.lyric
+  };
+  nextTick(() => {
+    if (showFullLyrics.value) {
+      scrollToCurrentLyric(true);
+    } else if (isLandscape.value) {
+      scrollToCurrentLyric(true, landscapeLyricsRef.value);
+    }
+  });
+};
+
+const handleRefreshLyricCandidates = async () => {
+  if (!playerStore.playMusic?.id || lyricStore.loading) return;
+  lyricStore.setLoading(true);
+  lyricStore.setErrorMessage('');
+  try {
+    const result = await loadLyricCandidates({ ...playerStore.playMusic });
+    lyricStore.setCandidateResult(result);
+    if (result.activeCandidate) {
+      playerStore.playMusic = {
+        ...playerStore.playMusic,
+        lyric: result.activeCandidate.lyric
+      };
+    }
+  } catch (error) {
+    console.warn('手动刷新歌词候选失败:', error);
+    lyricStore.setErrorMessage('歌词暂时没匹配到，可以稍后再试');
+  } finally {
+    lyricStore.setLoading(false);
   }
 };
 
@@ -1902,6 +1959,14 @@ const getWordStyle = (lineIndex: number, _wordIndex: number, word: any) => {
       opacity: 1;
     }
   }
+}
+
+.lyric-source-mobile {
+  right: 64px;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
 }
 
 #mobile-drawer-target {

@@ -5,8 +5,9 @@ import { computed, ref } from 'vue';
 
 import i18n from '@/../i18n/renderer';
 import { getParsingMusicUrl } from '@/api/music';
-import { useLyrics, useSongDetail } from '@/hooks/usePlayerHooks';
+import { useSongDetail } from '@/hooks/usePlayerHooks';
 import { audioService } from '@/services/audioService';
+import { loadLyricCandidates } from '@/services/lyricCandidateService';
 import { playbackRequestManager } from '@/services/playbackRequestManager';
 import { preloadService } from '@/services/preloadService';
 import { SongSourceConfigManager } from '@/services/SongSourceConfigManager';
@@ -15,6 +16,7 @@ import type { Platform, SongResult } from '@/types/music';
 import { getImgUrl } from '@/utils';
 import { getImageLinearBackground } from '@/utils/linearColor';
 
+import { useLyricStore } from './lyric';
 import { usePlayHistoryStore } from './playHistory';
 
 const { message } = createDiscreteApi(['message']);
@@ -270,8 +272,10 @@ export const usePlayerCoreStore = defineStore(
 
       const originalMusic = { ...music };
 
-      const { loadLrc } = useLyrics();
       const { getSongDetail } = useSongDetail();
+      const lyricStore = useLyricStore();
+      lyricStore.clearCandidates();
+      lyricStore.setLoading(true);
 
       // 根因：播放前同步等待歌词接口和封面取色，会把本来毫秒级的酷我直链播放拖慢，
       // 甚至在歌词/图片接口不稳定时让用户感觉“点了没反应”。这里先进入播放链路，
@@ -340,26 +344,49 @@ export const usePlayerCoreStore = defineStore(
           console.warn('预加载触发失败（可能是依赖未加载或循环依赖），已忽略:', e);
         }
 
-        void Promise.all([
-          music.lyric?.lrcTimeArray?.length ? Promise.resolve(music.lyric) : loadLrc(music.id),
+        const lyricSearchSong = cloneDeep(updatedPlayMusic);
+        void loadLyricCandidates(lyricSearchSong)
+          .then((result) => {
+            if (!playbackRequestManager.isRequestValid(requestId)) return;
+            lyricStore.setCandidateResult(result);
+            playMusic.value = {
+              ...playMusic.value,
+              lyric: result.activeCandidate?.lyric
+            };
+          })
+          .catch((error) => {
+            if (!playbackRequestManager.isRequestValid(requestId)) return;
+            console.warn('后台搜索歌词候选失败，已保留播放链路。', error);
+            lyricStore.setErrorMessage('歌词暂时没匹配到，可以稍后再试');
+            playMusic.value = {
+              ...playMusic.value,
+              lyric: { lrcTimeArray: [], lrcArray: [], hasWordByWord: false }
+            };
+          })
+          .finally(() => {
+            if (playbackRequestManager.isRequestValid(requestId)) {
+              lyricStore.setLoading(false);
+            }
+          });
+
+        void (
           music.backgroundColor && music.primaryColor
             ? Promise.resolve({
                 backgroundColor: music.backgroundColor,
                 primaryColor: music.primaryColor
               })
             : getImageLinearBackground(getImgUrl(music?.picUrl, '30y30'))
-        ])
-          .then(([lyrics, colors]) => {
+        )
+          .then((colors) => {
             if (!playbackRequestManager.isRequestValid(requestId)) return;
             playMusic.value = {
               ...playMusic.value,
-              lyric: lyrics,
               backgroundColor: colors.backgroundColor,
               primaryColor: colors.primaryColor
             };
           })
-          .catch((error) => {
-            console.warn('后台加载歌词或主题色失败，已跳过:', error);
+          .catch((error: unknown) => {
+            console.warn('后台加载主题色失败，已跳过:', error);
           });
 
         try {
@@ -381,6 +408,8 @@ export const usePlayerCoreStore = defineStore(
         }
       } catch (error) {
         console.error('处理播放音乐失败:', error);
+        lyricStore.setLoading(false);
+        lyricStore.setErrorMessage('歌词暂时没匹配到，可以稍后再试');
         message.error(i18n.global.t('player.playFailed'));
         if (playMusic.value) {
           playMusic.value.playLoading = false;

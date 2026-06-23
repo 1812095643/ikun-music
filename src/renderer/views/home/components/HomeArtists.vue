@@ -26,7 +26,7 @@
           v-for="item in artists"
           :key="item.id"
           class="artist-item group flex flex-shrink-0 snap-start flex-col items-center gap-3 md:gap-4 cursor-pointer"
-          @click="navigateToArtist(item.id)"
+          @click="searchArtist(item)"
         >
           <!-- Artist Avatar -->
           <div
@@ -68,22 +68,133 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 import { getHotSinger } from '@/api/home';
-import { useArtist } from '@/hooks/useArtist';
+import { getSearch } from '@/api/search';
+import { SEARCH_TYPE } from '@/const/bar-const';
+import { useSearchStore } from '@/store/modules/search';
 import { getImgUrl, isMobile } from '@/utils';
+
+type ArtistItem = {
+  id: number | string;
+  name: string;
+  picUrl?: string;
+};
+
+type SearchHistoryItem = {
+  keyword: string;
+  type: number;
+};
 
 const props = defineProps<{
   title: string;
   limit?: number;
 }>();
 
-const { navigateToArtist } = useArtist();
-const artists = ref<any[]>([]);
+const router = useRouter();
+const searchStore = useSearchStore();
+const artists = ref<ArtistItem[]>([]);
 const loading = ref(true);
 const scrollContainer = ref<HTMLElement | null>(null);
 const showLeftFade = ref(false);
 const showRightFade = ref(false);
+const SEARCH_HISTORY_KEY = 'searchHistory';
+const MAX_SEARCH_HISTORY = 20;
+
+const parseSearchHistory = (rawHistory: string | null): SearchHistoryItem[] => {
+  if (!rawHistory) return [];
+
+  try {
+    const history = JSON.parse(rawHistory);
+    if (!Array.isArray(history)) return [];
+
+    return history
+      .map((item): SearchHistoryItem | null => {
+        if (typeof item === 'string') {
+          return { keyword: item, type: SEARCH_TYPE.MUSIC };
+        }
+        if (!item || typeof item !== 'object') return null;
+
+        const record = item as Record<string, unknown>;
+        if (typeof record.keyword !== 'string') return null;
+
+        return {
+          keyword: record.keyword,
+          type: typeof record.type === 'number' ? record.type : SEARCH_TYPE.MUSIC
+        };
+      })
+      .filter((item): item is SearchHistoryItem => Boolean(item?.keyword.trim()));
+  } catch (error) {
+    console.error('解析搜索历史失败:', error);
+    return [];
+  }
+};
+
+const saveSearchHistory = (keyword: string, type: number) => {
+  const normalizedKeyword = keyword.trim();
+  if (!normalizedKeyword) return;
+
+  const history = parseSearchHistory(localStorage.getItem(SEARCH_HISTORY_KEY)).filter(
+    (item) => item.keyword !== normalizedKeyword
+  );
+  history.unshift({ keyword: normalizedKeyword, type });
+
+  localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history.slice(0, MAX_SEARCH_HISTORY)));
+};
+
+const getNormalizedText = (value: string) => value.trim().toLowerCase();
+
+const findMatchedArtistId = async (keyword: string, fallbackId: number | string) => {
+  try {
+    const { data } = await getSearch({
+      keywords: keyword,
+      type: SEARCH_TYPE.ARTIST,
+      limit: 10,
+      offset: 0
+    });
+    const artists = data?.result?.artists || [];
+    if (!Array.isArray(artists) || artists.length === 0) return fallbackId;
+
+    const normalizedKeyword = getNormalizedText(keyword);
+    const exactArtist =
+      artists.find((artist: any) => getNormalizedText(artist?.name || '') === normalizedKeyword) ||
+      artists[0];
+
+    return exactArtist?.id || fallbackId;
+  } catch (error) {
+    console.warn('歌手搜索定位失败，已使用首页原始歌手 ID 进入详情页。', error);
+    return fallbackId;
+  }
+};
+
+const searchArtist = async (item: ArtistItem) => {
+  const keyword = item.name?.trim();
+  if (!keyword) return;
+
+  // 根因：首页歌手点击必须进入歌手详情页，但直接使用热门歌手接口给的 ID 时，
+  // 详情页歌曲列表可能仍走原始歌手歌曲接口，播放时不一定优先命中已经加固过的酷我链路；
+  // 上一版误跳到单曲搜索页，虽然能走酷我优先播放链路，却破坏了“进入对应歌手详情”的用户路径。
+  // 解决思路：点击时先复用现有搜索功能按歌手名做一次“歌手分类搜索”，用搜索返回的
+  // 最匹配歌手 ID 进入详情页；若搜索接口不可用，则回退首页原始 ID，保证用户点击不断路。
+  // 搜索框状态和历史仍保持“单曲搜索”，让用户后续继续搜索/播放时默认走酷我优先策略。
+  const searchType = SEARCH_TYPE.MUSIC;
+  saveSearchHistory(keyword, searchType);
+  searchStore.searchValue = keyword;
+  searchStore.searchType = searchType;
+  const targetArtistId = await findMatchedArtistId(keyword, item.id);
+
+  router.push({
+    name: 'artistDetail',
+    params: {
+      id: targetArtistId
+    },
+    query: {
+      keyword,
+      source: 'home-artist-search'
+    }
+  });
+};
 
 const fetchArtists = async () => {
   try {

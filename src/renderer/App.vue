@@ -39,7 +39,7 @@ import type { Artist, SongResult } from '@/types/music';
 import { isElectron, isLyricWindow } from '@/utils';
 import { checkLoginStatus } from '@/utils/auth';
 
-import { initAudioListeners, initMusicHook } from './hooks/MusicHook';
+import { allTime, initAudioListeners, initMusicHook, nowTime, openLyric } from './hooks/MusicHook';
 import { audioService } from './services/audioService';
 import { initLxMusicRunner } from './services/LxMusicSourceRunner';
 import { isMobile } from './utils';
@@ -53,7 +53,11 @@ const userStore = useUserStore();
 const router = useRouter();
 
 const showSplash = ref(true);
+const isTrayPanelWindow = computed(() => window.location.hash.includes('tray-panel'));
 let removeTrayControlListener: (() => void) | null = null;
+let removeTrayPanelOpenedListener: (() => void) | null = null;
+let removeTrayPanelCommandListener: (() => void) | null = null;
+let trayPanelStateTimer: number | null = null;
 
 const getArtistText = (song: SongResult | Record<string, any> | null | undefined) => {
   const artistGroups = [
@@ -86,7 +90,12 @@ const getTrayVolume = () => {
  * 解决思路：把播放器 Pinia 状态作为唯一真源，主窗口每次播放/歌曲/音量变化时主动刷新托盘菜单文案。
  */
 const syncTrayState = () => {
-  if (!isElectron || isLyricWindow.value || !window.api?.updateTrayState) {
+  if (
+    !isElectron ||
+    isLyricWindow.value ||
+    isTrayPanelWindow.value ||
+    !window.api?.updateTrayState
+  ) {
     return;
   }
 
@@ -136,6 +145,82 @@ const handleTrayControl = async (action: string) => {
   }
 };
 
+const broadcastTrayPanelState = () => {
+  if (
+    !isElectron ||
+    isLyricWindow.value ||
+    isTrayPanelWindow.value ||
+    !window.electron?.ipcRenderer
+  ) {
+    return;
+  }
+
+  const song = playerStore.playMusic as SongResult | undefined;
+  const currentSound = audioService.getCurrentSound();
+  const currentTime = currentSound ? Number(currentSound.seek() || 0) : nowTime.value || 0;
+  const duration = currentSound ? Number(currentSound.duration() || 0) : allTime.value || 0;
+  window.electron.ipcRenderer.send('tray-panel-state', {
+    song,
+    isPlaying: Boolean(playerStore.play),
+    volume: getTrayVolume(),
+    muted: getTrayVolume() <= 0,
+    favoriteIds: playerStore.favoriteList,
+    playMode: playerStore.playMode,
+    playListCount: playerStore.playList?.length || 0,
+    playListIndex: playerStore.playListIndex || 0,
+    currentTime: Number.isFinite(currentTime) ? currentTime : 0,
+    duration: Number.isFinite(duration) ? duration : 0
+  });
+};
+
+const handleTrayPanelCommand = async (payload: any) => {
+  const action = typeof payload === 'string' ? payload : payload?.action;
+  if (!action) return;
+
+  switch (action) {
+    case 'setVolume': {
+      const nextVolume = Number(payload?.value);
+      if (Number.isFinite(nextVolume)) {
+        playerStore.setVolume(Math.max(0, Math.min(1, nextVolume)));
+      }
+      break;
+    }
+    case 'seek': {
+      const nextTime = Number(payload?.value);
+      if (Number.isFinite(nextTime) && nextTime >= 0) {
+        audioService.seek(nextTime);
+        nowTime.value = nextTime;
+      }
+      break;
+    }
+    case 'toggleMute':
+      toggleTrayMute();
+      break;
+    case 'togglePlay':
+      if (playerStore.play) {
+        await playerStore.handlePause();
+      } else if (playerStore.playMusic?.id) {
+        await playerStore.setPlay({ ...playerStore.playMusic });
+      }
+      break;
+    case 'togglePlayMode':
+      playerStore.togglePlayMode();
+      break;
+    case 'openLyric':
+      openLyric();
+      break;
+    case 'prevPlay':
+    case 'nextPlay':
+    case 'toggleFavorite':
+      await handleShortcutAction(action);
+      break;
+    default:
+      break;
+  }
+
+  broadcastTrayPanelState();
+};
+
 // 监听语言变化
 watch(
   () => settingsStore.setData.language,
@@ -171,7 +256,7 @@ const handleSetLanguage = (value: string) => {
   }
 };
 
-if (!isLyricWindow.value) {
+if (!isLyricWindow.value && !isTrayPanelWindow.value) {
   settingsStore.initializeSettings();
   settingsStore.initializeTheme();
   settingsStore.initializeSystemFonts();
@@ -191,7 +276,7 @@ if (!isLyricWindow.value) {
 handleSetLanguage(settingsStore.setData.language);
 
 // 监听迷你模式状态
-if (isElectron && window.api && window.electron?.ipcRenderer) {
+if (isElectron && !isTrayPanelWindow.value && window.api && window.electron?.ipcRenderer) {
   window.api.onLanguageChanged(handleSetLanguage);
   window.electron.ipcRenderer.on('mini-mode', (_, value) => {
     settingsStore.setMiniMode(value);
@@ -212,10 +297,27 @@ if (isElectron && window.api && window.electron?.ipcRenderer) {
   });
 }
 
-if (isElectron && !isLyricWindow.value && window.api?.onTrayControl) {
+if (isElectron && !isLyricWindow.value && !isTrayPanelWindow.value && window.api?.onTrayControl) {
   removeTrayControlListener = window.api.onTrayControl((action) => {
     void handleTrayControl(action);
   });
+}
+
+if (
+  isElectron &&
+  !isLyricWindow.value &&
+  !isTrayPanelWindow.value &&
+  window.electron?.ipcRenderer
+) {
+  removeTrayPanelOpenedListener = window.electron.ipcRenderer.on('tray-panel-opened', () => {
+    broadcastTrayPanelState();
+  });
+  removeTrayPanelCommandListener = window.electron.ipcRenderer.on(
+    'tray-panel-command',
+    (_, payload) => {
+      void handleTrayPanelCommand(payload);
+    }
+  );
 }
 
 watch(
@@ -228,22 +330,34 @@ watch(
     playerStore.playMusic?.song?.artists,
     playerStore.volume
   ],
-  () => syncTrayState(),
+  () => {
+    syncTrayState();
+    broadcastTrayPanelState();
+  },
   { immediate: true, deep: true }
 );
 
 // 使用应用内快捷键
-useAppShortcuts();
+if (!isTrayPanelWindow.value) {
+  useAppShortcuts();
+}
 
 onMounted(async () => {
   setTimeout(() => {
     showSplash.value = false;
   }, 1500);
 
+  if (isTrayPanelWindow.value) {
+    showSplash.value = false;
+    return;
+  }
+
   playerStore.setIsPlay(false);
   if (isLyricWindow.value) {
     return;
   }
+
+  trayPanelStateTimer = window.setInterval(broadcastTrayPanelState, 500);
 
   // 检查网络状态，离线时自动跳转到本地音乐页面
   if (!navigator.onLine) {
@@ -296,6 +410,14 @@ onMounted(async () => {
 onUnmounted(() => {
   removeTrayControlListener?.();
   removeTrayControlListener = null;
+  removeTrayPanelOpenedListener?.();
+  removeTrayPanelOpenedListener = null;
+  removeTrayPanelCommandListener?.();
+  removeTrayPanelCommandListener = null;
+  if (trayPanelStateTimer) {
+    window.clearInterval(trayPanelStateTimer);
+    trayPanelStateTimer = null;
+  }
 });
 </script>
 

@@ -42,6 +42,27 @@ export interface ILyric {
   hasWordByWord?: boolean;
 }
 
+export type LyricCandidateSource = 'embedded' | 'current' | 'kuwo' | 'kugou' | 'netease';
+
+export interface LyricCandidate {
+  key: string;
+  source: LyricCandidateSource;
+  sourceLabel: string;
+  songId: string | number;
+  title: string;
+  artist: string;
+  album?: string;
+  duration?: number;
+  score: number;
+  lyric: ILyric;
+  isBest?: boolean;
+}
+
+export interface LyricCandidateResult {
+  candidates: LyricCandidate[];
+  activeCandidate: LyricCandidate | null;
+}
+
 export interface SongResult {
   id: string | number;
   name: string;

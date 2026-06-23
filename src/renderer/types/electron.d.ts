@@ -9,6 +9,11 @@ type TrayStatePayload = {
   muted: boolean;
 };
 
+type TrayPanelCommandPayload = {
+  action: string;
+  value?: number;
+};
+
 export interface IElectronAPI {
   minimize: () => void;
   maximize: () => void;
@@ -17,6 +22,7 @@ export interface IElectronAPI {
   miniTray: () => void;
   miniWindow: () => void;
   restore: () => void;
+  hideTrayPanel: () => void;
   restart: () => void;
   resizeWindow: (_width: number, _height: number) => void;
   resizeMiniWindow: (_showPlaylist: boolean) => void;
@@ -31,6 +37,7 @@ export interface IElectronAPI {
   onLanguageChanged: (_callback: (_locale: string) => void) => void;
   updateTrayState: (_state: TrayStatePayload) => void;
   onTrayControl: (_callback: (_action: string) => void) => () => void;
+  sendTrayPanelCommand?: (_payload: TrayPanelCommandPayload) => void;
   invoke: (_channel: string, ..._args: any[]) => Promise<any>;
   getSearchSuggestions: (_keyword: string) => Promise<any>;
   lxMusicHttpRequest: (_request: any) => Promise<any>;

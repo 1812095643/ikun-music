@@ -51,6 +51,7 @@ const api = {
     });
   },
   updateTrayState: (state) => ipcRenderer.send('update-tray-state', state),
+  sendTrayPanelCommand: (payload) => ipcRenderer.send('tray-panel-command', payload),
   onTrayControl: (callback: (action: string) => void) => {
     const wrappedListener = (_event: IpcRendererEvent, payload: any) => {
       const action = typeof payload === 'string' ? payload : payload?.action;

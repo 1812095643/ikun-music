@@ -11,11 +11,10 @@ use zip::ZipArchive;
 
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
-use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{
-    AppHandle, Emitter, LogicalPosition, LogicalSize, Manager, Position, Runtime, Size,
-    WebviewWindow,
+    AppHandle, Emitter, LogicalPosition, LogicalSize, Manager, PhysicalPosition, Position,
+    Size, WebviewUrl, WebviewWindow, WebviewWindowBuilder, WindowEvent,
 };
 
 struct MusicApiChild {
@@ -29,18 +28,8 @@ struct MusicApiProcess(Mutex<Option<MusicApiChild>>);
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 const MAIN_WINDOW_LABEL: &str = "main";
+const TRAY_PANEL_WINDOW_LABEL: &str = "tray-panel";
 const TRAY_ID: &str = "ikun-music-tray";
-const TRAY_MENU_CURRENT_SONG: &str = "tray_current_song";
-const TRAY_MENU_PLAY_TOGGLE: &str = "tray_play_toggle";
-const TRAY_MENU_PREV: &str = "tray_prev";
-const TRAY_MENU_NEXT: &str = "tray_next";
-const TRAY_MENU_VOLUME_LABEL: &str = "tray_volume_label";
-const TRAY_MENU_VOLUME_UP: &str = "tray_volume_up";
-const TRAY_MENU_VOLUME_DOWN: &str = "tray_volume_down";
-const TRAY_MENU_MUTE_TOGGLE: &str = "tray_mute_toggle";
-const TRAY_MENU_SHOW: &str = "show";
-const TRAY_MENU_MINI: &str = "mini";
-const TRAY_MENU_QUIT: &str = "quit";
 const NORMAL_WINDOW_WIDTH: f64 = 1280.0;
 const NORMAL_WINDOW_HEIGHT: f64 = 840.0;
 const MINI_WINDOW_WIDTH: f64 = 360.0;
@@ -48,6 +37,9 @@ const MINI_WINDOW_HEIGHT: f64 = 120.0;
 const MINI_PLAYLIST_WINDOW_WIDTH: f64 = 420.0;
 const MINI_PLAYLIST_WINDOW_HEIGHT: f64 = 620.0;
 const MINI_WINDOW_MARGIN: f64 = 20.0;
+const TRAY_PANEL_WIDTH: f64 = 336.0;
+const TRAY_PANEL_HEIGHT: f64 = 438.0;
+const TRAY_PANEL_MARGIN: f64 = 12.0;
 const EMBEDDED_MUSIC_API_RUNTIME: &[u8] =
     include_bytes!("../embedded-runtime/music-api-runtime.zip");
 
@@ -353,8 +345,103 @@ fn show_main_window(app: &AppHandle) -> Result<(), String> {
     show_normal_window(&window)
 }
 
-fn safe_menu_text(value: &str) -> String {
-    value.replace('&', "&&").trim().to_string()
+fn ensure_tray_panel_window(app: &AppHandle) -> Result<WebviewWindow, String> {
+    if let Some(window) = app.get_webview_window(TRAY_PANEL_WINDOW_LABEL) {
+        return Ok(window);
+    }
+
+    // 根因：Windows 原生托盘菜单只能显示系统样式的文字项，无法承载 QQ 音乐那种
+    // 封面、播放进度、滑杆和图标按钮。这里创建一个独立的无边框置顶 WebView 小窗，
+    // 右键托盘时按托盘坐标展示，前端仍复用真实播放器状态和控制命令。
+    WebviewWindowBuilder::new(
+        app,
+        TRAY_PANEL_WINDOW_LABEL,
+        WebviewUrl::App("index.html".into()),
+    )
+    .title("ikun音乐托盘控制")
+    .inner_size(TRAY_PANEL_WIDTH, TRAY_PANEL_HEIGHT)
+    .min_inner_size(TRAY_PANEL_WIDTH, TRAY_PANEL_HEIGHT)
+    .max_inner_size(TRAY_PANEL_WIDTH, TRAY_PANEL_HEIGHT)
+    .decorations(false)
+    .resizable(false)
+    .skip_taskbar(true)
+    .always_on_top(true)
+    .focused(false)
+    .visible(false)
+    .initialization_script("window.__IKUN_INITIAL_ROUTE__ = '/tray-panel';")
+    .build()
+    .map_err(|error| format!("创建托盘控制面板失败：{error}"))
+}
+
+fn tray_panel_position(
+    app: &AppHandle,
+    click_position: PhysicalPosition<f64>,
+) -> Result<PhysicalPosition<i32>, String> {
+    let monitor = app
+        .monitor_from_point(click_position.x, click_position.y)
+        .map_err(|error| format!("读取托盘所在屏幕失败：{error}"))?;
+
+    let Some(monitor) = monitor else {
+        return Ok(PhysicalPosition::new(
+            (click_position.x - TRAY_PANEL_WIDTH / 2.0).round() as i32,
+            (click_position.y - TRAY_PANEL_HEIGHT - TRAY_PANEL_MARGIN).round() as i32,
+        ));
+    };
+
+    let work_area = monitor.work_area();
+    let scale_factor = monitor.scale_factor();
+    let panel_width = TRAY_PANEL_WIDTH * scale_factor;
+    let panel_height = TRAY_PANEL_HEIGHT * scale_factor;
+    let margin = TRAY_PANEL_MARGIN * scale_factor;
+    let work_x = work_area.position.x as f64;
+    let work_y = work_area.position.y as f64;
+    let work_width = work_area.size.width as f64;
+    let work_height = work_area.size.height as f64;
+    let min_x = work_x + margin;
+    let max_x = work_x + work_width - panel_width - margin;
+    let min_y = work_y + margin;
+    let max_y = work_y + work_height - panel_height - margin;
+    let x = (click_position.x - panel_width / 2.0).clamp(min_x, max_x.max(min_x));
+    let above_tray_y = click_position.y - panel_height - margin;
+    let below_tray_y = click_position.y + margin;
+    let y = if above_tray_y >= min_y {
+        above_tray_y
+    } else {
+        below_tray_y.clamp(min_y, max_y.max(min_y))
+    };
+
+    Ok(PhysicalPosition::new(x.round() as i32, y.round() as i32))
+}
+
+fn show_tray_panel(app: &AppHandle, click_position: PhysicalPosition<f64>) -> Result<(), String> {
+    let window = ensure_tray_panel_window(app)?;
+    let target_position = tray_panel_position(app, click_position)?;
+
+    window
+        .set_position(Position::Physical(target_position))
+        .map_err(|error| format!("移动托盘控制面板失败：{error}"))?;
+    window
+        .show()
+        .map_err(|error| format!("显示托盘控制面板失败：{error}"))?;
+    window
+        .set_focus()
+        .map_err(|error| format!("聚焦托盘控制面板失败：{error}"))?;
+    app
+        .emit("tray-panel-opened", json!({ "openedAt": chrono_free_timestamp() }))
+        .map_err(|error| format!("同步托盘控制面板状态失败：{error}"))
+}
+
+fn hide_tray_panel(app: &AppHandle) {
+    if let Some(window) = app.get_webview_window(TRAY_PANEL_WINDOW_LABEL) {
+        let _ = window.hide();
+    }
+}
+
+fn chrono_free_timestamp() -> u128 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|duration| duration.as_millis())
+        .unwrap_or(0)
 }
 
 fn truncate_menu_text(value: &str, max_chars: usize) -> String {
@@ -367,34 +454,6 @@ fn truncate_menu_text(value: &str, max_chars: usize) -> String {
     let mut text = trimmed.chars().take(keep_chars).collect::<String>();
     text.push_str("...");
     text
-}
-
-fn normalized_volume_percent(volume: f64) -> u8 {
-    let safe_volume = if volume.is_finite() { volume } else { 0.0 };
-    (safe_volume.clamp(0.0, 1.0) * 100.0).round() as u8
-}
-
-fn tray_current_song_text(state: &TrayState) -> String {
-    if !state.has_song {
-        return "当前播放：暂无歌曲".to_string();
-    }
-
-    let title = state
-        .title
-        .as_deref()
-        .map(str::trim)
-        .filter(|value| !value.is_empty())
-        .unwrap_or("未知歌曲");
-    let artist = state
-        .artist
-        .as_deref()
-        .map(str::trim)
-        .filter(|value| !value.is_empty());
-    let text = artist
-        .map(|artist| format!("{title} - {artist}"))
-        .unwrap_or_else(|| title.to_string());
-
-    format!("当前播放：{}", safe_menu_text(&truncate_menu_text(&text, 48)))
 }
 
 fn tray_tooltip_text(state: &TrayState) -> String {
@@ -421,102 +480,7 @@ fn tray_tooltip_text(state: &TrayState) -> String {
     format!("ikun音乐 - {status}：{}", truncate_menu_text(&song_text, 64))
 }
 
-fn build_tray_menu<R: Runtime, M: Manager<R>>(
-    manager: &M,
-    state: &TrayState,
-) -> tauri::Result<Menu<R>> {
-    let volume_percent = normalized_volume_percent(state.volume);
-    let is_muted = state.muted || volume_percent == 0;
-    let play_label = if state.is_playing { "暂停" } else { "播放" };
-    let volume_label = if is_muted {
-        "音量：已静音".to_string()
-    } else {
-        format!("音量：{volume_percent}%")
-    };
-    let mute_label = if is_muted { "取消静音" } else { "静音" };
-
-    let current_song_item = MenuItem::with_id(
-        manager,
-        TRAY_MENU_CURRENT_SONG,
-        tray_current_song_text(state),
-        false,
-        None::<&str>,
-    )?;
-    let play_item = MenuItem::with_id(
-        manager,
-        TRAY_MENU_PLAY_TOGGLE,
-        play_label,
-        state.has_song,
-        None::<&str>,
-    )?;
-    let prev_item =
-        MenuItem::with_id(manager, TRAY_MENU_PREV, "上一首", state.has_song, None::<&str>)?;
-    let next_item =
-        MenuItem::with_id(manager, TRAY_MENU_NEXT, "下一首", state.has_song, None::<&str>)?;
-    let volume_label_item = MenuItem::with_id(
-        manager,
-        TRAY_MENU_VOLUME_LABEL,
-        volume_label,
-        false,
-        None::<&str>,
-    )?;
-    let volume_up_item = MenuItem::with_id(
-        manager,
-        TRAY_MENU_VOLUME_UP,
-        "音量 +10%",
-        volume_percent < 100,
-        None::<&str>,
-    )?;
-    let volume_down_item = MenuItem::with_id(
-        manager,
-        TRAY_MENU_VOLUME_DOWN,
-        "音量 -10%",
-        volume_percent > 0,
-        None::<&str>,
-    )?;
-    let mute_item =
-        MenuItem::with_id(manager, TRAY_MENU_MUTE_TOGGLE, mute_label, true, None::<&str>)?;
-    let show_item =
-        MenuItem::with_id(manager, TRAY_MENU_SHOW, "显示主窗口", true, None::<&str>)?;
-    let mini_item = MenuItem::with_id(manager, TRAY_MENU_MINI, "精简模式", true, None::<&str>)?;
-    let quit_item = MenuItem::with_id(
-        manager,
-        TRAY_MENU_QUIT,
-        "退出 ikun音乐",
-        true,
-        None::<&str>,
-    )?;
-    let playback_separator = PredefinedMenuItem::separator(manager)?;
-    let volume_separator = PredefinedMenuItem::separator(manager)?;
-    let window_separator = PredefinedMenuItem::separator(manager)?;
-
-    Menu::with_items(
-        manager,
-        &[
-            &current_song_item,
-            &play_item,
-            &prev_item,
-            &next_item,
-            &playback_separator,
-            &volume_label_item,
-            &volume_up_item,
-            &volume_down_item,
-            &mute_item,
-            &volume_separator,
-            &show_item,
-            &mini_item,
-            &window_separator,
-            &quit_item,
-        ],
-    )
-}
-
-fn emit_tray_control(app: &AppHandle, action: &str) {
-    let _ = app.emit("tray-control", json!({ "action": action }));
-}
-
 fn create_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
-    let menu = build_tray_menu(app, &TrayState::default())?;
     let icon = app
         .default_window_icon()
         .cloned()
@@ -526,16 +490,24 @@ fn create_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     TrayIconBuilder::with_id(TRAY_ID)
         .icon(icon)
         .tooltip("ikun音乐")
-        .menu(&menu)
         .show_menu_on_left_click(false)
         .on_tray_icon_event(move |_tray, event| {
             if let TrayIconEvent::Click {
-                button: MouseButton::Left,
+                position,
+                button,
                 button_state: MouseButtonState::Up,
                 ..
             } = event
             {
-                let _ = show_main_window(&app_handle);
+                match button {
+                    MouseButton::Left => {
+                        let _ = show_main_window(&app_handle);
+                    }
+                    MouseButton::Right => {
+                        let _ = show_tray_panel(&app_handle, position);
+                    }
+                    _ => {}
+                }
             }
         })
         .build(app)?;
@@ -583,6 +555,11 @@ fn quit_app(app: AppHandle) {
 }
 
 #[tauri::command]
+fn hide_tray_panel_window(app: AppHandle) {
+    hide_tray_panel(&app);
+}
+
+#[tauri::command]
 fn start_drag(window: WebviewWindow) -> Result<(), String> {
     window.start_dragging().map_err(|error| error.to_string())
 }
@@ -619,13 +596,10 @@ fn emit_to_main(app: AppHandle, event: String, payload: Value) -> Result<(), Str
 
 #[tauri::command]
 fn update_tray_state(app: AppHandle, state: TrayState) -> Result<(), String> {
-    let menu = build_tray_menu(&app, &state).map_err(|error| error.to_string())?;
     let tray = app
         .tray_by_id(TRAY_ID)
         .ok_or_else(|| "系统托盘尚未创建，请稍后再试".to_string())?;
 
-    tray.set_menu(Some(menu))
-        .map_err(|error| format!("更新托盘菜单失败：{error}"))?;
     tray.set_tooltip(Some(tray_tooltip_text(&state)))
         .map_err(|error| format!("更新托盘提示失败：{error}"))?;
 
@@ -788,24 +762,6 @@ pub fn run() {
             let _ = start_music_api(app_handle, state, 30488);
             Ok(())
         })
-        .on_menu_event(|app, event| match event.id().as_ref() {
-            TRAY_MENU_PLAY_TOGGLE => emit_tray_control(app, "togglePlay"),
-            TRAY_MENU_PREV => emit_tray_control(app, "prevPlay"),
-            TRAY_MENU_NEXT => emit_tray_control(app, "nextPlay"),
-            TRAY_MENU_VOLUME_UP => emit_tray_control(app, "volumeUp"),
-            TRAY_MENU_VOLUME_DOWN => emit_tray_control(app, "volumeDown"),
-            TRAY_MENU_MUTE_TOGGLE => emit_tray_control(app, "toggleMute"),
-            TRAY_MENU_SHOW => {
-                let _ = show_main_window(app);
-            }
-            TRAY_MENU_MINI => {
-                if let Ok(window) = main_window(app) {
-                    let _ = enter_mini_window(&window, false);
-                }
-            }
-            TRAY_MENU_QUIT => app.exit(0),
-            _ => {}
-        })
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
@@ -820,6 +776,7 @@ pub fn run() {
             maximize_window,
             close_window,
             quit_app,
+            hide_tray_panel_window,
             start_drag,
             set_window_size,
             mini_window,
@@ -831,6 +788,19 @@ pub fn run() {
             start_music_api
         ])
         .on_window_event(|window, event| {
+            if window.label() == TRAY_PANEL_WINDOW_LABEL {
+                match event {
+                    WindowEvent::Focused(false) => {
+                        let _ = window.hide();
+                    }
+                    WindowEvent::CloseRequested { api, .. } => {
+                        api.prevent_close();
+                        let _ = window.hide();
+                    }
+                    _ => {}
+                }
+            }
+
             if matches!(event, tauri::WindowEvent::Destroyed) {
                 {
                     let state = window.state::<MusicApiProcess>();

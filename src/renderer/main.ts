@@ -22,4 +22,12 @@ Object.keys(directives).forEach((key: string) => {
 app.use(pinia);
 app.use(router);
 app.use(i18n as any);
-app.mount('#app');
+
+const initialRoute = (window as any).__IKUN_INITIAL_ROUTE__;
+const mountApp = () => app.mount('#app');
+
+if (typeof initialRoute === 'string' && initialRoute) {
+  router.replace(initialRoute).finally(mountApp);
+} else {
+  mountApp();
+}

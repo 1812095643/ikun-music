@@ -16,6 +16,11 @@ type TrayStatePayload = {
   muted: boolean;
 };
 
+type TrayPanelCommandPayload = {
+  action: string;
+  value?: number;
+};
+
 interface CompatApi {
   minimize: () => void;
   maximize: () => void;
@@ -25,6 +30,7 @@ interface CompatApi {
   miniTray: () => void;
   miniWindow: () => void;
   restore: () => void;
+  hideTrayPanel: () => void;
   restart: () => void;
   resizeWindow: (width: number, height: number) => void;
   resizeMiniWindow: (showPlaylist: boolean) => void;
@@ -46,6 +52,7 @@ interface CompatApi {
   onLanguageChanged: (callback: (locale: string) => void) => any;
   updateTrayState: (state: TrayStatePayload) => void;
   onTrayControl: (callback: (action: string) => void) => () => void;
+  sendTrayPanelCommand?: (payload: TrayPanelCommandPayload) => void;
   invoke: (channel: string, ...args: any[]) => Promise<any>;
   getSearchSuggestions: (keyword: string) => Promise<any>;
   lxMusicHttpRequest: (request: { url: string; options: any; requestId: string }) => Promise<any>;

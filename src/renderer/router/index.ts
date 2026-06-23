@@ -46,6 +46,10 @@ const routes = [
     component: () => import('@/views/lyric/index.vue')
   },
   {
+    path: '/tray-panel',
+    component: () => import('@/views/tray-panel/TrayPanel.vue')
+  },
+  {
     path: '/mini',
     component: MiniLayout
   }

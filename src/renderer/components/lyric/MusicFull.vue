@@ -30,6 +30,22 @@
       >
         <n-popover trigger="click" placement="bottom" raw>
           <template #trigger>
+            <div class="control-btn" :class="{ loading: lyricStore.loading }">
+              <i class="ri-file-list-3-line"></i>
+            </div>
+          </template>
+          <lyric-source-selector
+            :candidates="lyricStore.candidates"
+            :active-key="lyricStore.activeCandidateKey"
+            :loading="lyricStore.loading"
+            :error-message="lyricStore.errorMessage"
+            @select="handleSelectLyricCandidate"
+            @refresh="handleRefreshLyricCandidates"
+          />
+        </n-popover>
+
+        <n-popover trigger="click" placement="bottom" raw>
+          <template #trigger>
             <div class="control-btn">
               <i class="ri-settings-3-line"></i>
             </div>
@@ -284,6 +300,7 @@ import { useI18n } from 'vue-i18n';
 import Cover3D from '@/components/cover/Cover3D.vue';
 import LyricCorrectionControl from '@/components/lyric/LyricCorrectionControl.vue';
 import LyricSettings from '@/components/lyric/LyricSettings.vue';
+import LyricSourceSelector from '@/components/lyric/LyricSourceSelector.vue';
 import SimplePlayBar from '@/components/player/SimplePlayBar.vue';
 import {
   adjustCorrectionTime,
@@ -298,6 +315,8 @@ import {
   useLyricProgress
 } from '@/hooks/MusicHook';
 import { useArtist } from '@/hooks/useArtist';
+import { loadLyricCandidates } from '@/services/lyricCandidateService';
+import { useLyricStore } from '@/store/modules/lyric';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSettingsStore } from '@/store/modules/settings';
 import { DEFAULT_LYRIC_CONFIG, LyricConfig } from '@/types/lyric';
@@ -719,6 +738,40 @@ const handleScroll = () => {
 };
 
 const playerStore = usePlayerStore();
+const lyricStore = useLyricStore();
+
+const handleSelectLyricCandidate = (key: string) => {
+  const candidate = lyricStore.selectCandidate(key);
+  if (!candidate) return;
+  playerStore.playMusic = {
+    ...playerStore.playMusic,
+    lyric: candidate.lyric
+  };
+  nextTick(() => {
+    lrcScroll('instant');
+  });
+};
+
+const handleRefreshLyricCandidates = async () => {
+  if (!playerStore.playMusic?.id || lyricStore.loading) return;
+  lyricStore.setLoading(true);
+  lyricStore.setErrorMessage('');
+  try {
+    const result = await loadLyricCandidates({ ...playerStore.playMusic });
+    lyricStore.setCandidateResult(result);
+    if (result.activeCandidate) {
+      playerStore.playMusic = {
+        ...playerStore.playMusic,
+        lyric: result.activeCandidate.lyric
+      };
+    }
+  } catch (error) {
+    console.warn('手动刷新歌词候选失败:', error);
+    lyricStore.setErrorMessage('歌词暂时没匹配到，可以稍后再试');
+  } finally {
+    lyricStore.setLoading(false);
+  }
+};
 
 const closeMusicFull = () => {
   // 退出全屏模式
@@ -1290,6 +1343,16 @@ defineExpose({
     i {
       opacity: 1;
     }
+  }
+
+  &.loading i {
+    animation: lyric-source-spin 1s linear infinite;
+  }
+}
+
+@keyframes lyric-source-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 

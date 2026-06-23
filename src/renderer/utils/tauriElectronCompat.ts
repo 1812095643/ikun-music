@@ -272,6 +272,9 @@ const send = (channel: string, ...args: any[]) => {
     case 'restore-window':
       void invoke('restore_window');
       break;
+    case 'hide-tray-panel':
+      void invoke('hide_tray_panel_window');
+      break;
     case 'update-tray-state':
       if (isTauriRuntime) {
         void invoke('update_tray_state', { state: args[0] }).catch((error) => {
@@ -519,6 +522,7 @@ const api = {
   miniTray: () => send('mini-tray'),
   miniWindow: () => send('mini-window'),
   restore: () => send('restore-window'),
+  hideTrayPanel: () => send('hide-tray-panel'),
   restart: () => send('restart'),
   resizeWindow: (width: number, height: number) => send('resize-window', width, height),
   resizeMiniWindow: (showPlaylist: boolean) => send('resize-mini-window', showPlaylist),
@@ -542,6 +546,8 @@ const api = {
   onLanguageChanged: (callback: (locale: string) => void) =>
     on('language-changed', (_event: any, locale: string) => callback(locale)),
   updateTrayState: (state: TrayStatePayload) => send('update-tray-state', state),
+  sendTrayPanelCommand: (payload: { action: string; value?: number }) =>
+    send('tray-panel-command', payload),
   onTrayControl: (callback: (action: string) => void) =>
     on('tray-control', (_event: any, payload: any) => {
       const action = typeof payload === 'string' ? payload : payload?.action;
