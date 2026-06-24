@@ -800,6 +800,10 @@ export const sendLyricToWin = () => {
 
 // 歌词同步定时器
 let lyricSyncInterval: any = null;
+
+// 桌面歌词窗的事件要在 store 注入后尽早挂载。
+// 否则首次打开歌词窗时如果还没有进入音频监听初始化，窗口关闭/就绪事件会丢失，
+// 表现为歌词窗状态不同步，或者窗口已加载但拿不到首帧歌词。
 const setupLyricWindowListeners = () => {
   if (!isElectron || lyricWindowListenersInitialized) return;
 
@@ -1013,20 +1017,6 @@ export const initAudioListeners = async () => {
 
     // 初始化音频监听器
     setupAudioListeners();
-
-    // 监听歌词窗口事件
-    const compatApi = getCompatApi();
-    if (compatApi && !lyricWindowListenersInitialized) {
-      compatApi.onLyricWindowClosed(() => {
-        isLyricWindowOpen.value = false;
-      });
-      // 歌词窗口 Vue 加载完成后，发送完整歌词数据
-      compatApi.onLyricWindowReady(() => {
-        if (isLyricWindowOpen.value) {
-          sendLyricToWin();
-        }
-      });
-    }
 
     // 获取最新的音频实例
     const finalSound = audioService.getCurrentSound();
