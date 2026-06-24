@@ -33,10 +33,12 @@ const LYRIC_WINDOW_LABEL: &str = "lyric-window";
 const TRAY_ID: &str = "ikun-music-tray";
 const NORMAL_WINDOW_WIDTH: f64 = 1280.0;
 const NORMAL_WINDOW_HEIGHT: f64 = 840.0;
-const MINI_WINDOW_WIDTH: f64 = 360.0;
-const MINI_WINDOW_HEIGHT: f64 = 120.0;
-const MINI_PLAYLIST_WINDOW_WIDTH: f64 = 420.0;
-const MINI_PLAYLIST_WINDOW_HEIGHT: f64 = 620.0;
+// 与前端 MiniPlayBar 的 64px 顶栏和 330px 播放列表高度保持一致，
+// 避免 Tauri 精简模式相比 Electron 多出空白区域，恢复时观感不一致。
+const MINI_WINDOW_WIDTH: f64 = 340.0;
+const MINI_WINDOW_HEIGHT: f64 = 64.0;
+const MINI_PLAYLIST_WINDOW_WIDTH: f64 = 340.0;
+const MINI_PLAYLIST_WINDOW_HEIGHT: f64 = 400.0;
 const MINI_WINDOW_MARGIN: f64 = 20.0;
 const LYRIC_WINDOW_WIDTH: f64 = 800.0;
 const LYRIC_WINDOW_HEIGHT: f64 = 200.0;

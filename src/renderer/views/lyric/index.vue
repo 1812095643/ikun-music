@@ -356,6 +356,12 @@ const showControls = computed(() => {
   return true;
 });
 
+// 锁定态依赖桌面层鼠标穿透。
+// 这里统一从一个入口同步状态，避免进入/离开窗口、重开歌词窗和切换锁定时出现穿透状态反转。
+const syncIgnoreMouseState = (shouldIgnore: boolean) => {
+  windowData.electron.ipcRenderer.send('set-ignore-mouse', shouldIgnore);
+};
+
 // 清除隐藏定时器
 const clearHideTimer = () => {
   if (hideControlsTimer) {
@@ -368,9 +374,9 @@ const clearHideTimer = () => {
 const handleMouseEnter = () => {
   if (lyricSetting.value.isLock) {
     isHovering.value = true;
-    windowData.electron.ipcRenderer.send('set-ignore-mouse', true);
+    syncIgnoreMouseState(true);
   } else {
-    windowData.electron.ipcRenderer.send('set-ignore-mouse', false);
+    syncIgnoreMouseState(false);
   }
 };
 
@@ -378,7 +384,7 @@ const handleMouseEnter = () => {
 const handleMouseLeave = () => {
   if (!lyricSetting.value.isLock) return;
   isHovering.value = false;
-  windowData.electron.ipcRenderer.send('set-ignore-mouse', false);
+  syncIgnoreMouseState(true);
 
   // 强制重置背景色
   const lyricWindow = document.querySelector('.lyric-window') as HTMLElement;
@@ -399,7 +405,11 @@ watch(
       isHovering.value = false;
       // 锁定时自动关闭主题色面板
       showThemeColorPanel.value = false;
+      syncIgnoreMouseState(true);
+      return;
     }
+
+    syncIgnoreMouseState(false);
   }
 );
 
@@ -407,6 +417,7 @@ onMounted(() => {
   // 初始化时，如果是锁定状态，确保控制栏隐藏
   if (lyricSetting.value.isLock) {
     isHovering.value = false;
+    syncIgnoreMouseState(true);
   }
 });
 
@@ -937,7 +948,7 @@ const initializeThemeColor = () => {
 
 const handleLock = () => {
   lyricSetting.value.isLock = !lyricSetting.value.isLock;
-  windowData.electron.ipcRenderer.send('set-ignore-mouse', lyricSetting.value.isLock);
+  syncIgnoreMouseState(lyricSetting.value.isLock);
 };
 
 const handleClose = () => {
@@ -1072,12 +1083,12 @@ onMounted(() => {
   if (lyricLock) {
     lyricLock.onmouseenter = () => {
       if (lyricSetting.value.isLock) {
-        windowData.electron.ipcRenderer.send('set-ignore-mouse', false);
+        syncIgnoreMouseState(false);
       }
     };
     lyricLock.onmouseleave = () => {
       if (lyricSetting.value.isLock) {
-        windowData.electron.ipcRenderer.send('set-ignore-mouse', true);
+        syncIgnoreMouseState(true);
       }
     };
   }
