@@ -64,6 +64,7 @@ const MINI_PLAYLIST_WINDOW_HEIGHT: f64 = 400.0;
 const MINI_WINDOW_MARGIN: f64 = 20.0;
 const LYRIC_WINDOW_WIDTH: f64 = 800.0;
 const LYRIC_WINDOW_HEIGHT: f64 = 200.0;
+const LYRIC_WINDOW_POSITION_MARGIN: i32 = 50;
 const TRAY_PANEL_WIDTH: f64 = 336.0;
 const TRAY_PANEL_HEIGHT: f64 = 492.0;
 const TRAY_PANEL_MARGIN: f64 = 12.0;
@@ -505,13 +506,23 @@ fn has_visible_monitor_for_lyric_bounds(
     window: &WebviewWindow,
     bounds: &SavedLyricWindowBounds,
 ) -> Result<bool, String> {
-    let center_x = bounds.x as f64 + bounds.width as f64 / 2.0;
-    let center_y = bounds.y as f64 + bounds.height as f64 / 2.0;
+    let monitors = window
+        .available_monitors()
+        .map_err(|error| format!("读取桌面歌词窗口显示器列表失败：{error}"))?;
 
-    window
-        .monitor_from_point(center_x, center_y)
-        .map(|monitor| monitor.is_some())
-        .map_err(|error| format!("校验桌面歌词窗口显示器位置失败：{error}"))
+    if monitors.is_empty() {
+        return Ok(true);
+    }
+
+    Ok(monitors.iter().any(|monitor| {
+        let work_area = monitor.work_area();
+        let min_x = work_area.position.x - LYRIC_WINDOW_POSITION_MARGIN;
+        let max_x = work_area.position.x + work_area.size.width as i32 + LYRIC_WINDOW_POSITION_MARGIN;
+        let min_y = work_area.position.y - LYRIC_WINDOW_POSITION_MARGIN;
+        let max_y = work_area.position.y + work_area.size.height as i32 + LYRIC_WINDOW_POSITION_MARGIN;
+
+        bounds.x >= min_x && bounds.x < max_x && bounds.y >= min_y && bounds.y < max_y
+    }))
 }
 
 fn persist_lyric_window_bounds(window: &WebviewWindow) -> Result<(), String> {
@@ -561,12 +572,12 @@ fn ensure_lyric_window(app: &AppHandle) -> Result<WebviewWindow, String> {
     .map_err(|error| format!("创建桌面歌词窗口失败：{error}"))?;
 
     if let Some(bounds) = load_saved_lyric_window_bounds(app) {
+        window
+            .set_size(Size::Physical(PhysicalSize::new(bounds.width, bounds.height)))
+            .map_err(|error| format!("恢复桌面歌词窗口尺寸失败：{error}"))?;
         // 用户上次可能把歌词窗拖到副屏，后续副屏断开后旧坐标会落到屏幕外。
-        // 这里先校验保存的窗口中心点还能否命中当前显示器，失效时回退到居中打开。
+        // 位置失效时只重置位置，不丢弃用户上次调整过的窗口尺寸。
         if has_visible_monitor_for_lyric_bounds(&window, &bounds)? {
-            window
-                .set_size(Size::Physical(PhysicalSize::new(bounds.width, bounds.height)))
-                .map_err(|error| format!("恢复桌面歌词窗口尺寸失败：{error}"))?;
             window
                 .set_position(Position::Physical(PhysicalPosition::new(bounds.x, bounds.y)))
                 .map_err(|error| format!("恢复桌面歌词窗口位置失败：{error}"))?;
