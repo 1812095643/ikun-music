@@ -395,12 +395,9 @@ fn show_normal_window(
                 )))
                 .map_err(|error| format!("恢复主窗口位置失败：{error}"))?;
         }
-    } else {
-        resize_window_for_mode(window, NORMAL_WINDOW_WIDTH, NORMAL_WINDOW_HEIGHT)?;
-        window
-            .center()
-            .map_err(|error| format!("居中主窗口失败：{error}"))?;
     }
+    // 没有精简模式前快照时，说明这里只是普通主窗口的显示/隐藏切换。
+    // Tauri 隐藏窗口后会保留当前几何信息，恢复时不应强制重置到默认尺寸和居中位置。
 
     window
         .set_focus()
