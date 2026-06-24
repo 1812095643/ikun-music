@@ -501,6 +501,19 @@ fn load_saved_lyric_window_bounds(app: &AppHandle) -> Option<SavedLyricWindowBou
     }
 }
 
+fn has_visible_monitor_for_lyric_bounds(
+    window: &WebviewWindow,
+    bounds: &SavedLyricWindowBounds,
+) -> Result<bool, String> {
+    let center_x = bounds.x as f64 + bounds.width as f64 / 2.0;
+    let center_y = bounds.y as f64 + bounds.height as f64 / 2.0;
+
+    window
+        .monitor_from_point(center_x, center_y)
+        .map(|monitor| monitor.is_some())
+        .map_err(|error| format!("校验桌面歌词窗口显示器位置失败：{error}"))
+}
+
 fn persist_lyric_window_bounds(window: &WebviewWindow) -> Result<(), String> {
     let size = window
         .inner_size()
@@ -548,12 +561,20 @@ fn ensure_lyric_window(app: &AppHandle) -> Result<WebviewWindow, String> {
     .map_err(|error| format!("创建桌面歌词窗口失败：{error}"))?;
 
     if let Some(bounds) = load_saved_lyric_window_bounds(app) {
-        window
-            .set_size(Size::Physical(PhysicalSize::new(bounds.width, bounds.height)))
-            .map_err(|error| format!("恢复桌面歌词窗口尺寸失败：{error}"))?;
-        window
-            .set_position(Position::Physical(PhysicalPosition::new(bounds.x, bounds.y)))
-            .map_err(|error| format!("恢复桌面歌词窗口位置失败：{error}"))?;
+        // 用户上次可能把歌词窗拖到副屏，后续副屏断开后旧坐标会落到屏幕外。
+        // 这里先校验保存的窗口中心点还能否命中当前显示器，失效时回退到居中打开。
+        if has_visible_monitor_for_lyric_bounds(&window, &bounds)? {
+            window
+                .set_size(Size::Physical(PhysicalSize::new(bounds.width, bounds.height)))
+                .map_err(|error| format!("恢复桌面歌词窗口尺寸失败：{error}"))?;
+            window
+                .set_position(Position::Physical(PhysicalPosition::new(bounds.x, bounds.y)))
+                .map_err(|error| format!("恢复桌面歌词窗口位置失败：{error}"))?;
+        } else {
+            window
+                .center()
+                .map_err(|error| format!("校正桌面歌词窗口越界位置失败：{error}"))?;
+        }
     } else {
         window
             .center()
