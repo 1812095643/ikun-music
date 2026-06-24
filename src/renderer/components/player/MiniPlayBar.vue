@@ -171,24 +171,17 @@ const play = computed(() => playerStore.play as boolean);
 // 播放列表
 const playList = computed(() => playerStore.playList as SongResult[]);
 
-// 音量控制
-const audioVolume = ref(
-  localStorage.getItem('volume') ? parseFloat(localStorage.getItem('volume') as string) : 1
-);
-
 const volumeSlider = computed({
-  get: () => audioVolume.value * 100,
+  get: () => playerStore.volume * 100,
   set: (value) => {
-    localStorage.setItem('volume', (value / 100).toString());
-    audioService.setVolume(value / 100);
-    audioVolume.value = value / 100;
+    playerStore.setVolume(value / 100);
   }
 });
 
-// 音量图标
+// 迷你窗音量也要复用全局播放器状态，避免和主播放条、托盘状态出现分叉。
 const getVolumeIcon = computed(() => {
-  if (audioVolume.value === 0) return 'ri-volume-mute-line';
-  if (audioVolume.value <= 0.5) return 'ri-volume-down-line';
+  if (playerStore.volume === 0) return 'ri-volume-mute-line';
+  if (playerStore.volume <= 0.5) return 'ri-volume-down-line';
   return 'ri-volume-up-line';
 });
 
