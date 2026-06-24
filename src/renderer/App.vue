@@ -373,8 +373,14 @@ handleSetLanguage(settingsStore.setData.language);
 if (isElectron && !isTrayPanelWindow.value && window.api && window.electron?.ipcRenderer) {
   window.api.onLanguageChanged(handleSetLanguage);
   window.electron.ipcRenderer.on('mini-mode', (_, value) => {
-    settingsStore.setMiniMode(value);
-    if (value) {
+    const nextMiniMode = Boolean(value);
+    const currentMiniMode = settingsStore.isMiniMode;
+    // Tauri 调整迷你窗尺寸、隐藏到托盘时会复用 mini-mode 事件；重复态不能再次覆盖返回路由。
+    if (currentMiniMode === nextMiniMode) {
+      return;
+    }
+    settingsStore.setMiniMode(nextMiniMode);
+    if (nextMiniMode) {
       // 精简模式恢复时还要回到原页面的 query/hash，上下文不能只存 path。
       rememberMiniModeReturnRoute(router.currentRoute.value.fullPath);
       router.push('/mini');
