@@ -342,6 +342,7 @@ fn show_normal_window(
     window: &WebviewWindow,
     restore_state: &MiniWindowRestoreState,
 ) -> Result<(), String> {
+    let saved_state = take_pre_mini_window_state(restore_state)?;
     window
         .set_always_on_top(false)
         .map_err(|error| format!("恢复窗口置顶状态失败：{error}"))?;
@@ -356,13 +357,12 @@ fn show_normal_window(
             .unminimize()
             .map_err(|error| format!("恢复最小化窗口失败：{error}"))?;
     }
-    if window.is_maximized().unwrap_or(false) {
+    if saved_state.is_some() && window.is_maximized().unwrap_or(false) {
         window
             .unmaximize()
             .map_err(|error| format!("退出最大化状态失败：{error}"))?;
     }
 
-    let saved_state = take_pre_mini_window_state(restore_state)?;
     if let Some(saved_state) = saved_state {
         if saved_state.is_maximized {
             // 先恢复最大化前的正常尺寸和位置，再重新最大化，后续用户退出最大化时才能回到原来的布局。
@@ -397,7 +397,7 @@ fn show_normal_window(
         }
     }
     // 没有精简模式前快照时，说明这里只是普通主窗口的显示/隐藏切换。
-    // Tauri 隐藏窗口后会保留当前几何信息，恢复时不应强制重置到默认尺寸和居中位置。
+    // Tauri 隐藏窗口后会保留当前几何信息和最大化状态，恢复时不应额外改写这些窗口状态。
 
     window
         .set_focus()
