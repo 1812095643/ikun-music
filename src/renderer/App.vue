@@ -240,7 +240,7 @@ const executeTrayPlaybackCommand = async (payload: any) => {
       playerStore.togglePlayMode();
       return true;
     case 'openLyric':
-      openLyric();
+      openLyric(true);
       return true;
     case 'prevPlay':
       await playerStore.prevPlay();

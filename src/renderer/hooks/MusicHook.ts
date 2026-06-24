@@ -859,7 +859,9 @@ const stopLyricSync = () => {
 };
 
 // 修改openLyric函数，添加定时同步
-export const openLyric = () => {
+export const shouldOpenLyricWindow = (isOpen: boolean, forceOpen = false) => forceOpen || !isOpen;
+
+export const openLyric = (forceOpen = false) => {
   if (!isElectron) return;
 
   // 检查是否有播放中的歌曲
@@ -870,8 +872,9 @@ export const openLyric = () => {
 
   console.log('Opening lyric window with current song:', playMusic.value?.name);
 
-  isLyricWindowOpen.value = !isLyricWindowOpen.value;
-  if (isLyricWindowOpen.value) {
+  const shouldOpen = shouldOpenLyricWindow(isLyricWindowOpen.value, forceOpen);
+  if (shouldOpen) {
+    isLyricWindowOpen.value = true;
     // 立即打开窗口
     getCompatApi()?.openLyric();
 
