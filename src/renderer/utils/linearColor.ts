@@ -508,15 +508,14 @@ export const saveLyricThemeColor = (color: string): void => {
 /**
  * 加载歌词主题色
  */
-export const loadLyricThemeColor = (): string => {
+export const loadLyricThemeColor = (): string | undefined => {
   const settings = safeLoadLyricSettings();
 
   if (settings.highlightColor && validateColor(settings.highlightColor)) {
     return settings.highlightColor;
   }
 
-  // 如果没有保存的颜色或颜色无效，返回默认颜色
-  return getDefaultHighlightColor(settings.theme);
+  return undefined;
 };
 
 /**

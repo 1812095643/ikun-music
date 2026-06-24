@@ -228,7 +228,8 @@ import ThemeColorPanel from '@/components/lyric/ThemeColorPanel.vue';
 import { SongResult } from '@/types/music';
 import {
   getCurrentLyricThemeColor,
-  loadLyricThemeColor,
+  optimizeColorForTheme,
+  resetLyricThemeColor,
   saveLyricThemeColor,
   validateColor
 } from '@/utils/linearColor';
@@ -347,6 +348,15 @@ const isHovering = ref(false);
 // 主题色相关状态
 const showThemeColorPanel = ref(false);
 const currentHighlightColor = ref('#1db954');
+
+// 歌词窗主题色既要保留用户自定义颜色，又要在亮暗主题之间做可读性优化。
+// 这里统一走一个解析入口，避免初始化和切换主题时把保存色覆盖回默认值。
+const resolveHighlightColor = (theme: 'light' | 'dark', preferredColor?: string) => {
+  if (preferredColor && validateColor(preferredColor)) {
+    return optimizeColorForTheme(preferredColor, theme);
+  }
+  return getCurrentLyricThemeColor(theme);
+};
 
 // 计算是否栏
 const showControls = computed(() => {
@@ -843,22 +853,13 @@ const handleThemeColorPanelClose = () => {
 
 // 导出重置函数以供将来使用
 const resetThemeColor = () => {
-  // 重置到默认颜色
-  const defaultColor = getCurrentLyricThemeColor(lyricSetting.value.theme);
+  resetLyricThemeColor();
+  const defaultColor = resolveHighlightColor(lyricSetting.value.theme);
 
   // 更新所有相关状态
   currentHighlightColor.value = defaultColor;
   lyricSetting.value.highlightColor = undefined;
   updateThemeColorWithTransition(defaultColor);
-
-  // 清除专用存储
-  try {
-    const settings = loadLyricSettings();
-    delete settings.highlightColor;
-    saveLyricSettings(settings);
-  } catch (error) {
-    console.error('Failed to reset theme color:', error);
-  }
 };
 
 // 验证和修复颜色设置
@@ -917,28 +918,12 @@ const updateThemeColorWithTransition = (newColor: string) => {
 };
 
 const initializeThemeColor = () => {
-  // 优先从 lyricSetting 中读取颜色
-  let savedColor = lyricSetting.value.highlightColor;
-
-  // 如果 lyricSetting 中没有，则从专用存储中读取
-  if (!savedColor) {
-    savedColor = loadLyricThemeColor();
-    // 如果从专用存储中读取到了颜色，同步到 lyricSetting
-    if (savedColor) {
-      lyricSetting.value.highlightColor = savedColor;
-    }
-  }
-
-  if (savedColor) {
-    const optimizedColor = getCurrentLyricThemeColor(lyricSetting.value.theme);
-    currentHighlightColor.value = optimizedColor;
-    updateCSSVariable('--lyric-highlight-color', optimizedColor);
-  } else {
-    // 如果没有保存的颜色，使用默认颜色
-    const defaultColor = getCurrentLyricThemeColor(lyricSetting.value.theme);
-    currentHighlightColor.value = defaultColor;
-    updateCSSVariable('--lyric-highlight-color', defaultColor);
-  }
+  const initialColor = resolveHighlightColor(
+    lyricSetting.value.theme,
+    lyricSetting.value.highlightColor
+  );
+  currentHighlightColor.value = initialColor;
+  updateCSSVariable('--lyric-highlight-color', initialColor);
 };
 
 // const handleTop = () => {
@@ -983,7 +968,7 @@ watch(
   () => lyricSetting.value.theme,
   (newTheme) => {
     if (currentHighlightColor.value) {
-      const optimizedColor = getCurrentLyricThemeColor(newTheme);
+      const optimizedColor = resolveHighlightColor(newTheme, lyricSetting.value.highlightColor);
       currentHighlightColor.value = optimizedColor;
       updateThemeColorWithTransition(optimizedColor);
     }

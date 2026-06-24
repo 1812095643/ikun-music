@@ -371,8 +371,8 @@ if (isElectron && !isTrayPanelWindow.value && window.api && window.electron?.ipc
   window.electron.ipcRenderer.on('mini-mode', (_, value) => {
     settingsStore.setMiniMode(value);
     if (value) {
-      // 存储当前路由
-      localStorage.setItem('currentRoute', router.currentRoute.value.path);
+      // 精简模式恢复时还要回到原页面的 query/hash，上下文不能只存 path。
+      localStorage.setItem('currentRoute', router.currentRoute.value.fullPath);
       router.push('/mini');
     } else {
       // 恢复当前路由
