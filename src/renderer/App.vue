@@ -38,6 +38,10 @@ import { useUserStore } from '@/store/modules/user';
 import type { Artist, SongResult } from '@/types/music';
 import { isElectron, isLyricWindow } from '@/utils';
 import { checkLoginStatus } from '@/utils/auth';
+import {
+  consumeMiniModeRestoreRoute,
+  rememberMiniModeReturnRoute
+} from '@/utils/miniModeNavigation';
 
 import { allTime, initAudioListeners, initMusicHook, nowTime, openLyric } from './hooks/MusicHook';
 import { audioService } from './services/audioService';
@@ -372,14 +376,12 @@ if (isElectron && !isTrayPanelWindow.value && window.api && window.electron?.ipc
     settingsStore.setMiniMode(value);
     if (value) {
       // 精简模式恢复时还要回到原页面的 query/hash，上下文不能只存 path。
-      localStorage.setItem('currentRoute', router.currentRoute.value.fullPath);
+      rememberMiniModeReturnRoute(router.currentRoute.value.fullPath);
       router.push('/mini');
     } else {
-      // 恢复当前路由
-      const currentRoute = localStorage.getItem('currentRoute');
-      if (currentRoute) {
-        router.push(currentRoute);
-        localStorage.removeItem('currentRoute');
+      const restoreRoute = consumeMiniModeRestoreRoute();
+      if (restoreRoute) {
+        router.push(restoreRoute);
       } else {
         router.push('/');
       }
