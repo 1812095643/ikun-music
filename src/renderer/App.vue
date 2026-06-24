@@ -239,6 +239,12 @@ const executeTrayPlaybackCommand = async (payload: any) => {
     case 'togglePlayMode':
       playerStore.togglePlayMode();
       return true;
+    case 'restoreWindow':
+      window.api?.restore?.();
+      return true;
+    case 'miniWindow':
+      window.api?.miniWindow?.();
+      return true;
     case 'openLyric':
       openLyric(true);
       return true;

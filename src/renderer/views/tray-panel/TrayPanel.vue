@@ -235,12 +235,12 @@ const handleProgressStart = () => {
 };
 
 const showMainWindow = () => {
-  window.api?.restore?.();
+  sendPanelCommand('restoreWindow');
   closeTrayPanel();
 };
 
 const enterMiniMode = () => {
-  window.api?.miniWindow?.();
+  sendPanelCommand('miniWindow');
   closeTrayPanel();
 };
 
