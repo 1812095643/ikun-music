@@ -16,6 +16,7 @@ use tauri::{
     AppHandle, Emitter, LogicalPosition, LogicalSize, Manager, PhysicalPosition, Position,
     Size, WebviewUrl, WebviewWindow, WebviewWindowBuilder, WindowEvent,
 };
+use tauri::PhysicalSize;
 
 struct MusicApiChild {
     child: Child,
@@ -23,6 +24,19 @@ struct MusicApiChild {
 }
 
 struct MusicApiProcess(Mutex<Option<MusicApiChild>>);
+
+#[derive(Clone, Copy)]
+struct SavedMainWindowState {
+    width: u32,
+    height: u32,
+    x: i32,
+    y: i32,
+    is_maximized: bool,
+}
+
+// Tauri 主线以前进入精简模式后只会恢复到固定尺寸，用户原本手动调整过的窗口大小和位置都会丢。
+// 这里单独保存“进入精简模式前”的主窗口几何信息，保证缩放播放列表时不覆盖，恢复时再一次性还原。
+struct MiniWindowRestoreState(Mutex<Option<SavedMainWindowState>>);
 
 #[cfg(target_os = "windows")]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
@@ -237,6 +251,59 @@ fn main_window(app: &AppHandle) -> Result<WebviewWindow, String> {
         .ok_or_else(|| "没有找到主窗口，请重启应用后再试".to_string())
 }
 
+fn remember_pre_mini_window_state(
+    window: &WebviewWindow,
+    restore_state: &MiniWindowRestoreState,
+) -> Result<(), String> {
+    let mut guard = restore_state
+        .0
+        .lock()
+        .map_err(|_| "保存精简模式前窗口状态失败：状态锁已损坏".to_string())?;
+    // 只在第一次进入精简模式时记录主窗口快照，避免迷你播放列表展开/收起时把原始窗口布局覆盖掉。
+    if guard.is_some() {
+        return Ok(());
+    }
+
+    let is_maximized = window
+        .is_maximized()
+        .map_err(|error| format!("读取主窗口最大化状态失败：{error}"))?;
+
+    // 如果当前处于最大化，先拿到退出最大化后的正常尺寸。
+    // 否则从精简模式恢复后再次退出最大化，窗口会退回默认尺寸而不是用户原来的窗口大小。
+    if is_maximized {
+        window
+            .unmaximize()
+            .map_err(|error| format!("读取最大化前窗口尺寸失败：{error}"))?;
+    }
+
+    let size = window
+        .inner_size()
+        .map_err(|error| format!("读取主窗口尺寸失败：{error}"))?;
+    let position = window
+        .outer_position()
+        .map_err(|error| format!("读取主窗口位置失败：{error}"))?;
+
+    *guard = Some(SavedMainWindowState {
+        width: size.width,
+        height: size.height,
+        x: position.x,
+        y: position.y,
+        is_maximized,
+    });
+
+    Ok(())
+}
+
+fn take_pre_mini_window_state(
+    restore_state: &MiniWindowRestoreState,
+) -> Result<Option<SavedMainWindowState>, String> {
+    let mut guard = restore_state
+        .0
+        .lock()
+        .map_err(|_| "读取精简模式前窗口状态失败：状态锁已损坏".to_string())?;
+    Ok(guard.take())
+}
+
 fn emit_mini_mode(window: &WebviewWindow, enabled: bool) -> Result<(), String> {
     window
         .emit("mini-mode", enabled)
@@ -271,7 +338,10 @@ fn resize_window_for_mode(window: &WebviewWindow, width: f64, height: f64) -> Re
         .map_err(|error| format!("调整窗口尺寸失败：{error}"))
 }
 
-fn show_normal_window(window: &WebviewWindow) -> Result<(), String> {
+fn show_normal_window(
+    window: &WebviewWindow,
+    restore_state: &MiniWindowRestoreState,
+) -> Result<(), String> {
     window
         .set_always_on_top(false)
         .map_err(|error| format!("恢复窗口置顶状态失败：{error}"))?;
@@ -291,17 +361,59 @@ fn show_normal_window(window: &WebviewWindow) -> Result<(), String> {
             .unmaximize()
             .map_err(|error| format!("退出最大化状态失败：{error}"))?;
     }
-    resize_window_for_mode(window, NORMAL_WINDOW_WIDTH, NORMAL_WINDOW_HEIGHT)?;
-    window
-        .center()
-        .map_err(|error| format!("居中主窗口失败：{error}"))?;
+
+    let saved_state = take_pre_mini_window_state(restore_state)?;
+    if let Some(saved_state) = saved_state {
+        if saved_state.is_maximized {
+            // 先恢复最大化前的正常尺寸和位置，再重新最大化，后续用户退出最大化时才能回到原来的布局。
+            window
+                .set_size(Size::Physical(PhysicalSize::new(
+                    saved_state.width,
+                    saved_state.height,
+                )))
+                .map_err(|error| format!("恢复最大化前窗口尺寸失败：{error}"))?;
+            window
+                .set_position(Position::Physical(PhysicalPosition::new(
+                    saved_state.x,
+                    saved_state.y,
+                )))
+                .map_err(|error| format!("恢复最大化前窗口位置失败：{error}"))?;
+            window
+                .maximize()
+                .map_err(|error| format!("恢复主窗口最大化状态失败：{error}"))?;
+        } else {
+            window
+                .set_size(Size::Physical(PhysicalSize::new(
+                    saved_state.width,
+                    saved_state.height,
+                )))
+                .map_err(|error| format!("恢复主窗口尺寸失败：{error}"))?;
+            window
+                .set_position(Position::Physical(PhysicalPosition::new(
+                    saved_state.x,
+                    saved_state.y,
+                )))
+                .map_err(|error| format!("恢复主窗口位置失败：{error}"))?;
+        }
+    } else {
+        resize_window_for_mode(window, NORMAL_WINDOW_WIDTH, NORMAL_WINDOW_HEIGHT)?;
+        window
+            .center()
+            .map_err(|error| format!("居中主窗口失败：{error}"))?;
+    }
+
     window
         .set_focus()
         .map_err(|error| format!("聚焦主窗口失败：{error}"))?;
     emit_mini_mode(window, false)
 }
 
-fn enter_mini_window(window: &WebviewWindow, show_playlist: bool) -> Result<(), String> {
+fn enter_mini_window(
+    window: &WebviewWindow,
+    restore_state: &MiniWindowRestoreState,
+    show_playlist: bool,
+) -> Result<(), String> {
+    remember_pre_mini_window_state(window, restore_state)?;
     if window.is_maximized().unwrap_or(false) {
         window
             .unmaximize()
@@ -352,9 +464,12 @@ fn emit_to_window(app: &AppHandle, label: &str, event: &str, payload: Value) -> 
     window.emit(event, payload).map_err(|error| error.to_string())
 }
 
-fn show_main_window(app: &AppHandle) -> Result<(), String> {
+fn show_main_window(
+    app: &AppHandle,
+    restore_state: &MiniWindowRestoreState,
+) -> Result<(), String> {
     let window = main_window(app)?;
-    show_normal_window(&window)
+    show_normal_window(&window, restore_state)
 }
 
 fn ensure_lyric_window(app: &AppHandle) -> Result<WebviewWindow, String> {
@@ -562,7 +677,8 @@ fn create_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
             {
                 match button {
                     MouseButton::Left => {
-                        let _ = show_main_window(&app_handle);
+                        let restore_state = app_handle.state::<MiniWindowRestoreState>();
+                        let _ = show_main_window(&app_handle, &restore_state);
                     }
                     MouseButton::Right => {
                         let _ = show_tray_panel(&app_handle, position);
@@ -631,13 +747,20 @@ fn set_window_size(window: WebviewWindow, width: f64, height: f64) -> Result<(),
 }
 
 #[tauri::command]
-fn mini_window(window: WebviewWindow) -> Result<(), String> {
-    enter_mini_window(&window, false)
+fn mini_window(
+    window: WebviewWindow,
+    restore_state: tauri::State<MiniWindowRestoreState>,
+) -> Result<(), String> {
+    enter_mini_window(&window, &restore_state, false)
 }
 
 #[tauri::command]
-fn resize_mini_window(window: WebviewWindow, show_playlist: bool) -> Result<(), String> {
-    enter_mini_window(&window, show_playlist)
+fn resize_mini_window(
+    window: WebviewWindow,
+    restore_state: tauri::State<MiniWindowRestoreState>,
+    show_playlist: bool,
+) -> Result<(), String> {
+    enter_mini_window(&window, &restore_state, show_playlist)
 }
 
 #[tauri::command]
@@ -646,8 +769,11 @@ fn mini_tray(window: WebviewWindow) -> Result<(), String> {
 }
 
 #[tauri::command]
-fn restore_window(window: WebviewWindow) -> Result<(), String> {
-    show_normal_window(&window)
+fn restore_window(
+    window: WebviewWindow,
+    restore_state: tauri::State<MiniWindowRestoreState>,
+) -> Result<(), String> {
+    show_normal_window(&window, &restore_state)
 }
 
 #[tauri::command]
@@ -888,6 +1014,7 @@ fn start_music_api(
 pub fn run() {
     tauri::Builder::default()
         .manage(MusicApiProcess(Mutex::new(None)))
+        .manage(MiniWindowRestoreState(Mutex::new(None)))
         .setup(|app| {
             create_tray(app)?;
             let app_handle = app.handle().clone();
