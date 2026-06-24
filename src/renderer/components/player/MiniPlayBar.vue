@@ -142,6 +142,7 @@ import { audioService } from '@/services/audioService';
 import { usePlayerStore, useSettingsStore } from '@/store';
 import type { SongResult } from '@/types/music';
 import { getImgUrl } from '@/utils';
+import { restoreMainWindowFromMiniMode } from '@/utils/miniModeNavigation';
 
 const playerStore = usePlayerStore();
 const settingsStore = useSettingsStore();
@@ -358,6 +359,18 @@ const playMusicEvent = async () => {
 
 // 切换到完整播放器
 const setMusicFull = () => {
+  if (settingsStore.isMiniMode && window.api?.restore) {
+    // 迷你窗本身不承载完整播放器，先把状态切到展开，再恢复主窗口承接完整播放页。
+    restoreMainWindowFromMiniMode({
+      beforeRestore: () => {
+        closePlaylist();
+        playerStore.setMusicFull(true);
+      },
+      restore: window.api.restore
+    });
+    return;
+  }
+
   playerStore.setMusicFull(true);
 };
 
