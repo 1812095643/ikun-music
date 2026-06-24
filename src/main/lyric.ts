@@ -155,6 +155,13 @@ export const loadLyricWindow = (ipcMain: IpcMain, mainWin: BrowserWindow): void 
       return;
     }
 
+    win.on('closed', () => {
+      if (mainWin && !mainWin.isDestroyed()) {
+        // 歌词窗也可能被系统层直接关闭，主窗口要同步回收歌词开关状态和定时同步。
+        mainWin.webContents.send('lyric-window-closed');
+      }
+    });
+
     if (process.env.NODE_ENV === 'development') {
       win.webContents.openDevTools({ mode: 'detach' });
       win.loadURL(`${process.env.ELECTRON_RENDERER_URL}/#/lyric`);
