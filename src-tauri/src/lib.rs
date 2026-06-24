@@ -29,6 +29,7 @@ const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 const MAIN_WINDOW_LABEL: &str = "main";
 const TRAY_PANEL_WINDOW_LABEL: &str = "tray-panel";
+const LYRIC_WINDOW_LABEL: &str = "lyric-window";
 const TRAY_ID: &str = "ikun-music-tray";
 const NORMAL_WINDOW_WIDTH: f64 = 1280.0;
 const NORMAL_WINDOW_HEIGHT: f64 = 840.0;
@@ -37,6 +38,8 @@ const MINI_WINDOW_HEIGHT: f64 = 120.0;
 const MINI_PLAYLIST_WINDOW_WIDTH: f64 = 420.0;
 const MINI_PLAYLIST_WINDOW_HEIGHT: f64 = 620.0;
 const MINI_WINDOW_MARGIN: f64 = 20.0;
+const LYRIC_WINDOW_WIDTH: f64 = 800.0;
+const LYRIC_WINDOW_HEIGHT: f64 = 200.0;
 const TRAY_PANEL_WIDTH: f64 = 336.0;
 const TRAY_PANEL_HEIGHT: f64 = 492.0;
 const TRAY_PANEL_MARGIN: f64 = 12.0;
@@ -352,6 +355,37 @@ fn show_main_window(app: &AppHandle) -> Result<(), String> {
     show_normal_window(&window)
 }
 
+fn ensure_lyric_window(app: &AppHandle) -> Result<WebviewWindow, String> {
+    if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
+        return Ok(window);
+    }
+
+    let window = WebviewWindowBuilder::new(
+        app,
+        LYRIC_WINDOW_LABEL,
+        WebviewUrl::App("index.html".into()),
+    )
+    .title("ikun音乐桌面歌词")
+    .inner_size(LYRIC_WINDOW_WIDTH, LYRIC_WINDOW_HEIGHT)
+    .min_inner_size(600.0, 200.0)
+    .decorations(false)
+    .transparent(true)
+    .resizable(true)
+    .skip_taskbar(true)
+    .always_on_top(true)
+    .focused(false)
+    .visible(false)
+    .initialization_script("window.__IKUN_INITIAL_ROUTE__ = '/lyric';")
+    .build()
+    .map_err(|error| format!("创建桌面歌词窗口失败：{error}"))?;
+
+    window
+        .center()
+        .map_err(|error| format!("初始化桌面歌词窗口位置失败：{error}"))?;
+
+    Ok(window)
+}
+
 fn ensure_tray_panel_window(app: &AppHandle) -> Result<WebviewWindow, String> {
     if let Some(window) = app.get_webview_window(TRAY_PANEL_WINDOW_LABEL) {
         return Ok(window);
@@ -450,6 +484,16 @@ fn hide_tray_panel(app: &AppHandle) {
     if let Some(window) = app.get_webview_window(TRAY_PANEL_WINDOW_LABEL) {
         let _ = window.hide();
     }
+}
+
+fn close_lyric_window_internal(app: &AppHandle) -> Result<(), String> {
+    if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
+        window
+            .close()
+            .map_err(|error| format!("关闭桌面歌词窗口失败：{error}"))?;
+    }
+
+    Ok(())
 }
 
 fn chrono_free_timestamp() -> u128 {
@@ -605,10 +649,77 @@ fn restore_window(window: WebviewWindow) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn open_lyric_window(app: AppHandle) -> Result<(), String> {
+    let window = ensure_lyric_window(&app)?;
+
+    if window.is_minimized().unwrap_or(false) {
+        window
+            .unminimize()
+            .map_err(|error| format!("恢复桌面歌词窗口失败：{error}"))?;
+    }
+
+    window
+        .set_always_on_top(true)
+        .map_err(|error| format!("设置桌面歌词窗口置顶失败：{error}"))?;
+    window
+        .show()
+        .map_err(|error| format!("显示桌面歌词窗口失败：{error}"))?;
+    window
+        .set_focus()
+        .map_err(|error| format!("聚焦桌面歌词窗口失败：{error}"))?;
+
+    Ok(())
+}
+
+#[tauri::command]
+fn close_lyric_window(app: AppHandle) -> Result<(), String> {
+    close_lyric_window_internal(&app)
+}
+
+#[tauri::command]
+fn set_lyric_ignore_mouse(app: AppHandle, ignore: bool) -> Result<(), String> {
+    if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
+        window
+            .set_ignore_cursor_events(ignore)
+            .map_err(|error| format!("更新桌面歌词鼠标穿透状态失败：{error}"))?;
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+fn start_lyric_drag() {}
+
+#[tauri::command]
+fn end_lyric_drag() {}
+
+#[tauri::command]
+fn move_lyric_window(app: AppHandle, delta_x: f64, delta_y: f64) -> Result<(), String> {
+    if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
+        let current_position = window
+            .outer_position()
+            .map_err(|error| format!("读取桌面歌词窗口位置失败：{error}"))?;
+        let next_x = current_position.x + delta_x.round() as i32;
+        let next_y = current_position.y + delta_y.round() as i32;
+
+        window
+            .set_position(Position::Physical(PhysicalPosition::new(next_x, next_y)))
+            .map_err(|error| format!("移动桌面歌词窗口失败：{error}"))?;
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
 fn emit_to_main(app: AppHandle, event: String, payload: Value) -> Result<(), String> {
     let target_label = match event.as_str() {
         "tray-panel-state" => TRAY_PANEL_WINDOW_LABEL,
-        "tray-panel-command" | "tray-panel-opened" => MAIN_WINDOW_LABEL,
+        "receive-lyric" => LYRIC_WINDOW_LABEL,
+        "tray-panel-command"
+        | "tray-panel-opened"
+        | "lyric-window-ready"
+        | "lyric-window-closed"
+        | "lyric-control-back" => MAIN_WINDOW_LABEL,
         _ => MAIN_WINDOW_LABEL,
     };
     emit_to_window(&app, target_label, &event, payload)
@@ -803,6 +914,12 @@ pub fn run() {
             resize_mini_window,
             mini_tray,
             restore_window,
+            open_lyric_window,
+            close_lyric_window,
+            set_lyric_ignore_mouse,
+            start_lyric_drag,
+            move_lyric_window,
+            end_lyric_drag,
             emit_to_main,
             update_tray_state,
             start_music_api
@@ -821,7 +938,19 @@ pub fn run() {
                 }
             }
 
-            if matches!(event, tauri::WindowEvent::Destroyed) {
+            if window.label() == LYRIC_WINDOW_LABEL && matches!(event, tauri::WindowEvent::Destroyed)
+            {
+                let _ = emit_to_window(
+                    &window.app_handle(),
+                    MAIN_WINDOW_LABEL,
+                    "lyric-window-closed",
+                    json!({ "closedAt": chrono_free_timestamp() }),
+                );
+            }
+
+            if window.label() == MAIN_WINDOW_LABEL
+                && matches!(event, tauri::WindowEvent::Destroyed)
+            {
                 {
                     let state = window.state::<MusicApiProcess>();
                     if let Ok(mut process_guard) = state.0.lock() {

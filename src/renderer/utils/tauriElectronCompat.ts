@@ -34,6 +34,9 @@ type TrayStatePayload = {
 
 const isTauriRuntime = Boolean((window as any).__TAURI_INTERNALS__);
 const BROWSER_STORE_KEY = 'alger-music-tauri-browser-store';
+const MAIN_WINDOW_LABEL = 'main';
+const TRAY_PANEL_WINDOW_LABEL = 'tray-panel';
+const LYRIC_WINDOW_LABEL = 'lyric-window';
 const listeners = new Map<string, Set<Listener>>();
 const unlisteners = new Map<string, UnlistenFn>();
 let appWindow: ReturnType<typeof getCurrentWindow> | null = null;
@@ -234,7 +237,11 @@ const ensureTauriListener = async (channel: string) => {
     'tray-panel-state',
     'tray-panel-command',
     'tray-panel-opened',
-    'mini-mode'
+    'mini-mode',
+    'receive-lyric',
+    'lyric-window-ready',
+    'lyric-window-closed',
+    'lyric-control-back'
   ]);
   // 根因：托盘面板是 Tauri 动态创建的独立 WebView。旧兼容层只注册全局 listen，
   // 在窗口刚创建、主窗口立刻 emit 的时序下容易错过定向窗口事件；同时 capability
@@ -302,6 +309,62 @@ const send = (channel: string, ...args: any[]) => {
     case 'restore-window':
       void invoke('restore_window');
       break;
+    case 'open-lyric':
+      void invoke('open_lyric_window');
+      break;
+    case 'send-lyric':
+      if (isTauriRuntime) {
+        const payload = args[0] ?? null;
+        void emitTo(LYRIC_WINDOW_LABEL, 'receive-lyric', payload).catch(() => {
+          void invoke('emit_to_main', { event: 'receive-lyric', payload }).catch(() => undefined);
+        });
+      }
+      break;
+    case 'lyric-ready':
+      if (isTauriRuntime) {
+        const payload = args[0] ?? null;
+        void emitTo(MAIN_WINDOW_LABEL, 'lyric-window-ready', payload).catch(() => {
+          void invoke('emit_to_main', { event: 'lyric-window-ready', payload }).catch(
+            () => undefined
+          );
+        });
+      }
+      break;
+    case 'close-lyric':
+      void invoke('close_lyric_window');
+      break;
+    case 'set-ignore-mouse':
+      void invoke('set_lyric_ignore_mouse', { ignore: Boolean(args[0]) });
+      break;
+    case 'lyric-drag-start':
+      void invoke('start_lyric_drag');
+      break;
+    case 'lyric-drag-move':
+      {
+        const payload = args[0] || {};
+        const deltaX =
+          typeof payload === 'object' ? Number(payload.deltaX ?? 0) : Number(args[0] ?? 0);
+        const deltaY =
+          typeof payload === 'object' ? Number(payload.deltaY ?? 0) : Number(args[1] ?? 0);
+        void invoke('move_lyric_window', {
+          deltaX,
+          deltaY
+        });
+      }
+      break;
+    case 'lyric-drag-end':
+      void invoke('end_lyric_drag');
+      break;
+    case 'control-back':
+      if (isTauriRuntime) {
+        const payload = args[0] ?? null;
+        void emitTo(MAIN_WINDOW_LABEL, 'lyric-control-back', payload).catch(() => {
+          void invoke('emit_to_main', { event: 'lyric-control-back', payload }).catch(
+            () => undefined
+          );
+        });
+      }
+      break;
     case 'hide-tray-panel':
       void invoke('hide_tray_panel_window');
       break;
@@ -327,7 +390,8 @@ const send = (channel: string, ...args: any[]) => {
       break;
     default:
       if (isTauriRuntime) {
-        const targetLabel = channel === 'tray-panel-state' ? 'tray-panel' : 'main';
+        const targetLabel =
+          channel === 'tray-panel-state' ? TRAY_PANEL_WINDOW_LABEL : MAIN_WINDOW_LABEL;
         void emitTo(targetLabel, channel, args[0] ?? null).catch(() => {
           void invoke('emit_to_main', { event: channel, payload: args[0] ?? null }).catch(
             () => undefined

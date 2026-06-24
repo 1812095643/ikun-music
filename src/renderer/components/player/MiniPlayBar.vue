@@ -103,7 +103,7 @@
       @mouseleave="handleProgressLeave"
     >
       <div class="progress-track"></div>
-      <div class="progress-fill" :style="{ width: `${(nowTime / allTime) * 100}%` }"></div>
+      <div class="progress-fill" :style="{ width: `${progressPercent}%` }"></div>
     </div>
 
     <!-- 播放列表 - 单独放在外层，不再使用 popover -->
@@ -132,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, ref, useTemplateRef } from 'vue';
+import { computed, onUnmounted, provide, ref, useTemplateRef, watch } from 'vue';
 
 import SongDownloadButton from '@/components/common/SongDownloadButton.vue';
 import SongItem from '@/components/common/SongItem.vue';
@@ -160,6 +160,7 @@ withDefaults(
 // 处理关闭按钮点击
 const handleClose = () => {
   if (settingsStore.isMiniMode) {
+    closePlaylist();
     window.api.restore();
   }
 };
@@ -228,6 +229,29 @@ const toggleFavorite = async (e: Event) => {
 const palyListRef = useTemplateRef('palyListRef') as any;
 const isPlaylistOpen = ref(false);
 
+const resetMiniPlaylistStyles = () => {
+  document.body.style.height = '';
+  document.body.style.overflow = '';
+};
+
+const syncMiniWindowSize = (showPlaylist: boolean) => {
+  if (!settingsStore.isMiniMode) return;
+  if (window.api && typeof window.api.resizeMiniWindow === 'function') {
+    window.api.resizeMiniWindow(showPlaylist);
+  }
+};
+
+const closePlaylist = () => {
+  if (!isPlaylistOpen.value) {
+    resetMiniPlaylistStyles();
+    syncMiniWindowSize(false);
+    return;
+  }
+  isPlaylistOpen.value = false;
+  resetMiniPlaylistStyles();
+  syncMiniWindowSize(false);
+};
+
 // 提供 openPlaylistDrawer 给子组件
 provide('openPlaylistDrawer', (songId: number) => {
   console.log('打开歌单抽屉', songId);
@@ -248,18 +272,13 @@ const togglePlaylist = () => {
         document.body.style.overflow = 'visible';
 
         // 使用新的专用 API 调整窗口大小
-        if (window.api && typeof window.api.resizeMiniWindow === 'function') {
-          window.api.resizeMiniWindow(true);
-        }
+        syncMiniWindowSize(true);
       } else {
         // 关闭播放列表时强制调整DOM
-        document.body.style.height = '64px';
-        document.body.style.overflow = 'hidden';
+        resetMiniPlaylistStyles();
 
         // 使用新的专用 API 调整窗口大小
-        if (window.api && typeof window.api.resizeMiniWindow === 'function') {
-          window.api.resizeMiniWindow(false);
-        }
+        syncMiniWindowSize(false);
       }
     } catch (error) {
       console.error('调整窗口大小失败:', error);
@@ -297,6 +316,7 @@ const handleArtistClick = (id: number) => {
 
 // 进度条相关
 const handleProgressClick = (e: MouseEvent) => {
+  if (allTime.value <= 0) return;
   const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
   const percent = (e.clientX - rect.left) / rect.width;
   audioService.seek(allTime.value * percent);
@@ -307,6 +327,7 @@ const hoverTime = ref(0);
 const isHovering = ref(false);
 
 const handleProgressHover = (e: MouseEvent) => {
+  if (allTime.value <= 0) return;
   const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
   const percent = (e.clientX - rect.left) / rect.width;
   hoverTime.value = allTime.value * percent;
@@ -317,13 +338,18 @@ const handleProgressLeave = () => {
   isHovering.value = false;
 };
 
+const progressPercent = computed(() => {
+  if (allTime.value <= 0) return 0;
+  return Math.min((nowTime.value / allTime.value) * 100, 100);
+});
+
 // 播放控制
 const handlePrev = () => playerStore.prevPlay();
 const handleNext = () => playerStore.nextPlay();
 
 const playMusicEvent = async () => {
   try {
-    playerStore.setPlay(playerStore.playMusic);
+    await playerStore.setPlay(playerStore.playMusic);
   } catch (error) {
     console.error('播放出错:', error);
     playerStore.nextPlay();
@@ -334,6 +360,19 @@ const playMusicEvent = async () => {
 const setMusicFull = () => {
   playerStore.setMusicFull(true);
 };
+
+watch(
+  () => settingsStore.isMiniMode,
+  (isMiniMode) => {
+    if (!isMiniMode) {
+      closePlaylist();
+    }
+  }
+);
+
+onUnmounted(() => {
+  closePlaylist();
+});
 </script>
 
 <style lang="scss" scoped>
