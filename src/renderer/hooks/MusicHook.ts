@@ -13,6 +13,7 @@ import { parseLyrics } from '@/utils/yrcParser';
 const windowData = window as any;
 const getCompatApi = () => (isElectron ? window.api || null : null);
 const getCompatIpcRenderer = () => (isElectron ? windowData.electron?.ipcRenderer || null : null);
+let lyricWindowListenersInitialized = false;
 
 // 全局 playerStore 引用，通过 initMusicHook 函数注入
 let playerStore: ReturnType<typeof usePlayerStore> | null = null;
@@ -29,6 +30,7 @@ export const initMusicHook = (store: ReturnType<typeof usePlayerStore>) => {
 
   // 在 store 注入后初始化需要 store 的功能
   setupKeyboardListeners();
+  setupLyricWindowListeners();
   setupMusicWatchers();
   setupCorrectionTimeWatcher();
   setupPlayStateWatcher();
@@ -798,6 +800,25 @@ export const sendLyricToWin = () => {
 
 // 歌词同步定时器
 let lyricSyncInterval: any = null;
+const setupLyricWindowListeners = () => {
+  if (!isElectron || lyricWindowListenersInitialized) return;
+
+  const compatApi = getCompatApi();
+  if (!compatApi) return;
+
+  lyricWindowListenersInitialized = true;
+
+  compatApi.onLyricWindowClosed(() => {
+    isLyricWindowOpen.value = false;
+    stopLyricSync();
+  });
+
+  compatApi.onLyricWindowReady(() => {
+    if (isLyricWindowOpen.value) {
+      sendLyricToWin();
+    }
+  });
+};
 
 // 开始歌词同步
 const startLyricSync = () => {
@@ -949,6 +970,7 @@ if (lyricControlIpcRenderer) {
         break;
       case 'close':
         isLyricWindowOpen.value = false; // 确保状态更新
+        stopLyricSync();
         break;
       default:
         console.log('Unknown command:', command);
@@ -994,7 +1016,7 @@ export const initAudioListeners = async () => {
 
     // 监听歌词窗口事件
     const compatApi = getCompatApi();
-    if (compatApi) {
+    if (compatApi && !lyricWindowListenersInitialized) {
       compatApi.onLyricWindowClosed(() => {
         isLyricWindowOpen.value = false;
       });
