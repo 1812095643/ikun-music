@@ -9,6 +9,11 @@ import { openPath, openUrl } from '@tauri-apps/plugin-opener';
 import { Store } from '@tauri-apps/plugin-store';
 
 import defaultSettings from '../../main/set.json';
+import {
+  consumeMiniModeRestoreRoute,
+  rememberMiniModeReturnRoute,
+  setBrowserMiniModeFlag
+} from './miniModeNavigation';
 
 type Listener = (...args: any[]) => void;
 
@@ -34,6 +39,7 @@ type TrayStatePayload = {
 
 const isTauriRuntime = Boolean((window as any).__TAURI_INTERNALS__);
 const BROWSER_STORE_KEY = 'alger-music-tauri-browser-store';
+const BROWSER_LYRIC_RETURN_ROUTE_KEY = 'alger-music-browser-lyric-return-route';
 const MAIN_WINDOW_LABEL = 'main';
 const TRAY_PANEL_WINDOW_LABEL = 'tray-panel';
 const LYRIC_WINDOW_LABEL = 'lyric-window';
@@ -168,6 +174,34 @@ const emitLocal = (channel: string, ...args: any[]) => {
   listeners.get(channel)?.forEach((listener) => listener({ sender: null }, ...args));
 };
 
+const hasLocalListeners = (channel: string) => {
+  return (listeners.get(channel)?.size || 0) > 0;
+};
+
+const getBrowserHashRoute = () => window.location.hash.replace(/^#/, '') || '/';
+
+const navigateBrowserHashRoute = (route: string) => {
+  const normalizedRoute = route.startsWith('/') ? route : `/${route}`;
+  const targetHash = `#${normalizedRoute}`;
+  if (window.location.hash !== targetHash) {
+    window.location.hash = normalizedRoute;
+  }
+};
+
+const openBrowserLyricRoute = () => {
+  const currentRoute = getBrowserHashRoute();
+  if (!currentRoute.includes('/lyric')) {
+    localStorage.setItem(BROWSER_LYRIC_RETURN_ROUTE_KEY, currentRoute);
+  }
+  navigateBrowserHashRoute('/lyric');
+};
+
+const closeBrowserLyricRoute = () => {
+  const returnRoute = localStorage.getItem(BROWSER_LYRIC_RETURN_ROUTE_KEY) || '/';
+  localStorage.removeItem(BROWSER_LYRIC_RETURN_ROUTE_KEY);
+  navigateBrowserHashRoute(returnRoute);
+};
+
 const sanitizeFilename = (filename: string) =>
   filename
     .replace(/[\\/:*?"<>|]/g, '_')
@@ -261,25 +295,37 @@ const send = (channel: string, ...args: any[]) => {
   const currentWindow = getAppWindow();
   switch (channel) {
     case 'minimize-window':
-      void invoke('minimize_window');
+      if (isTauriRuntime) {
+        void invoke('minimize_window');
+      }
       break;
     case 'maximize-window':
-      void invoke('maximize_window');
+      if (isTauriRuntime) {
+        void invoke('maximize_window');
+      }
       break;
     case 'close-window':
-      void invoke('close_window');
+      if (isTauriRuntime) {
+        void invoke('close_window');
+      }
       break;
     case 'quit-app':
-      void invoke('quit_app');
+      if (isTauriRuntime) {
+        void invoke('quit_app');
+      }
       break;
     case 'drag-start':
       void currentWindow?.startDragging();
       break;
     case 'resize-window':
-      void invoke('set_window_size', { width: args[0], height: args[1] });
+      if (isTauriRuntime) {
+        void invoke('set_window_size', { width: args[0], height: args[1] });
+      }
       break;
     case 'resize-mini-window':
-      void invoke('resize_mini_window', { showPlaylist: Boolean(args[0]) });
+      if (isTauriRuntime) {
+        void invoke('resize_mini_window', { showPlaylist: Boolean(args[0]) });
+      }
       break;
     case 'set-content-zoom':
       document.documentElement.style.zoom = String(args[0] || 1);
@@ -301,16 +347,45 @@ const send = (channel: string, ...args: any[]) => {
       }
       break;
     case 'mini-window':
-      void invoke('mini_window');
+      if (isTauriRuntime) {
+        void invoke('mini_window');
+      } else {
+        const currentRoute = getBrowserHashRoute();
+        if (!currentRoute.includes('/mini')) {
+          rememberMiniModeReturnRoute(currentRoute);
+        }
+        setBrowserMiniModeFlag(true);
+        if (hasLocalListeners('mini-mode')) {
+          emitLocal('mini-mode', true);
+        } else {
+          navigateBrowserHashRoute('/mini');
+        }
+      }
       break;
     case 'mini-tray':
-      void invoke('mini_tray');
+      if (isTauriRuntime) {
+        void invoke('mini_tray');
+      }
       break;
     case 'restore-window':
-      void invoke('restore_window');
+      if (isTauriRuntime) {
+        void invoke('restore_window');
+      } else {
+        setBrowserMiniModeFlag(false);
+        if (hasLocalListeners('mini-mode')) {
+          emitLocal('mini-mode', false);
+        } else {
+          const restoreRoute = consumeMiniModeRestoreRoute() || '/';
+          navigateBrowserHashRoute(restoreRoute);
+        }
+      }
       break;
     case 'open-lyric':
-      void invoke('open_lyric_window');
+      if (isTauriRuntime) {
+        void invoke('open_lyric_window');
+      } else {
+        openBrowserLyricRoute();
+      }
       break;
     case 'send-lyric':
       if (isTauriRuntime) {
@@ -318,6 +393,8 @@ const send = (channel: string, ...args: any[]) => {
         void emitTo(LYRIC_WINDOW_LABEL, 'receive-lyric', payload).catch(() => {
           void invoke('emit_to_main', { event: 'receive-lyric', payload }).catch(() => undefined);
         });
+      } else {
+        emitLocal('receive-lyric', args[0] ?? null);
       }
       break;
     case 'lyric-ready':
@@ -328,16 +405,28 @@ const send = (channel: string, ...args: any[]) => {
             () => undefined
           );
         });
+      } else {
+        emitLocal('lyric-window-ready', args[0] ?? { readyAt: Date.now() });
       }
       break;
     case 'close-lyric':
-      void invoke('close_lyric_window');
+      if (isTauriRuntime) {
+        void invoke('close_lyric_window');
+      } else {
+        emitLocal('lyric-control-back', 'close');
+        emitLocal('lyric-window-closed', { closedAt: Date.now() });
+        closeBrowserLyricRoute();
+      }
       break;
     case 'set-ignore-mouse':
-      void invoke('set_lyric_ignore_mouse', { ignore: Boolean(args[0]) });
+      if (isTauriRuntime) {
+        void invoke('set_lyric_ignore_mouse', { ignore: Boolean(args[0]) });
+      }
       break;
     case 'lyric-drag-start':
-      void invoke('start_lyric_drag');
+      if (isTauriRuntime) {
+        void invoke('start_lyric_drag');
+      }
       break;
     case 'lyric-drag-move':
       {
@@ -346,14 +435,18 @@ const send = (channel: string, ...args: any[]) => {
           typeof payload === 'object' ? Number(payload.deltaX ?? 0) : Number(args[0] ?? 0);
         const deltaY =
           typeof payload === 'object' ? Number(payload.deltaY ?? 0) : Number(args[1] ?? 0);
-        void invoke('move_lyric_window', {
-          deltaX,
-          deltaY
-        });
+        if (isTauriRuntime) {
+          void invoke('move_lyric_window', {
+            deltaX,
+            deltaY
+          });
+        }
       }
       break;
     case 'lyric-drag-end':
-      void invoke('end_lyric_drag');
+      if (isTauriRuntime) {
+        void invoke('end_lyric_drag');
+      }
       break;
     case 'control-back':
       if (isTauriRuntime) {
@@ -363,10 +456,14 @@ const send = (channel: string, ...args: any[]) => {
             () => undefined
           );
         });
+      } else {
+        emitLocal('lyric-control-back', args[0] ?? null);
       }
       break;
     case 'hide-tray-panel':
-      void invoke('hide_tray_panel_window');
+      if (isTauriRuntime) {
+        void invoke('hide_tray_panel_window');
+      }
       break;
     case 'update-tray-state':
       if (isTauriRuntime) {

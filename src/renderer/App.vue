@@ -40,6 +40,7 @@ import { isElectron, isLyricWindow } from '@/utils';
 import { checkLoginStatus } from '@/utils/auth';
 import {
   consumeMiniModeRestoreRoute,
+  hasBrowserMiniModeFlag,
   rememberMiniModeReturnRoute
 } from '@/utils/miniModeNavigation';
 
@@ -70,6 +71,7 @@ const playerStore = usePlayerStore();
 const playerCoreStore = usePlayerCoreStore();
 const userStore = useUserStore();
 const router = useRouter();
+const isBrowserCompatRuntime = !(window as any).__TAURI_INTERNALS__;
 
 const showSplash = ref(true);
 const isTrayPanelWindow = computed(() => window.location.hash.includes('tray-panel'));
@@ -335,6 +337,25 @@ watch(
 const theme = computed(() => {
   return settingsStore.theme;
 });
+
+const syncBrowserMiniModeState = () => {
+  if (!isBrowserCompatRuntime || isLyricWindow.value || isTrayPanelWindow.value) {
+    return;
+  }
+
+  const shouldUseMiniMode = router.currentRoute.value.path === '/mini' && hasBrowserMiniModeFlag();
+  if (settingsStore.isMiniMode !== shouldUseMiniMode) {
+    settingsStore.setMiniMode(shouldUseMiniMode);
+  }
+};
+
+watch(
+  () => router.currentRoute.value.fullPath,
+  () => {
+    syncBrowserMiniModeState();
+  },
+  { immediate: true }
+);
 
 // 监听字体变化并应用
 watch(

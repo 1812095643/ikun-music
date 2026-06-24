@@ -5,6 +5,7 @@ import MiniLayout from '@/layout/MiniLayout.vue';
 import homeRouter from '@/router/home';
 import otherRouter from '@/router/other';
 import { useSettingsStore } from '@/store/modules/settings';
+import { hasBrowserMiniModeFlag } from '@/utils/miniModeNavigation';
 
 import { useUserStore } from '../store/modules/user';
 
@@ -63,9 +64,11 @@ const router = createRouter({
 // 添加全局前置守卫
 router.beforeEach((to, _, next) => {
   const settingsStore = getSettingsStore();
+  const isBrowserMiniMode =
+    !(window as any).__TAURI_INTERNALS__ && hasBrowserMiniModeFlag();
 
   // 如果是迷你模式
-  if (settingsStore.isMiniMode) {
+  if (settingsStore.isMiniMode || isBrowserMiniMode) {
     // 只允许访问 /mini 路由
     if (to.path === '/mini') {
       next();

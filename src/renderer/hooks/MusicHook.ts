@@ -982,6 +982,12 @@ export { parseLyricsString };
 const lyricControlIpcRenderer = getCompatIpcRenderer();
 if (lyricControlIpcRenderer) {
   lyricControlIpcRenderer.on('lyric-control-back', (_, command: string) => {
+    // 浏览器本地调试时，歌词页可能在没有主播放器上下文的情况下被直接打开；
+    // 这时控制命令应该静默忽略，避免因为未初始化 store 直接抛错。
+    if (!playerStore && command !== 'close') {
+      return;
+    }
+
     switch (command) {
       case 'playpause':
         if (getPlayerStore().playMusic?.id) {

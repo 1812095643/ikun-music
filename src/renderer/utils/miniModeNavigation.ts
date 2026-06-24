@@ -1,6 +1,7 @@
 const MINI_MODE_RETURN_ROUTE_KEY = 'currentRoute';
 const MINI_MODE_PENDING_ROUTE_KEY = 'miniModePendingRoute';
 const MINI_MODE_PENDING_PLAYLIST_DRAWER_SONG_ID_KEY = 'miniModePendingPlaylistDrawerSongId';
+const BROWSER_MINI_MODE_KEY = 'browserMiniMode';
 
 type RestoreMainWindowOptions = {
   beforeRestore?: () => void;
@@ -13,6 +14,18 @@ export const rememberMiniModeReturnRoute = (fullPath: string) => {
   localStorage.removeItem(MINI_MODE_PENDING_ROUTE_KEY);
   localStorage.removeItem(MINI_MODE_PENDING_PLAYLIST_DRAWER_SONG_ID_KEY);
   localStorage.setItem(MINI_MODE_RETURN_ROUTE_KEY, fullPath);
+};
+
+export const setBrowserMiniModeFlag = (enabled: boolean) => {
+  if (enabled) {
+    localStorage.setItem(BROWSER_MINI_MODE_KEY, '1');
+    return;
+  }
+  localStorage.removeItem(BROWSER_MINI_MODE_KEY);
+};
+
+export const hasBrowserMiniModeFlag = () => {
+  return localStorage.getItem(BROWSER_MINI_MODE_KEY) === '1';
 };
 
 export const requestMiniModeNavigation = (targetRoute: string) => {
