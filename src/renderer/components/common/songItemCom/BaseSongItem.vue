@@ -24,7 +24,7 @@
       @update:show="showDropdown = $event"
       @play="requestPlay(item)"
       @play-next="handlePlayNext"
-      @download="downloadMusic(item)"
+      @download="(quality) => downloadMusic(item, quality)"
       @download-lyric="downloadLyric(item)"
       @toggle-favorite="toggleFavorite"
       @toggle-dislike="toggleDislike"

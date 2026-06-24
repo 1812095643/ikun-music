@@ -44,6 +44,14 @@
 
       <!-- 右侧功能按钮 -->
       <div class="function-buttons">
+        <song-download-button
+          v-if="playMusic?.id"
+          :item="playMusic"
+          size="small"
+          button-class="function-button"
+          title="下载歌曲"
+        />
+
         <div class="function-button">
           <i
             class="iconfont icon-likefill"
@@ -126,6 +134,7 @@
 <script setup lang="ts">
 import { computed, provide, ref, useTemplateRef } from 'vue';
 
+import SongDownloadButton from '@/components/common/SongDownloadButton.vue';
 import SongItem from '@/components/common/SongItem.vue';
 import { allTime, artistList, nowTime, playMusic } from '@/hooks/MusicHook';
 import { useArtist } from '@/hooks/useArtist';
@@ -490,6 +499,15 @@ const setMusicFull = () => {
   .iconfont {
     @apply text-lg;
   }
+}
+
+:deep(.function-button.song-download-button) {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 0.5rem;
+  color: rgb(82 82 82);
+  background: transparent;
 }
 
 .close-button {

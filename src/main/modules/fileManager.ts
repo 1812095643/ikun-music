@@ -14,8 +14,21 @@ import * as path from 'path';
 import { getStore } from './config';
 
 const MAX_CONCURRENT_DOWNLOADS = 3;
-const downloadQueue: { url: string; filename: string; songInfo: any; type?: string }[] = [];
+const downloadQueue: {
+  url: string;
+  filename: string;
+  songInfo: any;
+  type?: string;
+  quality?: string;
+  downloadKey?: string;
+}[] = [];
 let activeDownloads = 0;
+
+function getDownloadTaskKey(filename: string, songInfo?: any, quality?: string): string {
+  const songId = songInfo?.id ? String(songInfo.id) : filename;
+  const qualityKey = songInfo?.downloadQuality || quality || 'default';
+  return `${songId}::${qualityKey}`;
+}
 
 // 创建一个store实例用于存储下载历史
 const downloadStore = new Store({
@@ -388,13 +401,29 @@ function handleDownloadRequest(
     url,
     filename,
     songInfo,
-    type
-  }: { url: string; filename: string; songInfo?: any; type?: string }
+    type,
+    quality,
+    downloadKey
+  }: {
+    url: string;
+    filename: string;
+    songInfo?: any;
+    type?: string;
+    quality?: string;
+    downloadKey?: string;
+  }
 ) {
+  const taskKey = getDownloadTaskKey(filename, songInfo, quality);
   // 检查是否已经在队列中或正在下载
-  if (downloadQueue.some((item) => item.filename === filename)) {
+  if (
+    downloadQueue.some(
+      (item) => getDownloadTaskKey(item.filename, item.songInfo, item.quality) === taskKey
+    )
+  ) {
     event.reply('music-download-error', {
       filename,
+      quality,
+      downloadKey,
       error: '该歌曲已在下载队列中'
     });
     return;
@@ -406,21 +435,30 @@ function handleDownloadRequest(
 
   // 检查是否已下载（通过ID）
   const isDownloaded =
-    songInfo?.id && Object.values(songInfos).some((info: any) => info.id === songInfo.id);
+    songInfo?.id &&
+    Object.values(songInfos).some(
+      (info: any) =>
+        info.id === songInfo.id &&
+        (info.downloadQuality || 'default') === (songInfo.downloadQuality || quality || 'default')
+    );
 
   if (isDownloaded) {
     event.reply('music-download-error', {
       filename,
+      quality,
+      downloadKey,
       error: '该歌曲已下载'
     });
     return;
   }
 
   // 添加到下载队列
-  downloadQueue.push({ url, filename, songInfo, type });
+  downloadQueue.push({ url, filename, songInfo, type, quality, downloadKey });
   event.reply('music-download-queued', {
     filename,
-    songInfo
+    songInfo,
+    quality,
+    downloadKey
   });
 
   // 尝试开始下载
@@ -435,11 +473,11 @@ async function processDownloadQueue(event: Electron.IpcMainEvent) {
     return;
   }
 
-  const { url, filename, songInfo, type } = downloadQueue.shift()!;
+  const { url, filename, songInfo, type, quality, downloadKey } = downloadQueue.shift()!;
   activeDownloads++;
 
   try {
-    await downloadMusic(event, { url, filename, songInfo, type });
+    await downloadMusic(event, { url, filename, songInfo, type, quality, downloadKey });
   } finally {
     activeDownloads--;
     processDownloadQueue(event);
@@ -466,8 +504,17 @@ async function downloadMusic(
     url,
     filename,
     songInfo,
-    type = 'mp3'
-  }: { url: string; filename: string; songInfo: any; type?: string }
+    type = 'mp3',
+    quality,
+    downloadKey
+  }: {
+    url: string;
+    filename: string;
+    songInfo: any;
+    type?: string;
+    quality?: string;
+    downloadKey?: string;
+  }
 ) {
   let finalFilePath = '';
   let writer: fs.WriteStream | null = null;
@@ -847,6 +894,8 @@ async function downloadMusic(
         path: finalFilePath,
         downloadTime: Date.now(),
         type: fileExtension.substring(1), // 去掉前面的点号，只保留扩展名
+        downloadQuality: songInfo?.downloadQuality || quality || 'default',
+        downloadQualityLabel: songInfo?.downloadQualityLabel || '',
         lyric: lyricData
       };
 
@@ -895,6 +944,8 @@ async function downloadMusic(
         success: true,
         path: finalFilePath,
         filename,
+        quality,
+        downloadKey,
         size: totalSize,
         songInfo: newSongInfo
       });
@@ -931,7 +982,9 @@ async function downloadMusic(
     event.reply('music-download-complete', {
       success: false,
       error: error.message || '下载失败',
-      filename
+      filename,
+      quality,
+      downloadKey
     });
   }
 }

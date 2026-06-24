@@ -3,12 +3,19 @@ import { useMessage } from 'naive-ui';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { getKuwoMusicUrl } from '@/api/kuwo';
 import { getMusicLrc } from '@/api/music';
 import { getSongUrl } from '@/store/modules/player';
 import type { SongResult } from '@/types/music';
 import { isElectron } from '@/utils';
+import { getDefaultDownloadQuality, getKuwoDownloadQuality } from '@/utils/downloadQuality';
 
 const getIpcRenderer = () => (isElectron ? window.electron?.ipcRenderer || null : null);
+const buildDownloadKey = (filename: string, quality?: string) =>
+  `${filename}::${quality || 'default'}`;
+const getDownloadEventKey = (data: any) =>
+  data?.downloadKey ||
+  buildDownloadKey(data?.filename || '', data?.quality || data?.songInfo?.downloadQuality);
 
 // 全局下载管理（闭包模式）
 const createDownloadManager = () => {
@@ -71,26 +78,28 @@ const createDownloadManager = () => {
 
       // 创建新的监听器
       completeListener = (_event, data) => {
-        if (!data.filename || !activeDownloads.has(data.filename)) return;
+        const downloadKey = getDownloadEventKey(data);
+        if (!downloadKey || !activeDownloads.has(downloadKey)) return;
 
         // 如果该文件已经通知过，则跳过
-        if (notifiedDownloads.has(data.filename)) return;
+        if (notifiedDownloads.has(downloadKey)) return;
 
         // 标记为已通知
-        notifiedDownloads.add(data.filename);
+        notifiedDownloads.add(downloadKey);
 
         // 从活动下载移除
-        activeDownloads.delete(data.filename);
+        activeDownloads.delete(downloadKey);
       };
 
       errorListener = (_event, data) => {
-        if (!data.filename || !activeDownloads.has(data.filename)) return;
+        const downloadKey = getDownloadEventKey(data);
+        if (!downloadKey || !activeDownloads.has(downloadKey)) return;
 
         // 如果该文件已经通知过，则跳过
-        if (notifiedDownloads.has(data.filename)) return;
+        if (notifiedDownloads.has(downloadKey)) return;
 
         // 标记为已通知
-        notifiedDownloads.add(data.filename);
+        notifiedDownloads.add(downloadKey);
 
         // 显示失败通知
         message.error(
@@ -101,7 +110,7 @@ const createDownloadManager = () => {
         );
 
         // 从活动下载移除
-        activeDownloads.delete(data.filename);
+        activeDownloads.delete(downloadKey);
       };
 
       // 添加监听器
@@ -154,9 +163,10 @@ export const useDownload = () => {
   /**
    * 下载单首音乐
    * @param song 歌曲信息
+   * @param quality 下载品质。酷我歌曲会严格使用接口文档中的品质参数，其它来源继续复用原下载链路。
    * @returns Promise<void>
    */
-  const downloadMusic = async (song: SongResult) => {
+  const downloadMusic = async (song: SongResult, quality?: string) => {
     if (isDownloading.value) {
       message.warning(t('songItem.message.downloading'));
       return;
@@ -165,7 +175,12 @@ export const useDownload = () => {
     try {
       isDownloading.value = true;
 
-      const musicUrl = (await getSongUrl(song.id as number, cloneDeep(song), true)) as any;
+      const downloadQuality =
+        song.source === 'kuwo' ? getKuwoDownloadQuality(quality) : getDefaultDownloadQuality();
+      const musicUrl =
+        song.source === 'kuwo'
+          ? ((await getKuwoMusicUrl(song.id as number, downloadQuality.key)).data.data as any)
+          : ((await getSongUrl(song.id as number, cloneDeep(song), true)) as any);
       if (!musicUrl) {
         throw new Error(t('songItem.message.getUrlFailed'));
       }
@@ -173,15 +188,16 @@ export const useDownload = () => {
       // 构建文件名
       const artistNames = (song.ar || song.song?.artists)?.map((a) => a.name).join(',');
       const filename = `${song.name} - ${artistNames}`;
+      const downloadKey = buildDownloadKey(filename, downloadQuality.key);
 
       // 检查是否已在下载
-      if (downloadManager.hasDownload(filename)) {
+      if (downloadManager.hasDownload(downloadKey)) {
         isDownloading.value = false;
         return;
       }
 
       // 添加到活动下载集合
-      downloadManager.addDownload(filename);
+      downloadManager.addDownload(downloadKey);
 
       const songData = cloneDeep(song);
       songData.ar = songData.ar || songData.song?.artists;
@@ -192,9 +208,13 @@ export const useDownload = () => {
         filename,
         songInfo: {
           ...songData,
-          downloadTime: Date.now()
+          downloadTime: Date.now(),
+          downloadQuality: downloadQuality.key,
+          downloadQualityLabel: downloadQuality.label
         },
-        type: musicUrl.type
+        type: musicUrl.type || downloadQuality.extension,
+        quality: downloadQuality.key,
+        downloadKey
       });
 
       message.success(t('songItem.message.downloadQueued'));
@@ -215,7 +235,7 @@ export const useDownload = () => {
    * @param songs 歌曲列表
    * @returns Promise<void>
    */
-  const batchDownloadMusic = async (songs: SongResult[]) => {
+  const batchDownloadMusic = async (songs: SongResult[], quality?: string) => {
     if (isDownloading.value) {
       message.warning(t('favorite.downloading'));
       return;
@@ -246,18 +266,25 @@ export const useDownload = () => {
       const downloadUrls = await Promise.all(
         songs.map(async (song) => {
           try {
-            const data = (await getSongUrl(song.id, song, true)) as any;
-            return { song, ...data };
+            const downloadQuality =
+              song.source === 'kuwo'
+                ? getKuwoDownloadQuality(quality)
+                : getDefaultDownloadQuality();
+            const data =
+              song.source === 'kuwo'
+                ? ((await getKuwoMusicUrl(song.id, downloadQuality.key)).data.data as any)
+                : ((await getSongUrl(song.id, song, true)) as any);
+            return { song, downloadQuality, ...data };
           } catch (error) {
             console.error(`获取歌曲 ${song.name} 下载链接失败:`, error);
             failCount++;
-            return { song, url: null };
+            return { song, downloadQuality: getDefaultDownloadQuality(), url: null };
           }
         })
       );
 
       // 开始下载有效的链接
-      downloadUrls.forEach(({ song, url, type }) => {
+      downloadUrls.forEach(({ song, url, type, downloadQuality }) => {
         if (!url) {
           failCount++;
           trackProgress();
@@ -266,28 +293,33 @@ export const useDownload = () => {
 
         const songData = cloneDeep(song);
         const filename = `${song.name} - ${(song.ar || song.song?.artists)?.map((a) => a.name).join(',')}`;
+        const downloadKey = buildDownloadKey(filename, downloadQuality.key);
 
         // 检查是否已在下载
-        if (downloadManager.hasDownload(filename)) {
+        if (downloadManager.hasDownload(downloadKey)) {
           failCount++;
           trackProgress();
           return;
         }
 
         // 添加到活动下载集合
-        downloadManager.addDownload(filename);
+        downloadManager.addDownload(downloadKey);
 
         const songInfo = {
           ...songData,
           ar: songData.ar || songData.song?.artists,
-          downloadTime: Date.now()
+          downloadTime: Date.now(),
+          downloadQuality: downloadQuality.key,
+          downloadQualityLabel: downloadQuality.label
         };
 
         getIpcRenderer()?.send('download-music', {
           url,
           filename,
           songInfo,
-          type
+          type: type || downloadQuality.extension,
+          quality: downloadQuality.key,
+          downloadKey
         });
 
         successCount++;

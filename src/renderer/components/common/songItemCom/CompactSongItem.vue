@@ -87,6 +87,12 @@
           <i v-if="isPlaying && play" class="iconfont icon-stop"></i>
           <i v-else class="iconfont icon-playfill"></i>
         </div>
+        <song-download-button
+          :item="item"
+          size="small"
+          :button-class="downloadButtonClass"
+          title="下载歌曲"
+        />
         <div
           class="song-item-operating-menu"
           @click.stop="onMenuClick"
@@ -106,6 +112,7 @@ import { computed, ref } from 'vue';
 import { usePlayerStore } from '@/store';
 import type { SongResult } from '@/types/music';
 
+import SongDownloadButton from '../SongDownloadButton.vue';
 import BaseSongItem from './BaseSongItem.vue';
 
 const playerStore = usePlayerStore();
@@ -140,6 +147,11 @@ const playLoading = computed(() => baseItem.value?.playLoading || false);
 const isFavorite = computed(() => baseItem.value?.isFavorite || false);
 const isHovering = computed(() => baseItem.value?.isHovering || false);
 const artists = computed(() => baseItem.value?.artists || []);
+const downloadButtonClass = computed(() =>
+  !isHovering.value && !isPlaying.value
+    ? 'song-item-operating-download opacity-0'
+    : 'song-item-operating-download'
+);
 
 // 包装方法，避免直接访问可能为undefined的ref
 const onToggleSelect = () => {
@@ -227,6 +239,7 @@ const formatDuration = (ms: number): string => {
 
     .song-item-operating-like,
     .song-item-operating-play,
+    .song-item-operating-download,
     .song-item-operating-menu {
       @apply transition-opacity duration-200;
     }

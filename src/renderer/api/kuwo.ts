@@ -1,5 +1,6 @@
 import type { SongResult } from '@/types/music';
 import { isElectron } from '@/utils';
+import { type DownloadQualityKey,getKuwoDownloadQuality } from '@/utils/downloadQuality';
 import { ensureMusicApiReady } from '@/utils/tauriElectronCompat';
 
 const KUWO_USER_AGENT =
@@ -313,10 +314,15 @@ export const mapKuwoSong = (song: KuwoSongItem): SongResult => {
   };
 };
 
-export const getKuwoMusicUrl = async (id: number | string) => {
+export const getKuwoMusicUrl = async (
+  id: number | string,
+  quality?: DownloadQualityKey | string
+) => {
   const rid = String(id).replace(/^MUSIC_/i, '');
-  const documentedUrl = `https://api.kuwo.cn/api/v1/www/music/playUrl?mid=${rid}&type=320kmp3&httpsStatus=1&plat=pc`;
-  const fallbackUrl = `https://antiserver.kuwo.cn/anti.s?type=convert_url3&rid=MUSIC_${rid}&format=mp3&response=json`;
+  const qualityOption = getKuwoDownloadQuality(quality);
+  const documentedUrl = `https://api.kuwo.cn/api/v1/www/music/playUrl?mid=${rid}&type=${qualityOption.apiType}&httpsStatus=1&plat=pc`;
+  const fallbackFormat = qualityOption.extension === 'flac' ? 'flac' : 'mp3';
+  const fallbackUrl = `https://antiserver.kuwo.cn/anti.s?type=convert_url3&rid=MUSIC_${rid}&format=${fallbackFormat}&response=json`;
   let musicUrl = '';
   let lastError: unknown;
 
@@ -360,8 +366,11 @@ export const getKuwoMusicUrl = async (id: number | string) => {
       message: 'success',
       data: {
         url: musicUrl,
-        type: 'mp3',
-        source: 'kuwo'
+        type: qualityOption.extension,
+        source: 'kuwo',
+        quality: qualityOption.key,
+        qualityLabel: qualityOption.label,
+        bitrate: qualityOption.apiType
       }
     }
   };

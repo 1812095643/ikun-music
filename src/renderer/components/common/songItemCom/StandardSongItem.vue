@@ -74,6 +74,7 @@
         <button class="song-action-btn" @click.stop="onPlayNext">
           <i class="ri-add-line"></i>
         </button>
+        <song-download-button :item="item" title="下载歌曲" />
         <button class="song-action-btn" @click.stop="onMenuClick">
           <i class="ri-file-copy-line"></i>
         </button>
@@ -101,6 +102,7 @@ import { usePlayerStore } from '@/store';
 import type { SongResult } from '@/types/music';
 import { getImgUrl } from '@/utils';
 
+import SongDownloadButton from '../SongDownloadButton.vue';
 import BaseSongItem from './BaseSongItem.vue';
 
 const playerStore = usePlayerStore();
@@ -239,11 +241,11 @@ const formatDuration = (duration: number): string => {
 
   .song-item-operating {
     display: grid;
-    grid-template-columns: repeat(3, 42px) minmax(110px, 170px) 58px;
+    grid-template-columns: repeat(4, 42px) minmax(110px, 170px) 58px;
     align-items: center;
     justify-content: end;
     gap: 4px;
-    min-width: 440px;
+    min-width: 482px;
     margin-left: clamp(48px, 8vw, 120px);
   }
 

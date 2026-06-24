@@ -178,7 +178,7 @@ const getDownloadExtension = (url: string, type?: string) => {
 };
 
 const downloadMusicFile = async (payload: any) => {
-  const { url, filename, songInfo, type } = payload || {};
+  const { url, filename, songInfo, type, quality, downloadKey } = payload || {};
   if (!url || !filename) {
     emitLocal('music-download-error', { filename, error: '下载参数不完整' });
     return;
@@ -188,7 +188,7 @@ const downloadMusicFile = async (payload: any) => {
   const extension = getDownloadExtension(url, type);
   const relativePath = `${safeName}${extension}`;
   try {
-    emitLocal('music-download-queued', { filename: safeName, songInfo });
+    emitLocal('music-download-queued', { filename: safeName, songInfo, quality, downloadKey });
     const response = await (isTauriRuntime ? tauriFetch : fetch)(url, {
       headers: { 'User-Agent': 'Mozilla/5.0' }
     });
@@ -208,12 +208,20 @@ const downloadMusicFile = async (payload: any) => {
     emitLocal('music-download-complete', {
       filename: safeName,
       filePath: relativePath,
-      songInfo,
+      songInfo: {
+        ...(songInfo || {}),
+        downloadQuality: songInfo?.downloadQuality || quality || 'default',
+        type: extension.replace(/^\./, '')
+      },
+      quality,
+      downloadKey,
       status: 'completed'
     });
   } catch (error) {
     emitLocal('music-download-error', {
       filename: safeName,
+      quality,
+      downloadKey,
       error: error instanceof Error ? error.message : String(error)
     });
   }

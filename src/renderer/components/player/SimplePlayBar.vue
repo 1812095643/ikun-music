@@ -53,6 +53,12 @@
               ></n-slider>
             </div>
           </div>
+          <song-download-button
+            v-if="playMusic?.id"
+            :item="playMusic"
+            size="small"
+            title="下载歌曲"
+          />
           <button class="control-btn small-btn" @click="openPlayListDrawer" title="播放列表">
             <i class="iconfont icon-list"></i>
           </button>
@@ -65,6 +71,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 
+import SongDownloadButton from '@/components/common/SongDownloadButton.vue';
 import { allTime, nowTime, playMusic } from '@/hooks/MusicHook';
 import { usePlayMode } from '@/hooks/usePlayMode';
 import { audioService } from '@/services/audioService';

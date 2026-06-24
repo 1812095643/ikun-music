@@ -22,6 +22,7 @@ import { useI18n } from 'vue-i18n';
 import type { SongResult } from '@/types/music';
 import { getImgUrl, isElectron } from '@/utils';
 import { hasPermission } from '@/utils/auth';
+import { DOWNLOAD_QUALITY_OPTIONS, getDefaultDownloadQuality } from '@/utils/downloadQuality';
 
 const { t } = useI18n();
 
@@ -152,7 +153,18 @@ const dropdownOptions = computed<MenuOption[]>(() => {
     {
       label: t('songItem.menu.download'),
       key: 'download',
-      icon: () => h('i', { class: 'iconfont ri-download-line' })
+      icon: () => h('i', { class: 'iconfont ri-download-line' }),
+      children:
+        props.item.source === 'kuwo'
+          ? DOWNLOAD_QUALITY_OPTIONS.map((quality) => ({
+              label: `${quality.label} · ${quality.description}`,
+              key: `download:${quality.key}`,
+              icon: () =>
+                h('i', {
+                  class: `iconfont ${quality.extension === 'flac' ? 'ri-disc-line' : 'ri-music-2-line'}`
+                })
+            }))
+          : undefined
     },
     {
       label: t('songItem.menu.downloadLyric'),
@@ -207,7 +219,7 @@ const handleSelect = (key: string | number) => {
 
   switch (key) {
     case 'download':
-      emits('download');
+      emits('download', getDefaultDownloadQuality().key);
       break;
     case 'downloadLyric':
       emits('download-lyric');
@@ -231,6 +243,9 @@ const handleSelect = (key: string | number) => {
       emits('toggle-dislike');
       break;
     default:
+      if (typeof key === 'string' && key.startsWith('download:')) {
+        emits('download', key.replace('download:', ''));
+      }
       break;
   }
 };

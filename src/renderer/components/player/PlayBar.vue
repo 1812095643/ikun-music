@@ -142,6 +142,13 @@
         {{ t('player.playBar.reparse') }}
       </n-tooltip>
 
+      <n-tooltip v-if="playMusic?.id && isElectron" trigger="hover" :z-index="9999999">
+        <template #trigger>
+          <song-download-button :item="playMusic" button-class="playbar-download-button" />
+        </template>
+        下载歌曲
+      </n-tooltip>
+
       <!-- 高级控制菜单按钮（整合了 EQ、定时关闭、播放速度） -->
       <advanced-controls-popover />
 
@@ -167,6 +174,7 @@ import { storeToRefs } from 'pinia';
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import SongDownloadButton from '@/components/common/SongDownloadButton.vue';
 import MusicFullWrapper from '@/components/lyric/MusicFullWrapper.vue';
 import AdvancedControlsPopover from '@/components/player/AdvancedControlsPopover.vue';
 import ReparsePopover from '@/components/player/ReparsePopover.vue';
