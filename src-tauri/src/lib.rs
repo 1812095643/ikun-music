@@ -1,4 +1,4 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::fs::{self, File};
 use std::io::{BufRead, BufReader, Cursor};
@@ -37,6 +37,14 @@ struct SavedMainWindowState {
 // Tauri 主线以前进入精简模式后只会恢复到固定尺寸，用户原本手动调整过的窗口大小和位置都会丢。
 // 这里单独保存“进入精简模式前”的主窗口几何信息，保证缩放播放列表时不覆盖，恢复时再一次性还原。
 struct MiniWindowRestoreState(Mutex<Option<SavedMainWindowState>>);
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+struct SavedLyricWindowBounds {
+    width: u32,
+    height: u32,
+    x: i32,
+    y: i32,
+}
 
 #[cfg(target_os = "windows")]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
@@ -469,6 +477,52 @@ fn show_main_window(
     show_normal_window(&window, restore_state)
 }
 
+fn lyric_window_bounds_path(app: &AppHandle) -> Result<PathBuf, String> {
+    let dir = app
+        .path()
+        .app_data_dir()
+        .map_err(|error| format!("解析桌面歌词窗口状态目录失败：{error}"))?;
+    fs::create_dir_all(&dir).map_err(|error| format!("创建桌面歌词窗口状态目录失败：{error}"))?;
+    Ok(dir.join("lyric-window-bounds.json"))
+}
+
+fn is_valid_lyric_window_bounds(bounds: &SavedLyricWindowBounds) -> bool {
+    (600..=1600).contains(&bounds.width) && (200..=800).contains(&bounds.height)
+}
+
+fn load_saved_lyric_window_bounds(app: &AppHandle) -> Option<SavedLyricWindowBounds> {
+    let path = lyric_window_bounds_path(app).ok()?;
+    let content = fs::read_to_string(path).ok()?;
+    let bounds = serde_json::from_str::<SavedLyricWindowBounds>(&content).ok()?;
+    if is_valid_lyric_window_bounds(&bounds) {
+        Some(bounds)
+    } else {
+        None
+    }
+}
+
+fn persist_lyric_window_bounds(window: &WebviewWindow) -> Result<(), String> {
+    let size = window
+        .inner_size()
+        .map_err(|error| format!("读取桌面歌词窗口尺寸失败：{error}"))?;
+    let position = window
+        .outer_position()
+        .map_err(|error| format!("读取桌面歌词窗口位置失败：{error}"))?;
+    let bounds = SavedLyricWindowBounds {
+        width: size.width,
+        height: size.height,
+        x: position.x,
+        y: position.y,
+    };
+    if !is_valid_lyric_window_bounds(&bounds) {
+        return Ok(());
+    }
+    let path = lyric_window_bounds_path(&window.app_handle())?;
+    let content = serde_json::to_string(&bounds)
+        .map_err(|error| format!("序列化桌面歌词窗口状态失败：{error}"))?;
+    fs::write(path, content).map_err(|error| format!("写入桌面歌词窗口状态失败：{error}"))
+}
+
 fn ensure_lyric_window(app: &AppHandle) -> Result<WebviewWindow, String> {
     if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
         return Ok(window);
@@ -493,9 +547,18 @@ fn ensure_lyric_window(app: &AppHandle) -> Result<WebviewWindow, String> {
     .build()
     .map_err(|error| format!("创建桌面歌词窗口失败：{error}"))?;
 
-    window
-        .center()
-        .map_err(|error| format!("初始化桌面歌词窗口位置失败：{error}"))?;
+    if let Some(bounds) = load_saved_lyric_window_bounds(app) {
+        window
+            .set_size(Size::Physical(PhysicalSize::new(bounds.width, bounds.height)))
+            .map_err(|error| format!("恢复桌面歌词窗口尺寸失败：{error}"))?;
+        window
+            .set_position(Position::Physical(PhysicalPosition::new(bounds.x, bounds.y)))
+            .map_err(|error| format!("恢复桌面歌词窗口位置失败：{error}"))?;
+    } else {
+        window
+            .center()
+            .map_err(|error| format!("初始化桌面歌词窗口位置失败：{error}"))?;
+    }
 
     Ok(window)
 }
@@ -602,6 +665,7 @@ fn hide_tray_panel(app: &AppHandle) {
 
 fn close_lyric_window_internal(app: &AppHandle) -> Result<(), String> {
     if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
+        let _ = persist_lyric_window_bounds(&window);
         window
             .close()
             .map_err(|error| format!("关闭桌面歌词窗口失败：{error}"))?;
@@ -816,7 +880,11 @@ fn set_lyric_ignore_mouse(app: AppHandle, ignore: bool) -> Result<(), String> {
 fn start_lyric_drag() {}
 
 #[tauri::command]
-fn end_lyric_drag() {}
+fn end_lyric_drag(app: AppHandle) {
+    if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
+        let _ = persist_lyric_window_bounds(&window);
+    }
+}
 
 #[tauri::command]
 fn move_lyric_window(app: AppHandle, delta_x: f64, delta_y: f64) -> Result<(), String> {
@@ -1064,14 +1132,19 @@ pub fn run() {
                 }
             }
 
-            if window.label() == LYRIC_WINDOW_LABEL && matches!(event, tauri::WindowEvent::Destroyed)
-            {
-                let _ = emit_to_window(
-                    &window.app_handle(),
-                    MAIN_WINDOW_LABEL,
-                    "lyric-window-closed",
-                    json!({ "closedAt": chrono_free_timestamp() }),
-                );
+            if window.label() == LYRIC_WINDOW_LABEL {
+                if matches!(event, WindowEvent::CloseRequested { .. }) {
+                    let _ = persist_lyric_window_bounds(window);
+                }
+
+                if matches!(event, tauri::WindowEvent::Destroyed) {
+                    let _ = emit_to_window(
+                        &window.app_handle(),
+                        MAIN_WINDOW_LABEL,
+                        "lyric-window-closed",
+                        json!({ "closedAt": chrono_free_timestamp() }),
+                    );
+                }
             }
 
             if window.label() == MAIN_WINDOW_LABEL
