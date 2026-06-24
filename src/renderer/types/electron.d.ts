@@ -32,8 +32,8 @@ export interface IElectronAPI {
   unblockMusic: (_id: number) => Promise<string>;
   importCustomApiPlugin: () => Promise<{ name: string; content: string } | null>;
   importLxMusicScript: () => Promise<{ name: string; content: string } | null>;
-  onLyricWindowClosed: (_callback: () => void) => void;
-  onLyricWindowReady: (_callback: () => void) => void;
+  onLyricWindowClosed: (_callback: (_payload?: any) => void) => void;
+  onLyricWindowReady: (_callback: (_payload?: any) => void) => void;
   onLanguageChanged: (_callback: (_locale: string) => void) => void;
   updateTrayState: (_state: TrayStatePayload) => void;
   onTrayControl: (_callback: (_action: string) => void) => () => void;

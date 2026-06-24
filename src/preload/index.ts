@@ -25,12 +25,12 @@ const api = {
   importCustomApiPlugin: () => ipcRenderer.invoke('import-custom-api-plugin'),
   importLxMusicScript: () => ipcRenderer.invoke('import-lx-music-script'),
   // 歌词窗口关闭事件
-  onLyricWindowClosed: (callback: () => void) => {
-    ipcRenderer.on('lyric-window-closed', () => callback());
+  onLyricWindowClosed: (callback: (payload?: any) => void) => {
+    ipcRenderer.on('lyric-window-closed', (_event, payload) => callback(payload));
   },
   // 歌词窗口就绪事件（Vue 加载完成，可以接收数据）
-  onLyricWindowReady: (callback: () => void) => {
-    ipcRenderer.on('lyric-window-ready', () => callback());
+  onLyricWindowReady: (callback: (payload?: any) => void) => {
+    ipcRenderer.on('lyric-window-ready', (_event, payload) => callback(payload));
   },
   getAppUpdateState: () => ipcRenderer.invoke('app-update:get-state') as Promise<AppUpdateState>,
   checkAppUpdate: (manual = false) =>

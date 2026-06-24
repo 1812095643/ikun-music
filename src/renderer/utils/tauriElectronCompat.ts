@@ -631,8 +631,10 @@ const api = {
     invokeChannel('unblock-music', id, data, enabledSources),
   importCustomApiPlugin: () => invokeChannel('import-custom-api-plugin'),
   importLxMusicScript: () => invokeChannel('import-lx-music-script'),
-  onLyricWindowClosed: (callback: () => void) => on('lyric-window-closed', callback),
-  onLyricWindowReady: (callback: () => void) => on('lyric-window-ready', callback),
+  onLyricWindowClosed: (callback: (payload?: any) => void) =>
+    on('lyric-window-closed', (_event: any, payload: any) => callback(payload)),
+  onLyricWindowReady: (callback: (payload?: any) => void) =>
+    on('lyric-window-ready', (_event: any, payload: any) => callback(payload)),
   getAppUpdateState: () => invokeChannel('app-update:get-state'),
   checkAppUpdate: (manual = false) => invokeChannel('app-update:check', { manual }),
   downloadAppUpdate: () => invokeChannel('app-update:download'),

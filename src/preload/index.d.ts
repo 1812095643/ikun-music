@@ -40,8 +40,8 @@ interface CompatApi {
   unblockMusic: (id: any, data: any, enabledSources: any) => Promise<any>;
   importCustomApiPlugin: () => Promise<{ name: string; content: string } | null>;
   importLxMusicScript: () => Promise<{ name: string; content: string } | null>;
-  onLyricWindowClosed: (callback: () => void) => any;
-  onLyricWindowReady: (callback: () => void) => any;
+  onLyricWindowClosed: (callback: (payload?: any) => void) => any;
+  onLyricWindowReady: (callback: (payload?: any) => void) => any;
   getAppUpdateState: () => Promise<any>;
   checkAppUpdate: (manual?: boolean) => Promise<any>;
   downloadAppUpdate: () => Promise<any>;

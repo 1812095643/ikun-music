@@ -698,6 +698,7 @@ fn hide_tray_panel(app: &AppHandle) {
 fn close_lyric_window_internal(app: &AppHandle) -> Result<(), String> {
     if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
         let _ = persist_lyric_window_bounds(&window);
+        let _ = emit_to_window(app, MAIN_WINDOW_LABEL, "lyric-control-back", json!("close"));
         window
             .close()
             .map_err(|error| format!("关闭桌面歌词窗口失败：{error}"))?;

@@ -8,12 +8,18 @@ import type { usePlayerStore } from '@/store';
 import type { Artist, ILyricText, SongResult } from '@/types/music';
 import { isElectron } from '@/utils';
 import { getTextColors } from '@/utils/linearColor';
+import {
+  getLyricWindowClosedAt,
+  isStaleLyricWindowClosedEvent,
+  type LyricWindowLifecyclePayload
+} from '@/utils/lyricWindowLifecycle';
 import { parseLyrics } from '@/utils/yrcParser';
 
 const windowData = window as any;
 const getCompatApi = () => (isElectron ? window.api || null : null);
 const getCompatIpcRenderer = () => (isElectron ? windowData.electron?.ipcRenderer || null : null);
 let lyricWindowListenersInitialized = false;
+let lastLyricWindowOpenRequestedAt = 0;
 
 // 全局 playerStore 引用，通过 initMusicHook 函数注入
 let playerStore: ReturnType<typeof usePlayerStore> | null = null;
@@ -812,7 +818,19 @@ const setupLyricWindowListeners = () => {
 
   lyricWindowListenersInitialized = true;
 
-  compatApi.onLyricWindowClosed(() => {
+  compatApi.onLyricWindowClosed((payload?: LyricWindowLifecyclePayload) => {
+    const closedAt = getLyricWindowClosedAt(payload);
+    // 歌词窗关闭是异步事件，用户如果在旧窗口真正销毁前立刻重开，
+    // 晚到的旧 closed 事件不能把新窗口的打开状态冲掉。
+    if (
+      isStaleLyricWindowClosedEvent(
+        closedAt,
+        lastLyricWindowOpenRequestedAt,
+        isLyricWindowOpen.value
+      )
+    ) {
+      return;
+    }
     isLyricWindowOpen.value = false;
     stopLyricSync();
   });
@@ -874,6 +892,7 @@ export const openLyric = (forceOpen = false) => {
 
   const shouldOpen = shouldOpenLyricWindow(isLyricWindowOpen.value, forceOpen);
   if (shouldOpen) {
+    lastLyricWindowOpenRequestedAt = Date.now();
     isLyricWindowOpen.value = true;
     // 立即打开窗口
     getCompatApi()?.openLyric();

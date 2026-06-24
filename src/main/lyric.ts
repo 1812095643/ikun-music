@@ -4,6 +4,9 @@ import path, { join } from 'path';
 
 const store = new Store();
 let lyricWindow: BrowserWindow | null = null;
+const createLyricLifecyclePayload = (key: 'closedAt' | 'readyAt') => ({
+  [key]: Date.now()
+});
 
 // 跟踪拖动状态
 let isDragging = false;
@@ -158,7 +161,7 @@ export const loadLyricWindow = (ipcMain: IpcMain, mainWin: BrowserWindow): void 
     win.on('closed', () => {
       if (mainWin && !mainWin.isDestroyed()) {
         // 歌词窗也可能被系统层直接关闭，主窗口要同步回收歌词开关状态和定时同步。
-        mainWin.webContents.send('lyric-window-closed');
+        mainWin.webContents.send('lyric-window-closed', createLyricLifecyclePayload('closedAt'));
       }
     });
 
@@ -182,7 +185,7 @@ export const loadLyricWindow = (ipcMain: IpcMain, mainWin: BrowserWindow): void 
   // 歌词窗口 Vue 应用加载完成，通知主窗口发送完整歌词数据
   ipcMain.on('lyric-ready', () => {
     if (mainWin && !mainWin.isDestroyed()) {
-      mainWin.webContents.send('lyric-window-ready');
+      mainWin.webContents.send('lyric-window-ready', createLyricLifecyclePayload('readyAt'));
     }
   });
 
@@ -206,7 +209,7 @@ export const loadLyricWindow = (ipcMain: IpcMain, mainWin: BrowserWindow): void 
     if (lyricWindow && !lyricWindow.isDestroyed()) {
       lyricWindow.webContents.send('lyric-window-close');
       mainWin.webContents.send('lyric-control-back', 'close');
-      mainWin.webContents.send('lyric-window-closed');
+      mainWin.webContents.send('lyric-window-closed', createLyricLifecyclePayload('closedAt'));
       lyricWindow.destroy();
       lyricWindow = null;
     }
