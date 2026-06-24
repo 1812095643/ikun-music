@@ -1,14 +1,17 @@
 const MINI_MODE_RETURN_ROUTE_KEY = 'currentRoute';
 const MINI_MODE_PENDING_ROUTE_KEY = 'miniModePendingRoute';
+const MINI_MODE_PENDING_PLAYLIST_DRAWER_SONG_ID_KEY = 'miniModePendingPlaylistDrawerSongId';
 
 type RestoreMainWindowOptions = {
   beforeRestore?: () => void;
   restore?: (() => void) | null;
+  playlistDrawerSongId?: number | string;
   targetRoute?: string;
 };
 
 export const rememberMiniModeReturnRoute = (fullPath: string) => {
   localStorage.removeItem(MINI_MODE_PENDING_ROUTE_KEY);
+  localStorage.removeItem(MINI_MODE_PENDING_PLAYLIST_DRAWER_SONG_ID_KEY);
   localStorage.setItem(MINI_MODE_RETURN_ROUTE_KEY, fullPath);
 };
 
@@ -16,8 +19,13 @@ export const requestMiniModeNavigation = (targetRoute: string) => {
   localStorage.setItem(MINI_MODE_PENDING_ROUTE_KEY, targetRoute);
 };
 
+export const requestMiniModePlaylistDrawer = (songId: number | string) => {
+  localStorage.setItem(MINI_MODE_PENDING_PLAYLIST_DRAWER_SONG_ID_KEY, String(songId));
+};
+
 export const restoreMainWindowFromMiniMode = ({
   beforeRestore,
+  playlistDrawerSongId,
   restore,
   targetRoute
 }: RestoreMainWindowOptions) => {
@@ -25,11 +33,12 @@ export const restoreMainWindowFromMiniMode = ({
   if (targetRoute) {
     requestMiniModeNavigation(targetRoute);
   }
+  if (playlistDrawerSongId !== undefined && playlistDrawerSongId !== null) {
+    requestMiniModePlaylistDrawer(playlistDrawerSongId);
+  }
   restore?.();
 };
 
-// 迷你模式退出时优先跳转到用户在迷你窗里新触发的目标页；
-// 如果没有新的跳转意图，再退回进入迷你模式前保存的页面上下文。
 export const consumeMiniModeRestoreRoute = () => {
   const pendingRoute = localStorage.getItem(MINI_MODE_PENDING_ROUTE_KEY);
   if (pendingRoute) {
@@ -43,4 +52,13 @@ export const consumeMiniModeRestoreRoute = () => {
     localStorage.removeItem(MINI_MODE_RETURN_ROUTE_KEY);
   }
   return returnRoute;
+};
+
+export const consumeMiniModePlaylistDrawerSongId = () => {
+  const pendingSongId = localStorage.getItem(MINI_MODE_PENDING_PLAYLIST_DRAWER_SONG_ID_KEY);
+  if (pendingSongId) {
+    localStorage.removeItem(MINI_MODE_PENDING_PLAYLIST_DRAWER_SONG_ID_KEY);
+    return pendingSongId;
+  }
+  return null;
 };

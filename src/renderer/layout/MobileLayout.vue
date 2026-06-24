@@ -81,10 +81,10 @@ const keepAliveInclude = computed(() => {
 
 // 歌单抽屉
 const showPlaylistDrawer = ref(false);
-const currentSongId = ref<number | undefined>();
+const currentSongId = ref<number | string | undefined>();
 
 // 提供打开歌单抽屉的方法
-const openPlaylistDrawer = (songId: number, isOpen: boolean = true) => {
+const openPlaylistDrawer = (songId: number | string, isOpen: boolean = true) => {
   currentSongId.value = songId;
   showPlaylistDrawer.value = isOpen;
   playerStore.setMusicFull(false);

@@ -154,7 +154,7 @@ const store = useUserStore();
 const { t } = useI18n();
 const props = defineProps<{
   modelValue: boolean;
-  songId?: number;
+  songId?: number | string;
 }>();
 
 const emit = defineEmits(['update:modelValue']);

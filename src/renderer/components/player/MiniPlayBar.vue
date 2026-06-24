@@ -253,10 +253,18 @@ const closePlaylist = () => {
   syncMiniWindowSize(false);
 };
 
-// 提供 openPlaylistDrawer 给子组件
-provide('openPlaylistDrawer', (songId: number) => {
-  console.log('打开歌单抽屉', songId);
-  // 由于在迷你模式不处理这个功能，所以只记录日志
+// 迷你窗里无法直接承接歌单抽屉，需要先恢复主窗口再由主布局打开抽屉。
+provide('openPlaylistDrawer', (songId: number | string) => {
+  if (settingsStore.isMiniMode && window.api?.restore) {
+    restoreMainWindowFromMiniMode({
+      beforeRestore: () => {
+        closePlaylist();
+        playerStore.setMusicFull(false);
+      },
+      playlistDrawerSongId: songId,
+      restore: window.api.restore
+    });
+  }
 });
 
 // 切换播放列表显示/隐藏

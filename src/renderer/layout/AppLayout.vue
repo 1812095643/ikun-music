@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, provide, ref } from 'vue';
+import { computed, defineAsyncComponent, onMounted, provide, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import PlayBottom from '@/components/common/PlayBottom.vue';
@@ -68,6 +68,7 @@ import { useMenuStore } from '@/store/modules/menu';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSettingsStore } from '@/store/modules/settings';
 import { isElectron } from '@/utils';
+import { consumeMiniModePlaylistDrawerSongId } from '@/utils/miniModeNavigation';
 
 // 关键布局组件同步导入（始终可见，避免加载闪烁）
 import AppMenu from './components/AppMenu.vue';
@@ -125,10 +126,10 @@ onMounted(() => {
 });
 
 const showPlaylistDrawer = ref(false);
-const currentSongId = ref<number | undefined>();
+const currentSongId = ref<number | string | undefined>();
 
 // 提供一个方法来打开歌单抽屉
-const openPlaylistDrawer = (songId: number, isOpen: boolean = true) => {
+const openPlaylistDrawer = (songId: number | string, isOpen: boolean = true) => {
   currentSongId.value = songId;
   showPlaylistDrawer.value = isOpen;
   playerStore.setMusicFull(false);
@@ -137,6 +138,18 @@ const openPlaylistDrawer = (songId: number, isOpen: boolean = true) => {
 
 // 将方法提供给全局
 provide('openPlaylistDrawer', openPlaylistDrawer);
+
+// 迷你窗里的“加入歌单”动作依赖主布局抽屉，所以恢复主窗口后再消费待办 songId。
+watch(
+  () => [settingsStore.isMiniMode, route.fullPath],
+  () => {
+    if (settingsStore.isMiniMode) return;
+    const pendingSongId = consumeMiniModePlaylistDrawerSongId();
+    if (pendingSongId == null) return;
+    openPlaylistDrawer(pendingSongId);
+  },
+  { immediate: true }
+);
 </script>
 
 <style lang="scss" scoped>
