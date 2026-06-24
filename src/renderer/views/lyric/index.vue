@@ -233,6 +233,7 @@ import {
   saveLyricThemeColor,
   validateColor
 } from '@/utils/linearColor';
+import { shouldStartLyricWindowDrag } from '@/utils/lyricWindowDrag';
 
 defineOptions({
   name: 'Lyric'
@@ -997,13 +998,8 @@ const moveThrottleMs = 10; // 限制拖动事件发送频率，提高性能
 
 // 处理鼠标按下事件
 const handleMouseDown = (e: MouseEvent) => {
-  // 如果点击的是控制按钮区域或窗口被锁定，不处理拖动
-  if (
-    lyricSetting.value.isLock ||
-    (e.target as HTMLElement).closest('.control-buttons') ||
-    (e.target as HTMLElement).closest('.font-size-controls') ||
-    (e.target as HTMLElement).closest('.play-controls')
-  ) {
+  // 主题色面板和顶部控制区都属于交互区，不能把点击误判成窗口拖动。
+  if (!shouldStartLyricWindowDrag(e.target, lyricSetting.value.isLock)) {
     return;
   }
 
