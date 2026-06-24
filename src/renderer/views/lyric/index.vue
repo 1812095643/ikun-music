@@ -385,7 +385,8 @@ const clearHideTimer = () => {
 const handleMouseEnter = () => {
   if (lyricSetting.value.isLock) {
     isHovering.value = true;
-    syncIgnoreMouseState(true);
+    // 锁定态悬停需要临时收回鼠标穿透，否则控制栏会显示出来但无法点击。
+    syncIgnoreMouseState(false);
   } else {
     syncIgnoreMouseState(false);
   }
