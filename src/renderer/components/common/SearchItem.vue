@@ -36,6 +36,14 @@
         <i class="ri-music-2-line" />
         <span>{{ item.size }}</span>
       </div>
+
+      <div
+        v-if="item.type === 'artist'"
+        class="qqm-cover-badge absolute bottom-2 left-2 flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+      >
+        <i class="ri-user-voice-line" />
+        <span>{{ t('search.search.artist') }}</span>
+      </div>
     </div>
 
     <!-- Info Section -->
@@ -62,6 +70,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
@@ -84,6 +93,7 @@ const props = defineProps<{
 
 const showPop = ref(false);
 
+const { t } = useI18n();
 const playerStore = usePlayerStore();
 const router = useRouter();
 const playHistoryStore = usePlayHistoryStore();
@@ -130,6 +140,15 @@ const handleClick = async () => {
     router.push({
       name: 'podcastRadio',
       params: { id: props.item.id }
+    });
+  } else if (props.item.type === 'artist') {
+    router.push({
+      name: 'artistDetail',
+      params: { id: props.item.id },
+      query: {
+        keyword: props.item.name,
+        source: props.item.source === 'kuwo' ? 'kuwo-artist-search' : 'artist-search'
+      }
     });
   }
 };

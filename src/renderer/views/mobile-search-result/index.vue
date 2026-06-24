@@ -108,6 +108,23 @@ const searchTypes = computed(() => {
   }));
 });
 
+const formatArtist = (item: any) => ({
+  ...item,
+  id: Number(item.id || item.userId || 0),
+  name: item.name || item.nickname || '未知歌手',
+  picUrl: item.picUrl || item.cover || item.avatar || item.img1v1Url || '',
+  desc:
+    item.briefDesc ||
+    [
+      item.musicSize ? `${item.musicSize} 首单曲` : '',
+      item.albumSize ? `${item.albumSize} 张专辑` : ''
+    ]
+      .filter(Boolean)
+      .join(' · '),
+  type: 'artist',
+  source: item.source || 'netease'
+});
+
 // 搜索结果
 const results = ref<any[]>([]);
 const loading = ref(false);
@@ -192,6 +209,25 @@ const performSearch = async (isLoadMore = false) => {
       }
 
       hasMore.value = albums.length === ITEMS_PER_PAGE;
+    }
+    // 歌手搜索
+    else if (searchType.value === SEARCH_TYPE.ARTIST) {
+      const { data } = await getSearch({
+        keywords: keyword.value,
+        type: searchType.value,
+        limit: ITEMS_PER_PAGE,
+        offset: (page.value - 1) * ITEMS_PER_PAGE
+      });
+
+      const artists = (data.result.artists || []).map(formatArtist);
+
+      if (isLoadMore) {
+        results.value = [...results.value, ...artists];
+      } else {
+        results.value = artists;
+      }
+
+      hasMore.value = artists.length === ITEMS_PER_PAGE;
     }
     // 歌单搜索
     else if (searchType.value === SEARCH_TYPE.PLAYLIST) {

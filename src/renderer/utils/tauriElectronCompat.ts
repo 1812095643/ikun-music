@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
-import { listen, type UnlistenFn } from '@tauri-apps/api/event';
+import { emitTo, listen, type UnlistenFn } from '@tauri-apps/api/event';
+import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { open } from '@tauri-apps/plugin-dialog';
 import { BaseDirectory, exists, readTextFile, writeFile } from '@tauri-apps/plugin-fs';
@@ -36,6 +37,7 @@ const BROWSER_STORE_KEY = 'alger-music-tauri-browser-store';
 const listeners = new Map<string, Set<Listener>>();
 const unlisteners = new Map<string, UnlistenFn>();
 let appWindow: ReturnType<typeof getCurrentWindow> | null = null;
+let currentWebviewWindow: ReturnType<typeof getCurrentWebviewWindow> | null = null;
 let storePromise: Promise<CompatStore> | null = null;
 let musicApiReadyPromise: Promise<number | null> | null = null;
 let storeCache: StoreData = {
@@ -47,6 +49,12 @@ const getAppWindow = () => {
   if (!isTauriRuntime) return null;
   if (!appWindow) appWindow = getCurrentWindow();
   return appWindow;
+};
+
+const getCompatWebviewWindow = () => {
+  if (!isTauriRuntime) return null;
+  if (!currentWebviewWindow) currentWebviewWindow = getCurrentWebviewWindow();
+  return currentWebviewWindow;
 };
 
 const saveBrowserStore = () => {
@@ -214,9 +222,23 @@ const downloadMusicFile = async (payload: any) => {
 const ensureTauriListener = async (channel: string) => {
   if (!isTauriRuntime) return;
   if (unlisteners.has(channel)) return;
-  const unlisten = await listen(channel, (event) => {
-    emitLocal(channel, event.payload);
-  });
+  const windowScopedEvents = new Set([
+    'tray-panel-state',
+    'tray-panel-command',
+    'tray-panel-opened',
+    'mini-mode'
+  ]);
+  // 根因：托盘面板是 Tauri 动态创建的独立 WebView。旧兼容层只注册全局 listen，
+  // 在窗口刚创建、主窗口立刻 emit 的时序下容易错过定向窗口事件；同时 capability
+  // 只覆盖 main 窗口时，tray-panel 自己也可能没有事件权限。这里对窗口间通信改用
+  // 当前 WebView 的窗口级 listen，和 Rust/WebviewWindow emit 的目标保持一致。
+  const unlisten = windowScopedEvents.has(channel)
+    ? await getCompatWebviewWindow()!.listen(channel, (event) => {
+        emitLocal(channel, event.payload);
+      })
+    : await listen(channel, (event) => {
+        emitLocal(channel, event.payload);
+      });
   unlisteners.set(channel, unlisten);
 };
 
@@ -296,10 +318,14 @@ const send = (channel: string, ...args: any[]) => {
       window.location.reload();
       break;
     default:
-      if (isTauriRuntime)
-        void invoke('emit_to_main', { event: channel, payload: args[0] ?? null }).catch(
-          () => undefined
-        );
+      if (isTauriRuntime) {
+        const targetLabel = channel === 'tray-panel-state' ? 'tray-panel' : 'main';
+        void emitTo(targetLabel, channel, args[0] ?? null).catch(() => {
+          void invoke('emit_to_main', { event: channel, payload: args[0] ?? null }).catch(
+            () => undefined
+          );
+        });
+      }
       break;
   }
 };

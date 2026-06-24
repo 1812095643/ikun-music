@@ -440,9 +440,13 @@ const routeArtistKeyword = computed(() => {
   const keyword = route.query.keyword;
   return typeof keyword === 'string' ? keyword.trim() : '';
 });
-const isSearchPoweredArtistEntry = computed(
-  () => route.query.source === 'home-artist-search' && Boolean(routeArtistKeyword.value)
-);
+const isSearchPoweredArtistEntry = computed(() => {
+  const source = String(route.query.source || '');
+  return (
+    ['home-artist-search', 'kuwo-artist-search', 'artist-search'].includes(source) &&
+    Boolean(routeArtistKeyword.value)
+  );
+});
 const artistSongSearchKeyword = computed(() =>
   isSearchPoweredArtistEntry.value ? routeArtistKeyword.value : ''
 );
@@ -547,6 +551,55 @@ const filterSongsByArtistKeyword = (songList: any[], keyword: string) => {
   return matchedSongs.length > 0 ? matchedSongs : songList;
 };
 
+const buildSearchPoweredArtistInfo = async (): Promise<IArtist | undefined> => {
+  if (!artistSongSearchKeyword.value) return undefined;
+
+  const { data } = await getSearch({
+    keywords: artistSongSearchKeyword.value,
+    type: SEARCH_TYPE.ARTIST,
+    limit: 10,
+    offset: 0
+  });
+  const artists = data?.result?.artists || [];
+  if (!Array.isArray(artists) || artists.length === 0) return undefined;
+
+  const normalizedKeyword = normalizeArtistSearchText(artistSongSearchKeyword.value);
+  const currentId = artistId.value;
+  const matchedArtist =
+    artists.find((artist: any) => Number(artist?.id) === currentId) ||
+    artists.find(
+      (artist: any) => normalizeArtistSearchText(artist?.name || '') === normalizedKeyword
+    ) ||
+    artists[0];
+
+  const picUrl =
+    matchedArtist.picUrl ||
+    matchedArtist.cover ||
+    matchedArtist.avatar ||
+    matchedArtist.img1v1Url ||
+    '';
+
+  return {
+    id: Number(matchedArtist.id || currentId),
+    name: matchedArtist.name || artistSongSearchKeyword.value,
+    cover: picUrl,
+    avatar: picUrl,
+    picUrl,
+    briefDesc: matchedArtist.briefDesc || '',
+    albumSize: Number(matchedArtist.albumSize || 0),
+    musicSize: Number(matchedArtist.musicSize || 0),
+    mvSize: Number(matchedArtist.mvSize || 0),
+    transNames: matchedArtist.transNames || [],
+    alias: matchedArtist.alias || [],
+    identities: [],
+    identifyTag: [],
+    rank: {
+      rank: 0,
+      type: 0
+    }
+  } as IArtist;
+};
+
 // 搜索和布局相关
 const searchKeyword = ref('');
 const isSearchVisible = ref(false);
@@ -598,13 +651,42 @@ const loadArtistInfo = async () => {
   // 加载新数据
   loading.value = true;
   try {
-    const info = await getArtistDetail(artistId.value);
-    if (info.data?.data?.artist) {
-      artistInfo.value = info.data.data.artist;
+    if (isSearchPoweredArtistEntry.value) {
+      // 根因：酷我歌手搜索返回的是酷我 ARTISTID，不能当作网易云 artist/detail 的 ID 使用；
+      // 否则用户从“歌手搜索”进入详情页时会进错页或拿不到数据。搜索驱动入口只把歌手详情
+      // 当作承载页：先用歌手分类搜索拿头像/歌曲数，再用歌手名走单曲搜索，保持酷我优先播放链路。
+      artistInfo.value =
+        (await buildSearchPoweredArtistInfo()) ||
+        ({
+          id: artistId.value,
+          name: artistSongSearchKeyword.value,
+          cover: '',
+          avatar: '',
+          picUrl: '',
+          briefDesc: '',
+          albumSize: 0,
+          musicSize: 0,
+          mvSize: 0,
+          transNames: [],
+          alias: [],
+          identities: [],
+          identifyTag: [],
+          rank: { rank: 0, type: 0 }
+        } as IArtist);
+    } else {
+      const info = await getArtistDetail(artistId.value);
+      if (info.data?.data?.artist) {
+        artistInfo.value = info.data.data.artist;
+      }
     }
     // 重置分页并加载初始数据
     resetPagination();
-    await Promise.all([loadSongs(), loadAlbums()]);
+    if (isSearchPoweredArtistEntry.value) {
+      albumPage.value.hasMore = false;
+      await loadSongs();
+    } else {
+      await Promise.all([loadSongs(), loadAlbums()]);
+    }
 
     // 保存到缓存
     artistDataCache.set(cacheKey, {

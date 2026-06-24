@@ -256,6 +256,23 @@ const formatSong = (item: any) => {
   };
 };
 
+const formatArtist = (item: any) => ({
+  ...item,
+  id: Number(item.id || item.userId || 0),
+  name: item.name || item.nickname || '未知歌手',
+  picUrl: item.picUrl || item.cover || item.avatar || item.img1v1Url || '',
+  desc:
+    item.briefDesc ||
+    [
+      item.musicSize ? `${item.musicSize} 首单曲` : '',
+      item.albumSize ? `${item.albumSize} 张专辑` : ''
+    ]
+      .filter(Boolean)
+      .join(' · '),
+  type: 'artist',
+  source: item.source || 'netease'
+});
+
 const searchDetail = ref<any>();
 const searchType = computed(() => searchStore.searchType as number);
 const searchDetailLoading = ref(false);
@@ -365,6 +382,7 @@ const loadSearch = async (isLoadMore = false) => {
     });
 
     const songs = data.result.songs || [];
+    const artists = (data.result.artists || []).map(formatArtist);
     const albums = data.result.albums || [];
     const mvs = (data.result.mvs || []).map((item: any) => ({
       ...item,
@@ -400,16 +418,18 @@ const loadSearch = async (isLoadMore = false) => {
 
     if (isLoadMore && searchDetail.value) {
       searchDetail.value.songs = [...(searchDetail.value.songs || []), ...songs];
+      searchDetail.value.artists = [...(searchDetail.value.artists || []), ...artists];
       searchDetail.value.albums = [...(searchDetail.value.albums || []), ...albums];
       searchDetail.value.mvs = [...(searchDetail.value.mvs || []), ...mvs];
       searchDetail.value.playlists = [...(searchDetail.value.playlists || []), ...playlists];
       searchDetail.value.djRadios = [...(searchDetail.value.djRadios || []), ...djRadios];
     } else {
-      searchDetail.value = { songs, albums, mvs, playlists, djRadios };
+      searchDetail.value = { songs, artists, albums, mvs, playlists, djRadios };
     }
 
     hasMore.value =
       songs.length === ITEMS_PER_PAGE ||
+      artists.length === ITEMS_PER_PAGE ||
       albums.length === ITEMS_PER_PAGE ||
       mvs.length === ITEMS_PER_PAGE ||
       playlists.length === ITEMS_PER_PAGE ||

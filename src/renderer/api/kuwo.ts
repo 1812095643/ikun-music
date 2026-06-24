@@ -51,6 +51,21 @@ interface KuwoSongItem {
   payInfo?: { feeType?: { song?: string; vip?: string } };
 }
 
+interface KuwoArtistItem {
+  ARTISTID?: string;
+  ARTIST?: string;
+  AARTIST?: string;
+  DC_TARGETID?: string;
+  PICPATH?: string;
+  hts_PICPATH?: string;
+  BASEPICPATH?: string;
+  SONGNUM?: string;
+  ALBUMNUM?: string;
+  MVNUM?: string;
+  COUNTRY?: string;
+  desc?: string;
+}
+
 const buildRequestId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
 const waitForRetry = (attempt: number) =>
@@ -160,6 +175,15 @@ const normalizeImageUrl = (url?: string) => {
   if (trimmedUrl.startsWith('//')) return `https:${trimmedUrl}`;
   if (/^http:\/\/img\d+\.kwcdn\.kuwo\.cn/i.test(trimmedUrl)) return trimmedUrl;
   return trimmedUrl.replace(/^http:/, 'https:');
+};
+
+const normalizeKuwoArtistImage = (item: KuwoArtistItem) => {
+  const pic = item.hts_PICPATH || item.PICPATH;
+  if (!pic) return '';
+  if (/^https?:\/\//i.test(pic)) return normalizeImageUrl(pic);
+
+  const base = item.BASEPICPATH || 'http://img1.kuwo.cn/star/starheads/';
+  return normalizeImageUrl(`${base.replace(/\/?$/, '/')}${pic.replace(/^\/+/, '')}`);
 };
 
 const normalizePlaybackUrl = (url?: string) => {
@@ -434,6 +458,64 @@ export const searchKuwoSongs = async (params: {
         playlists: [],
         djRadios: [],
         songCount: parseNumber(response?.TOTAL, songs.length)
+      }
+    }
+  };
+};
+
+const mapKuwoArtist = (artist: KuwoArtistItem) => {
+  const id = parseNumber(artist.ARTISTID || artist.DC_TARGETID);
+  const name = (artist.ARTIST || artist.AARTIST || '未知歌手').replace(/&nbsp;/g, ' ');
+  const picUrl = normalizeKuwoArtistImage(artist);
+  const musicSize = parseNumber(artist.SONGNUM);
+  const albumSize = parseNumber(artist.ALBUMNUM);
+  const mvSize = parseNumber(artist.MVNUM);
+
+  return {
+    id,
+    name,
+    picUrl,
+    cover: picUrl,
+    avatar: picUrl,
+    img1v1Url: picUrl,
+    briefDesc: artist.desc || artist.COUNTRY || '',
+    musicSize,
+    albumSize,
+    mvSize,
+    alias: artist.AARTIST ? [artist.AARTIST] : [],
+    transNames: artist.AARTIST ? [artist.AARTIST] : [],
+    source: 'kuwo',
+    rawKeyword: name
+  };
+};
+
+export const searchKuwoArtists = async (params: {
+  keywords: string;
+  limit?: number;
+  offset?: number;
+}) => {
+  const limit = params.limit || 30;
+  const page = Math.floor((params.offset || 0) / limit);
+  const keyword = encodeURIComponent(params.keywords);
+  const url = `http://search.kuwo.cn/r.s?client=kt&all=${keyword}&pn=${page}&rn=${limit}&uid=0&ver=kwplayer_ar_9.2.2.0&vipver=1&show_copyright_off=1&newver=1&ft=artist&cluster=0&strategy=2012&encoding=utf8&rformat=json&mobi=1`;
+  const response = await kuwoRequest<any>(url);
+  const artists = Array.isArray(response?.abslist)
+    ? response.abslist.map((item: KuwoArtistItem) =>
+        mapKuwoArtist({ ...item, BASEPICPATH: item.BASEPICPATH || response?.BASEPICPATH })
+      )
+    : [];
+
+  return {
+    data: {
+      code: 200,
+      result: {
+        songs: [],
+        artists,
+        albums: [],
+        mvs: [],
+        playlists: [],
+        djRadios: [],
+        artistCount: parseNumber(response?.TOTAL, artists.length)
       }
     }
   };

@@ -27,6 +27,7 @@ const pendingCommand = ref<string | null>(null);
 const previousVolume = ref(Number(localStorage.getItem('trayPreviousVolume') || '0.7'));
 const removeTrayPanelStateListener = ref<(() => void) | null>(null);
 const removeTrayPanelOpenedListener = ref<(() => void) | null>(null);
+const listenerReadyTimer = ref<number | null>(null);
 
 const getInitialTheme = (): 'light' | 'dark' => {
   const storedTheme = localStorage.getItem('theme');
@@ -314,10 +315,13 @@ onMounted(() => {
       handlePanelOpened
     );
   }
-  // 根因：托盘面板是独立 WebView，不能直接读取主窗口播放器状态。
-  // 面板创建和主窗口广播事件存在时序差，首次打开时容易错过状态同步，表现为歌曲、进度和按钮都像失效。
-  // 这里在监听绑定完成后主动向主窗口请求一次状态，后续仍由主窗口定时推送保持实时进度。
-  sendPanelCommand('requestState');
+  // 根因：Tauri listen 底层是异步注册，兼容层为了保持 Electron 风格返回了同步取消函数。
+  // 如果面板 mounted 后立刻发送 requestState，主窗口可能马上回推 tray-panel-state，
+  // 但当前 WebView 监听尚未真正落到 Tauri 事件系统里，第一包状态就被丢掉。
+  // 解决：下一轮事件循环再请求一次，并由主窗口 500ms 定时推送兜底，确保首次打开能拿到真实播放数据。
+  listenerReadyTimer.value = window.setTimeout(() => {
+    sendPanelCommand('requestState');
+  }, 0);
 });
 
 onUnmounted(() => {
@@ -325,6 +329,10 @@ onUnmounted(() => {
   if (progressTimer) {
     window.clearInterval(progressTimer);
     progressTimer = null;
+  }
+  if (listenerReadyTimer.value) {
+    window.clearTimeout(listenerReadyTimer.value);
+    listenerReadyTimer.value = null;
   }
   removeTrayPanelStateListener.value?.();
   removeTrayPanelOpenedListener.value?.();
