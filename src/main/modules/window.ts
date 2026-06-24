@@ -18,6 +18,7 @@ import {
   calculateMinimumWindowSize,
   DEFAULT_MAIN_HEIGHT,
   DEFAULT_MAIN_WIDTH,
+  DEFAULT_MINI_EXPANDED_HEIGHT,
   DEFAULT_MINI_HEIGHT,
   DEFAULT_MINI_WIDTH,
   getWindowOptions,
@@ -48,6 +49,41 @@ let preMiniModeState: WindowState = {
 export function setAppQuitting(quitting: boolean) {
   isAppQuitting = quitting;
 }
+
+const isMiniModeWindow = (win: BrowserWindow) => {
+  const [currentWidth, currentHeight] = win.getSize();
+  return (
+    !win.isResizable() &&
+    currentWidth === DEFAULT_MINI_WIDTH &&
+    (currentHeight === DEFAULT_MINI_HEIGHT || currentHeight === DEFAULT_MINI_EXPANDED_HEIGHT)
+  );
+};
+
+const restoreWindowFrameFromMiniMode = (win: BrowserWindow) => {
+  win.setResizable(true);
+  win.setMaximumSize(0, 0);
+
+  const { minWidth, minHeight } = calculateMinimumWindowSize();
+  win.setMinimumSize(minWidth, minHeight);
+
+  win.setAlwaysOnTop(false);
+  win.setSkipTaskbar(false);
+  win.webContents.send('mini-mode', false);
+
+  if (preMiniModeState.x !== undefined && preMiniModeState.y !== undefined) {
+    win.setPosition(preMiniModeState.x, preMiniModeState.y, false);
+  } else {
+    win.center();
+  }
+
+  if (preMiniModeState.isMaximized) {
+    win.maximize();
+  } else {
+    win.setSize(preMiniModeState.width, preMiniModeState.height, false);
+  }
+
+  applyContentZoom(win);
+};
 
 /**
  * 初始化代理设置
@@ -153,6 +189,10 @@ export function initializeWindowManager() {
   ipcMain.on('mini-tray', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     if (win) {
+      // 从精简模式收进托盘前先恢复正常窗口框架状态，避免下次从托盘呼出时残留迷你窗尺寸和置顶状态。
+      if (isMiniModeWindow(win)) {
+        restoreWindowFrameFromMiniMode(win);
+      }
       win.hide();
     }
   });
