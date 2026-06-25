@@ -1167,7 +1167,16 @@ pub fn run() {
 
             if window.label() == LYRIC_WINDOW_LABEL {
                 if matches!(event, WindowEvent::CloseRequested { .. }) {
-                    let _ = persist_lyric_window_bounds(window);
+                    // 根本原因：Tauri v2 的全局 on_window_event 回调给到的是通用 Window，
+                    // 但桌面歌词窗口状态保存需要 WebviewWindow 才能复用现有的尺寸、位置和
+                    // app 数据目录读取逻辑。这里不能直接把 Window 传进去，否则 release 打包
+                    // 会在 Rust 编译阶段报类型不匹配；按窗口 label 重新拿 WebviewWindow 后再保存，
+                    // 既保留关闭前持久化窗口几何状态的行为，也避免为通用 Window 复制一套保存逻辑。
+                    if let Some(lyric_window) =
+                        window.app_handle().get_webview_window(LYRIC_WINDOW_LABEL)
+                    {
+                        let _ = persist_lyric_window_bounds(&lyric_window);
+                    }
                 }
 
                 if matches!(event, tauri::WindowEvent::Destroyed) {
