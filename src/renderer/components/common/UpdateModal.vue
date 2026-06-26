@@ -92,22 +92,20 @@
 
 <script setup lang="ts">
 import { marked } from 'marked';
-import { computed, onMounted, onUnmounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { useAppUpdateState } from '@/hooks/useAppUpdateState';
 import { useSettingsStore } from '@/store/modules/settings';
 
-import {
-  APP_UPDATE_STATUS,
-  type AppUpdateState,
-  createDefaultAppUpdateState
-} from '../../../shared/appUpdate';
+import { APP_UPDATE_STATUS } from '../../../shared/appUpdate';
 
 marked.setOptions({ breaks: true, gfm: true });
 
 const { t } = useI18n();
 const message = useMessage();
 const settingsStore = useSettingsStore();
+useAppUpdateState();
 
 const showModal = computed({
   get: () => settingsStore.showUpdateModal,
@@ -190,27 +188,6 @@ const formatBytes = (bytes: number): string => {
   return `${value.toFixed(base === 0 ? 0 : 2)} ${units[base]}`;
 };
 
-const syncUpdateState = (state: AppUpdateState) => {
-  const previousStatus = settingsStore.appUpdateState.status;
-  settingsStore.setAppUpdateState(state);
-
-  if (
-    state.status === APP_UPDATE_STATUS.available ||
-    state.status === APP_UPDATE_STATUS.downloaded
-  ) {
-    settingsStore.setShowUpdateModal(true);
-    return;
-  }
-
-  if (
-    state.status === APP_UPDATE_STATUS.error &&
-    (previousStatus === APP_UPDATE_STATUS.available ||
-      previousStatus === APP_UPDATE_STATUS.downloading)
-  ) {
-    settingsStore.setShowUpdateModal(true);
-  }
-};
-
 const closeModal = () => {
   showModal.value = false;
 };
@@ -242,25 +219,14 @@ const handlePrimaryAction = async () => {
 const initializeUpdateState = async () => {
   try {
     const currentState = await window.api.getAppUpdateState();
-    syncUpdateState(currentState);
-
-    if (currentState.supported && currentState.status === APP_UPDATE_STATUS.idle) {
-      await window.api.checkAppUpdate(false);
-    }
+    settingsStore.setAppUpdateState(currentState);
   } catch (error) {
     console.error('初始化更新状态失败:', error);
-    settingsStore.setAppUpdateState(createDefaultAppUpdateState());
   }
 };
 
 onMounted(() => {
-  window.api.removeAppUpdateListeners();
-  window.api.onAppUpdateState(syncUpdateState);
   void initializeUpdateState();
-});
-
-onUnmounted(() => {
-  window.api.removeAppUpdateListeners();
 });
 </script>
 

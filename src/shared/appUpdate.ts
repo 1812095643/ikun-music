@@ -8,7 +8,12 @@ export const APP_UPDATE_STATUS = {
   error: 'error'
 } as const;
 
-export const APP_UPDATE_RELEASE_URL = 'https://example.invalid/ikun-music/releases/latest';
+export const APP_UPDATE_RELEASE_URL = 'https://gitee.com/caixukun66666666/ikun-music/releases';
+export const APP_UPDATE_RELEASE_API_URL =
+  'https://gitee.com/api/v5/repos/caixukun66666666/ikun-music/releases?per_page=20&page=1';
+// 当前已发布便携版的真实 Release tag。根因：package.json 只有 5.1.0，
+// 如果不带日期后缀，已安装的 v5.1.0-20260626 会被误判为有更新。
+export const APP_UPDATE_CURRENT_RELEASE_TAG = 'v5.1.0-20260626';
 
 export type AppUpdateStatus = (typeof APP_UPDATE_STATUS)[keyof typeof APP_UPDATE_STATUS];
 

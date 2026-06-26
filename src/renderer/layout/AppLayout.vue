@@ -123,6 +123,13 @@ const isPhone = computed(() => settingsStore.isMobile);
 onMounted(() => {
   settingsStore.initializeSettings();
   settingsStore.initializeTheme();
+  if (isElectron && window.api?.checkAppUpdate) {
+    window.setTimeout(() => {
+      void window.api.checkAppUpdate(false).then((state) => {
+        settingsStore.setAppUpdateState(state);
+      });
+    }, 1200);
+  }
 });
 
 const showPlaylistDrawer = ref(false);

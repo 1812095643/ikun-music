@@ -101,6 +101,22 @@
       </n-badge>
     </button>
 
+    <n-tooltip v-if="isElectron" trigger="hover">
+      <template #trigger>
+        <button
+          class="action-btn"
+          :class="{ 'update-checking': updateChecking }"
+          :disabled="updateChecking"
+          @click="handleAppUpdateClick"
+        >
+          <n-badge dot :show="hasAppUpdate" :offset="[-1, 3]">
+            <i class="ri-upload-cloud-2-line" />
+          </n-badge>
+        </button>
+      </template>
+      {{ hasAppUpdate ? t('settings.about.hasUpdate') : t('settings.about.checkUpdate') }}
+    </n-tooltip>
+
     <!-- 心动模式按钮 -->
     <n-tooltip v-if="showIntelligenceBtn" trigger="hover">
       <template #trigger>
@@ -206,6 +222,7 @@ import { getSearchKeyword } from '@/api/home';
 import { getUserDetail } from '@/api/login';
 import { getSearchSuggestions } from '@/api/search';
 import { SEARCH_TYPES, USER_SET_OPTIONS } from '@/const/bar-const';
+import { useAppUpdateState } from '@/hooks/useAppUpdateState';
 import { useDownloadStatus } from '@/hooks/useDownloadStatus';
 import { useZoom } from '@/hooks/useZoom';
 import { useIntelligenceModeStore } from '@/store/modules/intelligenceMode';
@@ -214,9 +231,8 @@ import { useSearchStore } from '@/store/modules/search';
 import { useSettingsStore } from '@/store/modules/settings';
 import { useUserStore } from '@/store/modules/user';
 import { getImgUrl, isElectron } from '@/utils';
-import { checkUpdate, UpdateResult } from '@/utils/update';
 
-import config from '../../../../package.json';
+import { APP_UPDATE_STATUS } from '../../../shared/appUpdate';
 
 const router = useRouter();
 const route = useRoute();
@@ -226,14 +242,17 @@ const settingsStore = useSettingsStore();
 const userStore = useUserStore();
 const userSetOptions = ref(USER_SET_OPTIONS);
 const { t, locale } = useI18n();
+const message = useMessage();
 
 const intelligenceModeStore = useIntelligenceModeStore();
 const { downloadingCount, navigateToDownloads } = useDownloadStatus();
+const { appUpdateState, hasAppUpdate } = useAppUpdateState();
 const showDownloadButton = computed(
   () =>
     isElectron && (settingsStore.setData?.alwaysShowDownloadButton || downloadingCount.value > 0)
 );
 const { zoomFactor, initZoomFactor, increaseZoom, decreaseZoom, resetZoom, isZoom100 } = useZoom();
+const updateChecking = computed(() => appUpdateState.value.status === APP_UPDATE_STATUS.checking);
 
 // ── 心动模式 ─────────────────────────────────────────
 const isIntelligenceMode = computed(() => intelligenceModeStore.isIntelligenceMode);
@@ -479,25 +498,31 @@ const selectItem = (key: string) => {
   }
 };
 
-const updateInfo = ref<UpdateResult>({
-  hasUpdate: false,
-  latestVersion: '',
-  currentVersion: config.version,
-  releaseInfo: null
-});
-const checkForUpdates = async () => {
+const handleAppUpdateClick = async () => {
+  if (hasAppUpdate.value) {
+    settingsStore.setShowUpdateModal(true);
+    return;
+  }
+
   try {
-    const r = await checkUpdate(config.version);
-    if (r) updateInfo.value = r;
+    const result = await window.api.checkAppUpdate(true);
+    settingsStore.setAppUpdateState(result);
+    if (result.status === APP_UPDATE_STATUS.available) {
+      settingsStore.setShowUpdateModal(true);
+    } else if (result.status === APP_UPDATE_STATUS.notAvailable) {
+      message.success(t('settings.about.latest'));
+    } else if (result.status === APP_UPDATE_STATUS.error) {
+      message.error(result.errorMessage || t('settings.about.messages.checkError'));
+    }
   } catch (e) {
-    void e; // 更新检查失败时静默处理
+    console.error('检查更新失败:', e);
+    message.error(t('settings.about.messages.checkError'));
   }
 };
 
 onMounted(() => {
   loadHotSearch();
   loadPage();
-  checkForUpdates();
   isElectron && initZoomFactor();
 });
 </script>

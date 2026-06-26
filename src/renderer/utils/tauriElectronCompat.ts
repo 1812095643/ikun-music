@@ -8,7 +8,16 @@ import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
 import { openPath, openUrl } from '@tauri-apps/plugin-opener';
 import { Store } from '@tauri-apps/plugin-store';
 
+import config from '../../../package.json';
 import defaultSettings from '../../main/set.json';
+import {
+  APP_UPDATE_CURRENT_RELEASE_TAG,
+  APP_UPDATE_RELEASE_API_URL,
+  APP_UPDATE_RELEASE_URL,
+  APP_UPDATE_STATUS,
+  type AppUpdateState,
+  createDefaultAppUpdateState
+} from '../../shared/appUpdate';
 import {
   consumeMiniModeRestoreRoute,
   rememberMiniModeReturnRoute,
@@ -39,6 +48,30 @@ type TrayStatePayload = {
   muted: boolean;
 };
 
+type GiteeReleaseAsset = {
+  name?: string;
+  browser_download_url?: string;
+  size?: number;
+};
+
+type GiteeRelease = {
+  tag_name?: string;
+  name?: string;
+  body?: string;
+  created_at?: string;
+  published_at?: string;
+  html_url?: string;
+  prerelease?: boolean;
+  assets?: GiteeReleaseAsset[];
+};
+
+type ParsedReleaseVersion = {
+  major: number;
+  minor: number;
+  patch: number;
+  date: number;
+};
+
 const isTauriRuntime = Boolean((window as any).__TAURI_INTERNALS__);
 const BROWSER_STORE_KEY = 'alger-music-tauri-browser-store';
 const BROWSER_LYRIC_RETURN_ROUTE_KEY = 'alger-music-browser-lyric-return-route';
@@ -51,6 +84,8 @@ let appWindow: ReturnType<typeof getCurrentWindow> | null = null;
 let currentWebviewWindow: ReturnType<typeof getCurrentWebviewWindow> | null = null;
 let storePromise: Promise<CompatStore> | null = null;
 let musicApiReadyPromise: Promise<number | null> | null = null;
+let appUpdateState: AppUpdateState = createDefaultAppUpdateState(config.version);
+let appUpdateCheckPromise: Promise<AppUpdateState> | null = null;
 let storeCache: StoreData = {
   set: { ...(defaultSettings as Record<string, any>) },
   shortcuts: {},
@@ -188,6 +223,198 @@ const emitLocal = (channel: string, ...args: any[]) => {
 
 const hasLocalListeners = (channel: string) => {
   return (listeners.get(channel)?.size || 0) > 0;
+};
+
+const emitAppUpdateState = () => {
+  emitLocal('app-update:state', appUpdateState);
+};
+
+const setAppUpdateState = (partial: Partial<AppUpdateState>) => {
+  appUpdateState = {
+    ...appUpdateState,
+    ...partial
+  };
+  emitAppUpdateState();
+};
+
+const parseReleaseVersion = (value: string): ParsedReleaseVersion | null => {
+  const match = value.trim().match(/^v?(\d+)\.(\d+)\.(\d+)(?:[-_.]?(\d{8}))?/i);
+  if (!match) return null;
+  return {
+    major: Number(match[1]),
+    minor: Number(match[2]),
+    patch: Number(match[3]),
+    date: Number(match[4] || 0)
+  };
+};
+
+const compareReleaseVersions = (nextVersion: string, currentVersion: string) => {
+  const next = parseReleaseVersion(nextVersion);
+  const current = parseReleaseVersion(currentVersion);
+  if (!next || !current) return nextVersion.localeCompare(currentVersion);
+
+  for (const key of ['major', 'minor', 'patch', 'date'] as const) {
+    if (next[key] > current[key]) return 1;
+    if (next[key] < current[key]) return -1;
+  }
+  return 0;
+};
+
+const getCurrentReleaseTag = () => {
+  // 当前发版仍是 5.1.0 + 日期 tag，后续版本号开始迭代后，如果 package.json 已经高于
+  // 旧的日期 tag，就自动以 package.json 为准，避免新版本继续拿旧 tag 做比较。
+  if (compareReleaseVersions(config.version, APP_UPDATE_CURRENT_RELEASE_TAG) > 0) {
+    return config.version;
+  }
+  return APP_UPDATE_CURRENT_RELEASE_TAG;
+};
+
+const isNewerThanCurrentRelease = (latestTag: string) => {
+  const latest = parseReleaseVersion(latestTag);
+  const currentTag = getCurrentReleaseTag();
+  const current = parseReleaseVersion(currentTag);
+  if (!latest || !current) return compareReleaseVersions(latestTag, currentTag) > 0;
+
+  for (const key of ['major', 'minor', 'patch'] as const) {
+    if (latest[key] > current[key]) return true;
+    if (latest[key] < current[key]) return false;
+  }
+
+  // 当前构建如果只有 package.json 版本号而没有日期后缀，说明新版发版已开始按主版本迭代；
+  // 此时同一个主版本的日期 tag 不再当作更新，防止刚打出的新包启动后提示自己需要更新。
+  if (current.date === 0) return false;
+  return latest.date > current.date;
+};
+
+const isInstallAsset = (asset: GiteeReleaseAsset) => {
+  const name = asset.name || '';
+  return /\.exe$/i.test(name) && !/\.(zip|tar\.gz)$/i.test(name);
+};
+
+const getReleasePageUrl = (release: GiteeRelease) => {
+  return release.html_url || `${APP_UPDATE_RELEASE_URL}/tag/${release.tag_name || ''}`;
+};
+
+const getReleaseDownloadUrl = (release: GiteeRelease) => {
+  return release.assets?.find(isInstallAsset)?.browser_download_url || getReleasePageUrl(release);
+};
+
+const normalizeReleaseBody = (release: GiteeRelease) => {
+  const body = release.body || '';
+  const downloadUrl = getReleaseDownloadUrl(release);
+  if (!downloadUrl || downloadUrl === getReleasePageUrl(release)) return body;
+  return `${body}\n\n## 下载\n\n- [打开便携版下载链接](${downloadUrl})`;
+};
+
+const fetchGiteeReleases = async (): Promise<GiteeRelease[]> => {
+  const response = await (isTauriRuntime ? tauriFetch : fetch)(APP_UPDATE_RELEASE_API_URL, {
+    headers: {
+      Accept: 'application/json',
+      'User-Agent': 'ikun-music-updater'
+    },
+    connectTimeout: 8000
+  } as RequestInit & { connectTimeout?: number });
+  if (!response.ok) {
+    throw new Error(`Gitee Release 接口返回 HTTP ${response.status}`);
+  }
+  const data = await response.json();
+  if (!Array.isArray(data)) {
+    throw new Error('Gitee Release 接口返回格式不正确');
+  }
+  return data as GiteeRelease[];
+};
+
+const findLatestRelease = (releases: GiteeRelease[]) => {
+  return releases
+    .filter((release) => release.tag_name && !release.prerelease)
+    .sort((a, b) => compareReleaseVersions(b.tag_name || '', a.tag_name || ''))[0];
+};
+
+const checkTauriAppUpdate = async (options: { manual?: boolean } = {}) => {
+  if (appUpdateCheckPromise) return appUpdateCheckPromise;
+
+  appUpdateCheckPromise = (async () => {
+    try {
+      setAppUpdateState({
+        supported: true,
+        status: APP_UPDATE_STATUS.checking,
+        currentVersion: config.version,
+        errorMessage: null,
+        checkedAt: Date.now()
+      });
+
+      const latestRelease = findLatestRelease(await fetchGiteeReleases());
+      if (!latestRelease?.tag_name) {
+        throw new Error('没有找到可用于更新的 Gitee Release');
+      }
+
+      const latestVersion = latestRelease.tag_name.replace(/^v/i, '');
+      if (!isNewerThanCurrentRelease(latestRelease.tag_name)) {
+        setAppUpdateState({
+          status: APP_UPDATE_STATUS.notAvailable,
+          availableVersion: null,
+          releaseNotes: '',
+          releaseDate: null,
+          releasePageUrl: APP_UPDATE_RELEASE_URL,
+          errorMessage: null,
+          checkedAt: Date.now()
+        });
+        return appUpdateState;
+      }
+
+      setAppUpdateState({
+        status: APP_UPDATE_STATUS.available,
+        availableVersion: latestVersion,
+        releaseNotes: normalizeReleaseBody(latestRelease),
+        releaseDate: latestRelease.published_at || latestRelease.created_at || null,
+        releasePageUrl: getReleaseDownloadUrl(latestRelease),
+        errorMessage: null,
+        checkedAt: Date.now()
+      });
+      return appUpdateState;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setAppUpdateState({
+        // 根因：Tauri 便携版没有 Electron autoUpdater 的安装器通道，旧兼容层还返回固定 idle，
+        // 导致用户既看不到可更新红点，也打不开下载页。这里把失败状态也广播出去，手动检查时
+        // 能看到清晰原因；启动静默检查虽然不弹错误，但状态保留给关于页和后续排查使用。
+        supported: true,
+        status: options.manual ? APP_UPDATE_STATUS.error : APP_UPDATE_STATUS.idle,
+        errorMessage: options.manual ? errorMessage : null,
+        checkedAt: Date.now()
+      });
+      return appUpdateState;
+    } finally {
+      appUpdateCheckPromise = null;
+    }
+  })();
+
+  return appUpdateCheckPromise;
+};
+
+const openTauriAppUpdatePage = async () => {
+  const targetUrl = appUpdateState.releasePageUrl || APP_UPDATE_RELEASE_URL;
+  if (!isTauriRuntime) {
+    window.open(targetUrl, '_blank');
+    return true;
+  }
+  await openUrl(targetUrl);
+  return true;
+};
+
+const downloadTauriAppUpdate = async () => {
+  // 根因：当前 Windows 产物是单 exe 便携版，运行中覆盖自身会被系统文件锁和安装路径权限影响，
+  // 比自动下载安装更容易失败。按产品要求，检测到新版后直接打开 Gitee 附件/Release 链接，
+  // 让用户手动下载新便携版，状态仍保持 available 以便红点继续提示。
+  if (appUpdateState.status !== APP_UPDATE_STATUS.available) {
+    setAppUpdateState({
+      status: APP_UPDATE_STATUS.error,
+      errorMessage: '当前没有可下载的更新'
+    });
+    return appUpdateState;
+  }
+  await openTauriAppUpdatePage();
+  return appUpdateState;
 };
 
 const getBrowserHashRoute = () => window.location.hash.replace(/^#/, '') || '/';
@@ -675,18 +902,15 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
       await setStoreValue('shortcuts', args[0]);
       return { success: true };
     case 'app-update:get-state':
+      return appUpdateState;
     case 'app-update:check':
-      return {
-        status: 'idle',
-        currentVersion: '5.1.0',
-        updateInfo: null,
-        error: null,
-        progress: null
-      };
+      return checkTauriAppUpdate(args[0] || {});
     case 'app-update:download':
+      return downloadTauriAppUpdate();
     case 'app-update:quit-and-install':
+      return openTauriAppUpdatePage();
     case 'app-update:open-release-page':
-      return false;
+      return openTauriAppUpdatePage();
     case 'get-downloads-path':
       return ensureDefaultDownloadPath();
     case 'get-downloaded-music': {
