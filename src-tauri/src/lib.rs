@@ -12,11 +12,11 @@ use zip::ZipArchive;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
-use tauri::{
-    AppHandle, Emitter, LogicalPosition, LogicalSize, Manager, PhysicalPosition, Position,
-    Size, WebviewUrl, WebviewWindow, WebviewWindowBuilder, WindowEvent,
-};
 use tauri::PhysicalSize;
+use tauri::{
+    AppHandle, Emitter, LogicalPosition, LogicalSize, Manager, PhysicalPosition, Position, Size,
+    WebviewUrl, WebviewWindow, WebviewWindowBuilder, WindowEvent,
+};
 
 struct MusicApiChild {
     child: Child,
@@ -37,6 +37,20 @@ struct SavedMainWindowState {
 // Tauri 主线以前进入精简模式后只会恢复到固定尺寸，用户原本手动调整过的窗口大小和位置都会丢。
 // 这里单独保存“进入精简模式前”的主窗口几何信息，保证缩放播放列表时不覆盖，恢复时再一次性还原。
 struct MiniWindowRestoreState(Mutex<Option<SavedMainWindowState>>);
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct WriteLocalFileRequest {
+    path: String,
+    bytes: Vec<u8>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct WriteTextFileRequest {
+    path: String,
+    content: String,
+}
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 struct SavedLyricWindowBounds {
@@ -114,9 +128,10 @@ fn current_exe_dir() -> Option<PathBuf> {
 }
 
 fn embedded_runtime_dir() -> Result<PathBuf, String> {
-    let runtime_dir = std::env::temp_dir()
-        .join("ikun-music")
-        .join(format!("music-api-runtime-{:016x}", embedded_runtime_hash()));
+    let runtime_dir = std::env::temp_dir().join("ikun-music").join(format!(
+        "music-api-runtime-{:016x}",
+        embedded_runtime_hash()
+    ));
     let node_file_name = if cfg!(target_os = "windows") {
         "node.exe"
     } else {
@@ -467,13 +482,12 @@ fn emit_to_window(app: &AppHandle, label: &str, event: &str, payload: Value) -> 
     let window = app
         .get_webview_window(label)
         .ok_or_else(|| format!("没有找到 {label} 窗口，无法发送事件 {event}"))?;
-    window.emit(event, payload).map_err(|error| error.to_string())
+    window
+        .emit(event, payload)
+        .map_err(|error| error.to_string())
 }
 
-fn show_main_window(
-    app: &AppHandle,
-    restore_state: &MiniWindowRestoreState,
-) -> Result<(), String> {
+fn show_main_window(app: &AppHandle, restore_state: &MiniWindowRestoreState) -> Result<(), String> {
     let window = main_window(app)?;
     show_normal_window(&window, restore_state)
 }
@@ -517,9 +531,11 @@ fn has_visible_monitor_for_lyric_bounds(
     Ok(monitors.iter().any(|monitor| {
         let work_area = monitor.work_area();
         let min_x = work_area.position.x - LYRIC_WINDOW_POSITION_MARGIN;
-        let max_x = work_area.position.x + work_area.size.width as i32 + LYRIC_WINDOW_POSITION_MARGIN;
+        let max_x =
+            work_area.position.x + work_area.size.width as i32 + LYRIC_WINDOW_POSITION_MARGIN;
         let min_y = work_area.position.y - LYRIC_WINDOW_POSITION_MARGIN;
-        let max_y = work_area.position.y + work_area.size.height as i32 + LYRIC_WINDOW_POSITION_MARGIN;
+        let max_y =
+            work_area.position.y + work_area.size.height as i32 + LYRIC_WINDOW_POSITION_MARGIN;
 
         bounds.x >= min_x && bounds.x < max_x && bounds.y >= min_y && bounds.y < max_y
     }))
@@ -573,13 +589,18 @@ fn ensure_lyric_window(app: &AppHandle) -> Result<WebviewWindow, String> {
 
     if let Some(bounds) = load_saved_lyric_window_bounds(app) {
         window
-            .set_size(Size::Physical(PhysicalSize::new(bounds.width, bounds.height)))
+            .set_size(Size::Physical(PhysicalSize::new(
+                bounds.width,
+                bounds.height,
+            )))
             .map_err(|error| format!("恢复桌面歌词窗口尺寸失败：{error}"))?;
         // 用户上次可能把歌词窗拖到副屏，后续副屏断开后旧坐标会落到屏幕外。
         // 位置失效时只重置位置，不丢弃用户上次调整过的窗口尺寸。
         if has_visible_monitor_for_lyric_bounds(&window, &bounds)? {
             window
-                .set_position(Position::Physical(PhysicalPosition::new(bounds.x, bounds.y)))
+                .set_position(Position::Physical(PhysicalPosition::new(
+                    bounds.x, bounds.y,
+                )))
                 .map_err(|error| format!("恢复桌面歌词窗口位置失败：{error}"))?;
         } else {
             window
@@ -745,9 +766,16 @@ fn tray_tooltip_text(state: &TrayState) -> String {
     let song_text = artist
         .map(|artist| format!("{title} - {artist}"))
         .unwrap_or_else(|| title.to_string());
-    let status = if state.is_playing { "正在播放" } else { "已暂停" };
+    let status = if state.is_playing {
+        "正在播放"
+    } else {
+        "已暂停"
+    };
 
-    format!("ikun音乐 - {status}：{}", truncate_menu_text(&song_text, 64))
+    format!(
+        "ikun音乐 - {status}：{}",
+        truncate_menu_text(&song_text, 64)
+    )
 }
 
 fn create_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
@@ -799,6 +827,53 @@ fn get_platform() -> String {
 #[tauri::command]
 fn get_arch() -> String {
     std::env::consts::ARCH.to_string()
+}
+
+#[tauri::command]
+fn get_downloads_path(app: AppHandle) -> Result<String, String> {
+    app.path()
+        .download_dir()
+        .map(|path| path.to_string_lossy().to_string())
+        .map_err(|error| format!("读取系统下载目录失败：{error}"))
+}
+
+#[tauri::command]
+fn write_local_file(request: WriteLocalFileRequest) -> Result<(), String> {
+    let path = PathBuf::from(&request.path);
+    if path.as_os_str().is_empty() {
+        return Err("写入文件路径为空".to_string());
+    }
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent).map_err(|error| format!("创建下载目录失败：{error}"))?;
+    }
+    fs::write(&path, request.bytes).map_err(|error| format!("写入下载文件失败：{error}"))
+}
+
+#[tauri::command]
+fn write_local_text_file(request: WriteTextFileRequest) -> Result<(), String> {
+    let path = PathBuf::from(&request.path);
+    if path.as_os_str().is_empty() {
+        return Err("写入文本文件路径为空".to_string());
+    }
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent).map_err(|error| format!("创建文本文件目录失败：{error}"))?;
+    }
+    fs::write(&path, request.content).map_err(|error| format!("写入文本文件失败：{error}"))
+}
+
+#[tauri::command]
+fn delete_local_file(path: String) -> Result<bool, String> {
+    let path = PathBuf::from(path);
+    if !path.exists() {
+        return Ok(false);
+    }
+    fs::remove_file(&path).map_err(|error| format!("删除本地文件失败：{error}"))?;
+    Ok(true)
+}
+
+#[tauri::command]
+fn local_file_exists(path: String) -> bool {
+    PathBuf::from(path).exists()
 }
 
 #[tauri::command]
@@ -1130,6 +1205,11 @@ pub fn run() {
             get_default_settings,
             get_platform,
             get_arch,
+            get_downloads_path,
+            write_local_file,
+            write_local_text_file,
+            delete_local_file,
+            local_file_exists,
             minimize_window,
             maximize_window,
             close_window,
@@ -1189,8 +1269,7 @@ pub fn run() {
                 }
             }
 
-            if window.label() == MAIN_WINDOW_LABEL
-                && matches!(event, tauri::WindowEvent::Destroyed)
+            if window.label() == MAIN_WINDOW_LABEL && matches!(event, tauri::WindowEvent::Destroyed)
             {
                 {
                     let state = window.state::<MusicApiProcess>();
