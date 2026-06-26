@@ -50,6 +50,7 @@ const isTemporaryPlaybackUrl = (url?: string) => {
     return (
       hostname.includes('kuwo.cn') ||
       hostname.includes('kwcdn.kuwo.cn') ||
+      hostname.includes('googlevideo.com') ||
       hostname.includes('migu') ||
       hostname.includes('kugou') ||
       hostname.includes('bilivideo.com') ||
@@ -217,7 +218,7 @@ export const getSongUrl = async (
     const baseFallbackSources =
       configuredFallbackSources.length > 0
         ? configuredFallbackSources
-        : ['migu', 'kugou', 'pyncmd'];
+        : ['migu', 'kugou', 'pyncmd', 'ytmusic', 'piped'];
     const fallbackSources = [
       'gdmusic',
       ...baseFallbackSources.filter((source: string) => source !== 'gdmusic')
@@ -291,6 +292,30 @@ export const getSongUrl = async (
         }
         console.warn('酷我直链接析失败，继续进入备用解析流程:', error);
         skipKuwoForFallback = true;
+      }
+    }
+
+    if (songData.source === 'ytmusic') {
+      try {
+        const { getYoutubeMusicUrl } = await import('@/api/youtubeMusic');
+        const youtubeResult = await getYoutubeMusicUrl(String(id));
+
+        if (requestId && !playbackRequestManager.isRequestValid(requestId)) {
+          console.log(`[getSongUrl] YouTube Music 解析后请求已失效: ${requestId}`);
+          throw new Error('Request cancelled');
+        }
+
+        if (youtubeResult.data?.data?.url) {
+          if (isDownloaded) return youtubeResult.data.data as any;
+          return await resolveCachedPlaybackUrl(youtubeResult.data.data.url, songData);
+        }
+      } catch (error) {
+        if ((error as Error).message === 'Request cancelled') {
+          throw error;
+        }
+        // 根因：YouTube Music 的 player 接口可能受地区或 Key 影响失败。
+        // 失败时立刻交给后续 Piped/GD/Unblock 兜底，不让用户点播放后卡在单一路径。
+        console.warn('YouTube Music 直链接析失败，继续进入备用解析流程:', error);
       }
     }
 

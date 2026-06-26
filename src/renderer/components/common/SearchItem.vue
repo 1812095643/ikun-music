@@ -124,7 +124,13 @@ const handleClick = async () => {
       id: props.item.id,
       type: 'playlist',
       name: props.item.name,
-      listInfo: { picUrl: props.item.picUrl },
+      // 根因：YouTube Music 歌单搜索返回的是 browseId，不是网易云歌单 ID。
+      // 详情页需要 source/browseId 才能走 InnerTube browse 接口，否则会误请求本地后端。
+      listInfo: {
+        ...props.item,
+        coverImgUrl: props.item.coverImgUrl || props.item.picUrl,
+        picUrl: props.item.picUrl || props.item.coverImgUrl
+      },
       canRemove: false
     });
   } else if (props.item.type === 'mv') {
@@ -147,7 +153,13 @@ const handleClick = async () => {
       params: { id: props.item.id },
       query: {
         keyword: props.item.name,
-        source: props.item.source === 'kuwo' ? 'kuwo-artist-search' : 'artist-search'
+        source:
+          props.item.source === 'kuwo'
+            ? 'kuwo-artist-search'
+            : props.item.source === 'ytmusic'
+              ? 'ytmusic-artist-search'
+              : 'artist-search',
+        browseId: props.item.browseId
       }
     });
   }

@@ -2,6 +2,11 @@ import { isElectron } from '@/utils';
 import request from '@/utils/request';
 
 import { getKuwoSearchSuggestions, searchKuwoArtists, searchKuwoSongs } from './kuwo';
+import {
+  searchYoutubeMusicArtists,
+  searchYoutubeMusicPlaylists,
+  searchYoutubeMusicSongs
+} from './youtubeMusic';
 
 interface IParams {
   keywords: string;
@@ -24,7 +29,22 @@ export const getSearch = async (params: IParams): Promise<any> => {
       console.warn('酷我搜索三次尝试后仍不可用，已切换到本地后端搜索。', error);
     }
 
-    return request.get<any>('/cloudsearch', { params });
+    const fallbackResponse = await request.get<any>('/cloudsearch', { params });
+    const fallbackSongs = fallbackResponse.data?.result?.songs || [];
+    if (fallbackSongs.length > 0) return fallbackResponse;
+
+    try {
+      const youtubeResponse = await searchYoutubeMusicSongs(params.keywords, params.limit || 30);
+      const youtubeSongs = youtubeResponse.data?.result?.songs || [];
+      if (youtubeSongs.length > 0) return youtubeResponse;
+    } catch (error) {
+      // 根因：YouTube Music / InnerTube 是接口文档要求补齐的公开能力，但它受
+      // 网络、Key 和地区影响更大，不能覆盖酷我主搜索。这里只作为酷我和本地后端
+      // 都没有结果后的补充，避免用户搜不到但也不拖慢主链路。
+      console.warn('YouTube Music 搜索补充不可用，保留本地后端搜索结果。', error);
+    }
+
+    return fallbackResponse;
   }
   if (params.type === 100) {
     try {
@@ -39,7 +59,41 @@ export const getSearch = async (params: IParams): Promise<any> => {
       console.warn('酷我歌手搜索三次尝试后仍不可用，已切换到本地后端搜索。', error);
     }
 
-    return request.get<any>('/cloudsearch', { params });
+    const fallbackResponse = await request.get<any>('/cloudsearch', { params });
+    const fallbackArtists = fallbackResponse.data?.result?.artists || [];
+    if (fallbackArtists.length > 0) return fallbackResponse;
+
+    try {
+      const youtubeResponse = await searchYoutubeMusicArtists(params.keywords, params.limit || 30);
+      const youtubeArtists = youtubeResponse.data?.result?.artists || [];
+      if (youtubeArtists.length > 0) return youtubeResponse;
+    } catch (error) {
+      // 根因：接口文档里的 YouTube Music 艺人主页如果只做底层封装，用户没有入口能触发。
+      // 这里仅在酷我歌手搜索和本地后端都没有结果后补 YouTube Music，点击后仍进入歌手详情页。
+      console.warn('YouTube Music 歌手搜索补充不可用，保留本地后端搜索结果。', error);
+    }
+
+    return fallbackResponse;
+  }
+  if (params.type === 1000) {
+    const fallbackResponse = await request.get<any>('/cloudsearch', { params });
+    const fallbackPlaylists = fallbackResponse.data?.result?.playlists || [];
+    if (fallbackPlaylists.length > 0) return fallbackResponse;
+
+    try {
+      const youtubeResponse = await searchYoutubeMusicPlaylists(
+        params.keywords,
+        params.limit || 30
+      );
+      const youtubePlaylists = youtubeResponse.data?.result?.playlists || [];
+      if (youtubePlaylists.length > 0) return youtubeResponse;
+    } catch (error) {
+      // 根因：接口文档里的 YouTube Music 播放列表详情需要先有播放列表搜索入口，
+      // 否则用户无法从界面进入 browseId 详情。这里只在本地后端无歌单结果时补位。
+      console.warn('YouTube Music 歌单搜索补充不可用，保留本地后端搜索结果。', error);
+    }
+
+    return fallbackResponse;
   }
   return request.get<any>('/cloudsearch', {
     params

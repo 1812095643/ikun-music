@@ -8,10 +8,23 @@ export type Platform =
   | 'joox'
   | 'gdmusic'
   | 'lxMusic'
-  | 'custom';
+  | 'custom'
+  | 'ytmusic'
+  | 'piped';
 
 // 默认平台列表
-export const DEFAULT_PLATFORMS: Platform[] = ['kuwo', 'migu', 'kugou', 'pyncmd'];
+// 根因：新增 YouTube Music / Piped 公开音源后，只更新 set.json 会漏掉部分设置组件
+// 直接引用 DEFAULT_PLATFORMS 的默认值，导致新装和旧配置弹窗里的音源顺序不一致。
+// 这里把共享常量同步为“酷我优先 + 常规本地兜底 + 公开扩展兜底”，确保搜索和播放
+// 默认仍优先走稳定酷我，酷我失败后才进入 YouTube Music / Piped。
+export const DEFAULT_PLATFORMS: Platform[] = [
+  'kuwo',
+  'migu',
+  'kugou',
+  'pyncmd',
+  'ytmusic',
+  'piped'
+];
 
 export interface IRecommendMusic {
   code: number;
@@ -42,7 +55,13 @@ export interface ILyric {
   hasWordByWord?: boolean;
 }
 
-export type LyricCandidateSource = 'embedded' | 'current' | 'kuwo' | 'kugou' | 'netease';
+export type LyricCandidateSource =
+  | 'embedded'
+  | 'current'
+  | 'kuwo'
+  | 'kugou'
+  | 'netease'
+  | 'ytmusic';
 
 export interface LyricCandidate {
   key: string;

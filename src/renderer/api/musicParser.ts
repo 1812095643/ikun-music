@@ -11,6 +11,8 @@ import type { ParsedMusicResult } from './gdmusic';
 import { parseFromGDMusic } from './gdmusic';
 import { LxMusicStrategy } from './lxMusicStrategy';
 import { parseFromCustomApi } from './parseFromCustomApi';
+import { getPipedAudioUrl } from './piped';
+import { getYoutubeMusicUrl, searchYoutubeMusicSongs } from './youtubeMusic';
 
 const { saveData, getData, deleteData } = musicDB;
 
@@ -45,6 +47,7 @@ const CACHE_CONFIG = {
  * 内存失败缓存（替代 IndexedDB，更轻量且应用重启后自动失效）
  */
 const failedCacheMap = new Map<string, number>();
+const UNBLOCK_SOURCE_KEYS = ['qq', 'migu', 'kugou', 'kuwo', 'pyncmd', 'joox'];
 
 const getSongArtistText = (song: SongResult) => {
   const artists = song.ar?.length ? song.ar : song.artists || song.song?.artists || [];
@@ -77,6 +80,7 @@ const isTemporaryPlaybackUrl = (url?: string) => {
     return (
       hostname.includes('kuwo.cn') ||
       hostname.includes('kwcdn.kuwo.cn') ||
+      hostname.includes('googlevideo.com') ||
       hostname.includes('migu') ||
       hostname.includes('kugou') ||
       hostname.includes('bilivideo.com') ||
@@ -296,7 +300,7 @@ const getGDMusicAudio = async (id: number, data: SongResult): Promise<ParsedMusi
  * @returns 解析结果
  */
 const getUnblockMusicAudio = (id: number, data: SongResult, sources: any[]) => {
-  const filteredSources = sources.filter((source) => source !== 'gdmusic');
+  const filteredSources = sources.filter((source) => UNBLOCK_SOURCE_KEYS.includes(source));
   console.log(`使用unblockMusic解析，音源:`, filteredSources);
   return window.api.unblockMusic(id, cloneDeep(data), cloneDeep(filteredSources));
 };
@@ -446,7 +450,7 @@ class UnblockMusicStrategy implements MusicSourceStrategy {
   priority = 4;
 
   canHandle(sources: string[]): boolean {
-    const unblockSources = sources.filter((source) => !['custom', 'gdmusic'].includes(source));
+    const unblockSources = sources.filter((source) => UNBLOCK_SOURCE_KEYS.includes(source));
     return unblockSources.length > 0;
   }
 
@@ -462,8 +466,8 @@ class UnblockMusicStrategy implements MusicSourceStrategy {
     }
 
     try {
-      const unblockSources = (sources || []).filter(
-        (source) => !['custom', 'gdmusic'].includes(source)
+      const unblockSources = (sources || []).filter((source) =>
+        UNBLOCK_SOURCE_KEYS.includes(source)
       );
       console.log('尝试使用UnblockMusic解析:', unblockSources);
 
@@ -488,6 +492,101 @@ class UnblockMusicStrategy implements MusicSourceStrategy {
   }
 }
 
+const getSongArtistTextForYoutube = (song: SongResult) => {
+  const artists = song.ar?.length ? song.ar : song.artists || song.song?.artists || [];
+  return artists
+    .map((artist: any) => artist?.name)
+    .filter(Boolean)
+    .join(' ');
+};
+
+const resolveYoutubeVideoId = async (id: number | string, data: SongResult) => {
+  if (data.source === 'ytmusic' && id) return String(id);
+  const keyword = [data.name, getSongArtistTextForYoutube(data)].filter(Boolean).join(' ').trim();
+  if (!keyword) return '';
+  const response = await searchYoutubeMusicSongs(keyword, 5);
+  const songs = response.data?.result?.songs || [];
+  const normalizedName = normalizeCacheText(data.name);
+  const normalizedArtist = normalizeCacheText(getSongArtistTextForYoutube(data));
+  const matched =
+    songs.find((song: SongResult) => {
+      const targetName = normalizeCacheText(song.name);
+      const targetArtist = normalizeCacheText(getSongArtistTextForYoutube(song));
+      return (
+        targetName &&
+        (targetName.includes(normalizedName) || normalizedName.includes(targetName)) &&
+        (!normalizedArtist ||
+          targetArtist.includes(normalizedArtist) ||
+          normalizedArtist.includes(targetArtist))
+      );
+    }) || songs[0];
+  return matched?.id ? String(matched.id) : '';
+};
+
+/**
+ * YouTube Music / InnerTube 解析策略
+ */
+class YoutubeMusicStrategy implements MusicSourceStrategy {
+  name = 'ytmusic';
+  priority = 5;
+
+  canHandle(sources: string[], _settingsStore?: any): boolean {
+    return sources.includes('ytmusic');
+  }
+
+  async parse(id: number, data: SongResult): Promise<MusicParseResult | null> {
+    if (CacheManager.isInFailedCache(id, this.name)) return null;
+
+    try {
+      const videoId = await resolveYoutubeVideoId(id, data);
+      if (!videoId) {
+        CacheManager.addFailedCache(id, this.name);
+        return null;
+      }
+      const result = await getYoutubeMusicUrl(videoId);
+      if (result.data?.data?.url) return result;
+      CacheManager.addFailedCache(id, this.name);
+      return null;
+    } catch (error) {
+      console.error('YouTube Music 解析失败:', error);
+      CacheManager.addFailedCache(id, this.name);
+      return null;
+    }
+  }
+}
+
+/**
+ * Piped 代理解析策略
+ */
+class PipedStrategy implements MusicSourceStrategy {
+  name = 'piped';
+  priority = 6;
+
+  canHandle(sources: string[], _settingsStore?: any): boolean {
+    return sources.includes('piped');
+  }
+
+  async parse(id: number, data: SongResult): Promise<MusicParseResult | null> {
+    if (CacheManager.isInFailedCache(id, this.name)) return null;
+
+    try {
+      const videoId = await resolveYoutubeVideoId(id, data);
+      if (!videoId) {
+        CacheManager.addFailedCache(id, this.name);
+        return null;
+      }
+      const result = await getPipedAudioUrl(videoId);
+      if (result.data?.data?.url) return result;
+      CacheManager.addFailedCache(id, this.name);
+      return null;
+    } catch (error) {
+      console.error('Piped 代理解析失败:', error);
+      CacheManager.addFailedCache(id, this.name);
+      return null;
+    }
+  }
+}
+
 /**
  * 音源策略工厂
  */
@@ -496,7 +595,9 @@ class MusicSourceStrategyFactory {
     new LxMusicStrategy(),
     new CustomApiStrategy(),
     new GDMusicStrategy(),
-    new UnblockMusicStrategy()
+    new UnblockMusicStrategy(),
+    new YoutubeMusicStrategy(),
+    new PipedStrategy()
   ];
 
   /**

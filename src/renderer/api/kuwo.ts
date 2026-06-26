@@ -1,7 +1,9 @@
 import type { SongResult } from '@/types/music';
 import { isElectron } from '@/utils';
-import { type DownloadQualityKey,getKuwoDownloadQuality } from '@/utils/downloadQuality';
+import { type DownloadQualityKey, getKuwoDownloadQuality } from '@/utils/downloadQuality';
 import { ensureMusicApiReady } from '@/utils/tauriElectronCompat';
+
+import { assertExternalOk, requestExternalMusic } from './externalMusicRequest';
 
 const KUWO_USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36';
@@ -25,6 +27,23 @@ interface KuwoPlaylistItem {
   total?: string;
   listencnt?: string;
   digest?: string;
+}
+
+interface KuwoRankItem {
+  bangId?: string | number;
+  id?: string | number;
+  name?: string;
+  bangName?: string;
+  pic?: string;
+  img?: string;
+  cover?: string;
+  updateTime?: string;
+  updateFrequency?: string;
+  intro?: string;
+  desc?: string;
+  songList?: KuwoSongItem[];
+  musicList?: KuwoSongItem[];
+  songs?: KuwoSongItem[];
 }
 
 interface KuwoSongItem {
@@ -105,6 +124,22 @@ const requestKuwoOnce = async <T = any>(url: string, timeout = 15000): Promise<T
   });
   if (!response.ok) throw new Error(`酷我接口请求失败：HTTP ${response.status}`);
   return (await response.json()) as T;
+};
+
+const requestKuwoPublic = async <T = any>(
+  url: string,
+  timeout = 15000,
+  headers: Record<string, string> = {}
+): Promise<T> => {
+  const response = await requestExternalMusic<T>(url, {
+    timeout,
+    requestPrefix: 'kuwo-public',
+    headers: {
+      Referer: 'https://www.kuwo.cn/',
+      ...headers
+    }
+  });
+  return assertExternalOk(response, '酷我公开接口');
 };
 
 const requestKuwoHead = async (url: string, timeout = 8000) => {
@@ -393,6 +428,63 @@ const mapKuwoPlaylist = (item: KuwoPlaylistItem) => ({
   digest: item.digest
 });
 
+const mapKuwoRank = (item: KuwoRankItem, index = 0) => {
+  const id = parseNumber(item.bangId || item.id, index + 1);
+  const name = item.name || item.bangName || `酷我榜单 ${id}`;
+  const cover = normalizeImageUrl(item.pic || item.img || item.cover);
+
+  return {
+    id,
+    name,
+    coverImgUrl: cover,
+    picUrl: cover,
+    updateFrequency: item.updateFrequency || item.updateTime || '实时更新',
+    description: item.intro || item.desc || '酷我音乐热门榜单',
+    playCount: 0,
+    trackCount: 0,
+    creator: {
+      userId: 0,
+      nickname: '酷我音乐',
+      avatarUrl: cover
+    },
+    source: 'kuwo-rank'
+  };
+};
+
+const normalizeKuwoRankList = (payload: any) => {
+  const candidates = [
+    payload?.data,
+    payload?.data?.data,
+    payload?.data?.list,
+    payload?.data?.bangMenu,
+    payload?.data?.bangList,
+    payload?.list,
+    payload?.bangMenu,
+    payload?.bangList
+  ];
+  const nestedList = candidates.find((item) => Array.isArray(item));
+  if (nestedList) {
+    return nestedList
+      .flatMap((item: any) => (Array.isArray(item?.list) ? item.list : item))
+      .filter(Boolean);
+  }
+  if (Array.isArray(payload?.data?.child)) return payload.data.child;
+  return [];
+};
+
+const normalizeKuwoRankSongs = (payload: any) => {
+  const candidates = [
+    payload?.data?.musicList,
+    payload?.data?.songList,
+    payload?.data?.songs,
+    payload?.musicList,
+    payload?.songList,
+    payload?.songs
+  ];
+  const list = candidates.find((item) => Array.isArray(item));
+  return Array.isArray(list) ? list : [];
+};
+
 export const getKuwoRecommendPlaylists = async (limit = 30) => {
   const url = `https://wapi.kuwo.cn/api/pc/classify/playlist/getRcmPlayList?pn=1&rn=${limit}&order=hot`;
   const response = await kuwoRequest<any>(url);
@@ -443,6 +535,103 @@ export const getKuwoPlaylistDetail = async (id: number | string, page = 0, limit
       privileges: []
     }
   };
+};
+
+export const getKuwoRankList = async () => {
+  const urls = [
+    // 根因：接口文档里的 /api/v1/www/bang/home/bangList 现场返回 502，
+    // 但这是用户要求补齐的文档接口，仍然保留为第一优先级；失败后再试
+    // 酷我官网榜单菜单接口，最后由调用方回退本地后端榜单，避免排行榜空白。
+    'https://api.kuwo.cn/api/v1/www/bang/home/bangList',
+    `https://www.kuwo.cn/api/www/bang/bang/bangMenu?httpsStatus=1&reqId=${Date.now()}`
+  ];
+  let lastError: unknown;
+
+  for (const url of urls) {
+    try {
+      const response = await requestKuwoPublic<any>(url, 8000);
+      if (response?.success === false) throw new Error(response.message || '酷我榜单接口不可用');
+      const list = normalizeKuwoRankList(response);
+      if (list.length > 0) {
+        return {
+          data: {
+            code: 200,
+            list: list.map(mapKuwoRank)
+          }
+        };
+      }
+      throw new Error('酷我榜单接口返回为空');
+    } catch (error) {
+      lastError = error;
+      console.warn('酷我榜单接口不可用，准备尝试下一路。', error);
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error(String(lastError));
+};
+
+export const getKuwoRankDetail = async (
+  id: number | string,
+  rankInfo?: any,
+  page = 1,
+  limit = 100
+) => {
+  const urls = [
+    `https://api.kuwo.cn/api/v1/www/bang/home/playlist?bangId=${id}&pn=${page}&rn=${limit}`,
+    `https://www.kuwo.cn/api/www/bang/bang/musicList?bangId=${id}&pn=${page}&rn=${limit}&httpsStatus=1&reqId=${Date.now()}`
+  ];
+  let lastError: unknown;
+
+  for (const url of urls) {
+    try {
+      const response = await requestKuwoPublic<any>(url, 9000);
+      if (response?.success === false) throw new Error(response.message || '酷我榜单歌曲不可用');
+      const songs = normalizeKuwoRankSongs(response);
+      if (songs.length === 0) throw new Error('酷我榜单歌曲返回为空');
+      const tracks = songs.map(mapKuwoSong);
+      const cover = normalizeImageUrl(
+        response?.data?.pic || response?.data?.img || rankInfo?.coverImgUrl || rankInfo?.picUrl
+      );
+
+      return {
+        data: {
+          code: 200,
+          playlist: {
+            id: parseNumber(id),
+            name: response?.data?.name || response?.data?.bangName || rankInfo?.name || '酷我榜单',
+            coverImgUrl: cover,
+            picUrl: cover,
+            description:
+              response?.data?.intro || response?.data?.desc || rankInfo?.description || '酷我榜单',
+            playCount: parseNumber(response?.data?.playCount || rankInfo?.playCount),
+            trackCount: parseNumber(response?.data?.num || tracks.length, tracks.length),
+            creator: {
+              userId: 0,
+              nickname: '酷我音乐',
+              avatarUrl: cover
+            },
+            tracks,
+            trackIds: tracks.map((song) => ({
+              id: song.id,
+              v: 0,
+              t: 0,
+              at: 0,
+              uid: 0,
+              rcmdReason: ''
+            })),
+            subscribed: false,
+            source: 'kuwo-rank'
+          },
+          privileges: []
+        }
+      };
+    } catch (error) {
+      lastError = error;
+      console.warn('酷我榜单歌曲接口不可用，准备尝试下一路。', error);
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error(String(lastError));
 };
 
 export const searchKuwoSongs = async (params: {

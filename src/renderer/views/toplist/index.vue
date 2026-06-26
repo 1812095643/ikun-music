@@ -96,7 +96,7 @@ import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
-import { getToplist } from '@/api/list';
+import { getToplistWithKuwo } from '@/api/list';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
 import { formatNumber, getImgUrl } from '@/utils';
 
@@ -126,7 +126,7 @@ const openToplist = async (item: any) => {
 const loadToplist = async () => {
   loading.value = true;
   try {
-    const { data } = await getToplist();
+    const { data } = await getToplistWithKuwo();
     topList.value = data.list || [];
   } catch (error) {
     console.error('加载排行榜列表失败:', error);

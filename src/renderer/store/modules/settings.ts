@@ -31,7 +31,10 @@ const getLocalSettings = () => {
 const normalizeEnabledMusicSources = (sources: unknown) => {
   if (!Array.isArray(sources)) return DEFAULT_PLATFORMS;
   const values = sources.filter((source): source is string => typeof source === 'string');
-  const result = ['kuwo', ...values.filter((source) => source !== 'kuwo')];
+  // 根因：旧用户本地配置里没有 YouTube Music / Piped，新接口如果只写进默认配置，
+  // 已安装用户升级后并不会自动拥有这些兜底源。这里保持酷我第一，保留用户原顺序，
+  // 再把新增公开音源放到末尾，只在酷我和本地解析都不可用时补位。
+  const result = ['kuwo', ...values.filter((source) => source !== 'kuwo'), 'ytmusic', 'piped'];
   return result.length > 0 ? [...new Set(result)] : DEFAULT_PLATFORMS;
 };
 

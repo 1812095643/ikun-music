@@ -1,5 +1,6 @@
 import { searchKuwoSongs } from '@/api/kuwo';
 import { getMusicLrc } from '@/api/music';
+import { getYoutubeMusicLyrics, searchYoutubeMusicSongs } from '@/api/youtubeMusic';
 import { parseRawLyrics } from '@/hooks/usePlayerHooks';
 import type { ILyric, LyricCandidate, LyricCandidateResult, SongResult } from '@/types/music';
 import { isElectron } from '@/utils';
@@ -29,7 +30,8 @@ const sourceLabelMap: Record<LyricCandidate['source'], string> = {
   current: '当前歌曲',
   kuwo: '酷我音乐',
   kugou: '酷狗歌词',
-  netease: '网易云'
+  netease: '网易云',
+  ytmusic: 'YouTube Music'
 };
 
 const getSongArtists = (song: SongResult) => {
@@ -104,6 +106,36 @@ const buildLyricFromPayload = (payload: RawLyricPayload | null | undefined): ILy
 
 const buildLyricFromText = (content: string | null | undefined): ILyric | null =>
   buildLyricFromPayload({ lrc: { lyric: content || '' } });
+
+const mergeTranslatedText = (lyric: ILyric, translatedContent: string | null | undefined) => {
+  if (!translatedContent) return lyric;
+  const translated = buildLyricFromText(decodeHtmlText(translatedContent));
+  if (!hasValidLyric(translated)) return lyric;
+
+  const translatedMap = new Map<number, string>();
+  translated!.lrcArray.forEach((line) => {
+    if (line.text && typeof line.startTime === 'number') {
+      translatedMap.set(line.startTime / 1000, line.text);
+    }
+  });
+
+  lyric.lrcArray.forEach((line, index) => {
+    if (!line.text) return;
+    const currentTime = lyric.lrcTimeArray[index] || Number(line.startTime || 0) / 1000;
+    let matchedText = '';
+    let minDiff = 2;
+    for (const [time, text] of translatedMap.entries()) {
+      const diff = Math.abs(time - currentTime);
+      if (diff < minDiff) {
+        minDiff = diff;
+        matchedText = text;
+      }
+    }
+    if (matchedText) line.trText = matchedText;
+  });
+
+  return lyric;
+};
 
 const formatLrcTime = (secondsText: string) => {
   const seconds = Number(secondsText);
@@ -423,6 +455,22 @@ const getKugouCandidates = async (song: SongResult): Promise<LyricCandidate[]> =
       const lyric = buildLyricFromText(lyricText);
       if (!hasValidLyric(lyric)) continue;
 
+      try {
+        const translateUrl = new URL('https://lyrics.kugou.com/translate/content');
+        translateUrl.searchParams.set('ver', '1');
+        translateUrl.searchParams.set('client', 'pc');
+        translateUrl.searchParams.set('id', item.id);
+        translateUrl.searchParams.set('accesskey', item.accesskey);
+        const translateResponse = await requestTextOrJson(translateUrl.toString(), 6000);
+        if (typeof translateResponse?.content === 'string') {
+          mergeTranslatedText(lyric as ILyric, translateResponse.content);
+        }
+      } catch (error) {
+        // 根因：酷狗翻译接口是锦上添花能力，偶发为空或不可用不能影响歌词本体。
+        // 这里只跳过翻译合并，仍保留已经下载成功的 LRC。
+        console.warn('酷狗歌词翻译读取失败，已保留原文歌词。', error);
+      }
+
       candidates.push(
         buildCandidate({
           source: 'kugou',
@@ -520,6 +568,47 @@ const getNeteaseCandidates = async (song: SongResult): Promise<LyricCandidate[]>
   return candidates;
 };
 
+const getYoutubeCandidates = async (song: SongResult): Promise<LyricCandidate[]> => {
+  const keyword = [song.name, getArtistText(song)].filter(Boolean).join(' ').trim();
+  if (!keyword) return [];
+
+  const response = await searchYoutubeMusicSongs(keyword, 5);
+  const songs = (response.data?.result?.songs || []) as SongResult[];
+  const candidates: LyricCandidate[] = [];
+
+  for (const youtubeSong of songs.slice(0, MAX_CANDIDATES_PER_CHANNEL)) {
+    try {
+      const lyric = await getYoutubeMusicLyrics(String(youtubeSong.id));
+      if (!hasValidLyric(lyric)) continue;
+
+      candidates.push(
+        buildCandidate({
+          source: 'ytmusic',
+          songId: youtubeSong.id,
+          title: youtubeSong.name,
+          artist: getArtistText(youtubeSong),
+          album: youtubeSong.al?.name || youtubeSong.album?.name,
+          duration: getDurationMs(youtubeSong),
+          score: scoreSongMatch(
+            song,
+            {
+              title: youtubeSong.name,
+              artist: getArtistText(youtubeSong),
+              duration: getDurationMs(youtubeSong)
+            },
+            8
+          ),
+          lyric: lyric as ILyric
+        })
+      );
+    } catch (error) {
+      console.warn('YouTube Music 歌词候选读取失败，继续尝试其它候选。', error);
+    }
+  }
+
+  return candidates;
+};
+
 const uniqueCandidates = (candidates: LyricCandidate[]) => {
   const seen = new Set<string>();
   return candidates.filter((candidate) => {
@@ -541,7 +630,8 @@ export const loadLyricCandidates = async (song: SongResult): Promise<LyricCandid
     withTimeout(getCurrentSongCandidate(song), LYRIC_SEARCH_TIMEOUT, '当前歌曲歌词'),
     withTimeout(getKuwoCandidates(song), LYRIC_SEARCH_TIMEOUT, '酷我歌词'),
     withTimeout(getKugouCandidates(song), LYRIC_SEARCH_TIMEOUT, '酷狗歌词'),
-    withTimeout(getNeteaseCandidates(song), LYRIC_SEARCH_TIMEOUT, '网易云歌词')
+    withTimeout(getNeteaseCandidates(song), LYRIC_SEARCH_TIMEOUT, '网易云歌词'),
+    withTimeout(getYoutubeCandidates(song), LYRIC_SEARCH_TIMEOUT, 'YouTube Music 歌词')
   ];
 
   const results = await Promise.allSettled(tasks);

@@ -88,12 +88,67 @@ export const usePlaylistStore = defineStore(
     const consecutiveFailCount = ref(0);
     const MAX_CONSECUTIVE_FAILS = 5; // 最大连续失败次数
     const SINGLE_TRACK_MAX_RETRIES = 3; // 单曲最大重试次数
+    const YOUTUBE_RECOMMEND_APPEND_LIMIT = 18;
+    const youtubeRecommendLoading = ref(false);
+    const youtubeRecommendSeedCache = new Set<string>();
 
     // ==================== Computed ====================
     const currentPlayList = computed(() => playList.value);
     const currentPlayListIndex = computed(() => playListIndex.value);
 
     // ==================== Actions ====================
+
+    const isYoutubeLikeSong = (song?: SongResult) =>
+      song?.source === 'ytmusic' || song?.source === 'piped';
+
+    const appendYoutubeRecommendations = async (seedSong?: SongResult) => {
+      if (!isYoutubeLikeSong(seedSong) || !seedSong?.id || youtubeRecommendLoading.value) {
+        return false;
+      }
+
+      const videoId = String(seedSong.id);
+      if (youtubeRecommendSeedCache.has(videoId)) return false;
+
+      try {
+        youtubeRecommendLoading.value = true;
+        const { getYoutubeMusicNextSongs } = await import('@/api/youtubeMusic');
+        const songs = await getYoutubeMusicNextSongs(videoId, YOUTUBE_RECOMMEND_APPEND_LIMIT);
+        const existingKeys = new Set(
+          playList.value.map((song) => `${song.source || 'netease'}-${String(song.id)}`)
+        );
+        const nextSongs = songs.filter((song) => {
+          const key = `${song.source || 'netease'}-${String(song.id)}`;
+          if (existingKeys.has(key)) return false;
+          existingKeys.add(key);
+          return true;
+        });
+
+        if (nextSongs.length === 0) {
+          youtubeRecommendSeedCache.add(videoId);
+          return false;
+        }
+
+        // 根因：接口文档里的 YouTube Music next 推荐接口之前没有接入播放队列，
+        // 用户播放 YouTube/Piped 兜底歌曲时，队列播完就停，公开推荐能力没有真实入口。
+        // 解决：只在外部音源队列接近末尾时按当前 videoId 追加推荐，且去重、不触碰
+        // 酷我/网易等常规队列，避免改变用户已有播放模式语义。
+        playList.value = [...playList.value, ...nextSongs];
+        youtubeRecommendSeedCache.add(videoId);
+        return true;
+      } catch (error) {
+        console.warn('YouTube Music 推荐列表读取失败，保留原播放队列。', error);
+        youtubeRecommendSeedCache.add(videoId);
+        return false;
+      } finally {
+        youtubeRecommendLoading.value = false;
+      }
+    };
+
+    const ensureYoutubeRecommendationsNearEnd = async (currentIndex: number) => {
+      const remainingCount = playList.value.length - currentIndex - 1;
+      if (remainingCount > 2) return;
+      await appendYoutubeRecommendations(playList.value[currentIndex]);
+    };
 
     /**
      * 获取歌曲详情并预加载
@@ -431,8 +486,13 @@ export const usePlaylistStore = defineStore(
           return;
         }
 
-        // 顺序播放模式：播放到最后一首后停止
+        // 顺序播放模式：播放到最后一首后停止；YouTube/Piped 队列先尝试按文档 next 接口续上推荐。
         if (playMode.value === 0 && playListIndex.value >= playList.value.length - 1) {
+          const appended = await appendYoutubeRecommendations(playList.value[playListIndex.value]);
+          if (appended) {
+            return _nextPlay(singleTrackRetryCount);
+          }
+
           if (sleepTimerStore.sleepTimer.type === 'end') {
             sleepTimerStore.stopPlayback();
           }
@@ -475,6 +535,7 @@ export const usePlaylistStore = defineStore(
             '[nextPlay] New current song in list:',
             playList.value[playListIndex.value]?.name
           );
+          void ensureYoutubeRecommendationsNearEnd(nowPlayListIndex);
           sleepTimerStore.handleSongChange();
         } else {
           console.error(`[nextPlay] 播放失败: ${nextSong.name}`);

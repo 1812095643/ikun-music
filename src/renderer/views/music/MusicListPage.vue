@@ -374,7 +374,11 @@ const fetchData = async () => {
         message.error(t('common.loadFailed'));
       }
     } else if (type === 'playlist') {
-      const res = await getListDetail(id.toString(), musicStore.currentListInfo?.source);
+      const res = await getListDetail(
+        id.toString(),
+        musicStore.currentListInfo?.source,
+        musicStore.currentListInfo
+      );
       data = res.data;
       if (data.code === 200) {
         const playlist = data.playlist;

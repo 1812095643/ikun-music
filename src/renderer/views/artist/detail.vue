@@ -416,6 +416,7 @@ import { useRoute } from 'vue-router';
 import { getArtistAlbums, getArtistDetail, getArtistTopSongs } from '@/api/artist';
 import { getMusicDetail } from '@/api/music';
 import { getSearch } from '@/api/search';
+import { getYoutubeMusicArtistDetail } from '@/api/youtubeMusic';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
 import PlayBottom from '@/components/common/PlayBottom.vue';
 import SongItem from '@/components/common/SongItem.vue';
@@ -440,13 +441,23 @@ const routeArtistKeyword = computed(() => {
   const keyword = route.query.keyword;
   return typeof keyword === 'string' ? keyword.trim() : '';
 });
+const routeYoutubeBrowseId = computed(() => {
+  const browseId = route.query.browseId;
+  return typeof browseId === 'string' ? browseId.trim() : '';
+});
 const isSearchPoweredArtistEntry = computed(() => {
   const source = String(route.query.source || '');
   return (
-    ['home-artist-search', 'kuwo-artist-search', 'artist-search'].includes(source) &&
-    Boolean(routeArtistKeyword.value)
+    ['home-artist-search', 'kuwo-artist-search', 'ytmusic-artist-search', 'artist-search'].includes(
+      source
+    ) && Boolean(routeArtistKeyword.value)
   );
 });
+const isYoutubeArtistEntry = computed(
+  () =>
+    String(route.query.source || '') === 'ytmusic-artist-search' &&
+    Boolean(routeYoutubeBrowseId.value)
+);
 const artistSongSearchKeyword = computed(() =>
   isSearchPoweredArtistEntry.value ? routeArtistKeyword.value : ''
 );
@@ -554,6 +565,33 @@ const filterSongsByArtistKeyword = (songList: any[], keyword: string) => {
 const buildSearchPoweredArtistInfo = async (): Promise<IArtist | undefined> => {
   if (!artistSongSearchKeyword.value) return undefined;
 
+  if (isYoutubeArtistEntry.value) {
+    try {
+      const { artist } = await getYoutubeMusicArtistDetail(routeYoutubeBrowseId.value);
+      return artist as IArtist;
+    } catch (error) {
+      // 根因：YouTube Music 艺人详情是公开外部接口，地区、Key 或接口结构波动时可能失败。
+      // 歌手详情页本身不能因此空白，先返回基础歌手信息，再让歌曲列表走歌手名搜索兜底。
+      console.warn('YouTube Music 艺人信息读取失败，已使用歌手名基础信息兜底。', error);
+      return {
+        id: artistId.value,
+        name: artistSongSearchKeyword.value,
+        cover: '',
+        avatar: '',
+        picUrl: '',
+        briefDesc: '',
+        albumSize: 0,
+        musicSize: 0,
+        mvSize: 0,
+        transNames: [],
+        alias: [],
+        identities: [],
+        identifyTag: [],
+        rank: { rank: 0, type: 0 }
+      } as IArtist;
+    }
+  }
+
   const { data } = await getSearch({
     keywords: artistSongSearchKeyword.value,
     type: SEARCH_TYPE.ARTIST,
@@ -653,8 +691,9 @@ const loadArtistInfo = async () => {
   try {
     if (isSearchPoweredArtistEntry.value) {
       // 根因：酷我歌手搜索返回的是酷我 ARTISTID，不能当作网易云 artist/detail 的 ID 使用；
-      // 否则用户从“歌手搜索”进入详情页时会进错页或拿不到数据。搜索驱动入口只把歌手详情
-      // 当作承载页：先用歌手分类搜索拿头像/歌曲数，再用歌手名走单曲搜索，保持酷我优先播放链路。
+      // YouTube Music 歌手搜索返回的是 browseId，同样不能当网易云 ID 使用。搜索驱动入口
+      // 只把歌手详情当承载页：先拿对应渠道的头像/歌曲数，再用渠道详情或歌手名搜索歌曲，
+      // 保持酷我优先播放链路，同时让 YouTube Music 艺人主页接口真正有用户入口。
       artistInfo.value =
         (await buildSearchPoweredArtistInfo()) ||
         ({
@@ -728,6 +767,24 @@ const loadSongs = async () => {
     const { page, pageSize } = songPage.value;
 
     if (artistSongSearchKeyword.value) {
+      if (isYoutubeArtistEntry.value) {
+        try {
+          const { songs: youtubeSongs } = await getYoutubeMusicArtistDetail(
+            routeYoutubeBrowseId.value
+          );
+          if (youtubeSongs.length > 0) {
+            songs.value = page === 1 ? youtubeSongs : [...songs.value, ...youtubeSongs];
+            songPage.value.hasMore = false;
+            songPage.value.page++;
+            return;
+          }
+        } catch (error) {
+          // 根因：YouTube Music 艺人主页属于外部公开能力，可能受地区、Key 或接口结构影响。
+          // 失败时不让详情页空白，继续用歌手名走 getSearch(type=单曲)，该链路仍优先酷我。
+          console.warn('YouTube Music 艺人主页歌曲读取失败，已切换到歌手名搜索兜底。', error);
+        }
+      }
+
       const { data } = await getSearch({
         keywords: artistSongSearchKeyword.value,
         type: SEARCH_TYPE.MUSIC,
