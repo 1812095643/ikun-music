@@ -74,17 +74,29 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onMounted, ref, watch } from 'vue';
+import {
+  computed,
+  defineAsyncComponent,
+  defineComponent,
+  inject,
+  onMounted,
+  ref,
+  watch
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
 import { getSearch } from '@/api/search';
-import SearchItem from '@/components/common/SearchItem.vue';
 import SongItem from '@/components/common/SongItem.vue';
 import { SEARCH_TYPE, SEARCH_TYPES } from '@/const/bar-const';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSearchStore } from '@/store/modules/search';
 import type { SongResult } from '@/types/music';
+import { isAndroidRuntime } from '@/utils';
+
+const SearchItem = isAndroidRuntime
+  ? defineComponent({ name: 'AndroidHiddenSearchItem', setup: () => () => null })
+  : defineAsyncComponent(() => import('@/components/common/SearchItem.vue'));
 
 const { t, locale } = useI18n();
 const route = useRoute();
@@ -99,10 +111,14 @@ const hasSafeArea = inject('hasSafeArea', false);
 const keyword = ref((route.query.keyword as string) || '');
 
 // 搜索类型
-const searchType = ref(Number(route.query.type) || searchStore.searchType || 1);
+const getAvailableSearchTypes = () =>
+  isAndroidRuntime ? SEARCH_TYPES.filter((type) => type.key === SEARCH_TYPE.MUSIC) : SEARCH_TYPES;
+const normalizeSearchType = (type?: number) =>
+  isAndroidRuntime ? SEARCH_TYPE.MUSIC : type || searchStore.searchType || SEARCH_TYPE.MUSIC;
+const searchType = ref(normalizeSearchType(Number(route.query.type)));
 const searchTypes = computed(() => {
   locale.value;
-  return SEARCH_TYPES.map((type) => ({
+  return getAvailableSearchTypes().map((type) => ({
     label: t(type.label),
     key: type.key
   }));
@@ -291,6 +307,7 @@ const performSearch = async (isLoadMore = false) => {
 
 // 选择搜索类型
 const selectType = (type: number) => {
+  if (isAndroidRuntime && type !== SEARCH_TYPE.MUSIC) return;
   if (searchType.value === type) return;
 
   searchType.value = type;
@@ -343,7 +360,7 @@ watch(
   (query) => {
     if (route.path === '/mobile-search-result' && query.keyword) {
       keyword.value = query.keyword as string;
-      searchType.value = Number(query.type) || searchStore.searchType || 1;
+      searchType.value = normalizeSearchType(Number(query.type));
       performSearch();
     }
   }
