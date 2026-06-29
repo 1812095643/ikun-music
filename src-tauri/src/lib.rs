@@ -2,6 +2,7 @@ use serde::Deserialize;
 #[cfg(not(mobile))]
 use serde::Serialize;
 use serde_json::{json, Value};
+#[cfg(not(mobile))]
 use std::fs;
 #[cfg(not(mobile))]
 use std::fs::File;
@@ -9,6 +10,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Cursor};
 #[cfg(not(mobile))]
 use std::path::Path;
+#[cfg(not(mobile))]
 use std::path::PathBuf;
 #[cfg(not(mobile))]
 use std::process::{Child, Command, Stdio};
@@ -909,14 +911,31 @@ fn get_arch() -> String {
 
 #[tauri::command]
 fn get_downloads_path(app: AppHandle) -> Result<String, String> {
+    #[cfg(mobile)]
+    {
+        let _ = app;
+        return Ok(String::new());
+    }
+
+    #[cfg(not(mobile))]
+    {
     app.path()
         .download_dir()
         .map(|path| path.to_string_lossy().to_string())
         .map_err(|error| format!("读取系统下载目录失败：{error}"))
+    }
 }
 
 #[tauri::command]
 fn write_local_file(request: WriteLocalFileRequest) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = request;
+        return Err("Android 第一阶段暂不支持写入本地文件".to_string());
+    }
+
+    #[cfg(not(mobile))]
+    {
     let path = PathBuf::from(&request.path);
     if path.as_os_str().is_empty() {
         return Err("写入文件路径为空".to_string());
@@ -925,10 +944,19 @@ fn write_local_file(request: WriteLocalFileRequest) -> Result<(), String> {
         fs::create_dir_all(parent).map_err(|error| format!("创建下载目录失败：{error}"))?;
     }
     fs::write(&path, request.bytes).map_err(|error| format!("写入下载文件失败：{error}"))
+    }
 }
 
 #[tauri::command]
 fn write_local_text_file(request: WriteTextFileRequest) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = request;
+        return Err("Android 第一阶段暂不支持写入本地文本文件".to_string());
+    }
+
+    #[cfg(not(mobile))]
+    {
     let path = PathBuf::from(&request.path);
     if path.as_os_str().is_empty() {
         return Err("写入文本文件路径为空".to_string());
@@ -937,26 +965,54 @@ fn write_local_text_file(request: WriteTextFileRequest) -> Result<(), String> {
         fs::create_dir_all(parent).map_err(|error| format!("创建文本文件目录失败：{error}"))?;
     }
     fs::write(&path, request.content).map_err(|error| format!("写入文本文件失败：{error}"))
+    }
 }
 
 #[tauri::command]
 fn delete_local_file(path: String) -> Result<bool, String> {
+    #[cfg(mobile)]
+    {
+        let _ = path;
+        return Ok(false);
+    }
+
+    #[cfg(not(mobile))]
+    {
     let path = PathBuf::from(path);
     if !path.exists() {
         return Ok(false);
     }
     fs::remove_file(&path).map_err(|error| format!("删除本地文件失败：{error}"))?;
     Ok(true)
+    }
 }
 
 #[tauri::command]
 fn local_file_exists(path: String) -> bool {
+    #[cfg(mobile)]
+    {
+        let _ = path;
+        return false;
+    }
+
+    #[cfg(not(mobile))]
+    {
     PathBuf::from(path).exists()
+    }
 }
 
 #[tauri::command]
 fn minimize_window(window: WebviewWindow) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = window;
+        return Ok(());
+    }
+
+    #[cfg(not(mobile))]
+    {
     window.minimize().map_err(|error| error.to_string())
+    }
 }
 
 #[tauri::command]
@@ -979,12 +1035,30 @@ fn maximize_window(window: WebviewWindow) -> Result<(), String> {
 
 #[tauri::command]
 fn close_window(window: WebviewWindow) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = window;
+        return Ok(());
+    }
+
+    #[cfg(not(mobile))]
+    {
     window.close().map_err(|error| error.to_string())
+    }
 }
 
 #[tauri::command]
 fn quit_app(app: AppHandle) {
+    #[cfg(mobile)]
+    {
+        let _ = app;
+        return;
+    }
+
+    #[cfg(not(mobile))]
+    {
     app.exit(0);
+    }
 }
 
 #[tauri::command]
