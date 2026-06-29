@@ -164,8 +164,10 @@ class AudioService {
 
   private getStoredSettings(): Record<string, any> {
     try {
-      const electronSettings = window.electron?.ipcRenderer?.sendSync('get-store-value', 'set');
-      if (electronSettings && typeof electronSettings === 'object') return electronSettings;
+      if (isDesktopRuntime) {
+        const electronSettings = window.electron?.ipcRenderer?.sendSync('get-store-value', 'set');
+        if (electronSettings && typeof electronSettings === 'object') return electronSettings;
+      }
     } catch {
       // 非 Electron/Tauri 兼容层时继续读取 localStorage
     }

@@ -110,7 +110,7 @@ export const isLyricWindow = computed(() => {
 
 export const getSetData = (): any => {
   let setData = null;
-  if (window.electron?.ipcRenderer) {
+  if (isDesktopRuntime && window.electron?.ipcRenderer) {
     setData = window.electron.ipcRenderer.sendSync('get-store-value', 'set');
   } else {
     const settingsStore = useSettingsStore();
