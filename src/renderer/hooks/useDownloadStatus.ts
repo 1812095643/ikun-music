@@ -1,6 +1,8 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+import { isDesktopRuntime } from '@/utils';
+
 const downloadList = ref<any[]>([]);
 const isInitialized = ref(false);
 
@@ -18,7 +20,7 @@ export const useDownloadStatus = () => {
   const initDownloadListeners = () => {
     if (isInitialized.value) return;
 
-    if (!window.electron?.ipcRenderer) return;
+    if (!isDesktopRuntime || !window.electron?.ipcRenderer) return;
 
     window.electron.ipcRenderer.on('music-download-progress', (_, data) => {
       const existingItem = downloadList.value.find((item) => item.filename === data.filename);

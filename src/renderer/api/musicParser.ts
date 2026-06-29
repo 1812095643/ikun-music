@@ -4,7 +4,7 @@ import { musicDB } from '@/hooks/MusicHook';
 import { SongSourceConfigManager } from '@/services/SongSourceConfigManager';
 import { useSettingsStore } from '@/store';
 import type { SongResult } from '@/types/music';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import requestMusic from '@/utils/request_music';
 
 import type { ParsedMusicResult } from './gdmusic';
@@ -662,7 +662,7 @@ export class MusicParser {
 
     try {
       // 非Electron环境直接使用API请求
-      if (!isElectron) {
+      if (!isDesktopRuntime) {
         console.log('非Electron环境，使用API请求');
         return await requestMusic.get<any>('/music', { params: { id } });
       }

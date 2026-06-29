@@ -3,7 +3,7 @@ import { getMusicLrc } from '@/api/music';
 import { getYoutubeMusicLyrics, searchYoutubeMusicSongs } from '@/api/youtubeMusic';
 import { parseRawLyrics } from '@/hooks/usePlayerHooks';
 import type { ILyric, LyricCandidate, LyricCandidateResult, SongResult } from '@/types/music';
-import { isDesktopRuntime, isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import request from '@/utils/request';
 
 type RawLyricPayload = {
@@ -253,7 +253,7 @@ const withTimeout = async <T>(task: Promise<T>, timeoutMs: number, label: string
 };
 
 const readCachedRawLyric = async (id: number) => {
-  if (!isElectron) return null;
+  if (!isDesktopRuntime) return null;
   try {
     return (await window.electron.ipcRenderer.invoke(
       'get-cached-lyric',
@@ -273,7 +273,7 @@ const fetchRawLyricById = async (id: string | number): Promise<RawLyricPayload |
   if (cached) return cached;
 
   const { data } = await getMusicLrc(numericId);
-  if (isElectron && data) {
+  if (isDesktopRuntime && data) {
     void window.electron.ipcRenderer
       .invoke('cache-lyric', numericId, data)
       .catch((error) => console.warn('写入歌词候选缓存失败:', error));

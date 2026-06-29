@@ -1,4 +1,4 @@
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import request from '@/utils/request';
 
 import { getKuwoSearchSuggestions, searchKuwoArtists, searchKuwoSongs } from './kuwo';
@@ -142,7 +142,7 @@ export const getSearchSuggestions = async (keyword: string) => {
     }
 
     let responseData: KugouSuggestionResponse;
-    if (isElectron) {
+    if (isDesktopRuntime) {
       console.log('[API] Running in desktop compatibility layer, using IPC proxy fallback.');
       responseData = await window.api.getSearchSuggestions(keyword);
     } else {

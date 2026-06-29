@@ -13,7 +13,7 @@ import { preloadService } from '@/services/preloadService';
 import { SongSourceConfigManager } from '@/services/SongSourceConfigManager';
 import type { AudioOutputDevice } from '@/types/audio';
 import type { Platform, SongResult } from '@/types/music';
-import { getImgUrl } from '@/utils';
+import { getImgUrl, isDesktopRuntime } from '@/utils';
 import { getImageLinearBackground } from '@/utils/linearColor';
 
 import { useLyricStore } from './lyric';
@@ -104,7 +104,9 @@ export const usePlayerCoreStore = defineStore(
     const setIsPlay = (value: boolean) => {
       isPlay.value = value;
       play.value = value;
-      window.electron?.ipcRenderer.send('update-play-state', value);
+      if (isDesktopRuntime) {
+        window.electron?.ipcRenderer.send('update-play-state', value);
+      }
     };
 
     /**

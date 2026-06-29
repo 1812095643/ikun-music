@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
 import i18n from '@/../i18n/renderer';
+import { isDesktopRuntime } from '@/utils';
 import { getLocalStorageItem, setLocalStorageItem } from '@/utils/playerUtils';
 
 // 定时关闭类型
@@ -179,7 +180,7 @@ export const useSleepTimerStore = defineStore('sleepTimer', () => {
     }
 
     // 发送通知
-    if (window.electron?.ipcRenderer) {
+    if (isDesktopRuntime && window.electron?.ipcRenderer) {
       window.electron.ipcRenderer.send('show-notification', {
         title: i18n.global.t('player.sleepTimer.timerEnded'),
         body: i18n.global.t('player.sleepTimer.playbackStopped')
