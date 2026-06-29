@@ -153,12 +153,12 @@
 
               <!-- Batch Actions -->
               <div
-                v-if="filteredSongs.length > 0 && isElectron"
+                v-if="filteredSongs.length > 0 && isDesktopRuntime"
                 class="h-8 w-[1px] bg-[var(--qqm-border)] mx-1 hidden md:block"
               ></div>
 
               <button
-                v-if="!isSelecting && isElectron"
+                v-if="!isSelecting && isDesktopRuntime"
                 class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center text-neutral-600 dark:text-neutral-400"
                 @click="startSelect"
               >
@@ -324,7 +324,7 @@ import { useScrollTitle } from '@/hooks/useScrollTitle';
 import { useMusicStore, usePlayerStore, useRecommendStore, useUserStore } from '@/store';
 import { usePlayHistoryStore } from '@/store/modules/playHistory';
 import { SongResult } from '@/types/music';
-import { getImgUrl, isElectron, isMobile } from '@/utils';
+import { getImgUrl, isDesktopRuntime, isMobile } from '@/utils';
 import { getLoginErrorMessage, hasPermission } from '@/utils/auth';
 
 defineOptions({

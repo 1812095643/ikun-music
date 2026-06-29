@@ -101,7 +101,7 @@
       </n-badge>
     </button>
 
-    <n-tooltip v-if="isElectron" trigger="hover">
+    <n-tooltip v-if="isDesktopRuntime" trigger="hover">
       <template #trigger>
         <button
           class="action-btn"
@@ -171,7 +171,7 @@
           <div class="menu-row" @click="selectItem('set')">
             <i class="ri-settings-3-line" /><span>{{ t('comp.searchBar.set') }}</span>
           </div>
-          <div v-if="isElectron" class="menu-row">
+          <div v-if="isDesktopRuntime" class="menu-row">
             <i class="ri-zoom-in-line" /><span>{{ t('comp.searchBar.zoom') }}</span>
             <div class="zoom-ctrl ml-auto">
               <button class="zoom-btn" @click.stop="decreaseZoom">
@@ -200,7 +200,7 @@
               <template #unchecked><i class="ri-sun-line text-[10px]" /></template>
             </n-switch>
           </div>
-          <div class="menu-row" @click="restartApp">
+          <div v-if="isDesktopRuntime" class="menu-row" @click="restartApp">
             <i class="ri-restart-line" /><span>{{ t('comp.searchBar.restart') }}</span>
           </div>
           <div class="menu-row" @click="selectItem('refresh')">
@@ -230,7 +230,7 @@ import { useNavTitleStore } from '@/store/modules/navTitle';
 import { useSearchStore } from '@/store/modules/search';
 import { useSettingsStore } from '@/store/modules/settings';
 import { useUserStore } from '@/store/modules/user';
-import { getImgUrl, isElectron } from '@/utils';
+import { getImgUrl, isDesktopRuntime } from '@/utils';
 
 import { APP_UPDATE_STATUS } from '../../../shared/appUpdate';
 
@@ -249,7 +249,8 @@ const { downloadingCount, navigateToDownloads } = useDownloadStatus();
 const { appUpdateState, hasAppUpdate } = useAppUpdateState();
 const showDownloadButton = computed(
   () =>
-    isElectron && (settingsStore.setData?.alwaysShowDownloadButton || downloadingCount.value > 0)
+    isDesktopRuntime &&
+    (settingsStore.setData?.alwaysShowDownloadButton || downloadingCount.value > 0)
 );
 const { zoomFactor, initZoomFactor, increaseZoom, decreaseZoom, resetZoom, isZoom100 } = useZoom();
 const updateChecking = computed(() => appUpdateState.value.status === APP_UPDATE_STATUS.checking);
@@ -294,7 +295,7 @@ const tabs = computed(() => {
       electronOnly: true
     }
   ];
-  return items.filter((tab) => !tab.electronOnly || isElectron);
+  return items.filter((tab) => !tab.electronOnly || isDesktopRuntime);
 });
 const isTabActive = (path: string) => route.path === path;
 
@@ -396,7 +397,7 @@ const rawSearchTypes = ref(SEARCH_TYPES);
 const searchTypeOptions = computed(() => {
   locale.value;
   return rawSearchTypes.value
-    .filter(() => isElectron)
+    .filter(() => isDesktopRuntime)
     .map((type) => ({ label: t(type.label), key: type.key }));
 });
 
@@ -473,7 +474,7 @@ watchEffect(() => {
     : USER_SET_OPTIONS.filter((i) => i.key !== 'logout');
 });
 
-const restartApp = () => window.electron.ipcRenderer.send('restart');
+const restartApp = () => window.electron?.ipcRenderer?.send('restart');
 const toLogin = () => router.push('/user');
 
 const isDark = computed({
@@ -523,7 +524,7 @@ const handleAppUpdateClick = async () => {
 onMounted(() => {
   loadHotSearch();
   loadPage();
-  isElectron && initZoomFactor();
+  isDesktopRuntime && initZoomFactor();
 });
 </script>
 

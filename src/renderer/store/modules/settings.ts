@@ -6,7 +6,7 @@ import setDataDefault from '@/../main/set.json';
 import homeRouter from '@/router/home';
 import { useMenuStore } from '@/store/modules/menu';
 import { DEFAULT_PLATFORMS } from '@/types/music';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import {
   applyTheme,
   getCurrentTheme,
@@ -17,7 +17,7 @@ import {
 
 import { type AppUpdateState, createDefaultAppUpdateState } from '../../../shared/appUpdate';
 
-const getSafeIpcRenderer = () => (isElectron ? window.electron?.ipcRenderer || null : null);
+const getSafeIpcRenderer = () => (isDesktopRuntime ? window.electron?.ipcRenderer || null : null);
 
 const getLocalSettings = () => {
   try {
@@ -229,7 +229,7 @@ export const useSettingsStore = defineStore('settings', () => {
   };
 
   const initializeSystemFonts = async () => {
-    if (!isElectron || !window.api?.invoke) return;
+    if (!isDesktopRuntime || !window.api?.invoke) return;
     if (systemFonts.value.length > 1) return;
 
     try {

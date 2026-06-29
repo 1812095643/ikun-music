@@ -1,6 +1,6 @@
 <template>
   <n-dropdown
-    v-if="isElectron"
+    v-if="isDesktopRuntime"
     :show="show"
     :x="x"
     :y="y"
@@ -20,7 +20,7 @@ import { computed, h, inject } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import type { SongResult } from '@/types/music';
-import { getImgUrl, isElectron } from '@/utils';
+import { getImgUrl, isDesktopRuntime } from '@/utils';
 import { hasPermission } from '@/utils/auth';
 import { DOWNLOAD_QUALITY_OPTIONS, getDefaultDownloadQuality } from '@/utils/downloadQuality';
 

@@ -1,7 +1,7 @@
 import { computed, onMounted, onUnmounted } from 'vue';
 
 import { useSettingsStore } from '@/store/modules/settings';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 
 import { APP_UPDATE_STATUS, type AppUpdateState } from '../../shared/appUpdate';
 
@@ -20,7 +20,7 @@ export const useAppUpdateState = () => {
   };
 
   const initializeUpdateState = async () => {
-    if (!isElectron || !window.api?.getAppUpdateState) return;
+    if (!isDesktopRuntime || !window.api?.getAppUpdateState) return;
 
     try {
       const currentState = await window.api.getAppUpdateState();
@@ -31,7 +31,7 @@ export const useAppUpdateState = () => {
   };
 
   onMounted(() => {
-    if (!isElectron || !window.api?.onAppUpdateState) return;
+    if (!isDesktopRuntime || !window.api?.onAppUpdateState) return;
 
     listenerCount += 1;
     if (listenerCount === 1) {
@@ -42,7 +42,7 @@ export const useAppUpdateState = () => {
   });
 
   onUnmounted(() => {
-    if (!isElectron || !window.api?.removeAppUpdateListeners) return;
+    if (!isDesktopRuntime || !window.api?.removeAppUpdateListeners) return;
 
     listenerCount = Math.max(listenerCount - 1, 0);
     if (listenerCount === 0) {

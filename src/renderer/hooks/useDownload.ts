@@ -7,10 +7,10 @@ import { getKuwoMusicUrl } from '@/api/kuwo';
 import { getMusicLrc } from '@/api/music';
 import { getSongUrl } from '@/store/modules/player';
 import type { SongResult } from '@/types/music';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import { getDefaultDownloadQuality, getKuwoDownloadQuality } from '@/utils/downloadQuality';
 
-const getIpcRenderer = () => (isElectron ? window.electron?.ipcRenderer || null : null);
+const getIpcRenderer = () => (isDesktopRuntime ? window.electron?.ipcRenderer || null : null);
 const buildDownloadKey = (filename: string, quality?: string) =>
   `${filename}::${quality || 'default'}`;
 const getDownloadEventKey = (data: any) =>
@@ -167,6 +167,11 @@ export const useDownload = () => {
    * @returns Promise<void>
    */
   const downloadMusic = async (song: SongResult, quality?: string) => {
+    if (!isDesktopRuntime) {
+      message.warning('当前移动端暂不支持下载，请在桌面端使用');
+      return;
+    }
+
     if (isDownloading.value) {
       message.warning(t('songItem.message.downloading'));
       return;
@@ -236,6 +241,11 @@ export const useDownload = () => {
    * @returns Promise<void>
    */
   const batchDownloadMusic = async (songs: SongResult[], quality?: string) => {
+    if (!isDesktopRuntime) {
+      message.warning('当前移动端暂不支持下载，请在桌面端使用');
+      return;
+    }
+
     if (isDownloading.value) {
       message.warning(t('favorite.downloading'));
       return;
@@ -340,6 +350,11 @@ export const useDownload = () => {
    * @param song 歌曲信息
    */
   const downloadLyric = async (song: SongResult) => {
+    if (!isDesktopRuntime) {
+      message.warning('当前移动端暂不支持下载歌词，请在桌面端使用');
+      return;
+    }
+
     try {
       const res = await getMusicLrc(song.id as number);
       const lyricData = res?.data;

@@ -6,7 +6,7 @@ import useIndexedDB from '@/hooks/IndexDBHook';
 import { audioService } from '@/services/audioService';
 import type { usePlayerStore } from '@/store';
 import type { Artist, ILyricText, SongResult } from '@/types/music';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import { getTextColors } from '@/utils/linearColor';
 import {
   getLyricWindowClosedAt,
@@ -16,8 +16,9 @@ import {
 import { parseLyrics } from '@/utils/yrcParser';
 
 const windowData = window as any;
-const getCompatApi = () => (isElectron ? window.api || null : null);
-const getCompatIpcRenderer = () => (isElectron ? windowData.electron?.ipcRenderer || null : null);
+const getCompatApi = () => (isDesktopRuntime ? window.api || null : null);
+const getCompatIpcRenderer = () =>
+  isDesktopRuntime ? windowData.electron?.ipcRenderer || null : null;
 let lyricWindowListenersInitialized = false;
 let lastLyricWindowOpenRequestedAt = 0;
 
@@ -218,7 +219,7 @@ const setupMusicWatchers = () => {
 
         await applyCurrentLyricData();
         // 当歌词数据更新时，如果歌词窗口打开，则发送数据
-        if (isElectron && isLyricWindowOpen.value) {
+        if (isDesktopRuntime && isLyricWindowOpen.value) {
           console.log('歌词窗口已打开，同步最新歌词数据');
           // 不管歌词数组是否为空，都发送最新数据
           sendLyricToWin();
@@ -300,7 +301,7 @@ const setupAudioListeners = () => {
         if (newIndex !== nowIndex.value) {
           nowIndex.value = newIndex;
           currentLrcProgress.value = 0; // 换行时重置进度
-          if (isElectron && isLyricWindowOpen.value) {
+          if (isDesktopRuntime && isLyricWindowOpen.value) {
             sendLyricToWin();
           }
         }
@@ -316,7 +317,7 @@ const setupAudioListeners = () => {
 
         // === 节流发送轻量歌词进度更新（每 ~200ms / 约每 4 个 tick）===
         lyricThrottleCounter++;
-        if (isElectron && isLyricWindowOpen.value && lyricThrottleCounter % 4 === 0) {
+        if (isDesktopRuntime && isLyricWindowOpen.value && lyricThrottleCounter % 4 === 0) {
           try {
             getCompatApi()?.sendLyric(
               JSON.stringify({
@@ -399,7 +400,7 @@ const setupAudioListeners = () => {
           const newIndex = getLrcIndex(nowTime.value);
           if (newIndex !== nowIndex.value) {
             nowIndex.value = newIndex;
-            if (isElectron && isLyricWindowOpen.value) {
+            if (isDesktopRuntime && isLyricWindowOpen.value) {
               sendLyricToWin();
             }
           }
@@ -433,7 +434,7 @@ const setupAudioListeners = () => {
   // 监听播放
   audioService.on('play', () => {
     getPlayerStore().setPlayMusic(true);
-    if (isElectron) {
+    if (isDesktopRuntime) {
       getCompatApi()?.sendSong(cloneDeep(getPlayerStore().playMusic));
     }
     // 启动进度更新
@@ -445,7 +446,7 @@ const setupAudioListeners = () => {
     console.log('音频暂停事件触发');
     getPlayerStore().setPlayMusic(false);
     clearInterval();
-    if (isElectron && isLyricWindowOpen.value) {
+    if (isDesktopRuntime && isLyricWindowOpen.value) {
       sendLyricToWin();
     }
   });
@@ -744,7 +745,7 @@ export const getLrcTimeRange = (index: number) => ({
 watch(
   () => lrcArray.value,
   (newLrcArray) => {
-    if (newLrcArray.length > 0 && isElectron && isLyricWindowOpen.value) {
+    if (newLrcArray.length > 0 && isDesktopRuntime && isLyricWindowOpen.value) {
       sendLyricToWin();
     }
   }
@@ -752,7 +753,7 @@ watch(
 
 // 发送歌词更新数据
 export const sendLyricToWin = () => {
-  if (!isElectron || !isLyricWindowOpen.value) {
+  if (!isDesktopRuntime || !isLyricWindowOpen.value) {
     return;
   }
 
@@ -811,7 +812,7 @@ let lyricSyncInterval: any = null;
 // 否则首次打开歌词窗时如果还没有进入音频监听初始化，窗口关闭/就绪事件会丢失，
 // 表现为歌词窗状态不同步，或者窗口已加载但拿不到首帧歌词。
 const setupLyricWindowListeners = () => {
-  if (!isElectron || lyricWindowListenersInitialized) return;
+  if (!isDesktopRuntime || lyricWindowListenersInitialized) return;
 
   const compatApi = getCompatApi();
   if (!compatApi) return;
@@ -851,7 +852,12 @@ const startLyricSync = () => {
 
   // 每秒同步一次歌词数据
   lyricSyncInterval = setInterval(() => {
-    if (isElectron && isLyricWindowOpen.value && getPlayerStore().play && playMusic.value?.id) {
+    if (
+      isDesktopRuntime &&
+      isLyricWindowOpen.value &&
+      getPlayerStore().play &&
+      playMusic.value?.id
+    ) {
       // 发送当前播放进度的更新
       try {
         const updateData = {
@@ -880,7 +886,7 @@ const stopLyricSync = () => {
 export const shouldOpenLyricWindow = (isOpen: boolean, forceOpen = false) => forceOpen || !isOpen;
 
 export const openLyric = (forceOpen = false) => {
-  if (!isElectron) return;
+  if (!isDesktopRuntime) return;
 
   // 检查是否有播放中的歌曲
   if (!playMusic.value || !playMusic.value.id) {
@@ -954,7 +960,7 @@ const setupPlayStateWatcher = () => {
     () => getPlayerStore().play,
     (isPlaying) => {
       // 如果歌词窗口打开，根据播放状态控制同步
-      if (isElectron && isLyricWindowOpen.value) {
+      if (isDesktopRuntime && isLyricWindowOpen.value) {
         if (isPlaying) {
           startLyricSync();
         } else {

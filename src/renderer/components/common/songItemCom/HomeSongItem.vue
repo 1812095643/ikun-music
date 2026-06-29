@@ -56,7 +56,7 @@
 
     <!-- Dropdown Menu -->
     <song-item-dropdown
-      v-if="isElectron"
+      v-if="isDesktopRuntime"
       :item="item"
       :show="showDropdown"
       :x="dropdownX"
@@ -81,7 +81,7 @@ import { NEllipsis, NImage } from 'naive-ui';
 
 import { useSongItem } from '@/hooks/useSongItem';
 import type { SongResult } from '@/types/music';
-import { getImgUrl, isElectron } from '@/utils';
+import { getImgUrl, isDesktopRuntime } from '@/utils';
 
 import SongItemDropdown from './SongItemDropdown.vue';
 

@@ -54,12 +54,12 @@
 
               <!-- Batch Actions -->
               <div
-                v-if="isElectron"
+                v-if="isDesktopRuntime"
                 class="mx-1 hidden h-8 w-[1px] bg-[var(--qqm-border)] md:block"
               ></div>
 
               <button
-                v-if="!isSelecting && isElectron"
+                v-if="!isSelecting && isDesktopRuntime"
                 class="action-btn-icon flex h-9 w-9 items-center justify-center rounded-lg transition-colors"
                 @click="startSelect"
               >
@@ -224,7 +224,7 @@ import { useScrollTitle } from '@/hooks/useScrollTitle';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSearchStore } from '@/store/modules/search';
 import type { SongResult } from '@/types/music';
-import { isElectron, isMobile } from '@/utils';
+import { isDesktopRuntime, isMobile } from '@/utils';
 
 defineOptions({
   name: 'SearchResult'

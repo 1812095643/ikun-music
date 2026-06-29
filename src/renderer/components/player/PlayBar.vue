@@ -125,7 +125,7 @@
         </template>
         {{ t('player.playBar.like') }}
       </n-tooltip>
-      <n-tooltip v-if="isElectron" class="music-lyric" trigger="hover" :z-index="9999999">
+      <n-tooltip v-if="isDesktopRuntime" class="music-lyric" trigger="hover" :z-index="9999999">
         <template #trigger>
           <i
             class="iconfont ri-netease-cloud-music-line"
@@ -135,14 +135,14 @@
         </template>
         {{ playMusic?.id ? t('player.playBar.lyric') : t('player.playBar.noSongPlaying') }}
       </n-tooltip>
-      <n-tooltip v-if="playMusic?.id && isElectron" trigger="hover" :z-index="9999999">
+      <n-tooltip v-if="playMusic?.id && isDesktopRuntime" trigger="hover" :z-index="9999999">
         <template #trigger>
           <reparse-popover v-if="playMusic?.id" />
         </template>
         {{ t('player.playBar.reparse') }}
       </n-tooltip>
 
-      <n-tooltip v-if="playMusic?.id && isElectron" trigger="hover" :z-index="9999999">
+      <n-tooltip v-if="playMusic?.id && isDesktopRuntime" trigger="hover" :z-index="9999999">
         <template #trigger>
           <song-download-button :item="playMusic" button-class="playbar-download-button" />
         </template>
@@ -192,7 +192,7 @@ import { usePlayMode } from '@/hooks/usePlayMode';
 import { audioService } from '@/services/audioService';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSettingsStore } from '@/store/modules/settings';
-import { getImgUrl, isElectron, isMobile, secondToMinute } from '@/utils';
+import { getImgUrl, isDesktopRuntime, isMobile, secondToMinute } from '@/utils';
 
 const playerStore = usePlayerStore();
 const settingsStore = useSettingsStore();

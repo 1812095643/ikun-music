@@ -1,6 +1,6 @@
 <template>
   <n-dropdown
-    v-if="isElectron && hasSong && isKuwoSong"
+    v-if="isDesktopRuntime && hasSong && isKuwoSong"
     trigger="click"
     :options="qualityOptions"
     :z-index="9999999"
@@ -18,7 +18,7 @@
   </n-dropdown>
 
   <button
-    v-else-if="isElectron && hasSong"
+    v-else-if="isDesktopRuntime && hasSong"
     class="song-download-button"
     :class="[`song-download-button--${size}`, buttonClass]"
     :title="title"
@@ -36,7 +36,7 @@ import { computed, h } from 'vue';
 
 import { useDownload } from '@/hooks/useDownload';
 import type { SongResult } from '@/types/music';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import { DOWNLOAD_QUALITY_OPTIONS, getDefaultDownloadQuality } from '@/utils/downloadQuality';
 
 const props = withDefaults(
