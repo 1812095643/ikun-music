@@ -1,5 +1,8 @@
 <template>
-  <div class="app-container h-full w-full" :class="{ mobile: isMobile, noElectron: !isElectron }">
+  <div
+    class="app-container h-full w-full"
+    :class="{ mobile: isMobile, noElectron: !isDesktopRuntime }"
+  >
     <n-config-provider :theme="theme === 'dark' ? darkTheme : lightTheme">
       <n-dialog-provider>
         <n-message-provider>
@@ -36,7 +39,7 @@ import { usePlayerCoreStore } from '@/store/modules/playerCore';
 import { useSettingsStore } from '@/store/modules/settings';
 import { useUserStore } from '@/store/modules/user';
 import type { Artist, SongResult } from '@/types/music';
-import { isDesktopRuntime, isElectron, isLyricWindow } from '@/utils';
+import { isDesktopRuntime, isLyricWindow } from '@/utils';
 import { checkLoginStatus } from '@/utils/auth';
 import {
   consumeMiniModeRestoreRoute,
@@ -130,7 +133,6 @@ const getSoundTimeSnapshot = () => {
  */
 const syncTrayState = () => {
   if (
-    !isElectron ||
     !shouldUseDesktopShell ||
     isLyricWindow.value ||
     isTrayPanelWindow.value ||
@@ -289,7 +291,6 @@ const handleTrayControl = async (action: string) => {
 
 const broadcastTrayPanelState = () => {
   if (
-    !isElectron ||
     !shouldUseDesktopShell ||
     isLyricWindow.value ||
     isTrayPanelWindow.value ||
@@ -402,7 +403,6 @@ handleSetLanguage(settingsStore.setData.language);
 // 监听迷你模式状态
 if (
   shouldUseDesktopShell &&
-  isElectron &&
   !isTrayPanelWindow.value &&
   window.api &&
   window.electron?.ipcRenderer
@@ -433,7 +433,6 @@ if (
 
 if (
   shouldUseDesktopShell &&
-  isElectron &&
   !isLyricWindow.value &&
   !isTrayPanelWindow.value &&
   window.api?.onTrayControl
@@ -444,7 +443,6 @@ if (
 }
 
 if (
-  isElectron &&
   shouldUseDesktopShell &&
   !isLyricWindow.value &&
   !isTrayPanelWindow.value &&
@@ -547,7 +545,7 @@ onMounted(async () => {
     // 使用 nextTick 确保 DOM 更新后再初始化
     await nextTick();
     initAudioListeners();
-    if (shouldUseDesktopShell && isElectron && window.api) {
+    if (shouldUseDesktopShell && window.api) {
       window.api.sendSong(cloneDeep(playerStore.playMusic));
     }
   }

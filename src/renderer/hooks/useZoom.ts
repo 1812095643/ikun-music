@@ -1,5 +1,7 @@
 import { ref } from 'vue';
 
+import { isDesktopRuntime } from '@/utils';
+
 /**
  * 页面缩放功能的组合式API
  * 提供页面缩放相关的状态和方法
@@ -15,6 +17,8 @@ export function useZoom() {
 
   // 初始化获取当前缩放比例
   const initZoomFactor = async () => {
+    if (!isDesktopRuntime || !window.ipcRenderer?.invoke) return;
+
     try {
       const currentZoom = await window.ipcRenderer.invoke('get-content-zoom');
       zoomFactor.value = currentZoom;
@@ -67,6 +71,11 @@ export function useZoom() {
 
   // 设置缩放比例
   const setZoomFactor = (zoom: number) => {
+    if (!isDesktopRuntime || !window.ipcRenderer?.send) {
+      zoomFactor.value = zoom;
+      return;
+    }
+
     window.ipcRenderer.send('set-content-zoom', zoom);
     zoomFactor.value = zoom;
   };
