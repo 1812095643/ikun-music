@@ -89,6 +89,8 @@ const menuIcons: Record<string, string> = {
   '/': '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.8 12 4l8 6.8v7.7a1.5 1.5 0 0 1-1.5 1.5h-4.2v-5.7H9.7V20H5.5A1.5 1.5 0 0 1 4 18.5v-7.7Z"/></svg>',
   '/search':
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18.5 18.5-4-4m2-4.6a6.6 6.6 0 1 1-13.2 0 6.6 6.6 0 0 1 13.2 0Z"/></svg>',
+  '/mobile-search':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18.5 18.5-4-4m2-4.6a6.6 6.6 0 1 1-13.2 0 6.6 6.6 0 0 1 13.2 0Z"/></svg>',
   '/list':
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5.5h12M6 10.5h12M6 15.5h7.5M17 15v4l3-1.9V13l-3 2Z"/></svg>',
   '/album':
