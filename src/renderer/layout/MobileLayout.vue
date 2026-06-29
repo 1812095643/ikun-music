@@ -23,13 +23,17 @@
       <app-menu class="mobile-menu" :menus="menuStore.menus" />
     </div>
     <!-- 其他弹窗/抽屉 -->
-    <playlist-drawer v-model="showPlaylistDrawer" :song-id="currentSongId" />
-    <playing-list-drawer />
+    <playlist-drawer
+      v-if="shouldMountPlaylistDrawer"
+      v-model="showPlaylistDrawer"
+      :song-id="currentSongId"
+    />
+    <playing-list-drawer v-if="shouldMountPlayingListDrawer" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, provide, ref } from 'vue';
+import { computed, defineAsyncComponent, provide, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
 import homeRouter from '@/router/home';
@@ -82,9 +86,12 @@ const keepAliveInclude = computed(() => {
 // 歌单抽屉
 const showPlaylistDrawer = ref(false);
 const currentSongId = ref<number | string | undefined>();
+const shouldMountPlaylistDrawer = ref(false);
+const shouldMountPlayingListDrawer = ref(playerStore.playListDrawerVisible);
 
 // 提供打开歌单抽屉的方法
 const openPlaylistDrawer = (songId: number | string, isOpen: boolean = true) => {
+  shouldMountPlaylistDrawer.value = true;
   currentSongId.value = songId;
   showPlaylistDrawer.value = isOpen;
   playerStore.setMusicFull(false);
@@ -92,6 +99,16 @@ const openPlaylistDrawer = (songId: number | string, isOpen: boolean = true) => 
 };
 
 provide('openPlaylistDrawer', openPlaylistDrawer);
+
+watch(
+  () => playerStore.playListDrawerVisible,
+  (visible) => {
+    if (visible) {
+      shouldMountPlayingListDrawer.value = true;
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <style lang="scss" scoped>

@@ -48,10 +48,14 @@
       </template>
     </div>
     <update-modal v-if="isDesktopRuntime" />
-    <playlist-drawer v-model="showPlaylistDrawer" :song-id="currentSongId" />
+    <playlist-drawer
+      v-if="shouldMountPlaylistDrawer"
+      v-model="showPlaylistDrawer"
+      :song-id="currentSongId"
+    />
     <sleep-timer-top v-if="!settingsStore.isMobile" />
     <!-- 播放列表抽屉 -->
-    <playing-list-drawer />
+    <playing-list-drawer v-if="shouldMountPlayingListDrawer" />
   </div>
 </template>
 
@@ -134,9 +138,12 @@ onMounted(() => {
 
 const showPlaylistDrawer = ref(false);
 const currentSongId = ref<number | string | undefined>();
+const shouldMountPlaylistDrawer = ref(false);
+const shouldMountPlayingListDrawer = ref(playerStore.playListDrawerVisible);
 
 // 提供一个方法来打开歌单抽屉
 const openPlaylistDrawer = (songId: number | string, isOpen: boolean = true) => {
+  shouldMountPlaylistDrawer.value = true;
   currentSongId.value = songId;
   showPlaylistDrawer.value = isOpen;
   playerStore.setMusicFull(false);
@@ -145,6 +152,16 @@ const openPlaylistDrawer = (songId: number | string, isOpen: boolean = true) => 
 
 // 将方法提供给全局
 provide('openPlaylistDrawer', openPlaylistDrawer);
+
+watch(
+  () => playerStore.playListDrawerVisible,
+  (visible) => {
+    if (visible) {
+      shouldMountPlayingListDrawer.value = true;
+    }
+  },
+  { immediate: true }
+);
 
 // 迷你窗里的“加入歌单”动作依赖主布局抽屉，所以恢复主窗口后再消费待办 songId。
 watch(
