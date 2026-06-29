@@ -13,6 +13,8 @@
     "prepare:music-api-runtime": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-music-api-runtime.ps1",
     "build:desktop": "npm run prepare:music-api-runtime && npm run build:web",
     "build:web": "vue-tsc --noEmit -p tsconfig.web.json --composite false && vite build",
+    "check:android-env": "node scripts/check-android-env.mjs",
+    "build:android:web": "npm run check:android-env && vue-tsc --noEmit -p tsconfig.web.json --composite false && vite build --mode android",
     "build": "tauri build",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
