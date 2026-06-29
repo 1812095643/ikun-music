@@ -132,9 +132,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onUnmounted, provide, ref, useTemplateRef, watch } from 'vue';
+import {
+  computed,
+  defineAsyncComponent,
+  onUnmounted,
+  provide,
+  ref,
+  useTemplateRef,
+  watch
+} from 'vue';
 
-import SongDownloadButton from '@/components/common/SongDownloadButton.vue';
 import SongItem from '@/components/common/SongItem.vue';
 import { allTime, artistList, nowTime, playMusic } from '@/hooks/MusicHook';
 import { useArtist } from '@/hooks/useArtist';
@@ -143,6 +150,10 @@ import { usePlayerStore, useSettingsStore } from '@/store';
 import type { SongResult } from '@/types/music';
 import { getImgUrl, isDesktopRuntime } from '@/utils';
 import { restoreMainWindowFromMiniMode } from '@/utils/miniModeNavigation';
+
+const SongDownloadButton = defineAsyncComponent(
+  () => import('@/components/common/SongDownloadButton.vue')
+);
 
 const playerStore = usePlayerStore();
 const settingsStore = useSettingsStore();

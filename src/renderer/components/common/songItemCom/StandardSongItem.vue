@@ -96,14 +96,15 @@
 
 <script lang="ts" setup>
 import { NCheckbox, NEllipsis, NImage } from 'naive-ui';
-import { computed, ref } from 'vue';
+import { computed, defineAsyncComponent, ref } from 'vue';
 
 import { usePlayerStore } from '@/store';
 import type { SongResult } from '@/types/music';
 import { getImgUrl } from '@/utils';
 
-import SongDownloadButton from '../SongDownloadButton.vue';
 import BaseSongItem from './BaseSongItem.vue';
+
+const SongDownloadButton = defineAsyncComponent(() => import('../SongDownloadButton.vue'));
 
 const playerStore = usePlayerStore();
 

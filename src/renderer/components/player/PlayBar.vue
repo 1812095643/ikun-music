@@ -171,13 +171,10 @@
 import { useThrottleFn } from '@vueuse/core';
 import { useMessage } from 'naive-ui';
 import { storeToRefs } from 'pinia';
-import { computed, ref, watch } from 'vue';
+import { computed, defineAsyncComponent, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import SongDownloadButton from '@/components/common/SongDownloadButton.vue';
 import MusicFullWrapper from '@/components/lyric/MusicFullWrapper.vue';
-import AdvancedControlsPopover from '@/components/player/AdvancedControlsPopover.vue';
-import ReparsePopover from '@/components/player/ReparsePopover.vue';
 import {
   allTime,
   artistList,
@@ -193,6 +190,14 @@ import { audioService } from '@/services/audioService';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSettingsStore } from '@/store/modules/settings';
 import { getImgUrl, isDesktopRuntime, isMobile, secondToMinute } from '@/utils';
+
+const AdvancedControlsPopover = defineAsyncComponent(
+  () => import('@/components/player/AdvancedControlsPopover.vue')
+);
+const ReparsePopover = defineAsyncComponent(() => import('@/components/player/ReparsePopover.vue'));
+const SongDownloadButton = defineAsyncComponent(
+  () => import('@/components/common/SongDownloadButton.vue')
+);
 
 const playerStore = usePlayerStore();
 const settingsStore = useSettingsStore();

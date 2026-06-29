@@ -69,14 +69,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
 
-import SongDownloadButton from '@/components/common/SongDownloadButton.vue';
 import { allTime, nowTime, playMusic } from '@/hooks/MusicHook';
 import { usePlayMode } from '@/hooks/usePlayMode';
 import { audioService } from '@/services/audioService';
 import { usePlayerStore } from '@/store/modules/player';
 import { secondToMinute } from '@/utils';
+
+const SongDownloadButton = defineAsyncComponent(
+  () => import('@/components/common/SongDownloadButton.vue')
+);
 
 const props = withDefaults(
   defineProps<{
