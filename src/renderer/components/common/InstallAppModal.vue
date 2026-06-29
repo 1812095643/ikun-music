@@ -33,7 +33,7 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { isElectron } from '@/utils';
+import { isTauriRuntime } from '@/utils';
 
 import config from '../../../../package.json';
 
@@ -50,8 +50,8 @@ const closeModal = () => {
 };
 
 onMounted(async () => {
-  // 如果是 electron 环境，不显示安装提示
-  if (isElectron) {
+  // Tauri 应用内不显示 Web 安装提示，Android App 第一阶段只保留基础播放链路。
+  if (isTauriRuntime) {
     return;
   }
 
