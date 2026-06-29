@@ -49,7 +49,6 @@ import {
 
 import { allTime, initAudioListeners, initMusicHook, nowTime, openLyric } from './hooks/MusicHook';
 import { audioService } from './services/audioService';
-import { initLxMusicRunner } from './services/LxMusicSourceRunner';
 import { isMobile } from './utils';
 import { useAppShortcuts } from './utils/appShortcuts';
 
@@ -539,6 +538,7 @@ onMounted(async () => {
       if (activeScript && activeScript.script) {
         try {
           console.log('[App] 初始化激活的落雪音源:', activeScript.name);
+          const { initLxMusicRunner } = await import('./services/LxMusicSourceRunner');
           await initLxMusicRunner(activeScript.script);
         } catch (error) {
           console.error('[App] 初始化落雪音源失败:', error);
