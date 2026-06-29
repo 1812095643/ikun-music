@@ -327,7 +327,11 @@ export const getSongUrl = async (
     const useCustomApiForSong = songConfig?.sources.includes('custom' as any) ?? false;
 
     // 如果全局或歌曲专属设置中启用了自定义API，则最优先尝试
-    if ((useCustomApiGlobally || useCustomApiForSong) && settingsStore.setData.customApiPlugin) {
+    if (
+      isDesktopRuntime &&
+      (useCustomApiGlobally || useCustomApiForSong) &&
+      settingsStore.setData.customApiPlugin
+    ) {
       console.log(`优先级 1: 尝试使用自定义API解析歌曲 ${id}...`);
       try {
         const { parseFromCustomApi } = await import('@/api/parseFromCustomApi');

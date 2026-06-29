@@ -373,7 +373,11 @@ class CustomApiStrategy implements MusicSourceStrategy {
   priority = 1;
 
   canHandle(sources: string[], settingsStore?: any): boolean {
-    return sources.includes('custom') && Boolean(settingsStore?.setData?.customApiPlugin);
+    return (
+      isDesktopRuntime &&
+      sources.includes('custom') &&
+      Boolean(settingsStore?.setData?.customApiPlugin)
+    );
   }
 
   async parse(id: number, data: SongResult, quality = 'higher'): Promise<MusicParseResult | null> {
