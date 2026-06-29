@@ -69,16 +69,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { defineAsyncComponent, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
-import MvPlayer from '@/components/MvPlayer.vue';
 import { usePlayerStore } from '@/store/modules/player';
 import { usePlayHistoryStore } from '@/store/modules/playHistory';
 import { IMvItem } from '@/types/mv';
 import { getImgUrl } from '@/utils';
+
+const MvPlayer = defineAsyncComponent(() => import('@/components/MvPlayer.vue'));
 
 const props = defineProps<{
   item: {

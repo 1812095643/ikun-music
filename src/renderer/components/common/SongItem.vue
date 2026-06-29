@@ -15,15 +15,15 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, defineAsyncComponent } from 'vue';
 
 import type { SongResult } from '@/types/music';
 
-import CompactSongItem from './songItemCom/CompactSongItem.vue';
-import HomeSongItem from './songItemCom/HomeSongItem.vue';
-import ListSongItem from './songItemCom/ListSongItem.vue';
-import MiniSongItem from './songItemCom/MiniSongItem.vue';
-import StandardSongItem from './songItemCom/StandardSongItem.vue';
+const CompactSongItem = defineAsyncComponent(() => import('./songItemCom/CompactSongItem.vue'));
+const HomeSongItem = defineAsyncComponent(() => import('./songItemCom/HomeSongItem.vue'));
+const ListSongItem = defineAsyncComponent(() => import('./songItemCom/ListSongItem.vue'));
+const MiniSongItem = defineAsyncComponent(() => import('./songItemCom/MiniSongItem.vue'));
+const StandardSongItem = defineAsyncComponent(() => import('./songItemCom/StandardSongItem.vue'));
 
 const props = withDefaults(
   defineProps<{
