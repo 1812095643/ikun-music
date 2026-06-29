@@ -167,7 +167,7 @@ const getStore = async (): Promise<CompatStore> => {
 };
 
 export const ensureMusicApiReady = async () => {
-  if (!isTauriRuntime) return null;
+  if (!isTauriRuntime || isAndroidRuntime) return null;
   if (musicApiReadyPromise) return musicApiReadyPromise;
 
   musicApiReadyPromise = (async () => {
@@ -212,6 +212,7 @@ const setByPath = (path: string, value: any) => {
 };
 
 const postToMusicApi = async (path: string, body: Record<string, any>) => {
+  if (isAndroidRuntime) return null;
   await ensureMusicApiReady();
   const url = new URL(`http://127.0.0.1:${storeCache.set.musicApiPort}${path}`);
   // 根因：内置 NCM API 在全局层面对所有路由启用了 2 分钟缓存，缓存 key 只包含
@@ -1106,6 +1107,7 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
       return { name, content };
     }
     case 'unblock-music':
+      if (isAndroidRuntime) return null;
       return postToMusicApi('/alger-tauri/unblock-music', {
         id: args[0],
         songData: args[1],
