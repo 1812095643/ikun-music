@@ -50,7 +50,6 @@ import {
 import { allTime, initAudioListeners, initMusicHook, nowTime, openLyric } from './hooks/MusicHook';
 import { audioService } from './services/audioService';
 import { isMobile } from './utils';
-import { useAppShortcuts } from './utils/appShortcuts';
 
 type TrayPanelStatePayload = {
   song?: SongResult;
@@ -82,10 +81,19 @@ let removeTrayControlListener: (() => void) | null = null;
 let removeTrayPanelOpenedListener: (() => void) | null = null;
 let removeTrayPanelCommandListener: (() => void) | null = null;
 let trayPanelStateTimer: number | null = null;
+let cleanupAppShortcuts: (() => void) | null = null;
 
 const handleDesktopOffline = () => {
   console.log('网络连接断开，跳转到本地音乐页面');
   router.push('/local-music');
+};
+
+const initDesktopAppShortcuts = async () => {
+  if (!shouldUseDesktopShell || cleanupAppShortcuts) return;
+
+  const appShortcutsModule = await import('./utils/appShortcuts');
+  appShortcutsModule.initAppShortcuts();
+  cleanupAppShortcuts = appShortcutsModule.cleanupAppShortcuts;
 };
 
 const getArtistText = (song: SongResult | Record<string, any> | null | undefined) => {
@@ -486,11 +494,6 @@ watch(
   { immediate: true, deep: true }
 );
 
-// 使用应用内快捷键
-if (!isTrayPanelWindow.value) {
-  useAppShortcuts();
-}
-
 onMounted(async () => {
   setTimeout(() => {
     showSplash.value = false;
@@ -500,6 +503,8 @@ onMounted(async () => {
     showSplash.value = false;
     return;
   }
+
+  await initDesktopAppShortcuts();
 
   playerStore.setIsPlay(false);
   if (isLyricWindow.value) {
@@ -571,6 +576,8 @@ onUnmounted(() => {
     window.clearInterval(trayPanelStateTimer);
     trayPanelStateTimer = null;
   }
+  cleanupAppShortcuts?.();
+  cleanupAppShortcuts = null;
   if (shouldUseDesktopShell) {
     window.removeEventListener('offline', handleDesktopOffline);
   }
