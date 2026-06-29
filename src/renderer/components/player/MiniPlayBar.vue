@@ -45,7 +45,7 @@
       <!-- 右侧功能按钮 -->
       <div class="function-buttons">
         <song-download-button
-          v-if="playMusic?.id"
+          v-if="isDesktopRuntime && playMusic?.id"
           :item="playMusic"
           size="small"
           button-class="function-button"
@@ -135,6 +135,7 @@
 import {
   computed,
   defineAsyncComponent,
+  defineComponent,
   onUnmounted,
   provide,
   ref,
@@ -151,9 +152,9 @@ import type { SongResult } from '@/types/music';
 import { getImgUrl, isDesktopRuntime } from '@/utils';
 import { restoreMainWindowFromMiniMode } from '@/utils/miniModeNavigation';
 
-const SongDownloadButton = defineAsyncComponent(
-  () => import('@/components/common/SongDownloadButton.vue')
-);
+const SongDownloadButton = isDesktopRuntime
+  ? defineAsyncComponent(() => import('@/components/common/SongDownloadButton.vue'))
+  : defineComponent({ name: 'DesktopOnlySongDownloadButton', setup: () => () => null });
 
 const playerStore = usePlayerStore();
 const settingsStore = useSettingsStore();

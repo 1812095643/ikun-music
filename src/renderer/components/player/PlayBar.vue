@@ -176,7 +176,7 @@
 import { useThrottleFn } from '@vueuse/core';
 import { useMessage } from 'naive-ui';
 import { storeToRefs } from 'pinia';
-import { computed, defineAsyncComponent, ref, watch } from 'vue';
+import { computed, defineAsyncComponent, defineComponent, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import {
@@ -199,9 +199,9 @@ const AdvancedControlsPopover = defineAsyncComponent(
   () => import('@/components/player/AdvancedControlsPopover.vue')
 );
 const ReparsePopover = defineAsyncComponent(() => import('@/components/player/ReparsePopover.vue'));
-const SongDownloadButton = defineAsyncComponent(
-  () => import('@/components/common/SongDownloadButton.vue')
-);
+const SongDownloadButton = isDesktopRuntime
+  ? defineAsyncComponent(() => import('@/components/common/SongDownloadButton.vue'))
+  : defineComponent({ name: 'DesktopOnlySongDownloadButton', setup: () => () => null });
 const MusicFullWrapper = defineAsyncComponent(
   () => import('@/components/lyric/MusicFullWrapper.vue')
 );
