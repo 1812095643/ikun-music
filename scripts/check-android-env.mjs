@@ -24,12 +24,21 @@ const readEnvFile = (filePath) => {
 };
 
 const loadAndroidEnv = () => {
-  return ENV_FILES.reduce(
+  const fileEnv = ENV_FILES.reduce(
     (env, fileName) => ({
       ...env,
       ...readEnvFile(resolve(process.cwd(), fileName))
     }),
     {}
+  );
+
+  // CI 或本机 shell 注入的环境变量应与 Vite 构建保持一致，优先级高于文件配置。
+  return REQUIRED_KEYS.reduce(
+    (env, key) => ({
+      ...env,
+      ...(process.env[key] ? { [key]: process.env[key] } : {})
+    }),
+    fileEnv
   );
 };
 
