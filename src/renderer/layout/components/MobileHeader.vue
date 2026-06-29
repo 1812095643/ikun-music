@@ -20,7 +20,7 @@
       <div class="header-btn" @click="openSearch">
         <i class="ri-search-line"></i>
       </div>
-      <div class="header-btn" @click="openSettings">
+      <div v-if="!isAndroidRuntime" class="header-btn" @click="openSettings">
         <i class="ri-settings-3-line"></i>
       </div>
     </div>
@@ -31,6 +31,8 @@
 import { computed, inject } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
+
+import { isAndroidRuntime } from '@/utils';
 
 const route = useRoute();
 const router = useRouter();

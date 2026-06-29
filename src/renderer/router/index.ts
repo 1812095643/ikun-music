@@ -63,6 +63,14 @@ const router = createRouter({
 });
 
 const androidBlockedRoutes = new Set([
+  '/list',
+  '/album',
+  '/toplist',
+  '/mv',
+  '/podcast',
+  '/history',
+  '/user',
+  '/set',
   '/downloads',
   '/local-music',
   '/lyric',
@@ -82,6 +90,11 @@ router.beforeEach((to, _, next) => {
   // Android 第一阶段只开放首页、搜索、播放和移动端歌词链路，直达桌面专属页面时回到首页。
   if (isAndroidRuntime && isDesktopOnlyRoute(to)) {
     next('/');
+    return;
+  }
+
+  if (isAndroidRuntime && to.path === '/search') {
+    next('/mobile-search');
     return;
   }
 
