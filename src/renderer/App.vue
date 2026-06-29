@@ -84,6 +84,11 @@ let removeTrayPanelOpenedListener: (() => void) | null = null;
 let removeTrayPanelCommandListener: (() => void) | null = null;
 let trayPanelStateTimer: number | null = null;
 
+const handleDesktopOffline = () => {
+  console.log('网络连接断开，跳转到本地音乐页面');
+  router.push('/local-music');
+};
+
 const getArtistText = (song: SongResult | Record<string, any> | null | undefined) => {
   const artistGroups = [
     song?.ar,
@@ -502,40 +507,42 @@ onMounted(async () => {
     return;
   }
 
-  trayPanelStateTimer = window.setInterval(broadcastTrayPanelState, 500);
+  if (shouldUseDesktopShell) {
+    trayPanelStateTimer = window.setInterval(broadcastTrayPanelState, 500);
 
-  // 检查网络状态，离线时自动跳转到本地音乐页面
-  if (shouldUseDesktopShell && !navigator.onLine) {
-    console.log('检测到无网络连接，跳转到本地音乐页面');
-    router.push('/local-music');
+    // 检查网络状态，离线时自动跳转到本地音乐页面
+    if (!navigator.onLine) {
+      console.log('检测到无网络连接，跳转到本地音乐页面');
+      router.push('/local-music');
+    }
+
+    // 监听网络状态变化，断网时跳转到本地音乐页面
+    window.addEventListener('offline', handleDesktopOffline);
   }
-
-  // 监听网络状态变化，断网时跳转到本地音乐页面
-  window.addEventListener('offline', () => {
-    if (!shouldUseDesktopShell) return;
-    console.log('网络连接断开，跳转到本地音乐页面');
-    router.push('/local-music');
-  });
 
   // 初始化 MusicHook，注入 playerStore
   initMusicHook(playerStore);
   // 初始化播放状态
   await playerStore.initializePlayState();
 
-  // 初始化音频设备变化监听器
-  playerCoreStore.initAudioDeviceListener();
+  // Android 第一阶段不初始化桌面音频输出设备监听，避免启动阶段触发不必要的设备 API。
+  if (shouldUseDesktopShell) {
+    playerCoreStore.initAudioDeviceListener();
+  }
 
-  // 初始化落雪音源（如果有激活的音源）
-  const activeLxApiId = settingsStore.setData?.activeLxMusicApiId;
-  if (activeLxApiId) {
-    const lxMusicScripts = settingsStore.setData?.lxMusicScripts || [];
-    const activeScript = lxMusicScripts.find((script: any) => script.id === activeLxApiId);
-    if (activeScript && activeScript.script) {
-      try {
-        console.log('[App] 初始化激活的落雪音源:', activeScript.name);
-        await initLxMusicRunner(activeScript.script);
-      } catch (error) {
-        console.error('[App] 初始化落雪音源失败:', error);
+  if (shouldUseDesktopShell) {
+    // 自定义音源 Worker 属于桌面增强能力，Android 第一阶段先保留基础远端播放链路。
+    const activeLxApiId = settingsStore.setData?.activeLxMusicApiId;
+    if (activeLxApiId) {
+      const lxMusicScripts = settingsStore.setData?.lxMusicScripts || [];
+      const activeScript = lxMusicScripts.find((script: any) => script.id === activeLxApiId);
+      if (activeScript && activeScript.script) {
+        try {
+          console.log('[App] 初始化激活的落雪音源:', activeScript.name);
+          await initLxMusicRunner(activeScript.script);
+        } catch (error) {
+          console.error('[App] 初始化落雪音源失败:', error);
+        }
       }
     }
   }
@@ -563,6 +570,9 @@ onUnmounted(() => {
   if (trayPanelStateTimer) {
     window.clearInterval(trayPanelStateTimer);
     trayPanelStateTimer = null;
+  }
+  if (shouldUseDesktopShell) {
+    window.removeEventListener('offline', handleDesktopOffline);
   }
 });
 </script>
