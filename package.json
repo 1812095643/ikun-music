@@ -17,6 +17,10 @@
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
+    "android:init": "tauri android init",
+    "android:dev": "tauri android dev",
+    "android:build": "tauri android build --apk true",
+    "android:run": "tauri android run",
     "lint:i18n": "jiti scripts/check_i18n.ts"
   },
   "lint-staged": {
