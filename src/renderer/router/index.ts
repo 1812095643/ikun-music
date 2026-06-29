@@ -78,6 +78,20 @@ const androidBlockedRoutes = new Set([
   '/mini'
 ]);
 
+const androidAllowedRouteNames = new Set([
+  'home',
+  'mobileSearch',
+  'mobileSearchResult',
+  'musicList'
+]);
+
+const isAndroidAllowedRoute = (to: { name?: unknown; query: Record<string, any> }) => {
+  if (to.name === 'musicList') {
+    return to.query.type === 'dailyRecommend';
+  }
+  return androidAllowedRouteNames.has(String(to.name || ''));
+};
+
 const isDesktopOnlyRoute = (to: { path: string; meta: Record<string, any> }) => {
   return Boolean(to.meta.electronOnly) || androidBlockedRoutes.has(to.path);
 };
@@ -95,6 +109,11 @@ router.beforeEach((to, _, next) => {
 
   if (isAndroidRuntime && to.path === '/search') {
     next('/mobile-search');
+    return;
+  }
+
+  if (isAndroidRuntime && !isAndroidAllowedRoute(to)) {
+    next('/');
     return;
   }
 
