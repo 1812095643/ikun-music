@@ -141,7 +141,7 @@ import { useArtist } from '@/hooks/useArtist';
 import { audioService } from '@/services/audioService';
 import { usePlayerStore, useSettingsStore } from '@/store';
 import type { SongResult } from '@/types/music';
-import { getImgUrl } from '@/utils';
+import { getImgUrl, isDesktopRuntime } from '@/utils';
 import { restoreMainWindowFromMiniMode } from '@/utils/miniModeNavigation';
 
 const playerStore = usePlayerStore();
@@ -160,7 +160,7 @@ withDefaults(
 
 // 处理关闭按钮点击
 const handleClose = () => {
-  if (settingsStore.isMiniMode) {
+  if (settingsStore.isMiniMode && isDesktopRuntime && window.api?.restore) {
     closePlaylist();
     window.api.restore();
   }
@@ -230,6 +230,7 @@ const resetMiniPlaylistStyles = () => {
 
 const syncMiniWindowSize = (showPlaylist: boolean) => {
   if (!settingsStore.isMiniMode) return;
+  if (!isDesktopRuntime) return;
   if (window.api && typeof window.api.resizeMiniWindow === 'function') {
     window.api.resizeMiniWindow(showPlaylist);
   }
@@ -248,7 +249,7 @@ const closePlaylist = () => {
 
 // 迷你窗里无法直接承接歌单抽屉，需要先恢复主窗口再由主布局打开抽屉。
 provide('openPlaylistDrawer', (songId: number | string) => {
-  if (settingsStore.isMiniMode && window.api?.restore) {
+  if (settingsStore.isMiniMode && isDesktopRuntime && window.api?.restore) {
     restoreMainWindowFromMiniMode({
       beforeRestore: () => {
         closePlaylist();
@@ -360,7 +361,7 @@ const playMusicEvent = async () => {
 
 // 切换到完整播放器
 const setMusicFull = () => {
-  if (settingsStore.isMiniMode && window.api?.restore) {
+  if (settingsStore.isMiniMode && isDesktopRuntime && window.api?.restore) {
     // 迷你窗本身不承载完整播放器，先把状态切到展开，再恢复主窗口承接完整播放页。
     restoreMainWindowFromMiniMode({
       beforeRestore: () => {

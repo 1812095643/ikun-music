@@ -150,7 +150,7 @@
       </n-tooltip>
 
       <!-- 高级控制菜单按钮（整合了 EQ、定时关闭、播放速度） -->
-      <advanced-controls-popover />
+      <advanced-controls-popover v-if="isDesktopRuntime" />
 
       <n-tooltip trigger="hover" :z-index="9999999">
         <template #trigger>

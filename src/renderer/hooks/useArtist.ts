@@ -1,6 +1,7 @@
 import { useRouter } from 'vue-router';
 
 import { useSettingsStore } from '@/store';
+import { isDesktopRuntime } from '@/utils';
 import { restoreMainWindowFromMiniMode } from '@/utils/miniModeNavigation';
 
 export const useArtist = () => {
@@ -15,7 +16,7 @@ export const useArtist = () => {
     const targetRoute = `/artist/detail/${id}`;
 
     // 迷你模式下直接路由跳转会被全局守卫拦住，所以先记录目标页，再恢复主窗口。
-    if (settingsStore.isMiniMode && window.api?.restore) {
+    if (settingsStore.isMiniMode && isDesktopRuntime && window.api?.restore) {
       restoreMainWindowFromMiniMode({
         restore: window.api.restore,
         targetRoute
