@@ -12,7 +12,7 @@
         />
       </setting-item>
 
-      <setting-item v-if="isElectron" :title="t('settings.playback.musicSources')">
+      <setting-item v-if="isDesktopRuntime" :title="t('settings.playback.musicSources')">
         <template #description>
           <div class="flex items-center gap-2">
             <n-switch v-model:value="setData.enableMusicUnblock">
@@ -68,7 +68,7 @@
       </setting-item>
 
       <setting-item
-        v-if="isElectron"
+        v-if="isDesktopRuntime"
         :title="t('settings.playback.audioDevice')"
         :description="t('settings.playback.audioDeviceDesc')"
       >
@@ -95,7 +95,7 @@
     </div>
 
     <music-source-settings
-      v-if="isElectron"
+      v-if="isDesktopRuntime"
       v-model:show="showMusicSourcesModal"
       v-model:sources="musicSources"
     />
@@ -109,7 +109,7 @@ import { useI18n } from 'vue-i18n';
 import AudioDeviceSettings from '@/components/settings/AudioDeviceSettings.vue';
 import MusicSourceSettings from '@/components/settings/MusicSourceSettings.vue';
 import { type Platform } from '@/types/music';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 
 import { SETTINGS_DATA_KEY } from '../keys';
 import SBtn from '../SBtn.vue';
@@ -127,7 +127,10 @@ const memberLinks = [
 
 const { t } = useI18n();
 const setData = inject(SETTINGS_DATA_KEY)!;
-const platform = window.electron ? window.electron.ipcRenderer.sendSync('get-platform') : 'web';
+const platform =
+  isDesktopRuntime && window.electron
+    ? window.electron.ipcRenderer.sendSync('get-platform')
+    : 'web';
 
 const showMusicSourcesModal = ref(false);
 
