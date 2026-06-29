@@ -200,7 +200,7 @@
 
         <!-- ===== 未登录: 推荐歌单 (Right Card) ===== -->
         <div
-          v-if="!isLoggedIn"
+          v-if="!isLoggedIn && !isAndroidRuntime"
           class="hero-card group cursor-pointer"
           @click="router.push('/list')"
         >
@@ -316,7 +316,7 @@ import {
   useRecommendStore,
   useUserStore
 } from '@/store';
-import { getImgUrl } from '@/utils';
+import { getImgUrl, isAndroidRuntime } from '@/utils';
 import { getImageBackground } from '@/utils/linearColor';
 
 const { t } = useI18n();
@@ -512,6 +512,8 @@ const handleFmTrash = async () => {
 // ==================== Quick Nav ====================
 
 const quickNavItems = computed(() => {
+  if (isAndroidRuntime) return [];
+
   const items = [
     {
       key: 'intelligence',

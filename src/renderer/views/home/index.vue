@@ -8,13 +8,22 @@
         <!-- Main Content Sections -->
         <div class="content-sections space-y-10 md:space-y-8 lg:space-y-12">
           <!-- Recommended Playlists (Grid Section) -->
-          <home-playlist-section :title="t('comp.recommendSonglist.title')" :limit="18" />
+          <home-playlist-section
+            v-if="!isAndroidRuntime"
+            :title="t('comp.recommendSonglist.title')"
+            :limit="18"
+          />
 
           <!-- Hot Artists (Horizontal Scroll Section) -->
-          <home-artists :title="t('comp.recommendSinger.title')" :limit="15" />
+          <home-artists
+            v-if="!isAndroidRuntime"
+            :title="t('comp.recommendSinger.title')"
+            :limit="15"
+          />
 
           <!-- New Albums (NEW - 新碟上架) -->
           <home-album-section
+            v-if="!isAndroidRuntime"
             :title="t('comp.newAlbum.title')"
             :limit="6"
             :columns="5"
@@ -32,14 +41,20 @@
 
 <script lang="ts" setup>
 import { NScrollbar } from 'naive-ui';
+import { defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
-import HomeAlbumSection from './components/HomeAlbumSection.vue';
-import HomeArtists from './components/HomeArtists.vue';
+import { isAndroidRuntime } from '@/utils';
+
 import HomeHero from './components/HomeHero.vue';
 import HomeNewSongs from './components/HomeNewSongs.vue';
-import HomePlaylistSection from './components/HomePlaylistSection.vue';
+
+const HomeAlbumSection = defineAsyncComponent(() => import('./components/HomeAlbumSection.vue'));
+const HomeArtists = defineAsyncComponent(() => import('./components/HomeArtists.vue'));
+const HomePlaylistSection = defineAsyncComponent(
+  () => import('./components/HomePlaylistSection.vue')
+);
 
 defineOptions({
   name: 'Home'
