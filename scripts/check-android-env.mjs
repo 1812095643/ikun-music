@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 
 const REQUIRED_KEYS = ['VITE_API', 'VITE_API_MUSIC'];
 const ENV_FILES = ['.env', '.env.local', '.env.android', '.env.android.local'];
+const PLACEHOLDER_PATTERNS = ['***', '你的远程', 'your-', 'example.invalid'];
 
 const readEnvFile = (filePath) => {
   if (!existsSync(filePath)) return {};
@@ -45,7 +46,7 @@ const loadAndroidEnv = () => {
 const androidEnv = loadAndroidEnv();
 const missingKeys = REQUIRED_KEYS.filter((key) => {
   const value = androidEnv[key];
-  return !value || value === '***';
+  return !value || PLACEHOLDER_PATTERNS.some((pattern) => value.includes(pattern));
 });
 
 const invalidEntries = REQUIRED_KEYS.filter((key) => {
@@ -55,7 +56,12 @@ const invalidEntries = REQUIRED_KEYS.filter((key) => {
   try {
     const url = new URL(value);
     const host = url.hostname.toLowerCase();
-    return host === '127.0.0.1' || host === 'localhost' || host === '0.0.0.0';
+    return (
+      !['http:', 'https:'].includes(url.protocol) ||
+      host === '127.0.0.1' ||
+      host === 'localhost' ||
+      host === '0.0.0.0'
+    );
   } catch {
     return true;
   }
