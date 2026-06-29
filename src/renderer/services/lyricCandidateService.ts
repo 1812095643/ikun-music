@@ -3,7 +3,7 @@ import { getMusicLrc } from '@/api/music';
 import { getYoutubeMusicLyrics, searchYoutubeMusicSongs } from '@/api/youtubeMusic';
 import { parseRawLyrics } from '@/hooks/usePlayerHooks';
 import type { ILyric, LyricCandidate, LyricCandidateResult, SongResult } from '@/types/music';
-import { isDesktopRuntime } from '@/utils';
+import { isAndroidRuntime, isDesktopRuntime } from '@/utils';
 import request from '@/utils/request';
 
 type RawLyricPayload = {
@@ -626,6 +626,25 @@ export const loadLyricCandidates = async (song: SongResult): Promise<LyricCandid
   }
 
   const immediateCandidates = getLocalCandidate(song);
+  if (isAndroidRuntime) {
+    // Android 第一阶段只保证基础歌词尽快可用，先不等待多平台歌词候选搜索。
+    const currentCandidates = await withTimeout(
+      getCurrentSongCandidate(song),
+      LYRIC_SEARCH_TIMEOUT,
+      '当前歌曲歌词'
+    ).catch((error) => {
+      console.warn('Android 当前歌曲歌词不可用，已跳过多源候选搜索。', error);
+      return [];
+    });
+    const candidates = uniqueCandidates([...immediateCandidates, ...currentCandidates])
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+    const activeCandidate = candidates[0] || null;
+    if (activeCandidate) activeCandidate.isBest = true;
+
+    return { candidates, activeCandidate };
+  }
+
   const tasks = [
     withTimeout(getCurrentSongCandidate(song), LYRIC_SEARCH_TIMEOUT, '当前歌曲歌词'),
     withTimeout(getKuwoCandidates(song), LYRIC_SEARCH_TIMEOUT, '酷我歌词'),
