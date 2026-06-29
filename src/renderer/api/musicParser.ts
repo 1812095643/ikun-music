@@ -300,6 +300,9 @@ const getGDMusicAudio = async (id: number, data: SongResult): Promise<ParsedMusi
  * @returns 解析结果
  */
 const getUnblockMusicAudio = (id: number, data: SongResult, sources: any[]) => {
+  // Android 第一阶段不启动桌面内置音乐服务，避免播放解析误走本地代理链路。
+  if (!isDesktopRuntime || !window.api?.unblockMusic) return null;
+
   const filteredSources = sources.filter((source) => UNBLOCK_SOURCE_KEYS.includes(source));
   console.log(`使用unblockMusic解析，音源:`, filteredSources);
   return window.api.unblockMusic(id, cloneDeep(data), cloneDeep(filteredSources));
@@ -450,6 +453,8 @@ class UnblockMusicStrategy implements MusicSourceStrategy {
   priority = 4;
 
   canHandle(sources: string[]): boolean {
+    if (!isDesktopRuntime) return false;
+
     const unblockSources = sources.filter((source) => UNBLOCK_SOURCE_KEYS.includes(source));
     return unblockSources.length > 0;
   }
