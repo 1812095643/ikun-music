@@ -34,13 +34,13 @@
         :cover="item.picUrl"
         :title="item.name"
         :subtitle="item.copywriter"
-        :tracks="isElectron ? playlistTracksMap[item.id] || [] : []"
-        :show-hover-tracks="isElectron"
+        :tracks="isDesktopRuntime ? playlistTracksMap[item.id] || [] : []"
+        :show-hover-tracks="isDesktopRuntime"
         :play-count="item.playCount"
         :playing="playingPlaylistId === item.id"
         @click="handlePlaylistClick(item)"
         @play="playPlaylist(item)"
-        @mouseenter="isElectron && loadTracksOnHover(item.id)"
+        @mouseenter="isDesktopRuntime && loadTracksOnHover(item.id)"
       />
     </div>
 
@@ -62,7 +62,7 @@ import { getListDetail } from '@/api/list';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
 import { usePlayerCoreStore } from '@/store/modules/playerCore';
 import { usePlaylistStore } from '@/store/modules/playlist';
-import { isElectron, isMobile } from '@/utils';
+import { isDesktopRuntime, isMobile } from '@/utils';
 
 import HomeListItem from './HomeListItem.vue';
 

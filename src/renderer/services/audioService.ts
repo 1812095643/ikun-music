@@ -4,7 +4,7 @@ import Tuna from 'tunajs';
 
 import type { AudioOutputDevice } from '@/types/audio';
 import type { SongResult } from '@/types/music';
-import { isElectron } from '@/utils'; // 导入isElectron常量
+import { isDesktopRuntime } from '@/utils';
 
 export type AudioEffectPreset = 'off' | 'ktv' | 'studio' | 'spatial3d' | 'concert';
 
@@ -644,7 +644,7 @@ class AudioService {
 
   private async setupEQ(sound: Howl) {
     try {
-      if (!isElectron) {
+      if (!isDesktopRuntime) {
         console.log('Web环境中跳过EQ设置，避免CORS问题');
         this.bypass = true;
         return;

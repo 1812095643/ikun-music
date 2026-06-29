@@ -38,7 +38,7 @@
         :title="album.name"
         :subtitle="getArtistNames(album)"
         :tracks="albumTracksMap[album.id] || []"
-        :show-hover-tracks="!isMobile"
+        :show-hover-tracks="isDesktopRuntime && !isMobile"
         @click="handleAlbumClick(album)"
         @play="playAlbum(album)"
       />
@@ -62,7 +62,7 @@ import { getAlbum } from '@/api/list';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
 import { usePlayerCoreStore } from '@/store/modules/playerCore';
 import { usePlaylistStore } from '@/store/modules/playlist';
-import { isElectron, isMobile } from '@/utils';
+import { isDesktopRuntime, isMobile } from '@/utils';
 
 import HomeListItem from './HomeListItem.vue';
 
@@ -108,8 +108,8 @@ const fetchAlbums = async () => {
     const { data } = await getTopAlbum({ limit: props.limit || displayCount.value + 5 });
     if (data.code === 200) {
       albums.value = data.weekData || data.monthData || data.albums || [];
-      // Preload tracks for displayed albums (Electron only)
-      if (isElectron && !isMobile.value) {
+      // Preload tracks for displayed albums (desktop only)
+      if (isDesktopRuntime && !isMobile.value) {
         preloadAllTracks();
       }
     }
