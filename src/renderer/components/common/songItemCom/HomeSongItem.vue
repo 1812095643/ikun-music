@@ -78,12 +78,13 @@
 
 <script lang="ts" setup>
 import { NEllipsis, NImage } from 'naive-ui';
+import { defineAsyncComponent } from 'vue';
 
 import { useSongItem } from '@/hooks/useSongItem';
 import type { SongResult } from '@/types/music';
 import { getImgUrl, isDesktopRuntime } from '@/utils';
 
-import SongItemDropdown from './SongItemDropdown.vue';
+const SongItemDropdown = defineAsyncComponent(() => import('./SongItemDropdown.vue'));
 
 const props = withDefaults(
   defineProps<{

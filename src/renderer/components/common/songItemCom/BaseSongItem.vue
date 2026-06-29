@@ -34,11 +34,13 @@
 </template>
 
 <script lang="ts" setup>
+import { defineAsyncComponent } from 'vue';
+
 import { useSongItem } from '@/hooks/useSongItem';
 import type { SongResult } from '@/types/music';
 import { isDesktopRuntime } from '@/utils';
 
-import SongItemDropdown from './SongItemDropdown.vue';
+const SongItemDropdown = defineAsyncComponent(() => import('./SongItemDropdown.vue'));
 
 const props = defineProps<{
   item: SongResult;

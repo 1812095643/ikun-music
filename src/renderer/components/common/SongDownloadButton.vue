@@ -30,14 +30,12 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuOption } from 'naive-ui';
 import { NDropdown } from 'naive-ui';
 import { computed, h } from 'vue';
 
-import { useDownload } from '@/hooks/useDownload';
 import type { SongResult } from '@/types/music';
 import { isDesktopRuntime } from '@/utils';
-import { DOWNLOAD_QUALITY_OPTIONS, getDefaultDownloadQuality } from '@/utils/downloadQuality';
+import type { DownloadQualityOption } from '@/utils/downloadQuality';
 
 const props = withDefaults(
   defineProps<{
@@ -54,25 +52,60 @@ const props = withDefaults(
   }
 );
 
-const { downloadMusic } = useDownload();
-
 const hasSong = computed(() => Boolean(props.item?.id));
 const isKuwoSong = computed(() => props.item?.source === 'kuwo');
-const qualityOptions = computed<MenuOption[]>(() =>
-  DOWNLOAD_QUALITY_OPTIONS.map((item) => ({
+
+const loadDownloadModule = async () => {
+  const [{ useDownload }, { DOWNLOAD_QUALITY_OPTIONS, getDefaultDownloadQuality }] =
+    await Promise.all([import('@/hooks/useDownload'), import('@/utils/downloadQuality')]);
+  return {
+    downloadMusic: useDownload().downloadMusic,
+    qualityOptions: DOWNLOAD_QUALITY_OPTIONS,
+    getDefaultDownloadQuality
+  };
+};
+
+const qualityOptions = computed(() =>
+  DOWNLOAD_QUALITY_OPTIONS_FALLBACK.map((item) => ({
     label: `${item.label} · ${item.description}`,
     key: item.key,
     icon: () => h('i', { class: item.extension === 'flac' ? 'ri-disc-line' : 'ri-music-2-line' })
   }))
 );
 
-const handleQualitySelect = (quality: string | number) => {
+const DOWNLOAD_QUALITY_OPTIONS_FALLBACK: DownloadQualityOption[] = [
+  {
+    key: 'standard',
+    label: '标准 MP3',
+    description: '128kbps',
+    apiType: '128kmp3',
+    extension: 'mp3'
+  },
+  {
+    key: 'high',
+    label: '高品质 MP3',
+    description: '320kbps',
+    apiType: '320kmp3',
+    extension: 'mp3'
+  },
+  {
+    key: 'lossless',
+    label: '无损 FLAC',
+    description: '无损',
+    apiType: '2000kflac',
+    extension: 'flac'
+  }
+];
+
+const handleQualitySelect = async (quality: string | number) => {
   if (!props.item) return;
+  const { downloadMusic } = await loadDownloadModule();
   void downloadMusic(props.item, String(quality));
 };
 
-const handleDefaultDownload = () => {
+const handleDefaultDownload = async () => {
   if (!props.item) return;
+  const { downloadMusic, getDefaultDownloadQuality } = await loadDownloadModule();
   void downloadMusic(props.item, getDefaultDownloadQuality().key);
 };
 </script>

@@ -7,16 +7,13 @@ import type { SongResult } from '@/types/music';
 import { getImgUrl } from '@/utils';
 import { getImageBackground } from '@/utils/linearColor';
 
-import { dislikeRecommendedSong } from '../api/music';
 import { useArtist } from './useArtist';
-import { useDownload } from './useDownload';
 
 export function useSongItem(props: { item: SongResult; canRemove?: boolean }) {
   const { t } = useI18n();
   const playerStore = usePlayerStore();
   const recommendStore = useRecommendStore();
   const message = useMessage();
-  const { downloadMusic, downloadLyric } = useDownload();
   const { navigateToArtist } = useArtist();
 
   // 状态变量
@@ -110,6 +107,7 @@ export function useSongItem(props: { item: SongResult; canRemove?: boolean }) {
     try {
       console.log('发送不感兴趣请求，歌曲ID:', props.item.id);
       const numericId = typeof props.item.id === 'string' ? parseInt(props.item.id) : props.item.id;
+      const { dislikeRecommendedSong } = await import('../api/music');
       const response = await dislikeRecommendedSong(numericId);
       if (response.data.data) {
         console.log(response);
@@ -144,6 +142,16 @@ export function useSongItem(props: { item: SongResult; canRemove?: boolean }) {
   const handlePlayNext = () => {
     playerStore.addToNextPlay(props.item);
     message.success(t('songItem.message.addedToNextPlay'));
+  };
+
+  const downloadMusic = async (song: SongResult, quality?: string) => {
+    const { useDownload } = await import('./useDownload');
+    return useDownload().downloadMusic(song, quality);
+  };
+
+  const downloadLyric = async (song: SongResult) => {
+    const { useDownload } = await import('./useDownload');
+    return useDownload().downloadLyric(song);
   };
 
   // 获取歌曲时长
