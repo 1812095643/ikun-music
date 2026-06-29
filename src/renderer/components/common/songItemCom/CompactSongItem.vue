@@ -107,14 +107,17 @@
 
 <script lang="ts" setup>
 import { NCheckbox, NEllipsis } from 'naive-ui';
-import { computed, defineAsyncComponent, ref } from 'vue';
+import { computed, defineAsyncComponent, defineComponent, ref } from 'vue';
 
 import { usePlayerStore } from '@/store';
 import type { SongResult } from '@/types/music';
+import { isDesktopRuntime } from '@/utils';
 
 import BaseSongItem from './BaseSongItem.vue';
 
-const SongDownloadButton = defineAsyncComponent(() => import('../SongDownloadButton.vue'));
+const SongDownloadButton = isDesktopRuntime
+  ? defineAsyncComponent(() => import('../SongDownloadButton.vue'))
+  : defineComponent({ name: 'DesktopOnlySongDownloadButton', setup: () => () => null });
 
 const playerStore = usePlayerStore();
 
