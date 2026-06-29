@@ -13,7 +13,7 @@
         </div>
       </div>
 
-      <div v-if="!isComponent && isElectron" class="flex items-center gap-3">
+      <div v-if="!isComponent && isDesktopRuntime" class="flex items-center gap-3">
         <template v-if="!isSelecting">
           <!-- Sort Controls -->
           <div class="favorite-segment flex items-center rounded-lg p-1 h-9">
@@ -139,7 +139,7 @@ import SongItem from '@/components/common/SongItem.vue';
 import { useDownload } from '@/hooks/useDownload';
 import { usePlayerStore } from '@/store';
 import type { SongResult } from '@/types/music';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 
 const { t } = useI18n();
 const playerStore = usePlayerStore();

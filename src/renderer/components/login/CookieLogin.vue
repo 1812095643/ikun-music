@@ -4,7 +4,7 @@ import { onBeforeUnmount, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getUserDetail } from '@/api/login';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 
 defineOptions({
   name: 'CookieLogin'
@@ -61,7 +61,7 @@ const loginByToken = async () => {
 
 // 自动获取Cookie
 const autoGetCookie = () => {
-  if (!isElectron) {
+  if (!isDesktopRuntime) {
     message.error('此功能仅在桌面版中可用');
     return;
   }
@@ -99,14 +99,14 @@ const handleCookieReceived = async (_event: any, cookieValue: string) => {
 
 // 在组件挂载时添加监听器
 onMounted(() => {
-  if (isElectron) {
+  if (isDesktopRuntime) {
     window.electron.ipcRenderer.on('send-cookies', handleCookieReceived);
   }
 });
 
 // 在组件卸载时移除监听器
 onBeforeUnmount(() => {
-  if (isElectron) {
+  if (isDesktopRuntime) {
     window.electron.ipcRenderer.removeAllListeners('send-cookies');
   }
 });
@@ -127,7 +127,7 @@ onBeforeUnmount(() => {
     <n-button class="btn-login" @click="loginByToken()">{{
       t('login.button.cookieLogin')
     }}</n-button>
-    <n-button v-if="isElectron" class="btn-auto-cookie" @click="autoGetCookie()">
+    <n-button v-if="isDesktopRuntime" class="btn-auto-cookie" @click="autoGetCookie()">
       {{ t('login.button.autoGetCookie') }}
     </n-button>
   </div>

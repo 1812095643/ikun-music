@@ -103,7 +103,7 @@
                   <button
                     class="play-list-item"
                     @click="goToImportPlaylist"
-                    v-if="isElectron && currentTab === 'created'"
+                    v-if="isDesktopRuntime && currentTab === 'created'"
                   >
                     <div class="play-list-item-img"><i class="icon iconfont ri-add-line"></i></div>
                     <div class="play-list-item-info">
@@ -176,7 +176,7 @@ import PlayBottom from '@/components/common/PlayBottom.vue';
 import SongItem from '@/components/common/SongItem.vue';
 import { usePlayerStore } from '@/store/modules/player';
 import { useUserStore } from '@/store/modules/user';
-import { getImgUrl, isElectron, isMobile } from '@/utils';
+import { getImgUrl, isDesktopRuntime, isMobile } from '@/utils';
 import { checkLoginStatus as checkAuthStatus } from '@/utils/auth';
 import LoginComponent from '@/views/login/index.vue';
 
