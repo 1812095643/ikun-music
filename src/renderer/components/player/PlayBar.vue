@@ -163,7 +163,12 @@
       </n-tooltip>
     </div>
     <!-- 全屏播放器 -->
-    <music-full-wrapper ref="MusicFullRef" v-model="musicFullVisible" :background="background" />
+    <music-full-wrapper
+      v-if="musicFullVisible"
+      ref="MusicFullRef"
+      v-model="musicFullVisible"
+      :background="background"
+    />
   </div>
 </template>
 
@@ -174,7 +179,6 @@ import { storeToRefs } from 'pinia';
 import { computed, defineAsyncComponent, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import MusicFullWrapper from '@/components/lyric/MusicFullWrapper.vue';
 import {
   allTime,
   artistList,
@@ -197,6 +201,9 @@ const AdvancedControlsPopover = defineAsyncComponent(
 const ReparsePopover = defineAsyncComponent(() => import('@/components/player/ReparsePopover.vue'));
 const SongDownloadButton = defineAsyncComponent(
   () => import('@/components/common/SongDownloadButton.vue')
+);
+const MusicFullWrapper = defineAsyncComponent(
+  () => import('@/components/lyric/MusicFullWrapper.vue')
 );
 
 const playerStore = usePlayerStore();
