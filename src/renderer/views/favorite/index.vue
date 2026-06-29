@@ -136,7 +136,6 @@ import { useRouter } from 'vue-router';
 import { getMusicDetail } from '@/api/music';
 import PlayBottom from '@/components/common/PlayBottom.vue';
 import SongItem from '@/components/common/SongItem.vue';
-import { useDownload } from '@/hooks/useDownload';
 import { usePlayerStore } from '@/store';
 import type { SongResult } from '@/types/music';
 import { isDesktopRuntime } from '@/utils';
@@ -151,7 +150,6 @@ const noMore = ref(false);
 // 多选相关
 const isSelecting = ref(false);
 const selectedSongs = ref<number[]>([]);
-const { batchDownloadMusic } = useDownload();
 
 // 开始多选
 const startSelect = () => {
@@ -176,13 +174,15 @@ const handleSelect = (songId: number, selected: boolean) => {
 
 // 批量下载
 const handleBatchDownload = async () => {
+  if (!isDesktopRuntime) return;
   // 获取选中歌曲的信息
   const selectedSongsList = selectedSongs.value
     .map((songId) => favoriteSongs.value.find((s) => s.id === songId))
     .filter((song) => song) as SongResult[];
 
   // 使用hook中的批量下载功能
-  await batchDownloadMusic(selectedSongsList);
+  const { useDownload } = await import('@/hooks/useDownload');
+  await useDownload().batchDownloadMusic(selectedSongsList);
 
   // 下载完成后取消选择
   cancelSelect();

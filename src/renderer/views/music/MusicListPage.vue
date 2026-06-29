@@ -319,7 +319,6 @@ import {
 } from '@/api/music';
 import PlayBottom from '@/components/common/PlayBottom.vue';
 import SongItem from '@/components/common/SongItem.vue';
-import { useDownload } from '@/hooks/useDownload';
 import { useScrollTitle } from '@/hooks/useScrollTitle';
 import { useMusicStore, usePlayerStore, useRecommendStore, useUserStore } from '@/store';
 import { usePlayHistoryStore } from '@/store/modules/playHistory';
@@ -449,7 +448,7 @@ const isFullPlaylistLoaded = ref(false);
 
 const isSelecting = ref(false);
 const selectedSongs = ref<number[]>([]);
-const { isDownloading, batchDownloadMusic } = useDownload();
+const isDownloading = ref(false);
 
 const isCompactLayout = ref(
   isMobile.value ? false : localStorage.getItem('musicListLayout') === 'compact'
@@ -753,10 +752,18 @@ const handleSelectAll = (checked: boolean) => {
   selectedSongs.value = checked ? filteredSongs.value.map((s) => s.id as number) : [];
 };
 const handleBatchDownload = async () => {
+  if (!isDesktopRuntime) return;
+  if (isDownloading.value) return;
   const list = selectedSongs.value
     .map((id) => filteredSongs.value.find((s) => s.id === id))
     .filter((s) => s) as SongResult[];
-  await batchDownloadMusic(list);
+  isDownloading.value = true;
+  try {
+    const { useDownload } = await import('@/hooks/useDownload');
+    await useDownload().batchDownloadMusic(list);
+  } finally {
+    isDownloading.value = false;
+  }
   cancelSelect();
 };
 

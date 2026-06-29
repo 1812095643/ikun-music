@@ -219,7 +219,6 @@ import PlayBottom from '@/components/common/PlayBottom.vue';
 import SearchItem from '@/components/common/SearchItem.vue';
 import SongItem from '@/components/common/SongItem.vue';
 import { SEARCH_TYPE, SEARCH_TYPES } from '@/const/bar-const';
-import { useDownload } from '@/hooks/useDownload';
 import { useScrollTitle } from '@/hooks/useScrollTitle';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSearchStore } from '@/store/modules/search';
@@ -302,7 +301,7 @@ const isResultEmpty = computed(() => {
 
 const isSelecting = ref(false);
 const selectedSongs = ref<number[]>([]);
-const { isDownloading, batchDownloadMusic } = useDownload();
+const isDownloading = ref(false);
 const isCompactLayout = ref(
   isMobile.value ? false : localStorage.getItem('musicListLayout') === 'compact'
 );
@@ -344,11 +343,19 @@ const handleSelectAll = (checked: boolean) => {
 };
 
 const handleBatchDownload = async () => {
+  if (!isDesktopRuntime) return;
+  if (isDownloading.value) return;
   const list = selectedSongs.value
     .map((id) => searchDetail.value.songs.find((s: any) => s.id === id))
     .filter((s) => s)
     .map(formatSong) as SongResult[];
-  await batchDownloadMusic(list);
+  isDownloading.value = true;
+  try {
+    const { useDownload } = await import('@/hooks/useDownload');
+    await useDownload().batchDownloadMusic(list);
+  } finally {
+    isDownloading.value = false;
+  }
   cancelSelect();
 };
 
