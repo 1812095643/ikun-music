@@ -2,8 +2,6 @@ import { invoke } from '@tauri-apps/api/core';
 import { emitTo, listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { open } from '@tauri-apps/plugin-dialog';
-import { readTextFile } from '@tauri-apps/plugin-fs';
 import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
 import { openPath, openUrl } from '@tauri-apps/plugin-opener';
 import { Store } from '@tauri-apps/plugin-store';
@@ -73,6 +71,8 @@ type ParsedReleaseVersion = {
 };
 
 const isTauriRuntime = Boolean((window as any).__TAURI_INTERNALS__);
+const isAndroidRuntime =
+  isTauriRuntime && /Android/i.test(navigator.userAgent || navigator.platform || '');
 const BROWSER_STORE_KEY = 'alger-music-tauri-browser-store';
 const BROWSER_LYRIC_RETURN_ROUTE_KEY = 'alger-music-browser-lyric-return-route';
 const MAIN_WINDOW_LABEL = 'main';
@@ -103,6 +103,16 @@ const getCompatWebviewWindow = () => {
   if (!isTauriRuntime) return null;
   if (!currentWebviewWindow) currentWebviewWindow = getCurrentWebviewWindow();
   return currentWebviewWindow;
+};
+
+const openTauriDialog = async (options: any) => {
+  const { open } = await import('@tauri-apps/plugin-dialog');
+  return open(options);
+};
+
+const readTauriTextFile = async (path: string) => {
+  const { readTextFile } = await import('@tauri-apps/plugin-fs');
+  return readTextFile(path);
 };
 
 const saveBrowserStore = () => {
@@ -974,13 +984,13 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
       if (!isTauriRuntime) return window.open(String(args[0]), '_blank') !== null;
       return openUrl(String(args[0]));
     case 'select-directory': {
-      if (!isTauriRuntime) return { canceled: true, filePaths: [] };
-      const selected = await open({ directory: true, multiple: false });
+      if (!isTauriRuntime || isAndroidRuntime) return { canceled: true, filePaths: [] };
+      const selected = await openTauriDialog({ directory: true, multiple: false });
       return { canceled: !selected, filePaths: selected ? [selected] : [] };
     }
     case 'select-file': {
-      if (!isTauriRuntime) return { canceled: true, filePaths: [] };
-      const selected = await open({ directory: false, multiple: false });
+      if (!isTauriRuntime || isAndroidRuntime) return { canceled: true, filePaths: [] };
+      const selected = await openTauriDialog({ directory: false, multiple: false });
       return { canceled: !selected, filePaths: selected ? [selected] : [] };
     }
     case 'open-path':
@@ -1049,36 +1059,39 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
     case 'lx-music-http-cancel':
       return undefined;
     case 'scan-local-music':
+      if (isAndroidRuntime) return [];
       return postToMusicApi('/alger-tauri/scan-local-music', { folderPath: args[0] });
     case 'scan-local-music-with-stats':
+      if (isAndroidRuntime) return { files: [], stats: { total: 0, parsed: 0, failed: 0 } };
       return postToMusicApi('/alger-tauri/scan-local-music-with-stats', { folderPath: args[0] });
     case 'parse-local-music-metadata':
+      if (isAndroidRuntime) return [];
       return postToMusicApi('/alger-tauri/parse-local-music-metadata', {
         filePaths: args[0] || []
       });
     case 'import-custom-api-plugin': {
-      if (!isTauriRuntime) return null;
-      const selected = await open({
+      if (!isTauriRuntime || isAndroidRuntime) return null;
+      const selected = await openTauriDialog({
         directory: false,
         multiple: false,
         filters: [{ name: 'JSON Files', extensions: ['json'] }]
       });
       if (!selected || Array.isArray(selected)) return null;
-      const content = await readTextFile(selected);
+      const content = await readTauriTextFile(selected);
       const pluginData = JSON.parse(content);
       if (!pluginData.name || !pluginData.apiUrl)
         throw new Error('无效的插件文件，缺少 name 或 apiUrl 字段。');
       return { name: pluginData.name, content };
     }
     case 'import-lx-music-script': {
-      if (!isTauriRuntime) return null;
-      const selected = await open({
+      if (!isTauriRuntime || isAndroidRuntime) return null;
+      const selected = await openTauriDialog({
         directory: false,
         multiple: false,
         filters: [{ name: 'JavaScript Files', extensions: ['js'] }]
       });
       if (!selected || Array.isArray(selected)) return null;
-      const content = await readTextFile(selected);
+      const content = await readTauriTextFile(selected);
       if (
         !content.includes('globalThis.lx') &&
         !content.includes('lx.on') &&

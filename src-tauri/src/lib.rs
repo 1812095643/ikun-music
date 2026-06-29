@@ -1372,7 +1372,7 @@ fn start_music_api(
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let builder = tauri::Builder::default()
         .manage(MusicApiProcess(Mutex::new(None)))
         .manage(MiniWindowRestoreState(Mutex::new(None)))
         .setup(|app| {
@@ -1385,11 +1385,19 @@ pub fn run() {
             }
             Ok(())
         })
-        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_opener::init());
+
+    #[cfg(not(mobile))]
+    let builder = builder
         .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_fs::init())
-        .plugin(tauri_plugin_http::init())
-        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_fs::init());
+
+    let builder = builder.plugin(tauri_plugin_http::init());
+
+    #[cfg(not(mobile))]
+    let builder = builder.plugin(tauri_plugin_shell::init());
+
+    builder
         .plugin(tauri_plugin_store::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             get_default_settings,
