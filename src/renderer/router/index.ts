@@ -5,6 +5,7 @@ import MiniLayout from '@/layout/MiniLayout.vue';
 import homeRouter from '@/router/home';
 import otherRouter from '@/router/other';
 import { useSettingsStore } from '@/store/modules/settings';
+import { isAndroidRuntime, isDesktopRuntime } from '@/utils';
 import { hasBrowserMiniModeFlag } from '@/utils/miniModeNavigation';
 
 import { useUserStore } from '../store/modules/user';
@@ -61,11 +62,33 @@ const router = createRouter({
   history: createWebHashHistory()
 });
 
+const androidBlockedRoutes = new Set([
+  '/downloads',
+  '/local-music',
+  '/lyric',
+  '/tray-panel',
+  '/mini'
+]);
+
+const isDesktopOnlyRoute = (to: { path: string; meta: Record<string, any> }) => {
+  return Boolean(to.meta.electronOnly) || androidBlockedRoutes.has(to.path);
+};
+
 // 添加全局前置守卫
 router.beforeEach((to, _, next) => {
   const settingsStore = getSettingsStore();
-  const isBrowserMiniMode =
-    !(window as any).__TAURI_INTERNALS__ && hasBrowserMiniModeFlag();
+  const isBrowserMiniMode = !(window as any).__TAURI_INTERNALS__ && hasBrowserMiniModeFlag();
+
+  // Android 第一阶段只开放首页、搜索、播放和移动端歌词链路，直达桌面专属页面时回到首页。
+  if (isAndroidRuntime && isDesktopOnlyRoute(to)) {
+    next('/');
+    return;
+  }
+
+  if (!isDesktopRuntime && to.meta.electronOnly) {
+    next('/');
+    return;
+  }
 
   // 如果是迷你模式
   if (settingsStore.isMiniMode || isBrowserMiniMode) {
