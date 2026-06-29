@@ -840,7 +840,7 @@ const send = (channel: string, ...args: any[]) => {
       void setStoreValue(args[0], args[1]);
       break;
     case 'download-music':
-      void downloadMusicFile(args[0]);
+      if (!isAndroidRuntime) void downloadMusicFile(args[0]);
       break;
     case 'clear-downloads-history':
       void setDownloadHistoryStore([]);
@@ -922,9 +922,10 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
     case 'app-update:open-release-page':
       return openTauriAppUpdatePage();
     case 'get-downloads-path':
+      if (isAndroidRuntime) return '';
       return ensureDefaultDownloadPath();
     case 'get-downloaded-music': {
-      if (!isTauriRuntime) return [];
+      if (!isTauriRuntime || isAndroidRuntime) return [];
       const records = getDownloadRecordStore();
       const entries = await Promise.all(
         Object.entries(records).map(async ([path, info]) => {
@@ -943,6 +944,7 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
       return validSongs;
     }
     case 'delete-downloaded-music': {
+      if (isAndroidRuntime) return false;
       const targetPath = String(args[0] || '');
       if (!targetPath) return false;
       const deleted = isTauriRuntime
@@ -960,10 +962,11 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
       await setDownloadRecordStore({});
       return true;
     case 'check-file-exists':
-      if (!isTauriRuntime) return false;
+      if (!isTauriRuntime || isAndroidRuntime) return false;
       return invoke<boolean>('local_file_exists', { path: String(args[0] || '') });
     case 'save-lyric-file': {
-      if (!isTauriRuntime) return { success: false, error: '当前运行环境不支持保存歌词文件' };
+      if (!isTauriRuntime || isAndroidRuntime)
+        return { success: false, error: '当前运行环境不支持保存歌词文件' };
       const payload = args[0] || {};
       const safeName = sanitizeFilename(String(payload.filename || '歌词'));
       const downloadPath = await ensureDefaultDownloadPath();
