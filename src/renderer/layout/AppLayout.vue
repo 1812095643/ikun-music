@@ -60,8 +60,6 @@ import { computed, defineAsyncComponent, onMounted, provide, ref, watch } from '
 import { useRoute } from 'vue-router';
 
 import PlayBottom from '@/components/common/PlayBottom.vue';
-import UpdateModal from '@/components/common/UpdateModal.vue';
-import SleepTimerTop from '@/components/player/SleepTimerTop.vue';
 import homeRouter from '@/router/home';
 import otherRouter from '@/router/other';
 import { useMenuStore } from '@/store/modules/menu';
@@ -99,6 +97,8 @@ const PlayingListDrawer = defineAsyncComponent(
   () => import('@/components/player/PlayingListDrawer.vue')
 );
 const PlaylistDrawer = defineAsyncComponent(() => import('@/components/common/PlaylistDrawer.vue'));
+const UpdateModal = defineAsyncComponent(() => import('@/components/common/UpdateModal.vue'));
+const SleepTimerTop = defineAsyncComponent(() => import('@/components/player/SleepTimerTop.vue'));
 
 const playerStore = usePlayerStore();
 const settingsStore = useSettingsStore();
