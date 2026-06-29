@@ -1,0 +1,8 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "android-main",
+  "description": "Android 第一阶段主窗口最小权限，只保留启动、网络请求、配置存储和打开外链能力。",
+  "windows": ["main"],
+  "platforms": ["android"],
+  "permissions": ["core:default", "opener:default", "http:default", "store:default"]
+}
