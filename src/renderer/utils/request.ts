@@ -13,7 +13,7 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   noRetry?: boolean;
 }
 
-const baseURL = window.electron
+const baseURL = isDesktopRuntime
   ? `http://127.0.0.1:${setData?.musicApiPort}`
   : import.meta.env.VITE_API;
 
@@ -40,7 +40,7 @@ request.interceptors.request.use(
       await ensureMusicApiReady();
     }
     setData = getSetData();
-    config.baseURL = window.electron
+    config.baseURL = isDesktopRuntime
       ? `http://127.0.0.1:${setData?.musicApiPort}`
       : import.meta.env.VITE_API;
     // 只在retryCount未定义时初始化为0

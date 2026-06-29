@@ -1,5 +1,5 @@
 import type { SongResult } from '@/types/music';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import { type DownloadQualityKey, getKuwoDownloadQuality } from '@/utils/downloadQuality';
 import { ensureMusicApiReady } from '@/utils/tauriElectronCompat';
 
@@ -92,7 +92,7 @@ const waitForRetry = (attempt: number) =>
   new Promise((resolve) => setTimeout(resolve, KUWO_RETRY_BASE_DELAY * attempt));
 
 const requestKuwoOnce = async <T = any>(url: string, timeout = 15000): Promise<T> => {
-  if (isElectron && window.api?.lxMusicHttpRequest) {
+  if (isDesktopRuntime && window.api?.lxMusicHttpRequest) {
     await ensureMusicApiReady();
     const response = (await window.api.lxMusicHttpRequest({
       url,
@@ -143,7 +143,7 @@ const requestKuwoPublic = async <T = any>(
 };
 
 const requestKuwoHead = async (url: string, timeout = 8000) => {
-  if (isElectron && window.api?.lxMusicHttpRequest) {
+  if (isDesktopRuntime && window.api?.lxMusicHttpRequest) {
     await ensureMusicApiReady();
     return (await window.api.lxMusicHttpRequest({
       url,

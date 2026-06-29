@@ -1,4 +1,4 @@
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import { ensureMusicApiReady } from '@/utils/tauriElectronCompat';
 
 export interface ExternalMusicHttpResponse<T = any> {
@@ -29,7 +29,7 @@ export const requestExternalMusic = async <T = any>(
     ...(options.headers || {})
   };
 
-  if (isElectron && window.api?.lxMusicHttpRequest) {
+  if (isDesktopRuntime && window.api?.lxMusicHttpRequest) {
     await ensureMusicApiReady();
     return (await window.api.lxMusicHttpRequest({
       url,

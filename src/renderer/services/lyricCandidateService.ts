@@ -3,7 +3,7 @@ import { getMusicLrc } from '@/api/music';
 import { getYoutubeMusicLyrics, searchYoutubeMusicSongs } from '@/api/youtubeMusic';
 import { parseRawLyrics } from '@/hooks/usePlayerHooks';
 import type { ILyric, LyricCandidate, LyricCandidateResult, SongResult } from '@/types/music';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime, isElectron } from '@/utils';
 import request from '@/utils/request';
 
 type RawLyricPayload = {
@@ -382,7 +382,7 @@ const requestTextOrJson = async (
     ...headers
   };
 
-  if (isElectron && window.api?.lxMusicHttpRequest) {
+  if (isDesktopRuntime && window.api?.lxMusicHttpRequest) {
     const response = await window.api.lxMusicHttpRequest({
       url,
       requestId: `lyric-${Date.now()}-${Math.random().toString(16).slice(2)}`,
