@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { isElectron } from '.';
+import { isDesktopRuntime } from '.';
 import { ensureMusicApiReady } from './tauriElectronCompat';
 
 const baseURL = `${import.meta.env.VITE_API_MUSIC}`;
@@ -12,7 +12,7 @@ const request = axios.create({
 // 请求拦截器
 request.interceptors.request.use(
   async (config) => {
-    if (isElectron) {
+    if (isDesktopRuntime) {
       await ensureMusicApiReady();
     }
     return config;

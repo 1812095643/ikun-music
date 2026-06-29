@@ -36,7 +36,7 @@ import { usePlayerCoreStore } from '@/store/modules/playerCore';
 import { useSettingsStore } from '@/store/modules/settings';
 import { useUserStore } from '@/store/modules/user';
 import type { Artist, SongResult } from '@/types/music';
-import { isElectron, isLyricWindow } from '@/utils';
+import { isDesktopRuntime, isElectron, isLyricWindow } from '@/utils';
 import { checkLoginStatus } from '@/utils/auth';
 import {
   consumeMiniModeRestoreRoute,
@@ -75,6 +75,7 @@ const isBrowserCompatRuntime = !(window as any).__TAURI_INTERNALS__;
 
 const showSplash = ref(true);
 const isTrayPanelWindow = computed(() => window.location.hash.includes('tray-panel'));
+const shouldUseDesktopShell = isDesktopRuntime;
 let removeTrayControlListener: (() => void) | null = null;
 let removeTrayPanelOpenedListener: (() => void) | null = null;
 let removeTrayPanelCommandListener: (() => void) | null = null;
@@ -130,6 +131,7 @@ const getSoundTimeSnapshot = () => {
 const syncTrayState = () => {
   if (
     !isElectron ||
+    !shouldUseDesktopShell ||
     isLyricWindow.value ||
     isTrayPanelWindow.value ||
     !window.api?.updateTrayState
@@ -288,6 +290,7 @@ const handleTrayControl = async (action: string) => {
 const broadcastTrayPanelState = () => {
   if (
     !isElectron ||
+    !shouldUseDesktopShell ||
     isLyricWindow.value ||
     isTrayPanelWindow.value ||
     !window.electron?.ipcRenderer
@@ -397,7 +400,13 @@ if (!isLyricWindow.value && !isTrayPanelWindow.value) {
 handleSetLanguage(settingsStore.setData.language);
 
 // 监听迷你模式状态
-if (isElectron && !isTrayPanelWindow.value && window.api && window.electron?.ipcRenderer) {
+if (
+  shouldUseDesktopShell &&
+  isElectron &&
+  !isTrayPanelWindow.value &&
+  window.api &&
+  window.electron?.ipcRenderer
+) {
   window.api.onLanguageChanged(handleSetLanguage);
   window.electron.ipcRenderer.on('mini-mode', (_, value) => {
     const nextMiniMode = Boolean(value);
@@ -422,7 +431,13 @@ if (isElectron && !isTrayPanelWindow.value && window.api && window.electron?.ipc
   });
 }
 
-if (isElectron && !isLyricWindow.value && !isTrayPanelWindow.value && window.api?.onTrayControl) {
+if (
+  shouldUseDesktopShell &&
+  isElectron &&
+  !isLyricWindow.value &&
+  !isTrayPanelWindow.value &&
+  window.api?.onTrayControl
+) {
   removeTrayControlListener = window.api.onTrayControl((action) => {
     void handleTrayControl(action);
   });
@@ -430,6 +445,7 @@ if (isElectron && !isLyricWindow.value && !isTrayPanelWindow.value && window.api
 
 if (
   isElectron &&
+  shouldUseDesktopShell &&
   !isLyricWindow.value &&
   !isTrayPanelWindow.value &&
   window.electron?.ipcRenderer
@@ -530,7 +546,7 @@ onMounted(async () => {
     // 使用 nextTick 确保 DOM 更新后再初始化
     await nextTick();
     initAudioListeners();
-    if (isElectron && window.api) {
+    if (shouldUseDesktopShell && isElectron && window.api) {
       window.api.sendSong(cloneDeep(playerStore.playMusic));
     }
   }

@@ -47,7 +47,7 @@
         />
       </template>
     </div>
-    <update-modal v-if="isElectron" />
+    <update-modal v-if="isDesktopRuntime" />
     <playlist-drawer v-model="showPlaylistDrawer" :song-id="currentSongId" />
     <sleep-timer-top v-if="!settingsStore.isMobile" />
     <!-- 播放列表抽屉 -->
@@ -67,7 +67,7 @@ import otherRouter from '@/router/other';
 import { useMenuStore } from '@/store/modules/menu';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSettingsStore } from '@/store/modules/settings';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import { consumeMiniModePlaylistDrawerSongId } from '@/utils/miniModeNavigation';
 
 // 关键布局组件同步导入（始终可见，避免加载闪烁）
@@ -123,7 +123,7 @@ const isPhone = computed(() => settingsStore.isMobile);
 onMounted(() => {
   settingsStore.initializeSettings();
   settingsStore.initializeTheme();
-  if (isElectron && window.api?.checkAppUpdate) {
+  if (isDesktopRuntime && window.api?.checkAppUpdate) {
     window.setTimeout(() => {
       void window.api.checkAppUpdate(false).then((state) => {
         settingsStore.setAppUpdateState(state);

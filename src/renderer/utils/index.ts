@@ -97,6 +97,13 @@ export const isElectron = Boolean(
   (window as any).electron || (window as any).api || (window as any).__TAURI_INTERNALS__
 );
 
+export const isTauriRuntime = Boolean((window as any).__TAURI_INTERNALS__);
+
+export const isAndroidRuntime =
+  isTauriRuntime && /Android/i.test(navigator.userAgent || navigator.platform || '');
+
+export const isDesktopRuntime = isElectron && !isAndroidRuntime;
+
 export const isLyricWindow = computed(() => {
   return window.location.hash.includes('lyric');
 });

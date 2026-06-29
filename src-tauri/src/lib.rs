@@ -1189,10 +1189,13 @@ pub fn run() {
         .manage(MusicApiProcess(Mutex::new(None)))
         .manage(MiniWindowRestoreState(Mutex::new(None)))
         .setup(|app| {
-            create_tray(app)?;
-            let app_handle = app.handle().clone();
-            let state = app.state::<MusicApiProcess>();
-            let _ = start_music_api(app_handle, state, 30488);
+            #[cfg(not(mobile))]
+            {
+                create_tray(app)?;
+                let app_handle = app.handle().clone();
+                let state = app.state::<MusicApiProcess>();
+                let _ = start_music_api(app_handle, state, 30488);
+            }
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())

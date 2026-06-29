@@ -2,7 +2,7 @@ import axios, { InternalAxiosRequestConfig } from 'axios';
 
 import { useUserStore } from '@/store/modules/user';
 
-import { getSetData, isElectron, isMobile } from '.';
+import { getSetData, isAndroidRuntime, isDesktopRuntime, isElectron, isMobile } from '.';
 import { ensureMusicApiReady } from './tauriElectronCompat';
 
 let setData: any = null;
@@ -31,7 +31,7 @@ const RETRY_DELAY = 500;
 // 请求拦截器
 request.interceptors.request.use(
   async (config: CustomAxiosRequestConfig) => {
-    if (isElectron) {
+    if (isDesktopRuntime) {
       // 根因：Tauri 打包版启动时 Vue 首屏会立刻请求首页、搜索和歌词接口，
       // 但内置 Node 音乐 API 需要先完成脚本加载、端口监听和酷我等音源模块初始化。
       // 之前请求层没有等待后端 ready，首次双击 exe 时就可能把请求打到尚未监听的
@@ -53,7 +53,7 @@ request.interceptors.request.use(
     config.params = {
       ...config.params,
       timestamp: Date.now(),
-      device: isElectron ? 'pc' : isMobile ? 'mobile' : 'web'
+      device: isAndroidRuntime || isMobile ? 'mobile' : isElectron ? 'pc' : 'web'
     };
     const token = localStorage.getItem('token');
     if (token && config.method !== 'post') {
@@ -64,7 +64,7 @@ request.interceptors.request.use(
         cookie: token
       };
     }
-    if (isElectron) {
+    if (isDesktopRuntime) {
       const proxyConfig = setData?.proxyConfig;
       if (proxyConfig?.enable && ['http', 'https'].includes(proxyConfig?.protocol)) {
         config.params.proxy = `${proxyConfig.protocol}://${proxyConfig.host}:${proxyConfig.port}`;
