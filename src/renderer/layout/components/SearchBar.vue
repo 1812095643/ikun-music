@@ -95,27 +95,7 @@
     </div>
 
     <!-- 下载按钮 -->
-    <button v-if="showDownloadButton" class="action-btn" @click="navigateToDownloads">
-      <n-badge :value="downloadingCount" :max="99" :show="downloadingCount > 0" :offset="[-2, 2]">
-        <i class="ri-download-cloud-2-line" />
-      </n-badge>
-    </button>
-
-    <n-tooltip v-if="isDesktopRuntime" trigger="hover">
-      <template #trigger>
-        <button
-          class="action-btn"
-          :class="{ 'update-checking': updateChecking }"
-          :disabled="updateChecking"
-          @click="handleAppUpdateClick"
-        >
-          <n-badge dot :show="hasAppUpdate" :offset="[-1, 3]">
-            <i class="ri-upload-cloud-2-line" />
-          </n-badge>
-        </button>
-      </template>
-      {{ hasAppUpdate ? t('settings.about.hasUpdate') : t('settings.about.checkUpdate') }}
-    </n-tooltip>
+    <search-bar-desktop-actions v-if="isDesktopRuntime" />
 
     <!-- 心动模式按钮 -->
     <n-tooltip v-if="showIntelligenceBtn" trigger="hover">
@@ -171,27 +151,7 @@
           <div class="menu-row" @click="selectItem('set')">
             <i class="ri-settings-3-line" /><span>{{ t('comp.searchBar.set') }}</span>
           </div>
-          <div v-if="isDesktopRuntime" class="menu-row">
-            <i class="ri-zoom-in-line" /><span>{{ t('comp.searchBar.zoom') }}</span>
-            <div class="zoom-ctrl ml-auto">
-              <button class="zoom-btn" @click.stop="decreaseZoom">
-                <i class="ri-subtract-line" />
-              </button>
-              <n-tooltip trigger="hover">
-                <template #trigger>
-                  <span
-                    class="zoom-val"
-                    :class="{ 'zoom-val--100': isZoom100() }"
-                    @click.stop="resetZoom"
-                  >
-                    {{ Math.round(zoomFactor * 100) }}%
-                  </span>
-                </template>
-                {{ isZoom100() ? t('comp.searchBar.zoom100') : t('comp.searchBar.resetZoom') }}
-              </n-tooltip>
-              <button class="zoom-btn" @click.stop="increaseZoom"><i class="ri-add-line" /></button>
-            </div>
-          </div>
+          <search-bar-desktop-zoom-row v-if="isDesktopRuntime" />
           <div class="menu-row">
             <i :class="isDark ? 'ri-moon-line' : 'ri-sun-line'" />
             <span>{{ t('comp.searchBar.theme') }}</span>
@@ -214,7 +174,7 @@
 
 <script lang="ts" setup>
 import { useDebounceFn } from '@vueuse/core';
-import { computed, onMounted, ref, watch, watchEffect } from 'vue';
+import { computed, defineAsyncComponent, onMounted, ref, watch, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -222,9 +182,6 @@ import { getSearchKeyword } from '@/api/home';
 import { getUserDetail } from '@/api/login';
 import { getSearchSuggestions } from '@/api/search';
 import { SEARCH_TYPES, USER_SET_OPTIONS } from '@/const/bar-const';
-import { useAppUpdateState } from '@/hooks/useAppUpdateState';
-import { useDownloadStatus } from '@/hooks/useDownloadStatus';
-import { useZoom } from '@/hooks/useZoom';
 import { useIntelligenceModeStore } from '@/store/modules/intelligenceMode';
 import { useNavTitleStore } from '@/store/modules/navTitle';
 import { useSearchStore } from '@/store/modules/search';
@@ -232,7 +189,8 @@ import { useSettingsStore } from '@/store/modules/settings';
 import { useUserStore } from '@/store/modules/user';
 import { getImgUrl, isDesktopRuntime } from '@/utils';
 
-import { APP_UPDATE_STATUS } from '../../../shared/appUpdate';
+const SearchBarDesktopActions = defineAsyncComponent(() => import('./SearchBarDesktopActions.vue'));
+const SearchBarDesktopZoomRow = defineAsyncComponent(() => import('./SearchBarDesktopZoomRow.vue'));
 
 const router = useRouter();
 const route = useRoute();
@@ -242,18 +200,8 @@ const settingsStore = useSettingsStore();
 const userStore = useUserStore();
 const userSetOptions = ref(USER_SET_OPTIONS);
 const { t, locale } = useI18n();
-const message = useMessage();
 
 const intelligenceModeStore = useIntelligenceModeStore();
-const { downloadingCount, navigateToDownloads } = useDownloadStatus();
-const { appUpdateState, hasAppUpdate } = useAppUpdateState();
-const showDownloadButton = computed(
-  () =>
-    isDesktopRuntime &&
-    (settingsStore.setData?.alwaysShowDownloadButton || downloadingCount.value > 0)
-);
-const { zoomFactor, initZoomFactor, increaseZoom, decreaseZoom, resetZoom, isZoom100 } = useZoom();
-const updateChecking = computed(() => appUpdateState.value.status === APP_UPDATE_STATUS.checking);
 
 // ── 心动模式 ─────────────────────────────────────────
 const isIntelligenceMode = computed(() => intelligenceModeStore.isIntelligenceMode);
@@ -499,32 +447,9 @@ const selectItem = (key: string) => {
   }
 };
 
-const handleAppUpdateClick = async () => {
-  if (hasAppUpdate.value) {
-    settingsStore.setShowUpdateModal(true);
-    return;
-  }
-
-  try {
-    const result = await window.api.checkAppUpdate(true);
-    settingsStore.setAppUpdateState(result);
-    if (result.status === APP_UPDATE_STATUS.available) {
-      settingsStore.setShowUpdateModal(true);
-    } else if (result.status === APP_UPDATE_STATUS.notAvailable) {
-      message.success(t('settings.about.latest'));
-    } else if (result.status === APP_UPDATE_STATUS.error) {
-      message.error(result.errorMessage || t('settings.about.messages.checkError'));
-    }
-  } catch (e) {
-    console.error('检查更新失败:', e);
-    message.error(t('settings.about.messages.checkError'));
-  }
-};
-
 onMounted(() => {
   loadHotSearch();
   loadPage();
-  isDesktopRuntime && initZoomFactor();
 });
 </script>
 
@@ -723,7 +648,8 @@ onMounted(() => {
 }
 
 /* ── Action buttons ──────────────────────────────────── */
-.action-btn {
+.action-btn,
+:deep(.action-btn) {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -737,16 +663,19 @@ onMounted(() => {
   cursor: pointer;
   transition: all 0.15s;
 }
-.dark .action-btn {
+.dark .action-btn,
+.dark :deep(.action-btn) {
   border-color: #374151;
   color: #9ca3af;
 }
-.action-btn:hover {
+.action-btn:hover,
+:deep(.action-btn:hover) {
   color: #22c55e;
   border-color: #bbf7d0;
   background: #f0fdf4;
 }
-.dark .action-btn:hover {
+.dark .action-btn:hover,
+.dark :deep(.action-btn:hover) {
   border-color: #166534;
   background: rgba(34, 197, 94, 0.08);
   color: #22c55e;
@@ -850,7 +779,8 @@ onMounted(() => {
   padding: 3px 0 5px;
 }
 
-.menu-row {
+.menu-row,
+:deep(.menu-row) {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -860,17 +790,21 @@ onMounted(() => {
   cursor: pointer;
   transition: background 0.12s;
 }
-.dark .menu-row {
+.dark .menu-row,
+.dark :deep(.menu-row) {
   color: #d1d5db;
 }
-.menu-row:hover {
+.menu-row:hover,
+:deep(.menu-row:hover) {
   background: #f9fafb;
 }
-.dark .menu-row:hover {
+.dark .menu-row:hover,
+.dark :deep(.menu-row:hover) {
   background: #1f2937;
 }
 
-.menu-row i {
+.menu-row i,
+:deep(.menu-row i) {
   font-size: 15px;
   color: #9ca3af;
   flex-shrink: 0;
@@ -878,12 +812,12 @@ onMounted(() => {
   text-align: center;
 }
 
-.zoom-ctrl {
+:deep(.zoom-ctrl) {
   display: flex;
   align-items: center;
   gap: 3px;
 }
-.zoom-btn {
+:deep(.zoom-btn) {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -897,11 +831,11 @@ onMounted(() => {
   cursor: pointer;
   transition: all 0.12s;
 }
-.zoom-btn:hover {
+:deep(.zoom-btn:hover) {
   background: #dcfce7;
   color: #16a34a;
 }
-.zoom-val {
+:deep(.zoom-val) {
   font-size: 11px;
   font-weight: 600;
   padding: 1px 6px;
@@ -911,7 +845,7 @@ onMounted(() => {
   cursor: pointer;
   transition: all 0.12s;
 }
-.zoom-val--100 {
+:deep(.zoom-val--100) {
   background: #dcfce7;
   color: #16a34a;
 }
