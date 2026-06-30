@@ -5,8 +5,9 @@
   <!-- PC 端 / 浏览器移动端 / 平板模式 保持原有布局 -->
   <div v-else class="layout-page" :class="{ mobile: settingsStore.isMobile }">
     <div id="layout-main" class="layout-main">
-      <title-bar />
-      <div class="layout-main-page">
+      <mobile-header v-if="isAndroidRuntime" />
+      <title-bar v-else />
+      <div class="layout-main-page" :class="{ 'has-title-bar': !isAndroidRuntime }">
         <div class="main">
           <!-- 搜索栏 -->
           <search-bar class="search-bar" />
@@ -74,6 +75,7 @@ import { consumeMiniModePlaylistDrawerSongId } from '@/utils/miniModeNavigation'
 
 // 关键布局组件同步导入（始终可见，避免加载闪烁）
 import AppMenu from './components/AppMenu.vue';
+import MobileHeader from './components/MobileHeader.vue';
 import SearchBar from './components/SearchBar.vue';
 import TitleBar from './components/TitleBar.vue';
 // 移动端专用布局
@@ -195,8 +197,12 @@ watch(
 
 .layout-main-page {
   @apply flex;
-  height: calc(100% - 40px);
+  height: 100%;
   background: var(--layout-shell-bg);
+}
+
+.layout-main-page.has-title-bar {
+  height: calc(100% - 40px);
 }
 
 .menu {
