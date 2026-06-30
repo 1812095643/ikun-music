@@ -48,6 +48,7 @@
 
     <!-- More Button -->
     <button
+      v-if="!isAndroidRuntime"
       class="more-btn home-song-more flex h-8 w-8 items-center justify-center rounded-lg opacity-0 transition-colors duration-200 group-hover:opacity-100"
       @click.stop="onMenuClick"
     >
@@ -82,7 +83,7 @@ import { defineAsyncComponent } from 'vue';
 
 import { useSongItem } from '@/hooks/useSongItem';
 import type { SongResult } from '@/types/music';
-import { getImgUrl, isDesktopRuntime } from '@/utils';
+import { getImgUrl, isAndroidRuntime, isDesktopRuntime } from '@/utils';
 
 const SongItemDropdown = defineAsyncComponent(() => import('./SongItemDropdown.vue'));
 
@@ -133,7 +134,10 @@ const onPlayMusic = () => {
 };
 
 const onArtistClick = (id: number) => handleArtistClick(id);
-const onMenuClick = (event: MouseEvent) => handleMenuClick(event);
+const onMenuClick = (event: MouseEvent) => {
+  if (isAndroidRuntime) return;
+  handleMenuClick(event);
+};
 </script>
 
 <style lang="scss" scoped>
