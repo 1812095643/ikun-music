@@ -36,14 +36,14 @@
       <!-- 底部音乐播放 -->
       <template v-if="!settingsStore.isMiniMode">
         <play-bar
-          v-if="!settingsStore.isMobile"
+          v-if="!shouldUseMobilePlayer"
           v-show="isPlay"
           :style="playerStore.musicFull ? 'bottom: 0;' : ''"
         />
         <mobile-play-bar
           v-else
           v-show="isPlay"
-          :style="settingsStore.isMobile && playerStore.musicFull ? 'bottom: 0;' : ''"
+          :style="shouldUseMobilePlayer && playerStore.musicFull ? 'bottom: 0;' : ''"
         />
       </template>
     </div>
@@ -69,7 +69,7 @@ import otherRouter from '@/router/other';
 import { useMenuStore } from '@/store/modules/menu';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSettingsStore } from '@/store/modules/settings';
-import { isDesktopRuntime } from '@/utils';
+import { isAndroidRuntime, isDesktopRuntime } from '@/utils';
 import { consumeMiniModePlaylistDrawerSongId } from '@/utils/miniModeNavigation';
 
 // 关键布局组件同步导入（始终可见，避免加载闪烁）
@@ -110,6 +110,7 @@ const menuStore = useMenuStore();
 
 const isPlay = computed(() => playerStore.playMusic && playerStore.playMusic.id);
 const route = useRoute();
+const shouldUseMobilePlayer = computed(() => isAndroidRuntime || settingsStore.isMobile);
 
 // 判断当前路由是否应该在移动端显示AppMenu
 const shouldShowMobileMenu = computed(() => {
