@@ -38,7 +38,13 @@
             :class="{ 'is-current': item.id === playerStore.playMusic?.id }"
           >
             <div class="flex items-center justify-between">
-              <song-item :key="item.id" class="flex-1" :item="item" mini></song-item>
+              <song-item
+                :key="item.id"
+                class="flex-1"
+                :item="item"
+                mini
+                :favorite="!isAndroidRuntime"
+              ></song-item>
               <div class="delete-btn" @click.stop="handleDeleteSong(item)">
                 <i class="iconfont ri-delete-bin-line transition-colors"></i>
               </div>
