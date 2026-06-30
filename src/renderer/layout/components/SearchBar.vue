@@ -187,7 +187,7 @@ import { useNavTitleStore } from '@/store/modules/navTitle';
 import { useSearchStore } from '@/store/modules/search';
 import { useSettingsStore } from '@/store/modules/settings';
 import { useUserStore } from '@/store/modules/user';
-import { getImgUrl, isDesktopRuntime } from '@/utils';
+import { getImgUrl, isAndroidRuntime, isDesktopRuntime } from '@/utils';
 
 const SearchBarDesktopActions = defineAsyncComponent(() => import('./SearchBarDesktopActions.vue'));
 const SearchBarDesktopZoomRow = defineAsyncComponent(() => import('./SearchBarDesktopZoomRow.vue'));
@@ -243,6 +243,9 @@ const tabs = computed(() => {
       electronOnly: true
     }
   ];
+  if (isAndroidRuntime) {
+    return items.filter((tab) => tab.path === '/');
+  }
   return items.filter((tab) => !tab.electronOnly || isDesktopRuntime);
 });
 const isTabActive = (path: string) => route.path === path;
@@ -324,17 +327,19 @@ const search = () => {
     searchValue.value = hotSearchValue.value;
     return;
   }
-  const q = { keyword: val, type: searchStore.searchType };
-  if (router.currentRoute.value.path === '/search-result') {
+  const q = { keyword: val, type: isAndroidRuntime ? 1 : searchStore.searchType };
+  const targetPath = isAndroidRuntime ? '/mobile-search-result' : '/search-result';
+  if (router.currentRoute.value.path === targetPath) {
     searchStore.searchValue = val;
-    router.replace({ path: '/search-result', query: q });
+    router.replace({ path: targetPath, query: q });
   } else {
-    router.push({ path: '/search-result', query: q });
+    router.push({ path: targetPath, query: q });
   }
   showSuggestions.value = false;
 };
 
 const selectSearchType = (key: number) => {
+  if (isAndroidRuntime) return;
   searchStore.searchType = key;
   if (searchValue.value)
     router.push({ path: '/search-result', query: { keyword: searchValue.value, type: key } });
