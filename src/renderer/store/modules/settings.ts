@@ -6,7 +6,7 @@ import setDataDefault from '@/../main/set.json';
 import homeRouter from '@/router/home';
 import { useMenuStore } from '@/store/modules/menu';
 import { DEFAULT_PLATFORMS } from '@/types/music';
-import { isDesktopRuntime } from '@/utils';
+import { isAndroidRuntime, isDesktopRuntime } from '@/utils';
 import {
   applyTheme,
   getCurrentTheme,
@@ -242,6 +242,9 @@ export const useSettingsStore = defineStore('settings', () => {
 
   // 计算移动端状态的函数
   const calculateMobileStatus = () => {
+    // Android 第一阶段固定走移动布局，避免历史平板模式配置误进入桌面化界面。
+    if (isAndroidRuntime) return true;
+
     const userAgentFlag = navigator.userAgent.match(
       /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
     );
