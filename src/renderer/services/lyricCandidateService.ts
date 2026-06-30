@@ -1,6 +1,4 @@
-import { searchKuwoSongs } from '@/api/kuwo';
 import { getMusicLrc } from '@/api/music';
-import { getYoutubeMusicLyrics, searchYoutubeMusicSongs } from '@/api/youtubeMusic';
 import { parseRawLyrics } from '@/hooks/usePlayerHooks';
 import type { ILyric, LyricCandidate, LyricCandidateResult, SongResult } from '@/types/music';
 import { isAndroidRuntime, isDesktopRuntime } from '@/utils';
@@ -328,6 +326,7 @@ const getKuwoCandidates = async (song: SongResult): Promise<LyricCandidate[]> =>
   const keyword = [song.name, getArtistText(song)].filter(Boolean).join(' ').trim();
   if (!keyword) return [];
 
+  const { searchKuwoSongs } = await import('@/api/kuwo');
   const response = await searchKuwoSongs({ keywords: keyword, limit: 6, offset: 0 });
   const songs = (response.data?.result?.songs || []) as SongResult[];
   const candidates: LyricCandidate[] = [];
@@ -572,6 +571,7 @@ const getYoutubeCandidates = async (song: SongResult): Promise<LyricCandidate[]>
   const keyword = [song.name, getArtistText(song)].filter(Boolean).join(' ').trim();
   if (!keyword) return [];
 
+  const { getYoutubeMusicLyrics, searchYoutubeMusicSongs } = await import('@/api/youtubeMusic');
   const response = await searchYoutubeMusicSongs(keyword, 5);
   const songs = (response.data?.result?.songs || []) as SongResult[];
   const candidates: LyricCandidate[] = [];
