@@ -10,6 +10,7 @@
     @select="(...args) => $emit('select', ...args)"
     @remove-song="(...args) => $emit('remove-song', ...args)"
     class="standard-song-item"
+    :class="{ 'standard-song-item--android': isAndroidRuntime }"
     ref="baseItem"
   >
     <!-- 选择框插槽 -->
@@ -100,7 +101,7 @@ import { computed, defineAsyncComponent, defineComponent, ref } from 'vue';
 
 import { usePlayerStore } from '@/store';
 import type { SongResult } from '@/types/music';
-import { getImgUrl, isDesktopRuntime } from '@/utils';
+import { getImgUrl, isAndroidRuntime, isDesktopRuntime } from '@/utils';
 
 import BaseSongItem from './BaseSongItem.vue';
 
@@ -250,6 +251,18 @@ const formatDuration = (duration: number): string => {
     gap: 4px;
     min-width: 482px;
     margin-left: clamp(48px, 8vw, 120px);
+  }
+
+  &.standard-song-item--android {
+    .song-item-operating {
+      grid-template-columns: 42px minmax(110px, 170px) 58px;
+      min-width: 230px;
+      margin-left: 24px;
+    }
+
+    .song-action-btn:not(:first-child) {
+      display: none;
+    }
   }
 
   .song-item-duration {
