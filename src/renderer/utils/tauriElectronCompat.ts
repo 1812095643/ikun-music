@@ -1134,7 +1134,7 @@ const removeAllListeners = (channel: string) => {
   listeners.delete(channel);
 };
 
-const ipcRenderer = {
+const desktopIpcRenderer = {
   send,
   sendSync,
   invoke: invokeChannel,
@@ -1142,6 +1142,48 @@ const ipcRenderer = {
   removeListener,
   removeAllListeners
 };
+
+const androidAllowedInvokeChannels = new Set([
+  'get-store-value',
+  'set-store-value',
+  'get-platform',
+  'get-arch',
+  'get-content-zoom',
+  'get-system-scale-factor',
+  'get-search-suggestions',
+  'lx-music-http-request',
+  'lx-music-http-cancel'
+]);
+
+// Android 第一阶段只保留配置、搜索、网络请求和语言事件等基础通道，
+// 其它桌面 IPC 直接兜底，避免页面误把移动端当成完整桌面运行时。
+const androidIpcRenderer = {
+  send: (channel: string, ...args: any[]) => {
+    if (channel === 'set-store-value' || channel === 'change-language') {
+      send(channel, ...args);
+    }
+  },
+  sendSync: (channel: string, ...args: any[]) => {
+    if (channel === 'get-store-value' || channel === 'get-platform' || channel === 'get-arch') {
+      return sendSync(channel, ...args);
+    }
+    return '';
+  },
+  invoke: (channel: string, ...args: any[]) => {
+    if (androidAllowedInvokeChannels.has(channel)) {
+      return invokeChannel(channel, ...args);
+    }
+    return Promise.resolve(null);
+  },
+  on: (channel: string, listener: Listener) => {
+    if (channel === 'language-changed') return on(channel, listener);
+    return () => undefined;
+  },
+  removeListener,
+  removeAllListeners
+};
+
+const ipcRenderer = isAndroidRuntime ? androidIpcRenderer : desktopIpcRenderer;
 
 const desktopApi = {
   minimize: () => send('minimize-window'),
