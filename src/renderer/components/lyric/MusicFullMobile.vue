@@ -30,6 +30,7 @@
 
       <!-- 右上角设置按钮 -->
       <div
+        v-if="!isAndroidRuntime"
         class="control-btn absolute right-5 flex items-center gap-2"
         :class="[
           { 'pure-mode': config.pureModeEnabled },
@@ -68,7 +69,7 @@
 
       <!-- 播放设置弹窗 -->
       <mobile-player-settings
-        v-if="shouldMountPlayerSettings"
+        v-if="!isAndroidRuntime && shouldMountPlayerSettings"
         v-model:visible="showPlayerSettings"
       />
 
@@ -173,7 +174,7 @@
                   {{ index < artistList.length - 1 ? ' / ' : '' }}
                 </span>
               </p>
-              <div class="favorite-icon" @click="toggleFavorite">
+              <div v-if="!isAndroidRuntime" class="favorite-icon" @click="toggleFavorite">
                 <i class="ri-heart-3-fill" :class="{ favorite: isFavorite }"></i>
               </div>
             </div>
@@ -280,7 +281,7 @@
                 </span>
               </p>
             </div>
-            <div class="favorite-icon landscape" @click="toggleFavorite">
+            <div v-if="!isAndroidRuntime" class="favorite-icon landscape" @click="toggleFavorite">
               <i class="ri-heart-3-fill" :class="{ favorite: isFavorite }"></i>
             </div>
           </div>
@@ -440,7 +441,7 @@ import { loadLyricCandidates } from '@/services/lyricCandidateService';
 import { useLyricStore } from '@/store/modules/lyric';
 import { usePlayerStore } from '@/store/modules/player';
 import { DEFAULT_LYRIC_CONFIG, LyricConfig } from '@/types/lyric';
-import { getImgUrl, secondToMinute } from '@/utils';
+import { getImgUrl, isAndroidRuntime, secondToMinute } from '@/utils';
 import { animateGradient, getHoverBackgroundColor, getTextColors } from '@/utils/linearColor';
 import { showBottomToast } from '@/utils/shortcutToast';
 
@@ -461,6 +462,7 @@ const showPlayerSettings = ref(false);
 const shouldMountPlayerSettings = ref(false);
 
 const openPlayerSettings = () => {
+  if (isAndroidRuntime) return;
   shouldMountPlayerSettings.value = true;
   showPlayerSettings.value = true;
 };
