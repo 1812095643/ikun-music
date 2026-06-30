@@ -1143,7 +1143,7 @@ const ipcRenderer = {
   removeAllListeners
 };
 
-const api = {
+const desktopApi = {
   minimize: () => send('minimize-window'),
   maximize: () => send('maximize-window'),
   close: () => send('close-window'),
@@ -1195,6 +1195,19 @@ const api = {
   parseLocalMusicMetadata: (filePaths: string[]) =>
     invokeChannel('parse-local-music-metadata', filePaths)
 };
+
+// Android 第一阶段只暴露首页、搜索、播放、歌词基础链路需要的兼容能力，
+// 避免后续代码通过“方法存在”误判下载、托盘、独立歌词窗等桌面能力可用。
+const androidApi = {
+  invoke: invokeChannel,
+  getSearchSuggestions: (keyword: string) => invokeChannel('get-search-suggestions', keyword),
+  lxMusicHttpRequest: (request: any) => invokeChannel('lx-music-http-request', request),
+  lxMusicHttpCancel: (requestId: string) => invokeChannel('lx-music-http-cancel', requestId),
+  onLanguageChanged: (callback: (locale: string) => void) =>
+    on('language-changed', (_event: any, locale: string) => callback(locale))
+};
+
+const api = isAndroidRuntime ? androidApi : desktopApi;
 
 const electron = {
   ipcRenderer,
