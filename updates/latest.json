@@ -1,19 +1,19 @@
 {
-  "version": "5.3.0",
-  "notes": "ikun音乐 5.3.0\n\n- 移除旧桌面主进程、预加载层与废弃构建配置，统一使用 Tauri 桌面服务。\n- 音乐协议通过私有标准输入输出管道调用，桌面端不再占用固定 HTTP 业务端口。\n- 音乐服务按需启动、并发请求隔离，应用退出时自动结束随包服务。\n- 修复 Windows 资源路径导致服务启动退出，以及 HTTP 插件版本不匹配导致首页一直加载的问题。\n- 使用小体积 Tauri 主程序与完整随包运行时，安装版一次安装；便携版完整解压后运行。\n- 启动自动检查新版本并提示，支持签名验证后的安装包和便携包更新。\n- 保留现有 Android 平台隔离、播放器、歌词及用户配置。\n\n旧版升级：5.1.x / 5.2.x 请下载完整安装包或完整便携 ZIP。不要只替换 EXE；本版本开始使用随包 runtime 目录。\n",
-  "pub_date": "2026-09-14T05:55:23.390Z",
+  "version": "5.3.1",
+  "notes": "ikun音乐 5.3.1\n\n- 修复 Windows 首次打开桌面歌词时，窗口创建阻塞主线程，导致主面板和进程卡死的问题。\n- 修复首次右键打开托盘控制面板的同类死锁；后台创建窗口，连续点击复用同一窗口。\n- 修复歌词窗口先发就绪通知、后完成监听注册造成首次歌词丢失的问题。\n- 恢复桌面底部播放器常驻显示；未选歌时显示空状态并禁用歌曲操作，列表区域始终为播放器保留位置。\n- 修复无歌曲或初始化未完成时进入精简模式的空白窗口，保留基本控制、音量、播放列表和返回主窗口入口。\n- 精简模式重新整理为封面与歌曲信息、集中播放控制、细进度条和可展开歌单，沿用主界面配色并处理封面加载异常。\n- 网页标签图标、窗口标题、精简播放器及应用入口统一使用指定的开屏 Logo，清除旧版网页图标。\n\n  5.3.0 用户可在应用中检查更新，或下载完整安装包/便携 ZIP 升级。便携版请完整解压并保留 runtime 目录。\n",
+  "pub_date": "2026-09-14T07:35:47.871Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSdTZodm1TRFFtc1RlSWkvUUc1cExvR3c5c1pTVEx3eXR3cS95OGQ0dmhadlVXdHlMa0swU21RdFhDc2o0OWxQWkRTeGh2MzA0aEFuOUc4ejM3L3VFSFl5dCtZdzA1TGdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg5MzY1MTY5CWZpbGU6aWt1bumfs+S5kF81LjMuMF94NjQtc2V0dXAuZXhlCkZDVXdsTitiK2Q3MU1mc1k2RUdWK2kxUlhBWWZ2WTNaZkt0NVJoTGk2bGN0bWFjZ2tITzhVanZ6bFpWYnkzZ09OYTkxemxnQmtsVVpnbXI4ZXV1Q0FnPT0K",
-      "url": "https://gitee.com/caixukun66666666/ikun-music/releases/download/v5.3.0/ikun-music-5.3.0-setup.exe",
-      "sha256": "5f08c7769524d000af4f49f09aefdf88d3c33dfc1d86c7acbc92cb37e68d341c",
-      "size": 39832424
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSdTZodm1TRFFtc1UreDRoMlNuVlFwSnJTMm9mNUl3OEVaelMrb3MwQ0VOQm9BSHBHWFVPVmJPUWMyMS9Ic2FaNnpHbDdnTkg1RW9CdDJzV283b21HbXoraFNmMmZaZUFBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg5MzcxMzA5CWZpbGU6aWt1bumfs+S5kF81LjMuMV94NjQtc2V0dXAuZXhlCnBSSm9PTG83bTQvemM2WW1JMmJicVdFWTduNTh1MEs2TTluZXZsNmNacEdteHdIVWFiWjRleWxkWDNGWUJBRDJzQXlTZVBTOXp6YVRNNi9CSEhSVUNRPT0K",
+      "url": "https://gitee.com/caixukun66666666/ikun-music/releases/download/v5.3.1/ikun-music-5.3.1-setup.exe",
+      "sha256": "9f48ca14aabfbfa6bd3bdac74672f9d709c74b5b324b2b5455ca3c58e9a91798",
+      "size": 40810926
     },
     "windows-x86_64-portable": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSdTZodm1TRFFtc2VUWmlTMFNzKy9pSVZoNHEybHdFT2N2N1BaemFhb0pKd0dUSWpQbmdxU3BFeHRxY25qOEt6TEg2MDJYcWRUb1JzdHQ2RkdNZHdOSkt0VWxyNGtrYmc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg5MzY1MzIyCWZpbGU6aWt1bi1tdXNpYy01LjMuMC1wb3J0YWJsZS56aXAKVFFxbVlkM01NaHl6a0M0TTgwZVBwRHRxaWRMT0d0NGdKQ1hCSXZXR2dvR0ZvN05CUGhyMGN2RTNyT2VzckJla0RtYkErWVlhNXJVK1RBeDU4bk5sQ0E9PQo=",
-      "url": "https://gitee.com/caixukun66666666/ikun-music/releases/download/v5.3.0/ikun-music-5.3.0-portable.zip",
-      "sha256": "74299d5a369a1342af5d5940f42070129169679090c4a9b6d250ba2c901d1dc6",
-      "size": 59225579
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSdTZodm1TRFFtc1hNbnJ6NkdEWVVKbDd0NW0vdzk3RWV1WDgxb0dDZm5GZjRneTFUQ1d3ZzVlUXFDL2gwZUhmczIvTlFjb1IwaWt5Q2crendGUkM3ejlHMnNEZG5xQ0EwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg5MzcxMzQ3CWZpbGU6aWt1bi1tdXNpYy01LjMuMS1wb3J0YWJsZS56aXAKRHZnUmdXc2NYcXc4SGZtSkgrajBrVHA3UUovdU5ZalJzQm5IalF0T1VZc3diYXRkTmpMMWFNOGN5WUh6UjJSS2ZQa3ZwUmZGOCsyZzRGcjhuRFZUQXc9PQo=",
+      "url": "https://gitee.com/caixukun66666666/ikun-music/releases/download/v5.3.1/ikun-music-5.3.1-portable.zip",
+      "sha256": "efe2722f6b28bc4e1505e4312fe4754710508650c5cececbf6241546c43c37e1",
+      "size": 58782916
     }
   }
 }
