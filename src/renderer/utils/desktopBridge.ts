@@ -60,6 +60,7 @@ const TRAY_PANEL_WINDOW_LABEL = 'tray-panel';
 const LYRIC_WINDOW_LABEL = 'lyric-window';
 const listeners = new Map<string, Set<Listener>>();
 const unlisteners = new Map<string, UnlistenFn>();
+const listenerRegistrations = new Map<string, Promise<void>>();
 const externalRequests = new Map<string, AbortController>();
 let appWindow: ReturnType<typeof getCurrentWindow> | null = null;
 let currentWebviewWindow: ReturnType<typeof getCurrentWebviewWindow> | null = null;
@@ -368,7 +369,7 @@ const downloadMusicFile = async (payload: any) => {
   }
 };
 
-const ensureTauriListener = async (channel: string) => {
+const registerTauriListener = async (channel: string) => {
   if (!isTauriRuntime) return;
   if (unlisteners.has(channel)) return;
   const windowScopedEvents = new Set([
@@ -393,6 +394,17 @@ const ensureTauriListener = async (channel: string) => {
         emitLocal(channel, event.payload);
       });
   unlisteners.set(channel, unlisten);
+};
+
+const ensureTauriListener = (channel: string): Promise<void> => {
+  if (!isTauriRuntime || unlisteners.has(channel)) return Promise.resolve();
+  const existing = listenerRegistrations.get(channel);
+  if (existing) return existing;
+  const pending = registerTauriListener(channel).finally(() =>
+    listenerRegistrations.delete(channel)
+  );
+  listenerRegistrations.set(channel, pending);
+  return pending;
 };
 
 const send = (channel: string, ...args: any[]) => {
@@ -511,11 +523,12 @@ const send = (channel: string, ...args: any[]) => {
     case 'lyric-ready':
       if (isTauriRuntime) {
         const payload = args[0] ?? null;
-        void emitTo(MAIN_WINDOW_LABEL, 'lyric-window-ready', payload).catch(() => {
-          void invoke('emit_to_main', { event: 'lyric-window-ready', payload }).catch(
-            () => undefined
-          );
-        });
+        // 根因：on() 立即返回，但原生监听注册需要异步 IPC。之前立即发送 ready，
+        // 主窗口可能在监听生效前回传整首歌词，暂停状态又没有下一次完整同步。
+        // 等歌词接收器确认就绪后再握手；并发注册复用同一 Promise，避免重复监听。
+        void ensureTauriListener('receive-lyric')
+          .then(() => emitTo(MAIN_WINDOW_LABEL, 'lyric-window-ready', payload))
+          .catch((error) => console.error('桌面歌词同步尚未就绪，请关闭后重试：', error));
       } else {
         emitLocal('lyric-window-ready', args[0] ?? { readyAt: Date.now() });
       }
@@ -895,7 +908,9 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
 const on = (channel: string, listener: Listener) => {
   if (!listeners.has(channel)) listeners.set(channel, new Set());
   listeners.get(channel)!.add(listener);
-  void ensureTauriListener(channel);
+  void ensureTauriListener(channel).catch((error) => {
+    console.error(`桌面事件 ${channel} 注册未完成：`, error);
+  });
   return () => removeListener(channel, listener);
 };
 

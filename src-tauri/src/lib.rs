@@ -456,6 +456,12 @@ fn persist_lyric_window_bounds(window: &WebviewWindow) -> Result<(), String> {
 
 #[cfg(not(mobile))]
 fn ensure_lyric_window(app: &AppHandle) -> Result<WebviewWindow, String> {
+    // 创建已移到后台线程；连续点击可能同时到达，必须串行检查/创建，避免重复 label。
+    // 此锁只由后台创建路径持有，主线程事件回调不等待它。
+    static CREATE_LOCK: Mutex<()> = Mutex::new(());
+    let _creation = CREATE_LOCK
+        .lock()
+        .map_err(|_| "歌词窗口创建状态需要重启后恢复")?;
     if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
         return Ok(window);
     }
@@ -510,6 +516,10 @@ fn ensure_lyric_window(app: &AppHandle) -> Result<WebviewWindow, String> {
 
 #[cfg(not(mobile))]
 fn ensure_tray_panel_window(app: &AppHandle) -> Result<WebviewWindow, String> {
+    static CREATE_LOCK: Mutex<()> = Mutex::new(());
+    let _creation = CREATE_LOCK
+        .lock()
+        .map_err(|_| "托盘面板创建状态需要重启后恢复")?;
     if let Some(window) = app.get_webview_window(TRAY_PANEL_WINDOW_LABEL) {
         return Ok(window);
     }
@@ -704,7 +714,15 @@ fn create_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
                         let _ = show_main_window(&app_handle, &restore_state);
                     }
                     MouseButton::Right => {
-                        let _ = show_tray_panel(&app_handle, position);
+                        // 根因：托盘回调运行在 Windows 消息线程，同步创建 WebView2 会
+                        // 等待同一线程处理初始化消息，造成整个应用死锁。后台线程完成
+                        // 创建和显示，回调立即返回，让消息循环继续处理主面板和歌词窗。
+                        let app = app_handle.clone();
+                        tauri::async_runtime::spawn_blocking(move || {
+                            if let Err(error) = show_tray_panel(&app, position) {
+                                eprintln!("打开托盘控制面板未完成：{error}");
+                            }
+                        });
                     }
                     _ => {}
                 }
@@ -970,7 +988,7 @@ fn restore_window(
 }
 
 #[tauri::command]
-fn open_lyric_window(app: AppHandle) -> Result<(), String> {
+async fn open_lyric_window(app: AppHandle) -> Result<(), String> {
     #[cfg(mobile)]
     {
         let _ = app;
@@ -978,25 +996,32 @@ fn open_lyric_window(app: AppHandle) -> Result<(), String> {
     }
     #[cfg(not(mobile))]
     {
-        let window = ensure_lyric_window(&app)?;
+        // 根因：同步 Tauri 命令在主线程处理 IPC，WebView2 创建又等待主线程消息，
+        // 从而形成互相等待，表现为歌词打不开、所有面板卡死。必须保留 async 命令，
+        // 并在阻塞线程创建窗口；不能改成 run_on_main_thread 或同步 block_on。
+        tauri::async_runtime::spawn_blocking(move || {
+            let window = ensure_lyric_window(&app)?;
 
-        if window.is_minimized().unwrap_or(false) {
+            if window.is_minimized().unwrap_or(false) {
+                window
+                    .unminimize()
+                    .map_err(|error| format!("恢复桌面歌词窗口失败：{error}"))?;
+            }
+
             window
-                .unminimize()
-                .map_err(|error| format!("恢复桌面歌词窗口失败：{error}"))?;
-        }
+                .set_always_on_top(true)
+                .map_err(|error| format!("设置桌面歌词窗口置顶失败：{error}"))?;
+            window
+                .show()
+                .map_err(|error| format!("显示桌面歌词窗口失败：{error}"))?;
+            window
+                .set_focus()
+                .map_err(|error| format!("聚焦桌面歌词窗口失败：{error}"))?;
 
-        window
-            .set_always_on_top(true)
-            .map_err(|error| format!("设置桌面歌词窗口置顶失败：{error}"))?;
-        window
-            .show()
-            .map_err(|error| format!("显示桌面歌词窗口失败：{error}"))?;
-        window
-            .set_focus()
-            .map_err(|error| format!("聚焦桌面歌词窗口失败：{error}"))?;
-
-        Ok(())
+            Ok(())
+        })
+        .await
+        .map_err(|error| format!("桌面歌词打开任务未完成：{error}"))?
     }
 }
 
