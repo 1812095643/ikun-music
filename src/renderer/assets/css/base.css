@@ -556,7 +556,11 @@ body {
 }
 
 .music-play-bar {
-  left: 66px !important;
+  /* 顶部导航布局没有侧栏，播放区左右对齐；清空歌曲也保留同一控制区。 */
+  left: 18px !important;
+  right: 18px !important;
+  height: 78px !important;
+  min-height: 78px;
 }
 
 /* 侧栏窄版最终图标尺寸：保持 56px 窄栏，同时提升可辨识度。 */

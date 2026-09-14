@@ -1,6 +1,6 @@
 import { cloneDeep } from 'lodash';
 import { createDiscreteApi } from 'naive-ui';
-import { computed, type ComputedRef, nextTick, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, ref, shallowRef, watch } from 'vue';
 
 import useIndexedDB from '@/hooks/IndexDBHook';
 import { audioService } from '@/services/audioService';
@@ -22,17 +22,12 @@ let lyricWindowListenersInitialized = false;
 let lastLyricWindowOpenRequestedAt = 0;
 
 // 全局 playerStore 引用，通过 initMusicHook 函数注入
-let playerStore: ReturnType<typeof usePlayerStore> | null = null;
+const playerStore = shallowRef<ReturnType<typeof usePlayerStore> | null>(null);
 
 // 初始化函数，接受 store 实例
 export const initMusicHook = (store: ReturnType<typeof usePlayerStore>) => {
-  playerStore = store;
-
-  // 创建 computed 属性
-  playMusic = computed(() => getPlayerStore().playMusic as SongResult);
-  artistList = computed(
-    () => (getPlayerStore().playMusic.ar || getPlayerStore().playMusic?.song?.artists) as Artist[]
-  );
+  if (playerStore.value === store) return;
+  playerStore.value = store;
 
   // 在 store 注入后初始化需要 store 的功能
   setupKeyboardListeners();
@@ -44,10 +39,10 @@ export const initMusicHook = (store: ReturnType<typeof usePlayerStore>) => {
 
 // 获取 playerStore 的辅助函数
 const getPlayerStore = () => {
-  if (!playerStore) {
+  if (!playerStore.value) {
     throw new Error('MusicHook not initialized. Call initMusicHook first.');
   }
-  return playerStore;
+  return playerStore.value;
 };
 export const lrcArray = ref<ILyricText[]>([]); // 歌词数组
 export const lrcTimeArray = ref<number[]>([]); // 歌词时间数组
@@ -59,9 +54,16 @@ export const sound = ref<Howl | null>(audioService.getCurrentSound());
 export const isLyricWindowOpen = ref(false); // 新增状态
 export const textColors = ref<any>(getTextColors());
 
-// 这些 computed 属性需要在初始化后创建
-export let playMusic: ComputedRef<SongResult>;
-export let artistList: ComputedRef<Artist[]>;
+// 根因：原先导出的 computed 要等 App 的异步 onMounted 才赋值，子组件可能先
+// 读取到 undefined；没有选歌时 artistList 也会返回 undefined，精简页的 map
+// 因此直接抛错，留下空白窗口。导出引用从模块加载时就存在，store 注入使用
+// shallowRef 通知订阅者，歌曲和歌手均提供真实空状态，切歌后仍沿用同一引用。
+export const playMusic = computed(() => playerStore.value?.playMusic || ({} as SongResult));
+export const artistList = computed<Artist[]>(() => {
+  const song = playMusic.value;
+  const artists = song.ar || song.artists || song.song?.artists;
+  return Array.isArray(artists) ? artists : [];
+});
 
 export const musicDB = await useIndexedDB(
   'musicDB',
@@ -988,10 +990,9 @@ const setupPlayStateWatcher = () => {
   );
 };
 
-// 在组件卸载时清理资源
-onUnmounted(() => {
-  stopLyricSync();
-});
+// 此模块不属于组件 setup，尤其顶层 await 之后注册 onUnmounted 不会生效。
+// 歌词同步属于整个 WebView，页面退出时清理；切换精简/普通布局时应继续同步。
+window.addEventListener('pagehide', stopLyricSync);
 
 // 导出歌词解析函数供外部使用
 export { parseLyricsString };
@@ -1002,7 +1003,7 @@ if (lyricControlIpcRenderer) {
   lyricControlIpcRenderer.on('lyric-control-back', (_, command: string) => {
     // 浏览器本地调试时，歌词页可能在没有主播放器上下文的情况下被直接打开；
     // 这时控制命令应该静默忽略，避免因为未初始化 store 直接抛错。
-    if (!playerStore && command !== 'close') {
+    if (!playerStore.value && command !== 'close') {
       return;
     }
 

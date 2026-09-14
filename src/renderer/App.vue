@@ -408,7 +408,9 @@ if (!isLyricWindow.value && !isTrayPanelWindow.value) {
 handleSetLanguage(settingsStore.setData.language);
 
 // 监听迷你模式状态
-if (shouldUseDesktopShell && !isTrayPanelWindow.value && window.desktop && window.desktop) {
+// 浏览器验收与桌面端使用同一模式切换顺序：先更新状态，再跳转。
+// 原来浏览器只改 hash，旧 isMiniMode 仍为 true，路由守卫会拦截返回主窗口。
+if (!isLyricWindow.value && !isTrayPanelWindow.value && window.desktop) {
   window.desktop.onLanguageChanged(handleSetLanguage);
   window.desktop.on('mini-mode', (_, value) => {
     const nextMiniMode = Boolean(value);

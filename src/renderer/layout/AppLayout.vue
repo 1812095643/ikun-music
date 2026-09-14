@@ -28,7 +28,6 @@
               </Transition>
             </router-view>
           </div>
-          <play-bottom />
           <!-- 移动端底部菜单（浏览器模拟移动端时使用） -->
           <app-menu v-if="shouldShowMobileMenu" class="menu mobile-menu" :menus="menuStore.menus" />
         </div>
@@ -36,8 +35,7 @@
       <!-- 底部音乐播放 -->
       <template v-if="!settingsStore.isMiniMode">
         <play-bar
-          v-if="!settingsStore.isMobile && isPlay"
-          v-show="isPlay"
+          v-if="!settingsStore.isMobile"
           :style="playerStore.musicFull ? 'bottom: 0;' : ''"
         />
         <mobile-play-bar
@@ -61,7 +59,6 @@ import { computed, defineAsyncComponent, onMounted, provide, ref, watch } from '
 import { useRoute } from 'vue-router';
 
 import AppUpdateNotice from '@/components/common/AppUpdateNotice.vue';
-import PlayBottom from '@/components/common/PlayBottom.vue';
 import UpdateModal from '@/components/common/UpdateModal.vue';
 import SleepTimerTop from '@/components/player/SleepTimerTop.vue';
 import homeRouter from '@/router/home';
@@ -174,6 +171,13 @@ watch(
   @apply flex;
   height: calc(100% - 40px);
   background: var(--layout-shell-bg);
+}
+
+// 根因：播放栏以前依赖选中歌曲才挂载，首次启动/清空歌曲后整个控制区消失；
+// 原占位还依赖播放 URL，解析中与暂停时高度不一致。桌面始终保留播放器和底边间距，
+// 内容区直接扣除其高度，使列表最后一行不会被绝对定位的播放栏遮挡。
+.layout-page:not(.mobile) .layout-main-page {
+  height: calc(100% - 40px - 104px);
 }
 
 .menu {

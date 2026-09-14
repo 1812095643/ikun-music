@@ -2,9 +2,8 @@
   <div class="mini-play-bar" :class="{ 'mini-mode': settingsStore.isMiniMode }">
     <div class="mini-main">
       <div class="mini-heading" @mousedown="startWindowDrag">
-        <span class="mini-state">{{
-          playMusic?.playLoading ? '正在准备音乐' : play ? '正在播放' : '随时继续听'
-        }}</span>
+        <span class="mini-brand"><i class="ri-music-fill" aria-hidden="true" /> ikun音乐</span>
+        <span v-if="playMusic?.playLoading" class="mini-status">正在准备音乐</span>
         <button
           class="mini-restore"
           type="button"
@@ -19,108 +18,115 @@
         <button
           class="album-cover"
           type="button"
-          title="打开完整播放器"
+          :title="playMusic?.id ? '打开完整播放器' : '去选一首歌'"
           aria-label="打开完整播放器"
           @click="setMusicFull"
         >
           <img
-            v-if="playMusic?.picUrl"
-            :src="getImgUrl(playMusic.picUrl, '100y100')"
+            v-if="coverUrl && !imageFailed"
+            :src="coverUrl"
             alt="当前歌曲封面"
             decoding="async"
+            @error="imageFailed = true"
           />
-          <i v-else class="ri-music-2-line" aria-hidden="true" />
+          <i v-else class="ri-music-2-line empty-cover-icon" aria-hidden="true" />
         </button>
-        <div class="song-info">
-          <button
-            type="button"
-            class="song-title"
-            :title="playMusic?.name || '选择一首喜欢的歌'"
-            @click="setMusicFull"
-          >
-            {{ playMusic?.name || '选择一首喜欢的歌' }}
-          </button>
-          <div class="song-artist" :title="artistList.map((artist) => artist.name).join(' / ')">
-            <span
-              v-for="(artist, index) in artistList"
-              :key="index"
-              @click="handleArtistClick(artist.id)"
-              >{{ artist.name }}{{ index < artistList.length - 1 ? ' / ' : '' }}</span
+        <div class="track-content">
+          <div class="song-info">
+            <button
+              type="button"
+              class="song-title"
+              :title="playMusic?.name || '选择一首喜欢的歌'"
+              @click="setMusicFull"
             >
+              {{ playMusic?.name || '选择一首喜欢的歌' }}
+            </button>
+            <div class="song-artist" :title="artistList.map((artist) => artist.name).join(' / ')">
+              <template v-if="artistList.length">
+                <span
+                  v-for="(artist, index) in artistList"
+                  :key="index"
+                  @click="handleArtistClick(artist.id)"
+                  >{{ artist.name }}{{ index < artistList.length - 1 ? ' / ' : '' }}</span
+                >
+              </template>
+              <span v-else>{{ playMusic?.id ? '未知歌手' : '好音乐，随时在身边' }}</span>
+            </div>
+          </div>
+          <div class="control-row">
+            <div class="control-buttons">
+              <button
+                class="control-button"
+                type="button"
+                aria-label="上一首"
+                title="上一首"
+                :disabled="!playMusic?.id"
+                @click="handlePrev"
+              >
+                <i class="ri-skip-back-fill" aria-hidden="true" />
+              </button>
+              <button
+                class="control-button play"
+                type="button"
+                :aria-label="play ? '暂停' : '播放'"
+                :title="play ? '暂停' : '播放'"
+                :disabled="!playMusic?.id || playMusic?.playLoading"
+                @click="playMusicEvent"
+              >
+                <i
+                  :class="
+                    playMusic?.playLoading
+                      ? 'ri-loader-4-line is-spinning'
+                      : play
+                        ? 'ri-pause-fill'
+                        : 'ri-play-fill'
+                  "
+                  aria-hidden="true"
+                />
+              </button>
+              <button
+                class="control-button"
+                type="button"
+                aria-label="下一首"
+                title="下一首"
+                :disabled="!playMusic?.id"
+                @click="handleNext"
+              >
+                <i class="ri-skip-forward-fill" aria-hidden="true" />
+              </button>
+            </div>
+            <button
+              class="tool-button favorite-button"
+              type="button"
+              :aria-label="isFavorite ? '取消收藏' : '收藏'"
+              :title="isFavorite ? '取消收藏' : '收藏'"
+              :disabled="!playMusic?.id"
+              @click="toggleFavorite"
+            >
+              <i
+                :class="isFavorite ? 'ri-heart-fill like-active' : 'ri-heart-line'"
+                aria-hidden="true"
+              />
+            </button>
           </div>
         </div>
-        <div class="control-buttons">
-          <button
-            class="control-button"
-            type="button"
-            aria-label="上一首"
-            title="上一首"
-            :disabled="!playMusic?.id"
-            @click="handlePrev"
-          >
-            <i class="ri-skip-back-fill" aria-hidden="true" />
-          </button>
-          <button
-            class="control-button play"
-            type="button"
-            :aria-label="play ? '暂停' : '播放'"
-            :title="play ? '暂停' : '播放'"
-            :disabled="!playMusic?.id || playMusic?.playLoading"
-            @click="playMusicEvent"
-          >
-            <i
-              :class="
-                playMusic?.playLoading
-                  ? 'ri-loader-4-line is-spinning'
-                  : play
-                    ? 'ri-pause-fill'
-                    : 'ri-play-fill'
-              "
-              aria-hidden="true"
-            />
-          </button>
-          <button
-            class="control-button"
-            type="button"
-            aria-label="下一首"
-            title="下一首"
-            :disabled="!playMusic?.id"
-            @click="handleNext"
-          >
-            <i class="ri-skip-forward-fill" aria-hidden="true" />
-          </button>
-        </div>
+      </div>
+      <div class="mini-timeline">
+        <span>{{ secondToMinute(nowTime) }}</span>
+        <input
+          type="range"
+          min="0"
+          :max="allTime || 1"
+          step="0.1"
+          :value="nowTime"
+          :style="{ '--range-fill': `${progressPercent}%` }"
+          :disabled="allTime <= 0"
+          aria-label="播放进度"
+          @change="seekFromRange"
+        />
+        <span>{{ secondToMinute(allTime) }}</span>
       </div>
       <div class="mini-tools">
-        <button
-          class="tool-button"
-          type="button"
-          :aria-label="isFavorite ? '取消收藏' : '收藏'"
-          :title="isFavorite ? '取消收藏' : '收藏'"
-          :disabled="!playMusic?.id"
-          @click="toggleFavorite"
-        >
-          <i
-            :class="isFavorite ? 'ri-heart-fill like-active' : 'ri-heart-line'"
-            aria-hidden="true"
-          />
-        </button>
-        <song-download-button
-          v-if="playMusic?.id"
-          :item="playMusic"
-          size="small"
-          button-class="tool-button"
-          title="下载歌曲"
-        />
-        <button
-          class="tool-button"
-          type="button"
-          title="桌面歌词"
-          aria-label="桌面歌词"
-          @click="toggleDesktopLyric"
-        >
-          <i class="ri-text" aria-hidden="true" />
-        </button>
         <div class="mini-volume" @wheel.prevent="handleVolumeWheel">
           <button
             class="tool-button"
@@ -137,51 +143,62 @@
             min="0"
             max="100"
             step="1"
+            :style="{ '--range-fill': `${volumeSlider}%` }"
             aria-label="音量"
           />
         </div>
-        <button
-          class="tool-button queue-button"
-          type="button"
-          :aria-expanded="isPlaylistOpen"
-          aria-label="播放列表"
-          title="播放列表"
-          @click="togglePlaylist"
-        >
-          <i class="ri-play-list-2-line" aria-hidden="true" /><span>{{ playList.length }}</span>
-        </button>
-      </div>
-      <div class="mini-timeline">
-        <span>{{ secondToMinute(nowTime) }}</span>
-        <input
-          type="range"
-          min="0"
-          :max="allTime || 1"
-          step="0.1"
-          :value="nowTime"
-          :disabled="allTime <= 0"
-          aria-label="播放进度"
-          @change="seekFromRange"
-        />
-        <span>{{ secondToMinute(allTime) }}</span>
+        <div class="secondary-actions">
+          <song-download-button
+            v-if="playMusic?.id"
+            :item="playMusic"
+            size="small"
+            button-class="tool-button"
+            title="下载歌曲"
+          />
+          <button
+            class="tool-button lyric-button"
+            type="button"
+            title="桌面歌词"
+            aria-label="桌面歌词"
+            :disabled="!playMusic?.id"
+            @click="toggleDesktopLyric"
+          >
+            词
+          </button>
+          <button
+            class="tool-button queue-button"
+            type="button"
+            :aria-expanded="isPlaylistOpen"
+            aria-label="播放列表"
+            title="播放列表"
+            @click="togglePlaylist"
+          >
+            <i class="ri-play-list-2-line" aria-hidden="true" /><span>{{ playList.length }}</span>
+          </button>
+        </div>
       </div>
     </div>
     <div v-if="!component && isPlaylistOpen" class="playlist-container">
       <div class="playlist-heading">
-        <span>播放列表 · {{ playList.length }} 首</span
+        <span
+          >播放列表 <span class="queue-count">{{ playList.length }} 首</span></span
         ><button type="button" class="tool-button" aria-label="收起播放列表" @click="closePlaylist">
           <i class="ri-arrow-up-s-line" aria-hidden="true" />
         </button>
       </div>
       <n-scrollbar ref="palyListRef" class="playlist-scrollbar">
-        <div v-if="!playList.length" class="mini-empty">从首页或本地音乐选一首歌，开始播放</div>
+        <div v-if="!playList.length" class="mini-empty">
+          <i class="ri-play-list-2-line" aria-hidden="true" /><span>播放列表还是空的</span
+          ><button type="button" @click="handleClose">
+            去选一首歌 <i class="ri-arrow-right-line" aria-hidden="true" />
+          </button>
+        </div>
         <div
           v-for="item in playList"
           :key="`${item.source}-${item.id}`"
           class="music-play-list-content"
         >
-          <song-item class="mini-song" :item="item" mini />
-          <button
+          <song-item class="mini-song" :item="item" mini /><button
             class="tool-button"
             type="button"
             :aria-label="`移除 ${item.name}`"
@@ -196,7 +213,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onUnmounted, provide, ref, useTemplateRef, watch } from 'vue';
+import { computed, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch } from 'vue';
 
 import SongDownloadButton from '@/components/common/SongDownloadButton.vue';
 import SongItem from '@/components/common/SongItem.vue';
@@ -211,6 +228,14 @@ import { restoreMainWindowFromMiniMode } from '@/utils/miniModeNavigation';
 const playerStore = usePlayerStore();
 const settingsStore = useSettingsStore();
 const { navigateToArtist } = useArtist();
+const coverUrl = computed(() => getImgUrl(playMusic.value?.picUrl, '200y200'));
+const imageFailed = shallowRef(false);
+watch(coverUrl, () => {
+  imageFailed.value = false;
+});
+const progressPercent = computed(() =>
+  allTime.value > 0 ? Math.min(100, Math.max(0, (nowTime.value / allTime.value) * 100)) : 0
+);
 
 /** 从标题空白处调用 Tauri 原生拖动，按钮仍只响应点击。 */
 const startWindowDrag = (event: MouseEvent) => {
@@ -416,14 +441,14 @@ const setMusicFull = () => {
     restoreMainWindowFromMiniMode({
       beforeRestore: () => {
         closePlaylist();
-        playerStore.setMusicFull(true);
+        playerStore.setMusicFull(Boolean(playMusic.value?.id));
       },
       restore: window.desktop.restore
     });
     return;
   }
 
-  playerStore.setMusicFull(true);
+  playerStore.setMusicFull(Boolean(playMusic.value?.id));
 };
 
 watch(
@@ -440,61 +465,88 @@ onUnmounted(() => {
 });
 </script>
 <style scoped lang="scss">
+/* 精简窗沿用主界面的浅色底、绿色主按钮与细线图标，封面/曲名优先于次要工具。 */
 .mini-play-bar {
+  --mini-track: color-mix(in srgb, var(--qqm-muted, #6b7470) 17%, transparent);
   height: 100%;
-  min-height: 164px;
+  min-height: 184px;
   overflow: hidden;
-  background: var(--qqm-surface, #f8faf9);
+  background: var(--qqm-surface, #fafcfb);
   color: var(--qqm-text, #202724);
 }
 .mini-main {
-  height: 164px;
-  padding: 8px 16px 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+  box-sizing: border-box;
+  height: 184px;
+  padding: 10px 16px;
+  display: grid;
+  grid-template-rows: 16px 80px 18px 24px;
+  row-gap: 8px;
 }
 .mini-heading {
-  height: 18px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
   cursor: grab;
 }
-.mini-state {
+.mini-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
   color: var(--qqm-muted);
+}
+.mini-brand i {
+  font-size: 13px;
+  color: var(--qqm-primary-strong, #149761);
+}
+.mini-status {
   font-size: 10px;
-  letter-spacing: 0.12em;
+  color: var(--qqm-muted);
 }
 .mini-restore {
+  display: grid;
+  place-items: center;
   width: 24px;
   height: 24px;
-  font-size: 14px;
+  margin-left: auto;
   color: var(--qqm-muted);
+  border-radius: 5px;
+  font-size: 15px;
 }
 .mini-track {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 48px;
+  gap: 14px;
+  min-width: 0;
 }
 .album-cover {
-  width: 48px;
-  height: 48px;
-  flex: 0 0 48px;
-  border-radius: 8px;
+  width: 80px;
+  height: 80px;
+  flex: 0 0 80px;
   overflow: hidden;
-  background: var(--qqm-surface-muted);
+  border-radius: 9px;
+  background: var(--qqm-surface-2, #eff3f1);
   color: var(--qqm-muted);
-  font-size: 24px;
 }
 .album-cover img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.song-info {
+.empty-cover-icon {
+  font-size: 30px;
+  opacity: 0.5;
+}
+.track-content {
+  height: 80px;
+  display: flex;
   flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.song-info {
   min-width: 0;
 }
 .song-title {
@@ -504,47 +556,75 @@ onUnmounted(() => {
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 650;
   color: inherit;
 }
 .song-artist {
-  margin-top: 4px;
   font-size: 11px;
+  line-height: 17px;
   color: var(--qqm-muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.song-artist span {
+  cursor: pointer;
+}
+.control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 34px;
+}
 .control-buttons {
   display: flex;
   align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
+  gap: 14px;
 }
 .control-button {
-  width: 28px;
-  height: 28px;
   display: grid;
   place-items: center;
+  width: 26px;
+  height: 28px;
   color: inherit;
-  font-size: 19px;
+  font-size: 21px;
   border: 0 !important;
   background: transparent !important;
   border-radius: 50% !important;
+  transition:
+    color 150ms,
+    transform 150ms;
 }
 .control-button.play {
-  width: 36px;
-  height: 36px;
-  color: #f8fffb !important;
-  background: var(--qqm-primary-strong, #159a61) !important;
-  font-size: 22px;
+  width: 34px;
+  height: 34px;
+  color: #fff !important;
+  background: var(--qqm-primary-strong, #149761) !important;
+  font-size: 23px;
 }
-.mini-tools {
+.control-button.play .ri-play-fill {
+  margin-left: 2px;
+}
+.control-button:not(:disabled):hover {
+  color: var(--qqm-primary-strong);
+  transform: scale(1.06);
+}
+.control-button:active {
+  transform: scale(0.96);
+}
+.mini-tools,
+.secondary-actions,
+.mini-volume {
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 24px;
+}
+.mini-tools {
+  justify-content: space-between;
+}
+.secondary-actions {
+  gap: 10px;
 }
 .tool-button {
   height: 26px;
@@ -555,33 +635,40 @@ onUnmounted(() => {
   gap: 5px;
   color: var(--qqm-muted);
   font-size: 15px;
-  border-radius: 6px;
+  border-radius: 5px;
 }
-.tool-button:hover,
+.tool-button:not(:disabled):hover,
 .mini-restore:hover {
   color: var(--qqm-primary-strong);
   background: var(--qqm-primary-soft);
 }
+.favorite-button {
+  margin-right: -4px;
+}
 .like-active {
   color: var(--qqm-primary-strong);
 }
+.lyric-button {
+  font-size: 12px;
+  font-weight: 500;
+}
 .mini-volume {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  margin-left: auto;
+  gap: 5px;
 }
 .mini-volume input {
-  width: 64px;
+  width: 60px;
 }
 .queue-button {
-  font-size: 12px;
-  margin-left: 6px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.queue-button i {
+  font-size: 17px;
 }
 .mini-timeline {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   font-size: 10px;
   font-variant-numeric: tabular-nums;
   color: var(--qqm-muted);
@@ -591,54 +678,98 @@ onUnmounted(() => {
   min-width: 0;
 }
 input[type='range'] {
-  height: 16px;
-  accent-color: var(--qqm-primary-strong);
+  appearance: none;
+  -webkit-appearance: none;
+  height: 3px;
+  border-radius: 9px;
+  background: linear-gradient(
+    to right,
+    var(--qqm-primary-strong, #149761) var(--range-fill, 0%),
+    var(--mini-track) var(--range-fill, 0%)
+  );
   cursor: pointer;
+}
+input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--qqm-primary-strong, #149761);
+}
+input[type='range']::-moz-range-thumb {
+  border: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--qqm-primary-strong, #149761);
+}
+input[type='range']:disabled::-webkit-slider-thumb {
+  opacity: 0;
 }
 button {
   cursor: pointer;
 }
-button:disabled,
-input:disabled {
+button:disabled {
   opacity: 0.4;
+  cursor: default;
+}
+input:disabled {
   cursor: default;
 }
 button:focus-visible,
 input:focus-visible {
   outline: 2px solid var(--qqm-primary-strong);
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 .playlist-container {
-  height: calc(100vh - 164px);
+  height: calc(100vh - 184px);
   background: var(--qqm-surface);
   border-top: 1px solid var(--qqm-border);
 }
 .playlist-heading {
-  height: 38px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px;
+  padding: 0 16px;
   font-size: 12px;
   font-weight: 600;
 }
+.queue-count {
+  margin-left: 6px;
+  font-size: 10px;
+  color: var(--qqm-muted);
+  font-weight: 400;
+}
 .playlist-scrollbar {
-  height: calc(100% - 38px);
+  height: calc(100% - 42px);
 }
 .music-play-list-content {
   display: flex;
   align-items: center;
-  padding: 4px 10px;
+  padding: 3px 10px;
 }
 .mini-song {
   flex: 1;
   min-width: 0;
 }
 .mini-empty {
-  padding: 26px 14px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 34px 16px;
   font-size: 12px;
   color: var(--qqm-muted);
+}
+.mini-empty > i {
+  font-size: 28px;
+  opacity: 0.45;
+}
+.mini-empty button {
+  color: var(--qqm-primary-strong);
+  font-size: 11px;
 }
 .is-spinning {
   animation: mini-spin 1s linear infinite;
@@ -651,6 +782,9 @@ input:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .is-spinning {
     animation: none;
+  }
+  .control-button {
+    transition: none;
   }
 }
 </style>

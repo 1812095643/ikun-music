@@ -21,7 +21,8 @@
       <n-slider
         v-model:value="timeSlider"
         :step="1"
-        :max="allTime"
+        :max="Math.max(1, allTime)"
+        :disabled="!hasSong || allTime <= 0"
         :min="0"
         :format-tooltip="formatTooltip"
         :show-tooltip="showSliderTooltip"
@@ -33,15 +34,19 @@
     </div>
     <div class="play-bar-img-wrapper" @click="setMusicFull">
       <n-image
+        v-if="hasSong"
         :src="getImgUrl(playMusic?.picUrl, '100y100')"
         :class="['play-bar-img', { 'is-playing': play }]"
         lazy
         preview-disabled
       />
+      <div v-else class="play-bar-empty-cover" aria-hidden="true">
+        <i class="ri-music-2-line" />
+      </div>
       <div v-if="playMusic?.playLoading" class="loading-overlay">
         <i class="ri-loader-4-line loading-icon"></i>
       </div>
-      <div class="hover-arrow">
+      <div v-if="hasSong" class="hover-arrow">
         <div class="hover-content">
           <i
             class="text-[22px] leading-none"
@@ -56,7 +61,8 @@
     <div class="music-content">
       <div class="music-content-title flex items-center">
         <n-ellipsis class="text-ellipsis" line-clamp="1">
-          <p v-html="playMusic?.name || ''"></p>
+          <p v-if="hasSong" v-html="playMusic?.name || ''"></p>
+          <p v-else>{{ t('player.playBar.noSongPlaying') }}</p>
         </n-ellipsis>
         <span v-if="playbackRate !== 1.0" class="playback-rate-badge"> {{ playbackRate }}x </span>
       </div>
@@ -81,15 +87,33 @@
       </div>
     </div>
     <div class="music-buttons">
-      <div class="music-buttons-prev" @click="handlePrev">
+      <button
+        type="button"
+        class="music-buttons-prev"
+        :disabled="!hasSong"
+        :aria-label="t('player.previous')"
+        @click="handlePrev"
+      >
         <i class="iconfont icon-prev"></i>
-      </div>
-      <div class="music-buttons-play" @click="playMusicEvent">
+      </button>
+      <button
+        type="button"
+        class="music-buttons-play"
+        :disabled="!hasSong"
+        :aria-label="play ? t('player.pause') : t('player.play')"
+        @click="playMusicEvent"
+      >
         <i class="iconfont icon" :class="play ? 'icon-stop' : 'icon-play'"></i>
-      </div>
-      <div class="music-buttons-next" @click="handleNext">
+      </button>
+      <button
+        type="button"
+        class="music-buttons-next"
+        :disabled="!hasSong"
+        :aria-label="t('player.next')"
+        @click="handleNext"
+      >
         <i class="iconfont icon-next"></i>
-      </div>
+      </button>
     </div>
     <div class="audio-button">
       <div class="audio-volume custom-slider" @wheel.prevent="handleVolumeWheel">
@@ -207,6 +231,8 @@ const { t } = useI18n();
 const message = useMessage();
 // 是否播放
 const play = computed(() => playerStore.isPlay);
+// 空播放器也是桌面布局的一部分，只有需要歌曲的操作禁用，音量和播放列表仍可使用。
+const hasSong = computed(() => Boolean(playMusic.value?.id));
 // 背景颜色
 const background = ref('#000');
 
@@ -310,10 +336,12 @@ const { playMode, playModeIcon, playModeText, togglePlayMode } = usePlayMode();
 const { playbackRate } = storeToRefs(playerStore);
 
 function handleNext() {
+  if (!hasSong.value) return;
   playerStore.nextPlay();
 }
 
 function handlePrev() {
+  if (!hasSong.value) return;
   playerStore.prevPlay();
 }
 
@@ -331,6 +359,7 @@ const showSliderTooltip = ref(false);
 
 // 播放暂停按钮事件
 const playMusicEvent = async () => {
+  if (!hasSong.value) return;
   try {
     const result = await playerStore.setPlay({ ...playMusic.value });
     if (result) {
@@ -351,6 +380,7 @@ const musicFullVisible = computed({
 
 // 设置musicFull
 const setMusicFull = () => {
+  if (!hasSong.value) return;
   musicFullVisible.value = !musicFullVisible.value;
   playerStore.setMusicFull(musicFullVisible.value);
   if (musicFullVisible.value) {
@@ -364,6 +394,7 @@ const isFavorite = computed(() => {
 });
 
 const toggleFavorite = async (e: Event) => {
+  if (!hasSong.value) return;
   console.log('playMusic.value', playMusic.value);
   e.stopPropagation();
 
@@ -469,8 +500,20 @@ const openPlayListDrawer = () => {
     color: var(--qqm-primary-strong, #0dbd62);
   }
 
-  > div {
+  > button {
     @apply cursor-pointer flex items-center justify-center;
+    &:disabled {
+      cursor: default;
+      opacity: 0.4;
+      transform: none;
+    }
+    &:disabled .iconfont {
+      pointer-events: none;
+    }
+    &:focus-visible {
+      outline: 2px solid var(--qqm-primary);
+      outline-offset: 4px;
+    }
   }
 
   &-play {
@@ -723,6 +766,16 @@ const openPlayListDrawer = () => {
     border-radius: 50%;
     animation: spin 15s linear infinite;
   }
+}
+
+.play-bar-empty-cover {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: var(--qqm-muted);
+  background: var(--qqm-surface-2, #eef1f3);
+  font-size: 24px;
 }
 
 .like-active {

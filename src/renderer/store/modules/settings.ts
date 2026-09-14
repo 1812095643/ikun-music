@@ -244,6 +244,8 @@ export const useSettingsStore = defineStore('settings', () => {
   const calculateMobileStatus = () => {
     // Android 第一阶段固定走移动布局，避免历史平板模式配置误进入桌面化界面。
     if (isAndroidRuntime) return true;
+    // 桌面精简窗口宽度只有 420px，不能按手机断点切换菜单、字体和布局。
+    if (isDesktopRuntime) return false;
 
     const userAgentFlag = navigator.userAgent.match(
       /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i

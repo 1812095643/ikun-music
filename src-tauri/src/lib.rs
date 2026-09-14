@@ -97,11 +97,11 @@ const TRAY_PANEL_WINDOW_LABEL: &str = "tray-panel";
 const LYRIC_WINDOW_LABEL: &str = "lyric-window";
 #[cfg(not(mobile))]
 const TRAY_ID: &str = "ikun-music-tray";
-// 与前端 MiniPlayBar 两行控制区的 164px 高度保持一致；旧 340x64 会挤压歌名和工具栏。
+// 与前端 MiniPlayBar 的封面、播放控制和进度区保持一致，避免原生窗口裁掉底部操作。
 #[cfg(not(mobile))]
 const MINI_WINDOW_WIDTH: f64 = 420.0;
 #[cfg(not(mobile))]
-const MINI_WINDOW_HEIGHT: f64 = 164.0;
+const MINI_WINDOW_HEIGHT: f64 = 184.0;
 #[cfg(not(mobile))]
 const MINI_PLAYLIST_WINDOW_WIDTH: f64 = 420.0;
 #[cfg(not(mobile))]
