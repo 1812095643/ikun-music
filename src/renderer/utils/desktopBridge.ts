@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { emitTo, listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import { cursorPosition, getCurrentWindow } from '@tauri-apps/api/window';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readTextFile } from '@tauri-apps/plugin-fs';
 import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
@@ -77,6 +77,22 @@ const getAppWindow = () => {
   if (!isTauriRuntime) return null;
   if (!appWindow) appWindow = getCurrentWindow();
   return appWindow;
+};
+
+/**
+ * 返回鼠标相对当前桌面窗口的逻辑坐标，浏览器预览返回 null。
+ * 根因：开启原生鼠标穿透后，DOM 不再收到 mouseenter，不能靠该事件唤回解锁按钮。
+ * 使用 Tauri 官方坐标接口，并换算 DPI；支持 Windows 缩放及位于主屏左侧的负坐标屏幕。
+ */
+export const getDesktopLyricPointer = async () => {
+  const currentWindow = getAppWindow();
+  if (!currentWindow) return null;
+  const [cursor, position, scale] = await Promise.all([
+    cursorPosition(),
+    currentWindow.innerPosition(),
+    currentWindow.scaleFactor()
+  ]);
+  return { x: (cursor.x - position.x) / scale, y: (cursor.y - position.y) / scale };
 };
 
 const getCompatWebviewWindow = () => {

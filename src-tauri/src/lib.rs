@@ -476,6 +476,9 @@ fn ensure_lyric_window(app: &AppHandle) -> Result<WebviewWindow, String> {
     .min_inner_size(600.0, 200.0)
     .decorations(false)
     .transparent(true)
+    // Windows 无装饰窗口默认阴影会附带 1px 白边；关闭它才能保持真正无边框、全透明。
+    // 玻璃工具栏由 WebView 内部局部绘制，整窗不启用会遮住桌面的实体背景或材质。
+    .shadow(false)
     .resizable(true)
     .skip_taskbar(true)
     .always_on_top(true)

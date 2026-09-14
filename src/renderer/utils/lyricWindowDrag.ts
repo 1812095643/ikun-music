@@ -4,6 +4,10 @@ type ClosestCapableTarget = EventTarget & {
 };
 
 const LYRIC_WINDOW_DRAG_BLOCK_SELECTORS = [
+  'button',
+  'input',
+  'label',
+  '.lyric-settings',
   '.control-buttons',
   '.font-size-controls',
   '.play-controls',
