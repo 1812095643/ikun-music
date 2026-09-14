@@ -108,13 +108,20 @@ export const isElectron = Boolean(
   (window as any).electron || (window as any).api || (window as any).__TAURI_INTERNALS__
 );
 
+export const isTauriRuntime = Boolean((window as any).__TAURI_INTERNALS__);
+
+export const isAndroidRuntime =
+  isTauriRuntime && /Android/i.test(navigator.userAgent || navigator.platform || '');
+
+export const isDesktopRuntime = isElectron && !isAndroidRuntime;
+
 export const isLyricWindow = computed(() => {
   return window.location.hash.includes('lyric');
 });
 
 export const getSetData = (): any => {
   let setData = null;
-  if (window.electron?.ipcRenderer) {
+  if (isDesktopRuntime && window.electron?.ipcRenderer) {
     setData = window.electron.ipcRenderer.sendSync('get-store-value', 'set');
   } else {
     const settingsStore = useSettingsStore();

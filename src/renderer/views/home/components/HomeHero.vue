@@ -5,7 +5,7 @@
       <div class="flex gap-1.5 overflow-hidden md:hidden">
         <div v-for="i in 6" :key="i" class="h-9 w-20 flex-shrink-0 skeleton-shimmer rounded-lg" />
       </div>
-      <div class="hero-grid grid gap-3">
+      <div class="hero-grid grid gap-3" :class="{ 'hero-grid--android': isAndroidRuntime }">
         <div class="skeleton-shimmer rounded-lg" style="height: 160px" />
         <div class="skeleton-shimmer rounded-lg" style="height: 160px" />
       </div>
@@ -104,7 +104,7 @@
         </div>
 
         <!-- ===== 已登录: 私人FM (Right Card) ===== -->
-        <div v-if="isLoggedIn" class="hero-card">
+        <div v-if="isLoggedIn && !isAndroidRuntime" class="hero-card">
           <div
             class="fm-card qqm-hero-card group relative cursor-pointer overflow-hidden rounded-lg transition-colors duration-200 ease-out"
             :style="{ background: fmCardBg }"
@@ -200,7 +200,7 @@
 
         <!-- ===== 未登录: 推荐歌单 (Right Card) ===== -->
         <div
-          v-if="!isLoggedIn"
+          v-if="!isLoggedIn && !isAndroidRuntime"
           class="hero-card group cursor-pointer"
           @click="router.push('/list')"
         >
@@ -316,7 +316,7 @@ import {
   useRecommendStore,
   useUserStore
 } from '@/store';
-import { getImgUrl } from '@/utils';
+import { getImgUrl, isAndroidRuntime } from '@/utils';
 import { getImageBackground } from '@/utils/linearColor';
 
 const { t } = useI18n();
@@ -511,6 +511,8 @@ const handleFmTrash = async () => {
 // ==================== Quick Nav ====================
 
 const quickNavItems = computed(() => {
+  if (isAndroidRuntime) return [];
+
   const items = [
     {
       key: 'intelligence',
@@ -588,6 +590,11 @@ const fetchHeroData = async () => {
     const promises: Promise<any>[] = [];
 
     promises.push(recommendStore.refreshIfStale());
+
+    if (isAndroidRuntime) {
+      await Promise.all(promises);
+      return;
+    }
 
     promises.push(
       getPersonalizedPlaylist(8)
@@ -692,6 +699,10 @@ onActivated(() => {
 /* Hero grid — left wider, right narrower, equal row height */
 .hero-grid {
   grid-template-columns: 3fr 2fr;
+}
+
+.hero-grid--android {
+  grid-template-columns: 1fr;
 }
 
 /* Cards fill grid row height equally */

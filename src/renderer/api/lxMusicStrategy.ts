@@ -4,11 +4,11 @@
  * 实现 MusicSourceStrategy 接口，作为落雪音源的解析入口
  */
 
-import { getLxMusicRunner, initLxMusicRunner } from '@/services/LxMusicSourceRunner';
 import { useSettingsStore } from '@/store';
 import type { LxMusicInfo, LxQuality, LxSourceKey } from '@/types/lxMusic';
 import { LX_SOURCE_NAMES, QUALITY_TO_LX } from '@/types/lxMusic';
 import type { SongResult } from '@/types/music';
+import { isDesktopRuntime } from '@/utils';
 
 import type { MusicParseResult } from './musicParser';
 import { CacheManager } from './musicParser';
@@ -143,6 +143,10 @@ export class LxMusicStrategy {
    * 检查是否可以处理
    */
   canHandle(sources: string[], settingsStore?: any): boolean {
+    if (!isDesktopRuntime) {
+      return false;
+    }
+
     // 检查是否启用了落雪音源
     if (!sources.includes('lxMusic')) {
       return false;
@@ -170,6 +174,10 @@ export class LxMusicStrategy {
     quality?: string,
     _sources?: string[]
   ): Promise<MusicParseResult | null> {
+    if (!isDesktopRuntime) {
+      return null;
+    }
+
     // 检查失败缓存
     if (CacheManager.isInFailedCache(id, this.name)) {
       return null;
@@ -199,6 +207,8 @@ export class LxMusicStrategy {
       );
 
       // 获取或初始化执行器
+      const { getLxMusicRunner, initLxMusicRunner } =
+        await import('@/services/LxMusicSourceRunner');
       let runner = getLxMusicRunner();
       if (!runner || !runner.isInitialized()) {
         console.log('[LxMusicStrategy] 初始化落雪音源执行器...');

@@ -54,7 +54,7 @@
             </div>
           </div>
           <song-download-button
-            v-if="playMusic?.id"
+            v-if="isDesktopRuntime && playMusic?.id"
             :item="playMusic"
             size="small"
             title="下载歌曲"
@@ -69,14 +69,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, defineAsyncComponent, defineComponent, onMounted, ref, watch } from 'vue';
 
-import SongDownloadButton from '@/components/common/SongDownloadButton.vue';
 import { allTime, nowTime, playMusic } from '@/hooks/MusicHook';
 import { usePlayMode } from '@/hooks/usePlayMode';
 import { audioService } from '@/services/audioService';
 import { usePlayerStore } from '@/store/modules/player';
-import { secondToMinute } from '@/utils';
+import { isDesktopRuntime, secondToMinute } from '@/utils';
+
+const SongDownloadButton = isDesktopRuntime
+  ? defineAsyncComponent(() => import('@/components/common/SongDownloadButton.vue'))
+  : defineComponent({ name: 'DesktopOnlySongDownloadButton', setup: () => () => null });
 
 const props = withDefaults(
   defineProps<{

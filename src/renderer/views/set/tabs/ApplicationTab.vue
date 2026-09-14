@@ -1,5 +1,5 @@
 <template>
-  <setting-section v-if="isElectron" :title="t('settings.sections.application')">
+  <setting-section v-if="isDesktopRuntime" :title="t('settings.sections.application')">
     <setting-item
       :title="t('settings.application.closeAction')"
       :description="t('settings.application.closeActionDesc')"
@@ -18,7 +18,7 @@
       <s-btn @click="showShortcutModal = true">{{ t('common.configure') }}</s-btn>
     </setting-item>
 
-    <setting-item v-if="isElectron" :title="t('settings.application.download')">
+    <setting-item v-if="isDesktopRuntime" :title="t('settings.application.download')">
       <template #description>
         <n-switch v-model:value="setData.alwaysShowDownloadButton" class="mr-2">
           <template #checked>{{ t('common.show') }}</template>
@@ -74,7 +74,7 @@ import { useRouter } from 'vue-router';
 
 import RemoteControlSetting from '@/components/settings/ServerSetting.vue';
 import ShortcutSettings from '@/components/settings/ShortcutSettings.vue';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import { openDirectory, selectDirectory } from '@/utils/fileOperation';
 
 import { SETTINGS_DATA_KEY, SETTINGS_MESSAGE_KEY } from '../keys';

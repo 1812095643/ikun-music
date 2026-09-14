@@ -6,7 +6,7 @@
   <div
     v-if="internalVisible"
     class="playlist-panel"
-    :class="{ closing }"
+    :class="{ closing, 'playlist-panel--android': isAndroidRuntime }"
     @transitionend="onPanelTransitionEnd"
   >
     <div class="playlist-panel-header">
@@ -38,7 +38,13 @@
             :class="{ 'is-current': item.id === playerStore.playMusic?.id }"
           >
             <div class="flex items-center justify-between">
-              <song-item :key="item.id" class="flex-1" :item="item" mini></song-item>
+              <song-item
+                :key="item.id"
+                class="flex-1"
+                :item="item"
+                mini
+                :favorite="!isAndroidRuntime"
+              ></song-item>
               <div class="delete-btn" @click.stop="handleDeleteSong(item)">
                 <i class="iconfont ri-delete-bin-line transition-colors"></i>
               </div>
@@ -58,7 +64,7 @@ import { useI18n } from 'vue-i18n';
 import SongItem from '@/components/common/SongItem.vue';
 import { usePlayerStore } from '@/store/modules/player';
 import type { SongResult } from '@/types/music';
-import { isMobile } from '@/utils';
+import { isAndroidRuntime, isMobile } from '@/utils';
 
 const { t } = useI18n();
 const message = useMessage();
@@ -258,6 +264,54 @@ const handleDeleteSong = (song: SongResult) => {
 
   &-content {
     @apply h-[calc(68vh-60px)] overflow-hidden px-2 py-2;
+  }
+
+  &.playlist-panel--android {
+    left: 50%;
+    right: auto;
+    top: auto;
+    bottom: var(--safe-area-inset-bottom, 0);
+    width: min(100vw, 520px);
+    height: min(78vh, calc(100vh - 96px));
+    border-radius: 18px 18px 0 0;
+    border-right: none;
+    border-bottom: none;
+    border-left: none;
+    transform: translateX(-50%);
+    box-shadow: 0 -18px 48px color-mix(in srgb, var(--qqm-text, #1f2329) 14%, transparent);
+
+    &.closing {
+      transform: translate(-50%, 12px);
+    }
+
+    .playlist-panel-header {
+      @apply relative px-4;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: -13px;
+        left: 50%;
+        width: 42px;
+        height: 5px;
+        border-radius: 999px;
+        background-color: color-mix(in srgb, var(--qqm-muted, #7a828c) 30%, transparent);
+        transform: translateX(-50%);
+      }
+    }
+
+    .playlist-panel-content {
+      height: calc(100% - 60px);
+      padding: 10px 14px max(14px, var(--safe-area-inset-bottom, 0));
+    }
+
+    .music-play-list-content {
+      min-height: 56px;
+    }
+
+    .delete-btn {
+      @apply visible;
+    }
   }
 }
 

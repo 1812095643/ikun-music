@@ -48,6 +48,7 @@
 
     <!-- More Button -->
     <button
+      v-if="!isAndroidRuntime"
       class="more-btn home-song-more flex h-8 w-8 items-center justify-center rounded-lg opacity-0 transition-colors duration-200 group-hover:opacity-100"
       @click.stop="onMenuClick"
     >
@@ -56,7 +57,7 @@
 
     <!-- Dropdown Menu -->
     <song-item-dropdown
-      v-if="isElectron"
+      v-if="isDesktopRuntime"
       :item="item"
       :show="showDropdown"
       :x="dropdownX"
@@ -78,12 +79,13 @@
 
 <script lang="ts" setup>
 import { NEllipsis, NImage } from 'naive-ui';
+import { defineAsyncComponent } from 'vue';
 
 import { useSongItem } from '@/hooks/useSongItem';
 import type { SongResult } from '@/types/music';
-import { getImgUrl, isElectron } from '@/utils';
+import { getImgUrl, isAndroidRuntime, isDesktopRuntime } from '@/utils';
 
-import SongItemDropdown from './SongItemDropdown.vue';
+const SongItemDropdown = defineAsyncComponent(() => import('./SongItemDropdown.vue'));
 
 const props = withDefaults(
   defineProps<{
@@ -132,7 +134,10 @@ const onPlayMusic = () => {
 };
 
 const onArtistClick = (id: number) => handleArtistClick(id);
-const onMenuClick = (event: MouseEvent) => handleMenuClick(event);
+const onMenuClick = (event: MouseEvent) => {
+  if (isAndroidRuntime) return;
+  handleMenuClick(event);
+};
 </script>
 
 <style lang="scss" scoped>

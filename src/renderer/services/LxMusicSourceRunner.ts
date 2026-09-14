@@ -17,6 +17,7 @@ import type {
   LxSourceConfig,
   LxSourceKey
 } from '@/types/lxMusic';
+import { isDesktopRuntime } from '@/utils';
 
 type WorkerInitializeMessage = {
   type: 'initialize';
@@ -392,7 +393,8 @@ export class LxMusicSourceRunner {
     const timeout = options.timeout || 30000;
     const requestId = `lx_http_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
-    const hasMainProcessHttp = typeof window.api?.lxMusicHttpRequest === 'function';
+    const hasMainProcessHttp =
+      isDesktopRuntime && typeof window.api?.lxMusicHttpRequest === 'function';
 
     if (hasMainProcessHttp) {
       window.api

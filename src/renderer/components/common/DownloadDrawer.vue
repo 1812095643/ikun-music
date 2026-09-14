@@ -1,5 +1,5 @@
 <template>
-  <div class="download-drawer-trigger">
+  <div v-if="isDesktopRuntime" class="download-drawer-trigger">
     <n-badge :value="downloadingCount" :max="99" :show="downloadingCount > 0">
       <n-button circle @click="navigateToDownloads">
         <template #icon>
@@ -13,6 +13,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+
+import { isDesktopRuntime } from '@/utils';
 
 const router = useRouter();
 const downloadList = ref<any[]>([]);
@@ -29,6 +31,8 @@ const navigateToDownloads = () => {
 
 // 监听下载进度
 onMounted(() => {
+  if (!isDesktopRuntime || !window.electron?.ipcRenderer) return;
+
   // 监听下载进度
   window.electron.ipcRenderer.on('music-download-progress', (_, data) => {
     const existingItem = downloadList.value.find((item) => item.filename === data.filename);

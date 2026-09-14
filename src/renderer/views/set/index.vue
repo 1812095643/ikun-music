@@ -67,7 +67,7 @@ import { useI18n } from 'vue-i18n';
 
 import PlayBottom from '@/components/common/PlayBottom.vue';
 import { useSettingsStore } from '@/store/modules/settings';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 
 import config from '../../../../package.json';
 import { createDefaultAppUpdateState } from '../../../shared/appUpdate';
@@ -140,7 +140,7 @@ const settingSections: SettingSectionConfig[] = [
 
 const navSections = computed(() => {
   return settingSections
-    .filter((section) => !section.electron || isElectron)
+    .filter((section) => !section.electron || isDesktopRuntime)
     .map((section) => ({
       id: section.id,
       title: t(`settings.sections.${section.id}`)
@@ -151,7 +151,7 @@ const currentSection = ref('basic');
 
 // ==================== 初始化 ====================
 onMounted(() => {
-  if (isElectron && settingsStore.appUpdateState.currentVersion === '') {
+  if (isDesktopRuntime && settingsStore.appUpdateState.currentVersion === '') {
     settingsStore.setAppUpdateState(createDefaultAppUpdateState(config.version));
   }
   if (setData.value.proxyConfig) {

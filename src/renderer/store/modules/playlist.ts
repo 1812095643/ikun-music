@@ -8,7 +8,7 @@ import i18n from '@/../i18n/renderer';
 import { useSongDetail } from '@/hooks/usePlayerHooks';
 import { preloadService } from '@/services/preloadService';
 import type { SongResult } from '@/types/music';
-import { getImgUrl } from '@/utils';
+import { getImgUrl, isAndroidRuntime } from '@/utils';
 import { performShuffle, preloadCoverImage } from '@/utils/playerUtils';
 
 import { useIntelligenceModeStore } from './intelligenceMode';
@@ -205,6 +205,8 @@ export const usePlaylistStore = defineStore(
      * 智能预加载下一首歌曲
      */
     const preloadNextSongs = (currentIndex: number) => {
+      // Android 第一阶段优先保证当前歌曲稳定播放，先不并发预加载下一首音频。
+      if (isAndroidRuntime) return;
       if (playList.value.length <= 1) return;
 
       let nextIndex: number;

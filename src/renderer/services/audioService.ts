@@ -4,7 +4,7 @@ import Tuna from 'tunajs';
 
 import type { AudioOutputDevice } from '@/types/audio';
 import type { SongResult } from '@/types/music';
-import { isElectron } from '@/utils'; // 导入isElectron常量
+import { isDesktopRuntime } from '@/utils';
 
 export type AudioEffectPreset = 'off' | 'ktv' | 'studio' | 'spatial3d' | 'concert';
 
@@ -164,8 +164,10 @@ class AudioService {
 
   private getStoredSettings(): Record<string, any> {
     try {
-      const electronSettings = window.electron?.ipcRenderer?.sendSync('get-store-value', 'set');
-      if (electronSettings && typeof electronSettings === 'object') return electronSettings;
+      if (isDesktopRuntime) {
+        const electronSettings = window.electron?.ipcRenderer?.sendSync('get-store-value', 'set');
+        if (electronSettings && typeof electronSettings === 'object') return electronSettings;
+      }
     } catch {
       // 非 Electron/Tauri 兼容层时继续读取 localStorage
     }
@@ -644,7 +646,7 @@ class AudioService {
 
   private async setupEQ(sound: Howl) {
     try {
-      if (!isElectron) {
+      if (!isDesktopRuntime) {
         console.log('Web环境中跳过EQ设置，避免CORS问题');
         this.bypass = true;
         return;

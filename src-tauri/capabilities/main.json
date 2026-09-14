@@ -3,6 +3,7 @@
   "identifier": "main",
   "description": "主窗口默认权限，尽量复刻原 Electron 桌面能力入口。",
   "windows": ["main", "tray-panel", "lyric-window"],
+  "platforms": ["windows", "macOS", "linux"],
   "permissions": [
     "core:default",
     "opener:default",

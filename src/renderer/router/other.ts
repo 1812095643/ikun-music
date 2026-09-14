@@ -29,7 +29,8 @@ const otherRouter = [
       keepAlive: true,
       showInMenu: true,
       back: true,
-      icon: 'ri-download-cloud-2-line'
+      icon: 'ri-download-cloud-2-line',
+      electronOnly: true
     },
     component: () => import('@/views/download/DownloadPage.vue')
   },

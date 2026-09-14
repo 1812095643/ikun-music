@@ -152,7 +152,7 @@ import { useMessage } from 'naive-ui';
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import { setAppShortcutsSuspended } from '@/utils/appShortcuts';
 import { keyboardEventToAccelerator } from '@/utils/shortcutKeyboard';
 
@@ -553,7 +553,7 @@ function enableAllShortcuts() {
 }
 
 async function loadShortcutsFromMain() {
-  if (!isElectron) {
+  if (!isDesktopRuntime) {
     const defaults = createDefaultShortcuts();
     storedShortcuts.value = cloneDeep(defaults);
     draftShortcuts.value = cloneDeep(defaults);
@@ -586,7 +586,7 @@ async function handleOpen() {
   registrationFailures.value = [];
   stopRecording();
 
-  if (isElectron) {
+  if (isDesktopRuntime) {
     setAppShortcutsSuspended(true);
     window.electron.ipcRenderer.send('disable-shortcuts');
   }
@@ -597,7 +597,7 @@ async function handleOpen() {
 function resumeShortcutRuntime() {
   setAppShortcutsSuspended(false);
 
-  if (isElectron) {
+  if (isDesktopRuntime) {
     window.electron.ipcRenderer.send('enable-shortcuts');
   }
 }
@@ -621,7 +621,7 @@ async function handleSave() {
       JSON.parse(JSON.stringify(draftShortcuts.value)) as ShortcutsConfig
     );
 
-    if (!isElectron) {
+    if (!isDesktopRuntime) {
       storedShortcuts.value = cloneDeep(shortcutsPayload);
       message.success(t('settings.shortcutSettings.messages.saveSuccess'));
       emit('change', storedShortcuts.value);

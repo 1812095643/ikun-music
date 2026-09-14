@@ -1,30 +1,55 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+#[cfg(not(mobile))]
+use serde::Serialize;
 use serde_json::{json, Value};
-use std::fs::{self, File};
+#[cfg(not(mobile))]
+use std::fs;
+#[cfg(not(mobile))]
+use std::fs::File;
+#[cfg(not(mobile))]
 use std::io::{BufRead, BufReader, Cursor};
-use std::path::{Path, PathBuf};
+#[cfg(not(mobile))]
+use std::path::Path;
+#[cfg(not(mobile))]
+use std::path::PathBuf;
+#[cfg(not(mobile))]
 use std::process::{Child, Command, Stdio};
-use std::sync::{mpsc, Mutex, OnceLock};
+#[cfg(not(mobile))]
+use std::sync::mpsc;
+use std::sync::Mutex;
+#[cfg(not(mobile))]
 use std::thread;
+#[cfg(not(mobile))]
 use std::time::{Duration, Instant};
+#[cfg(not(mobile))]
 use zip::ZipArchive;
 
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
+#[cfg(not(mobile))]
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+#[cfg(not(mobile))]
 use tauri::PhysicalSize;
+use tauri::{AppHandle, Manager, WebviewWindow};
+#[cfg(not(mobile))]
 use tauri::{
-    AppHandle, Emitter, LogicalPosition, LogicalSize, Manager, PhysicalPosition, Position, Size,
-    WebviewUrl, WebviewWindow, WebviewWindowBuilder, WindowEvent,
+    Emitter, LogicalPosition, LogicalSize, PhysicalPosition, Position, Size, WebviewUrl,
+    WebviewWindowBuilder, WindowEvent,
 };
 
+#[cfg(not(mobile))]
 struct MusicApiChild {
     child: Child,
     port: u16,
 }
 
+#[cfg(not(mobile))]
 struct MusicApiProcess(Mutex<Option<MusicApiChild>>);
 
+#[cfg(mobile)]
+struct MusicApiProcess(Mutex<Option<()>>);
+
+#[cfg(not(mobile))]
 #[derive(Clone, Copy)]
 struct SavedMainWindowState {
     width: u32,
@@ -36,7 +61,11 @@ struct SavedMainWindowState {
 
 // Tauri 主线以前进入精简模式后只会恢复到固定尺寸，用户原本手动调整过的窗口大小和位置都会丢。
 // 这里单独保存“进入精简模式前”的主窗口几何信息，保证缩放播放列表时不覆盖，恢复时再一次性还原。
+#[cfg(not(mobile))]
 struct MiniWindowRestoreState(Mutex<Option<SavedMainWindowState>>);
+
+#[cfg(mobile)]
+struct MiniWindowRestoreState(Mutex<Option<()>>);
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -52,6 +81,7 @@ struct WriteTextFileRequest {
     content: String,
 }
 
+#[cfg(not(mobile))]
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 struct SavedLyricWindowBounds {
     width: u32,
@@ -63,25 +93,44 @@ struct SavedLyricWindowBounds {
 #[cfg(target_os = "windows")]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
+#[cfg(not(mobile))]
 const MAIN_WINDOW_LABEL: &str = "main";
+#[cfg(not(mobile))]
 const TRAY_PANEL_WINDOW_LABEL: &str = "tray-panel";
+#[cfg(not(mobile))]
 const LYRIC_WINDOW_LABEL: &str = "lyric-window";
+#[cfg(not(mobile))]
 const TRAY_ID: &str = "ikun-music-tray";
-// 与 MiniPlayBar 两行控制区的 164px 高度一致；旧 340x64 无法同时容纳歌名与操作按钮。
-const MINI_WINDOW_WIDTH: f64 = 420.0;
-const MINI_WINDOW_HEIGHT: f64 = 164.0;
-const MINI_PLAYLIST_WINDOW_WIDTH: f64 = 420.0;
-const MINI_PLAYLIST_WINDOW_HEIGHT: f64 = 460.0;
+#[cfg(not(mobile))]
+const NORMAL_WINDOW_WIDTH: f64 = 1280.0;
+#[cfg(not(mobile))]
+const NORMAL_WINDOW_HEIGHT: f64 = 840.0;
+// 与前端 MiniPlayBar 的 64px 顶栏和 330px 播放列表高度保持一致，
+// 避免 Tauri 精简模式相比 Electron 多出空白区域，恢复时观感不一致。
+#[cfg(not(mobile))]
+const MINI_WINDOW_WIDTH: f64 = 340.0;
+#[cfg(not(mobile))]
+const MINI_WINDOW_HEIGHT: f64 = 64.0;
+#[cfg(not(mobile))]
+const MINI_PLAYLIST_WINDOW_WIDTH: f64 = 340.0;
+#[cfg(not(mobile))]
+const MINI_PLAYLIST_WINDOW_HEIGHT: f64 = 400.0;
+#[cfg(not(mobile))]
 const MINI_WINDOW_MARGIN: f64 = 20.0;
+#[cfg(not(mobile))]
 const LYRIC_WINDOW_WIDTH: f64 = 800.0;
+#[cfg(not(mobile))]
 const LYRIC_WINDOW_HEIGHT: f64 = 200.0;
+#[cfg(not(mobile))]
 const LYRIC_WINDOW_POSITION_MARGIN: i32 = 50;
+#[cfg(not(mobile))]
 const TRAY_PANEL_WIDTH: f64 = 336.0;
+#[cfg(not(mobile))]
 const TRAY_PANEL_HEIGHT: f64 = 492.0;
+#[cfg(not(mobile))]
 const TRAY_PANEL_MARGIN: f64 = 12.0;
-// const 在哈希闭包和解压函数中各自提升为独立的大字节数组，实测 EXE 含两份 ZIP。
-// 使用 static 明确共享同一地址，保证整个程序只嵌入一份内置运行时。
-static EMBEDDED_MUSIC_API_RUNTIME: &[u8] =
+#[cfg(not(mobile))]
+const EMBEDDED_MUSIC_API_RUNTIME: &[u8] =
     include_bytes!("../embedded-runtime/music-api-runtime.zip");
 
 #[derive(Debug, Clone, Deserialize)]
@@ -108,27 +157,27 @@ impl Default for TrayState {
     }
 }
 
+#[cfg(not(mobile))]
 fn embedded_runtime_hash() -> u64 {
     // 根因：旧逻辑按 exe 修改时间生成临时运行时目录。某些打包/复制场景下 exe 时间不变，
     // 会继续复用旧目录里的 alger-music-api.js，导致明明重新打包了，用户机器仍跑旧后端。
     // 这里直接对内置 zip 内容做轻量 FNV-1a 哈希；只要后端运行时内容变化，释放目录就变化。
-    static RUNTIME_HASH: OnceLock<u64> = OnceLock::new();
-    *RUNTIME_HASH.get_or_init(|| {
-        let mut hash = 0xcbf29ce484222325u64;
-        for byte in EMBEDDED_MUSIC_API_RUNTIME {
-            hash ^= u64::from(*byte);
-            hash = hash.wrapping_mul(0x100000001b3);
-        }
-        hash
-    })
+    let mut hash = 0xcbf29ce484222325u64;
+    for byte in EMBEDDED_MUSIC_API_RUNTIME {
+        hash ^= u64::from(*byte);
+        hash = hash.wrapping_mul(0x100000001b3);
+    }
+    hash
 }
 
+#[cfg(not(mobile))]
 fn current_exe_dir() -> Option<PathBuf> {
     std::env::current_exe()
         .ok()
         .and_then(|path| path.parent().map(|parent| parent.to_path_buf()))
 }
 
+#[cfg(not(mobile))]
 fn embedded_runtime_dir() -> Result<PathBuf, String> {
     let runtime_dir = std::env::temp_dir().join("ikun-music").join(format!(
         "music-api-runtime-{:016x}",
@@ -143,7 +192,6 @@ fn embedded_runtime_dir() -> Result<PathBuf, String> {
     if runtime_dir.join(node_file_name).exists()
         && runtime_dir.join("bin").join("alger-music-api.js").exists()
         && runtime_dir.join("node_modules").exists()
-        && runtime_dir.join(".ready").is_file()
     {
         return Ok(runtime_dir);
     }
@@ -185,12 +233,10 @@ fn embedded_runtime_dir() -> Result<PathBuf, String> {
             .map_err(|error| format!("写入运行时文件失败：{}，{error}", out_path.display()))?;
     }
 
-    // 解压可能被上次退出打断；只有所有文件写完后才允许下次复用。
-    fs::write(runtime_dir.join(".ready"), b"ready")
-        .map_err(|error| format!("保存运行时完成标记失败：{error}"))?;
     Ok(runtime_dir)
 }
 
+#[cfg(not(mobile))]
 fn resolve_node_command(current_dir: &Path, exe_dir: &Path) -> PathBuf {
     let node_filename = if cfg!(target_os = "windows") {
         "node.exe"
@@ -210,6 +256,7 @@ fn resolve_node_command(current_dir: &Path, exe_dir: &Path) -> PathBuf {
         .unwrap_or_else(|| PathBuf::from(node_filename))
 }
 
+#[cfg(not(mobile))]
 fn resolve_music_api_script(app: &AppHandle) -> Result<PathBuf, String> {
     let current_dir = std::env::current_dir().map_err(|error| error.to_string())?;
     let exe_dir = current_exe_dir().unwrap_or_else(|| current_dir.clone());
@@ -253,6 +300,7 @@ fn resolve_music_api_script(app: &AppHandle) -> Result<PathBuf, String> {
         })
 }
 
+#[cfg(not(mobile))]
 fn resolve_music_api_runtime(app: &AppHandle) -> Result<(PathBuf, PathBuf, PathBuf), String> {
     let runtime_dir = embedded_runtime_dir()?;
     let current_dir = std::env::current_dir().map_err(|error| error.to_string())?;
@@ -276,11 +324,13 @@ fn resolve_music_api_runtime(app: &AppHandle) -> Result<(PathBuf, PathBuf, PathB
     Ok((fallback_root, fallback_node, fallback_script))
 }
 
+#[cfg(not(mobile))]
 fn main_window(app: &AppHandle) -> Result<WebviewWindow, String> {
     app.get_webview_window(MAIN_WINDOW_LABEL)
         .ok_or_else(|| "没有找到主窗口，请重启应用后再试".to_string())
 }
 
+#[cfg(not(mobile))]
 fn remember_pre_mini_window_state(
     window: &WebviewWindow,
     restore_state: &MiniWindowRestoreState,
@@ -324,6 +374,7 @@ fn remember_pre_mini_window_state(
     Ok(())
 }
 
+#[cfg(not(mobile))]
 fn take_pre_mini_window_state(
     restore_state: &MiniWindowRestoreState,
 ) -> Result<Option<SavedMainWindowState>, String> {
@@ -334,12 +385,14 @@ fn take_pre_mini_window_state(
     Ok(guard.take())
 }
 
+#[cfg(not(mobile))]
 fn emit_mini_mode(window: &WebviewWindow, enabled: bool) -> Result<(), String> {
     window
         .emit("mini-mode", enabled)
         .map_err(|error| format!("同步窗口模式失败：{error}"))
 }
 
+#[cfg(not(mobile))]
 fn apply_mini_position(window: &WebviewWindow, width: f64, height: f64) -> Result<(), String> {
     let monitor = window
         .current_monitor()
@@ -362,12 +415,14 @@ fn apply_mini_position(window: &WebviewWindow, width: f64, height: f64) -> Resul
     Ok(())
 }
 
+#[cfg(not(mobile))]
 fn resize_window_for_mode(window: &WebviewWindow, width: f64, height: f64) -> Result<(), String> {
     window
         .set_size(Size::Logical(LogicalSize { width, height }))
         .map_err(|error| format!("调整窗口尺寸失败：{error}"))
 }
 
+#[cfg(not(mobile))]
 fn show_normal_window(
     window: &WebviewWindow,
     restore_state: &MiniWindowRestoreState,
@@ -435,6 +490,7 @@ fn show_normal_window(
     emit_mini_mode(window, false)
 }
 
+#[cfg(not(mobile))]
 fn enter_mini_window(
     window: &WebviewWindow,
     restore_state: &MiniWindowRestoreState,
@@ -474,6 +530,7 @@ fn enter_mini_window(
     emit_mini_mode(window, true)
 }
 
+#[cfg(not(mobile))]
 fn hide_to_tray(window: &WebviewWindow) -> Result<(), String> {
     window
         .set_always_on_top(false)
@@ -484,6 +541,7 @@ fn hide_to_tray(window: &WebviewWindow) -> Result<(), String> {
         .map_err(|error| format!("隐藏到系统托盘失败：{error}"))
 }
 
+#[cfg(not(mobile))]
 fn emit_to_window(app: &AppHandle, label: &str, event: &str, payload: Value) -> Result<(), String> {
     let window = app
         .get_webview_window(label)
@@ -493,11 +551,13 @@ fn emit_to_window(app: &AppHandle, label: &str, event: &str, payload: Value) -> 
         .map_err(|error| error.to_string())
 }
 
+#[cfg(not(mobile))]
 fn show_main_window(app: &AppHandle, restore_state: &MiniWindowRestoreState) -> Result<(), String> {
     let window = main_window(app)?;
     show_normal_window(&window, restore_state)
 }
 
+#[cfg(not(mobile))]
 fn lyric_window_bounds_path(app: &AppHandle) -> Result<PathBuf, String> {
     let dir = app
         .path()
@@ -507,10 +567,12 @@ fn lyric_window_bounds_path(app: &AppHandle) -> Result<PathBuf, String> {
     Ok(dir.join("lyric-window-bounds.json"))
 }
 
+#[cfg(not(mobile))]
 fn is_valid_lyric_window_bounds(bounds: &SavedLyricWindowBounds) -> bool {
     (600..=1600).contains(&bounds.width) && (200..=800).contains(&bounds.height)
 }
 
+#[cfg(not(mobile))]
 fn load_saved_lyric_window_bounds(app: &AppHandle) -> Option<SavedLyricWindowBounds> {
     let path = lyric_window_bounds_path(app).ok()?;
     let content = fs::read_to_string(path).ok()?;
@@ -522,6 +584,7 @@ fn load_saved_lyric_window_bounds(app: &AppHandle) -> Option<SavedLyricWindowBou
     }
 }
 
+#[cfg(not(mobile))]
 fn has_visible_monitor_for_lyric_bounds(
     window: &WebviewWindow,
     bounds: &SavedLyricWindowBounds,
@@ -547,6 +610,7 @@ fn has_visible_monitor_for_lyric_bounds(
     }))
 }
 
+#[cfg(not(mobile))]
 fn persist_lyric_window_bounds(window: &WebviewWindow) -> Result<(), String> {
     let size = window
         .inner_size()
@@ -569,6 +633,7 @@ fn persist_lyric_window_bounds(window: &WebviewWindow) -> Result<(), String> {
     fs::write(path, content).map_err(|error| format!("写入桌面歌词窗口状态失败：{error}"))
 }
 
+#[cfg(not(mobile))]
 fn ensure_lyric_window(app: &AppHandle) -> Result<WebviewWindow, String> {
     if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
         return Ok(window);
@@ -622,6 +687,7 @@ fn ensure_lyric_window(app: &AppHandle) -> Result<WebviewWindow, String> {
     Ok(window)
 }
 
+#[cfg(not(mobile))]
 fn ensure_tray_panel_window(app: &AppHandle) -> Result<WebviewWindow, String> {
     if let Some(window) = app.get_webview_window(TRAY_PANEL_WINDOW_LABEL) {
         return Ok(window);
@@ -650,6 +716,7 @@ fn ensure_tray_panel_window(app: &AppHandle) -> Result<WebviewWindow, String> {
     .map_err(|error| format!("创建托盘控制面板失败：{error}"))
 }
 
+#[cfg(not(mobile))]
 fn tray_panel_position(
     app: &AppHandle,
     click_position: PhysicalPosition<f64>,
@@ -690,6 +757,7 @@ fn tray_panel_position(
     Ok(PhysicalPosition::new(x.round() as i32, y.round() as i32))
 }
 
+#[cfg(not(mobile))]
 fn show_tray_panel(app: &AppHandle, click_position: PhysicalPosition<f64>) -> Result<(), String> {
     let window = ensure_tray_panel_window(app)?;
     let target_position = tray_panel_position(app, click_position)?;
@@ -716,12 +784,14 @@ fn show_tray_panel(app: &AppHandle, click_position: PhysicalPosition<f64>) -> Re
     .map_err(|error| format!("同步托盘控制面板状态失败：{error}"))
 }
 
+#[cfg(not(mobile))]
 fn hide_tray_panel(app: &AppHandle) {
     if let Some(window) = app.get_webview_window(TRAY_PANEL_WINDOW_LABEL) {
         let _ = window.hide();
     }
 }
 
+#[cfg(not(mobile))]
 fn close_lyric_window_internal(app: &AppHandle) -> Result<(), String> {
     if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
         let _ = persist_lyric_window_bounds(&window);
@@ -734,6 +804,7 @@ fn close_lyric_window_internal(app: &AppHandle) -> Result<(), String> {
     Ok(())
 }
 
+#[cfg(not(mobile))]
 fn chrono_free_timestamp() -> u128 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -741,6 +812,7 @@ fn chrono_free_timestamp() -> u128 {
         .unwrap_or(0)
 }
 
+#[cfg(not(mobile))]
 fn truncate_menu_text(value: &str, max_chars: usize) -> String {
     let trimmed = value.trim();
     if trimmed.chars().count() <= max_chars {
@@ -753,6 +825,7 @@ fn truncate_menu_text(value: &str, max_chars: usize) -> String {
     text
 }
 
+#[cfg(not(mobile))]
 fn tray_tooltip_text(state: &TrayState) -> String {
     if !state.has_song {
         return "ikun音乐".to_string();
@@ -784,6 +857,7 @@ fn tray_tooltip_text(state: &TrayState) -> String {
     )
 }
 
+#[cfg(not(mobile))]
 fn create_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
     let icon = app
         .default_window_icon()
@@ -837,14 +911,31 @@ fn get_arch() -> String {
 
 #[tauri::command]
 fn get_downloads_path(app: AppHandle) -> Result<String, String> {
+    #[cfg(mobile)]
+    {
+        let _ = app;
+        return Ok(String::new());
+    }
+
+    #[cfg(not(mobile))]
+    {
     app.path()
         .download_dir()
         .map(|path| path.to_string_lossy().to_string())
         .map_err(|error| format!("读取系统下载目录失败：{error}"))
+    }
 }
 
 #[tauri::command]
 fn write_local_file(request: WriteLocalFileRequest) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = request;
+        return Err("Android 第一阶段暂不支持写入本地文件".to_string());
+    }
+
+    #[cfg(not(mobile))]
+    {
     let path = PathBuf::from(&request.path);
     if path.as_os_str().is_empty() {
         return Err("写入文件路径为空".to_string());
@@ -853,10 +944,19 @@ fn write_local_file(request: WriteLocalFileRequest) -> Result<(), String> {
         fs::create_dir_all(parent).map_err(|error| format!("创建下载目录失败：{error}"))?;
     }
     fs::write(&path, request.bytes).map_err(|error| format!("写入下载文件失败：{error}"))
+    }
 }
 
 #[tauri::command]
 fn write_local_text_file(request: WriteTextFileRequest) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = request;
+        return Err("Android 第一阶段暂不支持写入本地文本文件".to_string());
+    }
+
+    #[cfg(not(mobile))]
+    {
     let path = PathBuf::from(&request.path);
     if path.as_os_str().is_empty() {
         return Err("写入文本文件路径为空".to_string());
@@ -865,59 +965,131 @@ fn write_local_text_file(request: WriteTextFileRequest) -> Result<(), String> {
         fs::create_dir_all(parent).map_err(|error| format!("创建文本文件目录失败：{error}"))?;
     }
     fs::write(&path, request.content).map_err(|error| format!("写入文本文件失败：{error}"))
+    }
 }
 
 #[tauri::command]
 fn delete_local_file(path: String) -> Result<bool, String> {
+    #[cfg(mobile)]
+    {
+        let _ = path;
+        return Ok(false);
+    }
+
+    #[cfg(not(mobile))]
+    {
     let path = PathBuf::from(path);
     if !path.exists() {
         return Ok(false);
     }
     fs::remove_file(&path).map_err(|error| format!("删除本地文件失败：{error}"))?;
     Ok(true)
+    }
 }
 
 #[tauri::command]
 fn local_file_exists(path: String) -> bool {
+    #[cfg(mobile)]
+    {
+        let _ = path;
+        return false;
+    }
+
+    #[cfg(not(mobile))]
+    {
     PathBuf::from(path).exists()
+    }
 }
 
 #[tauri::command]
 fn minimize_window(window: WebviewWindow) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = window;
+        return Ok(());
+    }
+
+    #[cfg(not(mobile))]
+    {
     window.minimize().map_err(|error| error.to_string())
+    }
 }
 
 #[tauri::command]
 fn maximize_window(window: WebviewWindow) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = window;
+        return Ok(());
+    }
+
+    #[cfg(not(mobile))]
+    {
     if window.is_maximized().map_err(|error| error.to_string())? {
         window.unmaximize().map_err(|error| error.to_string())
     } else {
         window.maximize().map_err(|error| error.to_string())
     }
+    }
 }
 
 #[tauri::command]
 fn close_window(window: WebviewWindow) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = window;
+        return Ok(());
+    }
+
+    #[cfg(not(mobile))]
+    {
     window.close().map_err(|error| error.to_string())
+    }
 }
 
 #[tauri::command]
 fn quit_app(app: AppHandle) {
+    #[cfg(mobile)]
+    {
+        let _ = app;
+        return;
+    }
+
+    #[cfg(not(mobile))]
+    {
     app.exit(0);
+    }
 }
 
 #[tauri::command]
 fn hide_tray_panel_window(app: AppHandle) {
+    #[cfg(mobile)]
+    {
+        let _ = app;
+    }
+    #[cfg(not(mobile))]
     hide_tray_panel(&app);
 }
 
 #[tauri::command]
 fn start_drag(window: WebviewWindow) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = window;
+        return Ok(());
+    }
+    #[cfg(not(mobile))]
     window.start_dragging().map_err(|error| error.to_string())
 }
 
 #[tauri::command]
 fn set_window_size(window: WebviewWindow, width: f64, height: f64) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = (window, width, height);
+        return Ok(());
+    }
+    #[cfg(not(mobile))]
     resize_window_for_mode(&window, width, height)
 }
 
@@ -926,6 +1098,12 @@ fn mini_window(
     window: WebviewWindow,
     restore_state: tauri::State<MiniWindowRestoreState>,
 ) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = (window, restore_state);
+        return Ok(());
+    }
+    #[cfg(not(mobile))]
     enter_mini_window(&window, &restore_state, false)
 }
 
@@ -935,11 +1113,23 @@ fn resize_mini_window(
     restore_state: tauri::State<MiniWindowRestoreState>,
     show_playlist: bool,
 ) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = (window, restore_state, show_playlist);
+        return Ok(());
+    }
+    #[cfg(not(mobile))]
     enter_mini_window(&window, &restore_state, show_playlist)
 }
 
 #[tauri::command]
 fn mini_tray(window: WebviewWindow) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = window;
+        return Ok(());
+    }
+    #[cfg(not(mobile))]
     hide_to_tray(&window)
 }
 
@@ -948,11 +1138,24 @@ fn restore_window(
     window: WebviewWindow,
     restore_state: tauri::State<MiniWindowRestoreState>,
 ) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = (window, restore_state);
+        return Ok(());
+    }
+    #[cfg(not(mobile))]
     show_normal_window(&window, &restore_state)
 }
 
 #[tauri::command]
 fn open_lyric_window(app: AppHandle) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = app;
+        return Ok(());
+    }
+    #[cfg(not(mobile))]
+    {
     let window = ensure_lyric_window(&app)?;
 
     if window.is_minimized().unwrap_or(false) {
@@ -972,15 +1175,29 @@ fn open_lyric_window(app: AppHandle) -> Result<(), String> {
         .map_err(|error| format!("聚焦桌面歌词窗口失败：{error}"))?;
 
     Ok(())
+    }
 }
 
 #[tauri::command]
 fn close_lyric_window(app: AppHandle) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = app;
+        return Ok(());
+    }
+    #[cfg(not(mobile))]
     close_lyric_window_internal(&app)
 }
 
 #[tauri::command]
 fn set_lyric_ignore_mouse(app: AppHandle, ignore: bool) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = (app, ignore);
+        return Ok(());
+    }
+    #[cfg(not(mobile))]
+    {
     if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
         window
             .set_ignore_cursor_events(ignore)
@@ -988,6 +1205,7 @@ fn set_lyric_ignore_mouse(app: AppHandle, ignore: bool) -> Result<(), String> {
     }
 
     Ok(())
+    }
 }
 
 #[tauri::command]
@@ -995,6 +1213,11 @@ fn start_lyric_drag() {}
 
 #[tauri::command]
 fn end_lyric_drag(app: AppHandle) {
+    #[cfg(mobile)]
+    {
+        let _ = app;
+    }
+    #[cfg(not(mobile))]
     if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
         let _ = persist_lyric_window_bounds(&window);
     }
@@ -1002,6 +1225,13 @@ fn end_lyric_drag(app: AppHandle) {
 
 #[tauri::command]
 fn move_lyric_window(app: AppHandle, delta_x: f64, delta_y: f64) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = (app, delta_x, delta_y);
+        return Ok(());
+    }
+    #[cfg(not(mobile))]
+    {
     if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
         let current_position = window
             .outer_position()
@@ -1015,10 +1245,18 @@ fn move_lyric_window(app: AppHandle, delta_x: f64, delta_y: f64) -> Result<(), S
     }
 
     Ok(())
+    }
 }
 
 #[tauri::command]
 fn emit_to_main(app: AppHandle, event: String, payload: Value) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = (app, event, payload);
+        return Ok(());
+    }
+    #[cfg(not(mobile))]
+    {
     let target_label = match event.as_str() {
         "tray-panel-state" => TRAY_PANEL_WINDOW_LABEL,
         "receive-lyric" => LYRIC_WINDOW_LABEL,
@@ -1030,10 +1268,18 @@ fn emit_to_main(app: AppHandle, event: String, payload: Value) -> Result<(), Str
         _ => MAIN_WINDOW_LABEL,
     };
     emit_to_window(&app, target_label, &event, payload)
+    }
 }
 
 #[tauri::command]
 fn update_tray_state(app: AppHandle, state: TrayState) -> Result<(), String> {
+    #[cfg(mobile)]
+    {
+        let _ = (app, state);
+        return Ok(());
+    }
+    #[cfg(not(mobile))]
+    {
     let tray = app
         .tray_by_id(TRAY_ID)
         .ok_or_else(|| "系统托盘尚未创建，请稍后再试".to_string())?;
@@ -1042,10 +1288,22 @@ fn update_tray_state(app: AppHandle, state: TrayState) -> Result<(), String> {
         .map_err(|error| format!("更新托盘提示失败：{error}"))?;
 
     Ok(())
+    }
 }
 
-fn start_music_api_process(app: AppHandle, port: u16) -> Result<Value, String> {
-    let state = app.state::<MusicApiProcess>();
+#[tauri::command]
+fn start_music_api(
+    app: AppHandle,
+    state: tauri::State<MusicApiProcess>,
+    port: u16,
+) -> Result<Value, String> {
+    #[cfg(mobile)]
+    {
+        let _ = (app, state, port);
+        return Ok(json!({ "running": false, "mobile": true }));
+    }
+    #[cfg(not(mobile))]
+    {
     let mut process_guard = state.0.lock().map_err(|error| error.to_string())?;
     if let Some(api_child) = process_guard.as_mut() {
         if api_child
@@ -1167,8 +1425,6 @@ fn start_music_api_process(app: AppHandle, port: u16) -> Result<Value, String> {
             } else {
                 format!("，错误输出：{}", stderr_lines.join(" | "))
             };
-            let _ = child.kill();
-            let _ = child.wait();
             return Err(format!(
                 "音乐 API 子进程启动超时，Node 路径：{}，脚本路径：{}{}",
                 node_command.display(),
@@ -1185,32 +1441,37 @@ fn start_music_api_process(app: AppHandle, port: u16) -> Result<Value, String> {
         port: actual_port,
     });
     Ok(json!({ "port": actual_port, "running": true }))
-}
-
-#[tauri::command]
-async fn start_music_api(app: AppHandle, port: u16) -> Result<Value, String> {
-    // 根因：setup 和同步 IPC 在 UI 线程解压并等待 Node，最坏会冻结窗口三十秒。
-    // 交给阻塞任务池处理，前端等待同一个就绪 Promise，窗口仍能拖动和切换页面。
-    tauri::async_runtime::spawn_blocking(move || start_music_api_process(app, port))
-        .await
-        .map_err(|error| format!("启动音乐服务任务未完成：{error}"))?
+    }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let builder = tauri::Builder::default()
         .manage(MusicApiProcess(Mutex::new(None)))
         .manage(MiniWindowRestoreState(Mutex::new(None)))
         .setup(|app| {
-            create_tray(app)?;
-            // 前端读取保存的端口后再异步启动，避免固定 30488 覆盖用户配置。
+            #[cfg(not(mobile))]
+            {
+                create_tray(app)?;
+                let app_handle = app.handle().clone();
+                let state = app.state::<MusicApiProcess>();
+                let _ = start_music_api(app_handle, state, 30488);
+            }
             Ok(())
         })
-        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_opener::init());
+
+    #[cfg(not(mobile))]
+    let builder = builder
         .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_fs::init())
-        .plugin(tauri_plugin_http::init())
-        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_fs::init());
+
+    let builder = builder.plugin(tauri_plugin_http::init());
+
+    #[cfg(not(mobile))]
+    let builder = builder.plugin(tauri_plugin_shell::init());
+
+    builder
         .plugin(tauri_plugin_store::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             get_default_settings,
@@ -1243,6 +1504,14 @@ pub fn run() {
             start_music_api
         ])
         .on_window_event(|window, event| {
+            #[cfg(mobile)]
+            {
+                let _ = (window, event);
+                return;
+            }
+
+            #[cfg(not(mobile))]
+            {
             if window.label() == TRAY_PANEL_WINDOW_LABEL {
                 match event {
                     WindowEvent::Focused(false) => {
@@ -1290,6 +1559,7 @@ pub fn run() {
                         }
                     };
                 }
+            }
             }
         })
         .run(tauri::generate_context!())

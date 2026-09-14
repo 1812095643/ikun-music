@@ -19,6 +19,7 @@ bun.lockb
 bun.lock
 
 .env.*.local
+.env.android
 
 out
 

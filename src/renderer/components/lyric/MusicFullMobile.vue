@@ -30,6 +30,7 @@
 
       <!-- 右上角设置按钮 -->
       <div
+        v-if="!isAndroidRuntime"
         class="control-btn absolute right-5 flex items-center gap-2"
         :class="[
           { 'pure-mode': config.pureModeEnabled },
@@ -40,12 +41,12 @@
         <div
           v-if="hasSleepTimerActive"
           class="flex items-center gap-1 px-2 py-1 rounded-md bg-black/35 text-xs text-white/90"
-          @click="showPlayerSettings = true"
+          @click="openPlayerSettings"
         >
           <i class="ri-timer-line text-primary"></i>
           <span class="font-medium tabular-nums">{{ sleepTimerDisplayText }}</span>
         </div>
-        <div @click="showPlayerSettings = true">
+        <div @click="openPlayerSettings">
           <i class="ri-more-2-fill"></i>
         </div>
       </div>
@@ -67,7 +68,10 @@
       </n-popover>
 
       <!-- 播放设置弹窗 -->
-      <mobile-player-settings v-model:visible="showPlayerSettings" />
+      <mobile-player-settings
+        v-if="!isAndroidRuntime && shouldMountPlayerSettings"
+        v-model:visible="showPlayerSettings"
+      />
 
       <!-- 全屏歌词页面 - 竖屏模式下 -->
       <transition name="fade">
@@ -170,7 +174,7 @@
                   {{ index < artistList.length - 1 ? ' / ' : '' }}
                 </span>
               </p>
-              <div class="favorite-icon" @click="toggleFavorite">
+              <div v-if="!isAndroidRuntime" class="favorite-icon" @click="toggleFavorite">
                 <i class="ri-heart-3-fill" :class="{ favorite: isFavorite }"></i>
               </div>
             </div>
@@ -277,7 +281,7 @@
                 </span>
               </p>
             </div>
-            <div class="favorite-icon landscape" @click="toggleFavorite">
+            <div v-if="!isAndroidRuntime" class="favorite-icon landscape" @click="toggleFavorite">
               <i class="ri-heart-3-fill" :class="{ favorite: isFavorite }"></i>
             </div>
           </div>
@@ -406,11 +410,18 @@
 
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core';
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import {
+  computed,
+  defineAsyncComponent,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import LyricSourceSelector from '@/components/lyric/LyricSourceSelector.vue';
-import MobilePlayerSettings from '@/components/player/MobilePlayerSettings.vue';
 import {
   allTime,
   artistList,
@@ -430,9 +441,13 @@ import { loadLyricCandidates } from '@/services/lyricCandidateService';
 import { useLyricStore } from '@/store/modules/lyric';
 import { usePlayerStore } from '@/store/modules/player';
 import { DEFAULT_LYRIC_CONFIG, LyricConfig } from '@/types/lyric';
-import { getImgUrl, secondToMinute } from '@/utils';
+import { getImgUrl, isAndroidRuntime, secondToMinute } from '@/utils';
 import { animateGradient, getHoverBackgroundColor, getTextColors } from '@/utils/linearColor';
 import { showBottomToast } from '@/utils/shortcutToast';
+
+const MobilePlayerSettings = defineAsyncComponent(
+  () => import('@/components/player/MobilePlayerSettings.vue')
+);
 
 const { t } = useI18n();
 const playerStore = usePlayerStore();
@@ -444,6 +459,13 @@ const playIcon = computed(() => (play.value ? 'ri-pause-fill' : 'ri-play-fill'))
 
 // 播放设置弹窗
 const showPlayerSettings = ref(false);
+const shouldMountPlayerSettings = ref(false);
+
+const openPlayerSettings = () => {
+  if (isAndroidRuntime) return;
+  shouldMountPlayerSettings.value = true;
+  showPlayerSettings.value = true;
+};
 
 // 定时器相关
 const sleepTimerRefresh = ref(0);

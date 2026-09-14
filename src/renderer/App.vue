@@ -1,5 +1,8 @@
 <template>
-  <div class="app-container h-full w-full" :class="{ mobile: isMobile, noElectron: !isElectron }">
+  <div
+    class="app-container h-full w-full"
+    :class="{ mobile: isMobile, noElectron: !isDesktopRuntime }"
+  >
     <n-config-provider :theme="theme === 'dark' ? darkTheme : lightTheme">
       <n-dialog-provider>
         <n-message-provider>
@@ -36,7 +39,7 @@ import { usePlayerCoreStore } from '@/store/modules/playerCore';
 import { useSettingsStore } from '@/store/modules/settings';
 import { useUserStore } from '@/store/modules/user';
 import type { Artist, SongResult } from '@/types/music';
-import { isElectron, isLyricWindow } from '@/utils';
+import { isDesktopRuntime, isLyricWindow } from '@/utils';
 import { checkLoginStatus } from '@/utils/auth';
 import {
   consumeMiniModeRestoreRoute,
@@ -46,9 +49,7 @@ import {
 
 import { allTime, initAudioListeners, initMusicHook, nowTime, openLyric } from './hooks/MusicHook';
 import { audioService } from './services/audioService';
-import { initLxMusicRunner } from './services/LxMusicSourceRunner';
 import { isMobile } from './utils';
-import { useAppShortcuts } from './utils/appShortcuts';
 
 type TrayPanelStatePayload = {
   song?: SongResult;
@@ -75,10 +76,25 @@ const isBrowserCompatRuntime = !(window as any).__TAURI_INTERNALS__;
 
 const showSplash = ref(true);
 const isTrayPanelWindow = computed(() => window.location.hash.includes('tray-panel'));
+const shouldUseDesktopShell = isDesktopRuntime;
 let removeTrayControlListener: (() => void) | null = null;
 let removeTrayPanelOpenedListener: (() => void) | null = null;
 let removeTrayPanelCommandListener: (() => void) | null = null;
 let trayPanelStateTimer: number | null = null;
+let cleanupAppShortcuts: (() => void) | null = null;
+
+const handleDesktopOffline = () => {
+  console.log('网络连接断开，跳转到本地音乐页面');
+  router.push('/local-music');
+};
+
+const initDesktopAppShortcuts = async () => {
+  if (!shouldUseDesktopShell || cleanupAppShortcuts) return;
+
+  const appShortcutsModule = await import('./utils/appShortcuts');
+  appShortcutsModule.initAppShortcuts();
+  cleanupAppShortcuts = appShortcutsModule.cleanupAppShortcuts;
+};
 
 const getArtistText = (song: SongResult | Record<string, any> | null | undefined) => {
   const artistGroups = [
@@ -129,7 +145,7 @@ const getSoundTimeSnapshot = () => {
  */
 const syncTrayState = () => {
   if (
-    !isElectron ||
+    !shouldUseDesktopShell ||
     isLyricWindow.value ||
     isTrayPanelWindow.value ||
     !window.api?.updateTrayState
@@ -287,7 +303,7 @@ const handleTrayControl = async (action: string) => {
 
 const broadcastTrayPanelState = () => {
   if (
-    !isElectron ||
+    !shouldUseDesktopShell ||
     isLyricWindow.value ||
     isTrayPanelWindow.value ||
     !window.electron?.ipcRenderer
@@ -397,7 +413,12 @@ if (!isLyricWindow.value && !isTrayPanelWindow.value) {
 handleSetLanguage(settingsStore.setData.language);
 
 // 监听迷你模式状态
-if (isElectron && !isTrayPanelWindow.value && window.api && window.electron?.ipcRenderer) {
+if (
+  shouldUseDesktopShell &&
+  !isTrayPanelWindow.value &&
+  window.api &&
+  window.electron?.ipcRenderer
+) {
   window.api.onLanguageChanged(handleSetLanguage);
   window.electron.ipcRenderer.on('mini-mode', (_, value) => {
     const nextMiniMode = Boolean(value);
@@ -422,14 +443,19 @@ if (isElectron && !isTrayPanelWindow.value && window.api && window.electron?.ipc
   });
 }
 
-if (isElectron && !isLyricWindow.value && !isTrayPanelWindow.value && window.api?.onTrayControl) {
+if (
+  shouldUseDesktopShell &&
+  !isLyricWindow.value &&
+  !isTrayPanelWindow.value &&
+  window.api?.onTrayControl
+) {
   removeTrayControlListener = window.api.onTrayControl((action) => {
     void handleTrayControl(action);
   });
 }
 
 if (
-  isElectron &&
+  shouldUseDesktopShell &&
   !isLyricWindow.value &&
   !isTrayPanelWindow.value &&
   window.electron?.ipcRenderer
@@ -468,11 +494,6 @@ watch(
   { immediate: true, deep: true }
 );
 
-// 使用应用内快捷键
-if (!isTrayPanelWindow.value) {
-  useAppShortcuts();
-}
-
 onMounted(async () => {
   // 页面已经挂载后立即让出启动遮罩；旧的固定 1.5 秒延迟会挡住已经可操作的首页。
   showSplash.value = false;
@@ -482,44 +503,50 @@ onMounted(async () => {
     return;
   }
 
+  await initDesktopAppShortcuts();
+
   playerStore.setIsPlay(false);
   if (isLyricWindow.value) {
     return;
   }
 
-  trayPanelStateTimer = window.setInterval(broadcastTrayPanelState, 500);
+  if (shouldUseDesktopShell) {
+    trayPanelStateTimer = window.setInterval(broadcastTrayPanelState, 500);
 
-  // 检查网络状态，离线时自动跳转到本地音乐页面
-  if (!navigator.onLine) {
-    console.log('检测到无网络连接，跳转到本地音乐页面');
-    router.push('/local-music');
+    // 检查网络状态，离线时自动跳转到本地音乐页面
+    if (!navigator.onLine) {
+      console.log('检测到无网络连接，跳转到本地音乐页面');
+      router.push('/local-music');
+    }
+
+    // 监听网络状态变化，断网时跳转到本地音乐页面
+    window.addEventListener('offline', handleDesktopOffline);
   }
-
-  // 监听网络状态变化，断网时跳转到本地音乐页面
-  window.addEventListener('offline', () => {
-    console.log('网络连接断开，跳转到本地音乐页面');
-    router.push('/local-music');
-  });
 
   // 初始化 MusicHook，注入 playerStore
   initMusicHook(playerStore);
   // 初始化播放状态
   await playerStore.initializePlayState();
 
-  // 初始化音频设备变化监听器
-  playerCoreStore.initAudioDeviceListener();
+  // Android 第一阶段不初始化桌面音频输出设备监听，避免启动阶段触发不必要的设备 API。
+  if (shouldUseDesktopShell) {
+    playerCoreStore.initAudioDeviceListener();
+  }
 
-  // 初始化落雪音源（如果有激活的音源）
-  const activeLxApiId = settingsStore.setData?.activeLxMusicApiId;
-  if (activeLxApiId) {
-    const lxMusicScripts = settingsStore.setData?.lxMusicScripts || [];
-    const activeScript = lxMusicScripts.find((script: any) => script.id === activeLxApiId);
-    if (activeScript && activeScript.script) {
-      try {
-        console.log('[App] 初始化激活的落雪音源:', activeScript.name);
-        await initLxMusicRunner(activeScript.script);
-      } catch (error) {
-        console.error('[App] 初始化落雪音源失败:', error);
+  if (shouldUseDesktopShell) {
+    // 自定义音源 Worker 属于桌面增强能力，Android 第一阶段先保留基础远端播放链路。
+    const activeLxApiId = settingsStore.setData?.activeLxMusicApiId;
+    if (activeLxApiId) {
+      const lxMusicScripts = settingsStore.setData?.lxMusicScripts || [];
+      const activeScript = lxMusicScripts.find((script: any) => script.id === activeLxApiId);
+      if (activeScript && activeScript.script) {
+        try {
+          console.log('[App] 初始化激活的落雪音源:', activeScript.name);
+          const { initLxMusicRunner } = await import('./services/LxMusicSourceRunner');
+          await initLxMusicRunner(activeScript.script);
+        } catch (error) {
+          console.error('[App] 初始化落雪音源失败:', error);
+        }
       }
     }
   }
@@ -529,7 +556,7 @@ onMounted(async () => {
     // 使用 nextTick 确保 DOM 更新后再初始化
     await nextTick();
     initAudioListeners();
-    if (isElectron && window.api) {
+    if (shouldUseDesktopShell && window.api) {
       window.api.sendSong(cloneDeep(playerStore.playMusic));
     }
   }
@@ -547,6 +574,11 @@ onUnmounted(() => {
   if (trayPanelStateTimer) {
     window.clearInterval(trayPanelStateTimer);
     trayPanelStateTimer = null;
+  }
+  cleanupAppShortcuts?.();
+  cleanupAppShortcuts = null;
+  if (shouldUseDesktopShell) {
+    window.removeEventListener('offline', handleDesktopOffline);
   }
 });
 </script>

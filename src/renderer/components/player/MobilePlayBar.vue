@@ -45,6 +45,7 @@
 
     <!-- 全屏播放器 -->
     <music-full-wrapper
+      v-if="playerStore.musicFull"
       ref="MusicFullRef"
       v-model="playerStore.musicFull"
       :background="background"
@@ -55,13 +56,16 @@
 <script lang="ts" setup>
 import { useSwipe } from '@vueuse/core';
 import type { Ref } from 'vue';
-import { computed, inject, onMounted, ref, watch } from 'vue';
+import { computed, defineAsyncComponent, inject, onMounted, ref, watch } from 'vue';
 
-import MusicFullWrapper from '@/components/lyric/MusicFullWrapper.vue';
 import { artistList, playMusic } from '@/hooks/MusicHook';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSettingsStore } from '@/store/modules/settings';
 import { getImgUrl } from '@/utils';
+
+const MusicFullWrapper = defineAsyncComponent(
+  () => import('@/components/lyric/MusicFullWrapper.vue')
+);
 
 const shouldShowMobileMenu = inject('shouldShowMobileMenu') as Ref<boolean>;
 

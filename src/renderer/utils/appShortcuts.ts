@@ -11,7 +11,7 @@ import {
   shortcutActionOrder,
   type ShortcutsConfig
 } from '../../shared/shortcuts';
-import { isElectron } from '.';
+import { isDesktopRuntime } from '.';
 import { isEditableTarget, keyboardEventToAccelerator } from './shortcutKeyboard';
 import { showShortcutToast } from './shortcutToast';
 
@@ -185,7 +185,7 @@ export function setAppShortcutsSuspended(suspended: boolean) {
  */
 export function initAppShortcuts() {
   const ipcRenderer = window.electron?.ipcRenderer;
-  if (!isElectron || !ipcRenderer || appShortcutsInitialized) {
+  if (!isDesktopRuntime || !ipcRenderer || appShortcutsInitialized) {
     return;
   }
 
@@ -205,7 +205,7 @@ export function initAppShortcuts() {
  */
 export function cleanupAppShortcuts() {
   const ipcRenderer = window.electron?.ipcRenderer;
-  if (!isElectron || !ipcRenderer || !appShortcutsInitialized) {
+  if (!isDesktopRuntime || !ipcRenderer || !appShortcutsInitialized) {
     return;
   }
 

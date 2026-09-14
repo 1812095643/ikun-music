@@ -37,7 +37,7 @@
     </setting-item>
 
     <setting-item
-      v-if="!isElectron"
+      v-if="!isDesktopRuntime"
       :title="t('settings.basic.tabletMode')"
       :description="t('settings.basic.tabletModeDesc')"
     >
@@ -59,7 +59,7 @@
     </setting-item>
 
     <setting-item
-      v-if="isElectron"
+      v-if="isDesktopRuntime"
       :title="t('settings.basic.font')"
       :description="t('settings.basic.fontDesc')"
     >
@@ -84,7 +84,7 @@
       </template>
     </setting-item>
 
-    <div v-if="isElectron && selectedFonts.length > 0" class="basic-option-row p-4">
+    <div v-if="isDesktopRuntime && selectedFonts.length > 0" class="basic-option-row p-4">
       <div class="text-base font-bold mb-4 text-neutral-900 dark:text-neutral-100">
         {{ t('settings.basic.fontPreview.title') }}
       </div>
@@ -164,7 +164,7 @@
       </template>
     </setting-item>
 
-    <setting-item v-if="isElectron" :title="t('settings.basic.gpuAcceleration')">
+    <setting-item v-if="isDesktopRuntime" :title="t('settings.basic.gpuAcceleration')">
       <template #description>
         <div class="text-sm text-neutral-500 mb-2">
           {{ t('settings.basic.gpuAccelerationDesc') }}
@@ -200,7 +200,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher.vue';
 import CookieSettingsModal from '@/components/settings/CookieSettingsModal.vue';
 import { useSettingsStore } from '@/store/modules/settings';
 import { useUserStore } from '@/store/modules/user';
-import { isElectron, isMobile } from '@/utils';
+import { isDesktopRuntime, isMobile } from '@/utils';
 
 import { SETTINGS_DATA_KEY, SETTINGS_MESSAGE_KEY } from '../keys';
 import SBtn from '../SBtn.vue';
@@ -235,7 +235,7 @@ const gpuAccelerationChanged = ref(false);
 
 const handleGpuAccelerationChange = (enabled: boolean) => {
   try {
-    if (window.electron) {
+    if (isDesktopRuntime && window.electron) {
       window.electron.ipcRenderer.send('update-gpu-acceleration', enabled);
       gpuAccelerationChanged.value = true;
       message.info(t('settings.basic.gpuAccelerationChangeSuccess'));
@@ -330,7 +330,7 @@ watch(
 );
 
 onMounted(() => {
-  if (window.electron) {
+  if (isDesktopRuntime && window.electron) {
     window.electron.ipcRenderer.on('gpu-acceleration-updated', (_, enabled: boolean) => {
       console.log('GPU加速设置已更新:', enabled);
       gpuAccelerationChanged.value = true;
@@ -344,7 +344,7 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  if (window.electron) {
+  if (isDesktopRuntime && window.electron) {
     window.electron.ipcRenderer.removeAllListeners?.('gpu-acceleration-updated');
     window.electron.ipcRenderer.removeAllListeners?.('gpu-acceleration-update-error');
   }

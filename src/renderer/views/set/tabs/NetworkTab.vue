@@ -1,5 +1,5 @@
 <template>
-  <setting-section v-if="isElectron" :title="t('settings.sections.network')">
+  <setting-section v-if="isDesktopRuntime" :title="t('settings.sections.network')">
     <setting-item
       :title="t('settings.network.apiPort')"
       :description="t('settings.network.apiPortDesc')"
@@ -63,7 +63,7 @@ import { inject, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import ProxySettings from '@/components/settings/ProxySettings.vue';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 
 import { SETTINGS_DATA_KEY, SETTINGS_MESSAGE_KEY } from '../keys';
 import SBtn from '../SBtn.vue';

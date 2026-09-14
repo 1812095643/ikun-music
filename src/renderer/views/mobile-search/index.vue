@@ -102,8 +102,9 @@ import { useRouter } from 'vue-router';
 
 import { getHotSearch, getSearchKeyword } from '@/api/home';
 import { getSearchSuggestions } from '@/api/search';
-import { SEARCH_TYPES } from '@/const/bar-const';
+import { SEARCH_TYPE, SEARCH_TYPES } from '@/const/bar-const';
 import { useSearchStore } from '@/store/modules/search';
+import { isAndroidRuntime } from '@/utils';
 
 const { t, locale } = useI18n();
 const router = useRouter();
@@ -120,10 +121,14 @@ const searchInputRef = ref<HTMLInputElement | null>(null);
 const hotSearchKeyword = ref('搜索音乐、歌手、歌单');
 
 // 搜索类型
-const searchType = ref(searchStore.searchType || 1);
+const getAvailableSearchTypes = () =>
+  isAndroidRuntime ? SEARCH_TYPES.filter((type) => type.key === SEARCH_TYPE.MUSIC) : SEARCH_TYPES;
+const getInitialSearchType = () =>
+  isAndroidRuntime ? SEARCH_TYPE.MUSIC : searchStore.searchType || SEARCH_TYPE.MUSIC;
+const searchType = ref(getInitialSearchType());
 const searchTypes = computed(() => {
   locale.value;
-  return SEARCH_TYPES.map((type) => ({
+  return getAvailableSearchTypes().map((type) => ({
     label: t(type.label),
     key: type.key
   }));
@@ -219,6 +224,7 @@ const clearSearch = () => {
 
 // 选择搜索类型
 const selectType = (type: number) => {
+  if (isAndroidRuntime && type !== SEARCH_TYPE.MUSIC) return;
   searchType.value = type;
   searchStore.searchType = type;
 };

@@ -202,7 +202,7 @@ import { useI18n } from 'vue-i18n';
 
 import alipayQRCode from '@/assets/alipay.png';
 import wechatQRCode from '@/assets/wechat.png';
-import { isElectron, isLyricWindow } from '@/utils';
+import { isDesktopRuntime, isLyricWindow } from '@/utils';
 
 import config from '../../../../package.json';
 
@@ -242,7 +242,7 @@ const handleDisagree = () => {
   if (isTransitioning.value) return;
   isTransitioning.value = true;
 
-  if (isElectron) {
+  if (isDesktopRuntime) {
     window.api?.quitApp?.();
   } else {
     window.close();

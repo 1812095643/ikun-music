@@ -153,12 +153,12 @@
 
               <!-- Batch Actions -->
               <div
-                v-if="filteredSongs.length > 0 && isElectron"
+                v-if="filteredSongs.length > 0 && isDesktopRuntime"
                 class="h-8 w-[1px] bg-[var(--qqm-border)] mx-1 hidden md:block"
               ></div>
 
               <button
-                v-if="!isSelecting && isElectron"
+                v-if="!isSelecting && isDesktopRuntime"
                 class="action-btn-icon w-9 h-9 rounded-lg flex items-center justify-center text-neutral-600 dark:text-neutral-400"
                 @click="startSelect"
               >
@@ -265,7 +265,7 @@
             <div v-for="(item, index) in filteredSongs" :key="item.id" class="mb-2">
               <song-item
                 :index="index"
-                :compact="isCompactLayout"
+                :compact="shouldUseCompactLayout"
                 :item="formatSong(item)"
                 :can-remove="canRemove"
                 :selectable="isSelecting"
@@ -319,12 +319,11 @@ import {
 } from '@/api/music';
 import PlayBottom from '@/components/common/PlayBottom.vue';
 import SongItem from '@/components/common/SongItem.vue';
-import { useDownload } from '@/hooks/useDownload';
 import { useScrollTitle } from '@/hooks/useScrollTitle';
 import { useMusicStore, usePlayerStore, useRecommendStore, useUserStore } from '@/store';
 import { usePlayHistoryStore } from '@/store/modules/playHistory';
 import { SongResult } from '@/types/music';
-import { getImgUrl, isElectron, isMobile } from '@/utils';
+import { getImgUrl, isAndroidRuntime, isDesktopRuntime, isMobile } from '@/utils';
 import { getLoginErrorMessage, hasPermission } from '@/utils/auth';
 
 defineOptions({
@@ -449,11 +448,12 @@ const isFullPlaylistLoaded = ref(false);
 
 const isSelecting = ref(false);
 const selectedSongs = ref<number[]>([]);
-const { isDownloading, batchDownloadMusic } = useDownload();
+const isDownloading = ref(false);
 
 const isCompactLayout = ref(
   isMobile.value ? false : localStorage.getItem('musicListLayout') === 'compact'
 );
+const shouldUseCompactLayout = computed(() => !isAndroidRuntime && isCompactLayout.value);
 
 const total = computed(() => {
   if (listInfo.value?.trackIds) return listInfo.value.trackIds.length;
@@ -493,7 +493,7 @@ const filteredSongs = computed(() => {
 });
 
 // 未渲染项的占位高度，让滚动条从一开始就反映真实总高度
-const estimatedItemHeight = computed(() => (isCompactLayout.value ? 50 : 70));
+const estimatedItemHeight = computed(() => (shouldUseCompactLayout.value ? 50 : 70));
 const placeholderHeight = computed(() => {
   if (searchKeyword.value) return 0;
   const unrenderedCount = allFilteredSongs.value.length - filteredSongs.value.length;
@@ -753,10 +753,18 @@ const handleSelectAll = (checked: boolean) => {
   selectedSongs.value = checked ? filteredSongs.value.map((s) => s.id as number) : [];
 };
 const handleBatchDownload = async () => {
+  if (!isDesktopRuntime) return;
+  if (isDownloading.value) return;
   const list = selectedSongs.value
     .map((id) => filteredSongs.value.find((s) => s.id === id))
     .filter((s) => s) as SongResult[];
-  await batchDownloadMusic(list);
+  isDownloading.value = true;
+  try {
+    const { useDownload } = await import('@/hooks/useDownload');
+    await useDownload().batchDownloadMusic(list);
+  } finally {
+    isDownloading.value = false;
+  }
   cancelSelect();
 };
 

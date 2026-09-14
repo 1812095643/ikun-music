@@ -4,7 +4,7 @@ import { musicDB } from '@/hooks/MusicHook';
 import { SongSourceConfigManager } from '@/services/SongSourceConfigManager';
 import { useSettingsStore } from '@/store';
 import type { SongResult } from '@/types/music';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import requestMusic from '@/utils/request_music';
 
 import type { ParsedMusicResult } from './gdmusic';
@@ -300,6 +300,9 @@ const getGDMusicAudio = async (id: number, data: SongResult): Promise<ParsedMusi
  * @returns 解析结果
  */
 const getUnblockMusicAudio = (id: number, data: SongResult, sources: any[]) => {
+  // Android 第一阶段不启动桌面内置音乐服务，避免播放解析误走本地代理链路。
+  if (!isDesktopRuntime || !window.api?.unblockMusic) return null;
+
   const filteredSources = sources.filter((source) => UNBLOCK_SOURCE_KEYS.includes(source));
   console.log(`使用unblockMusic解析，音源:`, filteredSources);
   return window.api.unblockMusic(id, cloneDeep(data), cloneDeep(filteredSources));
@@ -370,7 +373,11 @@ class CustomApiStrategy implements MusicSourceStrategy {
   priority = 1;
 
   canHandle(sources: string[], settingsStore?: any): boolean {
-    return sources.includes('custom') && Boolean(settingsStore?.setData?.customApiPlugin);
+    return (
+      isDesktopRuntime &&
+      sources.includes('custom') &&
+      Boolean(settingsStore?.setData?.customApiPlugin)
+    );
   }
 
   async parse(id: number, data: SongResult, quality = 'higher'): Promise<MusicParseResult | null> {
@@ -450,6 +457,8 @@ class UnblockMusicStrategy implements MusicSourceStrategy {
   priority = 4;
 
   canHandle(sources: string[]): boolean {
+    if (!isDesktopRuntime) return false;
+
     const unblockSources = sources.filter((source) => UNBLOCK_SOURCE_KEYS.includes(source));
     return unblockSources.length > 0;
   }
@@ -662,7 +671,7 @@ export class MusicParser {
 
     try {
       // 非Electron环境直接使用API请求
-      if (!isElectron) {
+      if (!isDesktopRuntime) {
         console.log('非Electron环境，使用API请求');
         return await requestMusic.get<any>('/music', { params: { id } });
       }

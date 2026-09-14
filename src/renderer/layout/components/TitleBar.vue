@@ -129,7 +129,7 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { useSettingsStore } from '@/store/modules/settings';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 
 const { t } = useI18n();
 
@@ -138,25 +138,27 @@ const showCloseModal = ref(false);
 const rememberChoice = ref(false);
 
 const minimize = () => {
-  if (!isElectron) {
+  if (!isDesktopRuntime) {
     return;
   }
   window.api.minimize();
 };
 
 const maximize = () => {
-  if (!isElectron) {
+  if (!isDesktopRuntime) {
     return;
   }
   window.api.maximize();
 };
 
 const miniWindow = () => {
-  if (!isElectron) return;
+  if (!isDesktopRuntime) return;
   window.api.miniWindow();
 };
 
 const handleAction = (action: 'minimize' | 'close') => {
+  if (!isDesktopRuntime) return;
+
   if (rememberChoice.value) {
     settingsStore.setSetData({
       ...settingsStore.setData,
@@ -177,6 +179,8 @@ const handleAction = (action: 'minimize' | 'close') => {
 };
 
 const handleClose = () => {
+  if (!isDesktopRuntime) return;
+
   const { closeAction } = settingsStore.setData;
 
   if (closeAction === 'minimize') {
@@ -189,7 +193,7 @@ const handleClose = () => {
 };
 
 const drag = (event: MouseEvent) => {
-  if (!isElectron) {
+  if (!isDesktopRuntime) {
     return;
   }
 

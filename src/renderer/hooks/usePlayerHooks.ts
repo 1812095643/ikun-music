@@ -6,7 +6,7 @@ import { getMusicLrc, getMusicUrl, getParsingMusicUrl } from '@/api/music';
 import { playbackRequestManager } from '@/services/playbackRequestManager';
 import { SongSourceConfigManager } from '@/services/SongSourceConfigManager';
 import type { ILyric, ILyricText, IWordData, SongResult } from '@/types/music';
-import { getImgUrl, isElectron } from '@/utils';
+import { getImgUrl, isDesktopRuntime } from '@/utils';
 import { getImageLinearBackground } from '@/utils/linearColor';
 import request from '@/utils/request';
 import { parseLyrics as parseYrcLyrics } from '@/utils/yrcParser';
@@ -147,7 +147,7 @@ const resolveCachedPlaybackUrl = async (
   url: string | null | undefined,
   songData: SongResult
 ): Promise<string | null | undefined> => {
-  if (!url || !isElectron || !/^https?:\/\//i.test(url)) {
+  if (!url || !isDesktopRuntime || !/^https?:\/\//i.test(url)) {
     return url;
   }
 
@@ -327,7 +327,11 @@ export const getSongUrl = async (
     const useCustomApiForSong = songConfig?.sources.includes('custom' as any) ?? false;
 
     // 如果全局或歌曲专属设置中启用了自定义API，则最优先尝试
-    if ((useCustomApiGlobally || useCustomApiForSong) && settingsStore.setData.customApiPlugin) {
+    if (
+      isDesktopRuntime &&
+      (useCustomApiGlobally || useCustomApiForSong) &&
+      settingsStore.setData.customApiPlugin
+    ) {
       console.log(`优先级 1: 尝试使用自定义API解析歌曲 ${id}...`);
       try {
         const { parseFromCustomApi } = await import('@/api/parseFromCustomApi');
@@ -508,7 +512,7 @@ export const loadLrc = async (id: string | number): Promise<ILyric> => {
     const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
     let lyricData: any;
 
-    if (isElectron) {
+    if (isDesktopRuntime) {
       try {
         lyricData = await window.electron.ipcRenderer.invoke('get-cached-lyric', numericId);
       } catch (error) {
@@ -520,7 +524,7 @@ export const loadLrc = async (id: string | number): Promise<ILyric> => {
       const { data } = await getMusicLrc(numericId);
       lyricData = data;
 
-      if (isElectron && lyricData) {
+      if (isDesktopRuntime && lyricData) {
         void window.electron.ipcRenderer
           .invoke('cache-lyric', numericId, lyricData)
           .catch((error) => console.warn('写入磁盘歌词缓存失败:', error));
