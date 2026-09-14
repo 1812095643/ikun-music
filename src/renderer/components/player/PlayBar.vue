@@ -774,7 +774,7 @@ const openPlayListDrawer = () => {
   height: 100%;
   place-items: center;
   color: var(--qqm-muted);
-  background: var(--qqm-surface-2, #eef1f3);
+  background: color-mix(in srgb, var(--qqm-muted, #7a8780) 12%, transparent);
   font-size: 24px;
 }
 

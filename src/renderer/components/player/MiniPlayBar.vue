@@ -2,7 +2,7 @@
   <div class="mini-play-bar" :class="{ 'mini-mode': settingsStore.isMiniMode }">
     <div class="mini-main">
       <div class="mini-heading" @mousedown="startWindowDrag">
-        <span class="mini-brand"><i class="ri-music-fill" aria-hidden="true" /> ikun音乐</span>
+        <span class="mini-brand"><img src="@/assets/logo.png" alt="" /> ikun音乐</span>
         <span v-if="playMusic?.playLoading" class="mini-status">正在准备音乐</span>
         <button
           class="mini-restore"
@@ -496,9 +496,11 @@ onUnmounted(() => {
   font-weight: 600;
   color: var(--qqm-muted);
 }
-.mini-brand i {
-  font-size: 13px;
-  color: var(--qqm-primary-strong, #149761);
+.mini-brand img {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  object-fit: cover;
 }
 .mini-status {
   font-size: 10px;
@@ -526,7 +528,7 @@ onUnmounted(() => {
   flex: 0 0 80px;
   overflow: hidden;
   border-radius: 9px;
-  background: var(--qqm-surface-2, #eff3f1);
+  background: color-mix(in srgb, var(--qqm-muted, #7a8780) 12%, transparent);
   color: var(--qqm-muted);
 }
 .album-cover img {

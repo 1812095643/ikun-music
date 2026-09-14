@@ -1,10 +1,10 @@
 {
-  "name": "Alger Music PWA",
+  "name": "ikun音乐",
   "icons": [
     {
       "src": "./icon.png",
       "type": "image/png",
-      "sizes": "256x256"
+      "sizes": "512x512"
     }
   ]
 }

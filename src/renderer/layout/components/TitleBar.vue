@@ -4,7 +4,10 @@
     class="flex justify-between px-6 py-2 select-none relative text-dark dark:text-white"
     @mousedown="drag"
   >
-    <div id="title">ikun音乐</div>
+    <div id="title" class="flex items-center gap-2">
+      <img src="@/assets/logo.png" alt="" class="h-4 w-4 rounded-[3px]" />
+      ikun音乐
+    </div>
     <div id="buttons" class="flex gap-4" @mousedown.stop>
       <div
         class="window-action text-neutral-600 dark:text-neutral-400 hover:text-primary"
