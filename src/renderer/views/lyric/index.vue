@@ -429,7 +429,7 @@ const showControls = computed(() => {
 // 锁定态依赖桌面层鼠标穿透。
 // 这里统一从一个入口同步状态，避免进入/离开窗口、重开歌词窗和切换锁定时出现穿透状态反转。
 const syncIgnoreMouseState = (shouldIgnore: boolean) => {
-  windowData.electron.ipcRenderer.send('set-ignore-mouse', shouldIgnore);
+  windowData.desktop.send('set-ignore-mouse', shouldIgnore);
 };
 
 // 清除隐藏定时器
@@ -809,7 +809,7 @@ onMounted(() => {
   window.addEventListener('resize', updateContainerHeight);
 
   // 监听歌词数据
-  removeLyricDataListener = windowData.electron.ipcRenderer.on('receive-lyric', (_, data) => {
+  removeLyricDataListener = windowData.desktop.on('receive-lyric', (_, data) => {
     try {
       const parsedData = JSON.parse(data);
       handleDataUpdate(parsedData);
@@ -819,7 +819,7 @@ onMounted(() => {
   });
 
   // 通知主窗口歌词窗口已就绪，请求发送完整歌词数据
-  windowData.electron.ipcRenderer.send('lyric-ready');
+  windowData.desktop.send('lyric-ready');
 });
 
 onUnmounted(() => {
@@ -946,7 +946,7 @@ const initializeThemeColor = () => {
 
 // const handleTop = () => {
 //   lyricSetting.value.isTop = !lyricSetting.value.isTop;
-//   windowData.electron.ipcRenderer.send('top-lyric', lyricSetting.value.isTop);
+//   windowData.desktop.send('top-lyric', lyricSetting.value.isTop);
 // };
 
 const handleLock = () => {
@@ -955,7 +955,7 @@ const handleLock = () => {
 };
 
 const handleClose = () => {
-  windowData.electron.ipcRenderer.send('close-lyric');
+  windowData.desktop.send('close-lyric');
 };
 
 const cycleDisplayMode = () => {
@@ -1028,7 +1028,7 @@ const handleMouseDown = (e: MouseEvent) => {
   lastMoveTime.value = performance.now();
 
   // 发送拖动开始信号到主进程
-  windowData.electron.ipcRenderer.send('lyric-drag-start');
+  windowData.desktop.send('lyric-drag-start');
 
   // 添加全局鼠标事件监听
   const handleMouseMove = (e: MouseEvent) => {
@@ -1045,7 +1045,7 @@ const handleMouseDown = (e: MouseEvent) => {
     // 只有在实际移动时才发送事件
     if (Math.abs(deltaX) > 0 || Math.abs(deltaY) > 0) {
       // 发送移动事件到主进程
-      windowData.electron.ipcRenderer.send('lyric-drag-move', { deltaX, deltaY });
+      windowData.desktop.send('lyric-drag-move', { deltaX, deltaY });
       startPosition.value = { x: e.screenX, y: e.screenY };
     }
   };
@@ -1055,7 +1055,7 @@ const handleMouseDown = (e: MouseEvent) => {
     isDragging.value = false;
 
     // 发送拖动结束信号到主进程
-    windowData.electron.ipcRenderer.send('lyric-drag-end');
+    windowData.desktop.send('lyric-drag-end');
 
     // 移除事件监听
     document.removeEventListener('mousemove', handleMouseMove);
@@ -1100,15 +1100,15 @@ onMounted(() => {
 
 // 添加播放控制相关的函数
 const handlePlayPause = () => {
-  windowData.electron.ipcRenderer.send('control-back', 'playpause');
+  windowData.desktop.send('control-back', 'playpause');
 };
 
 const handlePrev = () => {
-  windowData.electron.ipcRenderer.send('control-back', 'prev');
+  windowData.desktop.send('control-back', 'prev');
 };
 
 const handleNext = () => {
-  windowData.electron.ipcRenderer.send('control-back', 'next');
+  windowData.desktop.send('control-back', 'next');
 };
 </script>
 

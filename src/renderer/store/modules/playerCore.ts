@@ -105,7 +105,7 @@ export const usePlayerCoreStore = defineStore(
       isPlay.value = value;
       play.value = value;
       if (isDesktopRuntime) {
-        window.electron?.ipcRenderer.send('update-play-state', value);
+        window.desktop.send('update-play-state', value);
       }
     };
 

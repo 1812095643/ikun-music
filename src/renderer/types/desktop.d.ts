@@ -1,11 +1,4 @@
-interface CompatIpcRenderer {
-  send: (channel: string, ...args: any[]) => void;
-  sendSync: (channel: string, ...args: any[]) => any;
-  invoke: (channel: string, ...args: any[]) => Promise<any>;
-  on: (channel: string, listener: (...args: any[]) => void) => () => void;
-  removeListener: (channel: string, listener: (...args: any[]) => void) => void;
-  removeAllListeners: (channel: string) => void;
-}
+import type { LocalMusicMeta } from './localMusic';
 
 type TrayStatePayload = {
   title?: string;
@@ -15,13 +8,19 @@ type TrayStatePayload = {
   volume: number;
   muted: boolean;
 };
-
-type TrayPanelCommandPayload = {
-  action: string;
-  value?: number;
-};
-
-interface CompatApi {
+type TrayPanelCommandPayload = { action: string; value?: number };
+interface DesktopBridgeEvents {
+  send: (channel: string, ...args: any[]) => void;
+  sendSync: (channel: string, ...args: any[]) => any;
+  invoke: (channel: string, ...args: any[]) => Promise<any>;
+  on: (channel: string, listener: (...args: any[]) => void) => () => void;
+  removeListener: (channel: string, listener: (...args: any[]) => void) => void;
+  removeAllListeners: (channel: string) => void;
+}
+interface DesktopBridge extends DesktopBridgeEvents, IDesktopAPI {
+  process: { platform: string; arch: string };
+}
+export interface IDesktopAPI {
   minimize: () => void;
   maximize: () => void;
   close: () => void;
@@ -37,7 +36,7 @@ interface CompatApi {
   openLyric: () => void;
   sendLyric: (data: any) => void;
   sendSong: (data: any) => void;
-  unblockMusic: (id: any, data: any, enabledSources: any) => Promise<any>;
+  unblockMusic: (id: any, data?: any, enabledSources?: any) => Promise<any>;
   importCustomApiPlugin: () => Promise<{ name: string; content: string } | null>;
   importLxMusicScript: () => Promise<{ name: string; content: string } | null>;
   onLyricWindowClosed: (callback: (payload?: any) => void) => any;
@@ -55,25 +54,16 @@ interface CompatApi {
   sendTrayPanelCommand?: (payload: TrayPanelCommandPayload) => void;
   invoke: (channel: string, ...args: any[]) => Promise<any>;
   getSearchSuggestions: (keyword: string) => Promise<any>;
-  lxMusicHttpRequest: (request: { url: string; options: any; requestId: string }) => Promise<any>;
+  lxMusicHttpRequest: (request: any) => Promise<any>;
   lxMusicHttpCancel: (requestId: string) => Promise<void>;
   scanLocalMusic: (folderPath: string) => Promise<any>;
   scanLocalMusicWithStats: (folderPath: string) => Promise<any>;
-  parseLocalMusicMetadata: (filePaths: string[]) => Promise<any[]>;
+  parseLocalMusicMetadata: (filePaths: string[]) => Promise<LocalMusicMeta[]>;
 }
-
-interface CompatElectron {
-  ipcRenderer: CompatIpcRenderer;
-  process?: { platform: string; arch: string };
-}
-
 declare global {
   interface Window {
-    electron: CompatElectron;
-    api: CompatApi;
-    ipcRenderer: CompatIpcRenderer;
+    desktop: DesktopBridge;
     $message: any;
   }
 }
-
 export {};

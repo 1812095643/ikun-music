@@ -106,7 +106,7 @@ function collectReferencesFromContent(content: string, file: string): KeyReferen
 }
 
 function collectTranslationReferences(projectRoot: string): KeyReference[] {
-  const scanDirs = ['src/renderer', 'src/main', 'src/preload'];
+  const scanDirs = ['src/renderer', 'src/shared'];
   const references: KeyReference[] = [];
 
   for (const scanDir of scanDirs) {

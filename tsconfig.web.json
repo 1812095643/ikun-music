@@ -30,9 +30,6 @@
       "@renderer/*": [
         "src/renderer/*"
       ],
-      "@main/*": [
-        "src/main/*"
-      ],
       "@i18n/*": [
         "src/i18n/*"
       ]
@@ -45,9 +42,7 @@
     "src/renderer/auto-imports.d.ts",
     "src/renderer/components.d.ts",
     "src/shared/**/*",
-    "src/i18n/**/*",
-    "src/main/set.json",
-    "src/preload/index.d.ts"
+    "src/i18n/**/*"
   ],
   "references": []
 }

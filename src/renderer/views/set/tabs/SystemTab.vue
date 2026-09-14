@@ -122,7 +122,7 @@ import { useDebounceFn } from '@vueuse/core';
 import { computed, inject, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import localData from '@/../main/set.json';
+import localData from '@/../shared/defaultSettings.json';
 import ClearCacheSettings from '@/components/settings/ClearCacheSettings.vue';
 import { useUserStore } from '@/store/modules/user';
 import { isDesktopRuntime } from '@/utils';
@@ -221,11 +221,9 @@ const readDiskCacheConfigFromUI = (): DiskCacheConfig => {
 };
 
 const refreshDiskCacheStats = async (silent: boolean = true) => {
-  if (!isDesktopRuntime || !window.electron) return;
+  if (!isDesktopRuntime || !window.desktop) return;
   try {
-    const stats = (await window.electron.ipcRenderer.invoke(
-      'get-disk-cache-stats'
-    )) as DiskCacheStats;
+    const stats = (await window.desktop.invoke('get-disk-cache-stats')) as DiskCacheStats;
     if (stats) {
       diskCacheStats.value = stats;
     }
@@ -238,12 +236,10 @@ const refreshDiskCacheStats = async (silent: boolean = true) => {
 };
 
 const loadDiskCacheConfig = async () => {
-  if (!isDesktopRuntime || !window.electron) return;
+  if (!isDesktopRuntime || !window.desktop) return;
 
   try {
-    const config = (await window.electron.ipcRenderer.invoke(
-      'get-disk-cache-config'
-    )) as DiskCacheConfig;
+    const config = (await window.desktop.invoke('get-disk-cache-config')) as DiskCacheConfig;
     if (config) {
       setData.value = {
         ...setData.value,
@@ -259,12 +255,12 @@ const loadDiskCacheConfig = async () => {
 };
 
 const applyDiskCacheConfig = async () => {
-  if (!isDesktopRuntime || !window.electron || applyingDiskCacheConfig.value) return;
+  if (!isDesktopRuntime || !window.desktop || applyingDiskCacheConfig.value) return;
 
   applyingDiskCacheConfig.value = true;
   try {
     const config = readDiskCacheConfigFromUI();
-    const updated = (await window.electron.ipcRenderer.invoke(
+    const updated = (await window.desktop.invoke(
       'set-disk-cache-config',
       config
     )) as DiskCacheConfig;
@@ -300,7 +296,7 @@ watch(
   () => {
     if (
       !isDesktopRuntime ||
-      !window.electron ||
+      !window.desktop ||
       applyingDiskCacheConfig.value ||
       switchingCacheDirectory.value
     )
@@ -352,7 +348,7 @@ const askCacheSwitchDestroy = (): Promise<boolean> => {
 };
 
 const selectCacheDirectory = async () => {
-  if (!isDesktopRuntime || !window.electron) return;
+  if (!isDesktopRuntime || !window.desktop) return;
 
   const selectedPath = await selectDirectory(message);
   if (!selectedPath) return;
@@ -375,7 +371,7 @@ const selectCacheDirectory = async () => {
 
   switchingCacheDirectory.value = true;
   try {
-    const result = (await window.electron.ipcRenderer.invoke('switch-disk-cache-directory', {
+    const result = (await window.desktop.invoke('switch-disk-cache-directory', {
       directory: selectedPath,
       action
     })) as SwitchCacheDirectoryResult;
@@ -421,10 +417,10 @@ const openCacheDirectory = () => {
 };
 
 const clearDiskCacheByScope = async (scope: DiskCacheScope) => {
-  if (!isDesktopRuntime || !window.electron) return;
+  if (!isDesktopRuntime || !window.desktop) return;
 
   try {
-    const success = await window.electron.ipcRenderer.invoke('clear-disk-cache', scope);
+    const success = await window.desktop.invoke('clear-disk-cache', scope);
     if (success) {
       await refreshDiskCacheStats();
       message.success(t('settings.system.messages.diskCacheClearSuccess'));
@@ -450,8 +446,8 @@ const clearCache = async (selectedCacheTypes: string[]) => {
         userStore.handleLogout();
         break;
       case 'settings':
-        if (isDesktopRuntime && window.electron) {
-          window.electron.ipcRenderer.send('set-store-value', 'set', localData);
+        if (isDesktopRuntime && window.desktop) {
+          window.desktop.send('set-store-value', 'set', localData);
         }
         localStorage.removeItem('appSettings');
         localStorage.removeItem('theme');
@@ -460,14 +456,14 @@ const clearCache = async (selectedCacheTypes: string[]) => {
         localStorage.removeItem('playMode');
         break;
       case 'downloads':
-        if (isDesktopRuntime && window.electron) {
-          window.electron.ipcRenderer.send('clear-downloads-history');
+        if (isDesktopRuntime && window.desktop) {
+          window.desktop.send('clear-downloads-history');
         }
         break;
       case 'resources':
-        if (isDesktopRuntime && window.electron) {
-          window.electron.ipcRenderer.send('clear-audio-cache');
-          await window.electron.ipcRenderer.invoke('clear-disk-cache', 'music');
+        if (isDesktopRuntime && window.desktop) {
+          window.desktop.send('clear-audio-cache');
+          await window.desktop.invoke('clear-disk-cache', 'music');
         }
         localStorage.removeItem('lyricCache');
         localStorage.removeItem('musicUrlCache');
@@ -482,11 +478,11 @@ const clearCache = async (selectedCacheTypes: string[]) => {
         }
         break;
       case 'lyrics':
-        if (isDesktopRuntime && window.electron) {
-          await window.electron.ipcRenderer.invoke('clear-disk-cache', 'lyrics');
+        if (isDesktopRuntime && window.desktop) {
+          await window.desktop.invoke('clear-disk-cache', 'lyrics');
         }
-        if (isDesktopRuntime && window.api?.invoke) {
-          await window.api.invoke('clear-lyrics-cache');
+        if (isDesktopRuntime && window.desktop?.invoke) {
+          await window.desktop.invoke('clear-lyrics-cache');
         }
         break;
     }
@@ -497,8 +493,8 @@ const clearCache = async (selectedCacheTypes: string[]) => {
 };
 
 const restartApp = () => {
-  if (!isDesktopRuntime || !window.electron) return;
-  window.electron.ipcRenderer.send('restart');
+  if (!isDesktopRuntime || !window.desktop) return;
+  window.desktop.send('restart');
 };
 
 onMounted(async () => {

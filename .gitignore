@@ -57,3 +57,7 @@ src-tauri/gen
 
 # 内置后端独立锁文件必须版本化，保证每次打包使用同一依赖树。
 !src-tauri/runtime/package-lock.json
+
+src-tauri/runtime-stage/
+
+!package-lock.json

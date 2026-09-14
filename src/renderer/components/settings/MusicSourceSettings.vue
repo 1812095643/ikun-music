@@ -412,7 +412,7 @@ const toggleSource = (sourceKey: string) => {
  */
 const importPlugin = async () => {
   try {
-    const result = await window.api.importCustomApiPlugin();
+    const result = await window.desktop.importCustomApiPlugin();
     if (result && result.name && result.content) {
       settingsStore.setCustomApiPlugin(result);
       message.success(t('settings.playback.customApi.importSuccess', { name: result.name }));
@@ -432,7 +432,7 @@ const importPlugin = async () => {
  */
 const importLxMusicScript = async () => {
   try {
-    const result = await window.api.importLxMusicScript();
+    const result = await window.desktop.importLxMusicScript();
     if (result && result.content) {
       await addLxMusicScript(result.content);
     }

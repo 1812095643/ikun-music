@@ -63,7 +63,7 @@ import { getAlbum } from '@/api/list';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
 import { usePlayerCoreStore } from '@/store/modules/playerCore';
 import { usePlaylistStore } from '@/store/modules/playlist';
-import { isElectron, isMobile } from '@/utils';
+import { isDesktopRuntime, isMobile } from '@/utils';
 
 import HomeListItem from './HomeListItem.vue';
 
@@ -119,7 +119,7 @@ const fetchAlbums = async () => {
 };
 
 const loadTracksOnHover = async (id: number) => {
-  if (!isElectron || isMobile.value || albumTracksMap[id] || loadingTracksMap[id]) return;
+  if (!isDesktopRuntime || isMobile.value || albumTracksMap[id] || loadingTracksMap[id]) return;
   loadingTracksMap[id] = true;
   try {
     const { data } = await getAlbum(id);

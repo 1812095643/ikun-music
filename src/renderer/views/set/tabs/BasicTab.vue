@@ -235,8 +235,8 @@ const gpuAccelerationChanged = ref(false);
 
 const handleGpuAccelerationChange = (enabled: boolean) => {
   try {
-    if (isDesktopRuntime && window.electron) {
-      window.electron.ipcRenderer.send('update-gpu-acceleration', enabled);
+    if (isDesktopRuntime && window.desktop) {
+      window.desktop.send('update-gpu-acceleration', enabled);
       gpuAccelerationChanged.value = true;
       message.info(t('settings.basic.gpuAccelerationChangeSuccess'));
     }
@@ -330,13 +330,13 @@ watch(
 );
 
 onMounted(() => {
-  if (isDesktopRuntime && window.electron) {
-    window.electron.ipcRenderer.on('gpu-acceleration-updated', (_, enabled: boolean) => {
+  if (isDesktopRuntime && window.desktop) {
+    window.desktop.on('gpu-acceleration-updated', (_, enabled: boolean) => {
       console.log('GPU加速设置已更新:', enabled);
       gpuAccelerationChanged.value = true;
     });
 
-    window.electron.ipcRenderer.on('gpu-acceleration-update-error', (_, errorMessage: string) => {
+    window.desktop.on('gpu-acceleration-update-error', (_, errorMessage: string) => {
       console.error('GPU加速设置更新错误:', errorMessage);
       gpuAccelerationChanged.value = false;
     });
@@ -344,9 +344,9 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  if (isDesktopRuntime && window.electron) {
-    window.electron.ipcRenderer.removeAllListeners?.('gpu-acceleration-updated');
-    window.electron.ipcRenderer.removeAllListeners?.('gpu-acceleration-update-error');
+  if (isDesktopRuntime && window.desktop) {
+    window.desktop.removeAllListeners?.('gpu-acceleration-updated');
+    window.desktop.removeAllListeners?.('gpu-acceleration-update-error');
   }
 });
 </script>

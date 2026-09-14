@@ -1,3 +1,32 @@
+#[cfg(not(mobile))]
+mod music_service;
+#[cfg(not(mobile))]
+mod updates;
+#[cfg(not(mobile))]
+use music_service::music_request;
+#[cfg(not(mobile))]
+use updates::{check_app_update, download_app_update, install_app_update};
+
+#[cfg(mobile)]
+#[tauri::command]
+async fn music_request() -> Result<serde_json::Value, String> {
+    Err("移动端请配置网络音乐服务".into())
+}
+#[cfg(mobile)]
+#[tauri::command]
+async fn check_app_update() -> Result<serde_json::Value, String> {
+    Err("移动端请从发布页下载更新".into())
+}
+#[cfg(mobile)]
+#[tauri::command]
+async fn download_app_update() -> Result<serde_json::Value, String> {
+    Err("移动端请从发布页下载更新".into())
+}
+#[cfg(mobile)]
+#[tauri::command]
+async fn install_app_update() -> Result<serde_json::Value, String> {
+    Err("移动端请从发布页下载更新".into())
+}
 use serde::Deserialize;
 #[cfg(not(mobile))]
 use serde::Serialize;
@@ -5,27 +34,9 @@ use serde_json::{json, Value};
 #[cfg(not(mobile))]
 use std::fs;
 #[cfg(not(mobile))]
-use std::fs::File;
-#[cfg(not(mobile))]
-use std::io::{BufRead, BufReader, Cursor};
-#[cfg(not(mobile))]
-use std::path::Path;
-#[cfg(not(mobile))]
 use std::path::PathBuf;
-#[cfg(not(mobile))]
-use std::process::{Child, Command, Stdio};
-#[cfg(not(mobile))]
-use std::sync::mpsc;
 use std::sync::Mutex;
-#[cfg(not(mobile))]
-use std::thread;
-#[cfg(not(mobile))]
-use std::time::{Duration, Instant};
-#[cfg(not(mobile))]
-use zip::ZipArchive;
 
-#[cfg(target_os = "windows")]
-use std::os::windows::process::CommandExt;
 #[cfg(not(mobile))]
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 #[cfg(not(mobile))]
@@ -36,18 +47,6 @@ use tauri::{
     Emitter, LogicalPosition, LogicalSize, PhysicalPosition, Position, Size, WebviewUrl,
     WebviewWindowBuilder, WindowEvent,
 };
-
-#[cfg(not(mobile))]
-struct MusicApiChild {
-    child: Child,
-    port: u16,
-}
-
-#[cfg(not(mobile))]
-struct MusicApiProcess(Mutex<Option<MusicApiChild>>);
-
-#[cfg(mobile)]
-struct MusicApiProcess(Mutex<Option<()>>);
 
 #[cfg(not(mobile))]
 #[derive(Clone, Copy)]
@@ -90,9 +89,6 @@ struct SavedLyricWindowBounds {
     y: i32,
 }
 
-#[cfg(target_os = "windows")]
-const CREATE_NO_WINDOW: u32 = 0x08000000;
-
 #[cfg(not(mobile))]
 const MAIN_WINDOW_LABEL: &str = "main";
 #[cfg(not(mobile))]
@@ -101,10 +97,6 @@ const TRAY_PANEL_WINDOW_LABEL: &str = "tray-panel";
 const LYRIC_WINDOW_LABEL: &str = "lyric-window";
 #[cfg(not(mobile))]
 const TRAY_ID: &str = "ikun-music-tray";
-#[cfg(not(mobile))]
-const NORMAL_WINDOW_WIDTH: f64 = 1280.0;
-#[cfg(not(mobile))]
-const NORMAL_WINDOW_HEIGHT: f64 = 840.0;
 // 与前端 MiniPlayBar 两行控制区的 164px 高度保持一致；旧 340x64 会挤压歌名和工具栏。
 #[cfg(not(mobile))]
 const MINI_WINDOW_WIDTH: f64 = 420.0;
@@ -128,9 +120,6 @@ const TRAY_PANEL_WIDTH: f64 = 336.0;
 const TRAY_PANEL_HEIGHT: f64 = 492.0;
 #[cfg(not(mobile))]
 const TRAY_PANEL_MARGIN: f64 = 12.0;
-#[cfg(not(mobile))]
-const EMBEDDED_MUSIC_API_RUNTIME: &[u8] =
-    include_bytes!("../embedded-runtime/music-api-runtime.zip");
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase", default)]
@@ -154,173 +143,6 @@ impl Default for TrayState {
             muted: false,
         }
     }
-}
-
-#[cfg(not(mobile))]
-fn embedded_runtime_hash() -> u64 {
-    // 根因：旧逻辑按 exe 修改时间生成临时运行时目录。某些打包/复制场景下 exe 时间不变，
-    // 会继续复用旧目录里的 alger-music-api.js，导致明明重新打包了，用户机器仍跑旧后端。
-    // 这里直接对内置 zip 内容做轻量 FNV-1a 哈希；只要后端运行时内容变化，释放目录就变化。
-    let mut hash = 0xcbf29ce484222325u64;
-    for byte in EMBEDDED_MUSIC_API_RUNTIME {
-        hash ^= u64::from(*byte);
-        hash = hash.wrapping_mul(0x100000001b3);
-    }
-    hash
-}
-
-#[cfg(not(mobile))]
-fn current_exe_dir() -> Option<PathBuf> {
-    std::env::current_exe()
-        .ok()
-        .and_then(|path| path.parent().map(|parent| parent.to_path_buf()))
-}
-
-#[cfg(not(mobile))]
-fn embedded_runtime_dir() -> Result<PathBuf, String> {
-    let runtime_dir = std::env::temp_dir().join("ikun-music").join(format!(
-        "music-api-runtime-{:016x}",
-        embedded_runtime_hash()
-    ));
-    let node_file_name = if cfg!(target_os = "windows") {
-        "node.exe"
-    } else {
-        "node"
-    };
-
-    if runtime_dir.join(node_file_name).exists()
-        && runtime_dir.join("bin").join("alger-music-api.js").exists()
-        && runtime_dir.join("node_modules").exists()
-    {
-        return Ok(runtime_dir);
-    }
-
-    if runtime_dir.exists() {
-        fs::remove_dir_all(&runtime_dir)
-            .map_err(|error| format!("清理旧音乐 API 运行时失败：{error}"))?;
-    }
-    fs::create_dir_all(&runtime_dir)
-        .map_err(|error| format!("创建音乐 API 运行时目录失败：{error}"))?;
-
-    let cursor = Cursor::new(EMBEDDED_MUSIC_API_RUNTIME);
-    let mut archive =
-        ZipArchive::new(cursor).map_err(|error| format!("读取内置音乐 API 运行时失败：{error}"))?;
-
-    for index in 0..archive.len() {
-        let mut file = archive
-            .by_index(index)
-            .map_err(|error| format!("读取内置运行时文件失败：{error}"))?;
-        let enclosed_path = file
-            .enclosed_name()
-            .ok_or_else(|| "内置运行时包含不安全路径，已停止释放".to_string())?;
-        let out_path = runtime_dir.join(enclosed_path);
-
-        if file.is_dir() {
-            fs::create_dir_all(&out_path)
-                .map_err(|error| format!("创建运行时目录失败：{}，{error}", out_path.display()))?;
-            continue;
-        }
-
-        if let Some(parent) = out_path.parent() {
-            fs::create_dir_all(parent)
-                .map_err(|error| format!("创建运行时父目录失败：{}，{error}", parent.display()))?;
-        }
-
-        let mut out_file = File::create(&out_path)
-            .map_err(|error| format!("释放运行时文件失败：{}，{error}", out_path.display()))?;
-        std::io::copy(&mut file, &mut out_file)
-            .map_err(|error| format!("写入运行时文件失败：{}，{error}", out_path.display()))?;
-    }
-
-    Ok(runtime_dir)
-}
-
-#[cfg(not(mobile))]
-fn resolve_node_command(current_dir: &Path, exe_dir: &Path) -> PathBuf {
-    let node_filename = if cfg!(target_os = "windows") {
-        "node.exe"
-    } else {
-        "node"
-    };
-    let candidates = [
-        exe_dir.join(node_filename),
-        exe_dir.join("bin").join(node_filename),
-        current_dir.join(node_filename),
-        current_dir.join("bin").join(node_filename),
-    ];
-
-    candidates
-        .into_iter()
-        .find(|path| path.exists())
-        .unwrap_or_else(|| PathBuf::from(node_filename))
-}
-
-#[cfg(not(mobile))]
-fn resolve_music_api_script(app: &AppHandle) -> Result<PathBuf, String> {
-    let current_dir = std::env::current_dir().map_err(|error| error.to_string())?;
-    let exe_dir = current_exe_dir().unwrap_or_else(|| current_dir.clone());
-    let resource_dir = app
-        .path()
-        .resource_dir()
-        .map_err(|error| error.to_string())?;
-
-    // 根因：完整便携版会把 JS 后端和 node_modules 放在 exe 同级目录，
-    // 而 Tauri 的 resource_dir 在安装版和便携版下可能不一致。之前优先使用
-    // resource_dir/bin，遇到资源目录存在脚本但没有 node_modules 时，Node 能启动但
-    // require 依赖失败，前端表现就是首页无内容。这里先找“脚本同级上层带
-    // node_modules”的位置，再退回到普通脚本路径。
-    let candidates = [
-        exe_dir.join("bin").join("alger-music-api.js"),
-        current_dir
-            .join("src-tauri")
-            .join("bin")
-            .join("alger-music-api.js"),
-        resource_dir.join("bin").join("alger-music-api.js"),
-    ];
-
-    candidates
-        .iter()
-        .find(|script_path| {
-            script_path.exists()
-                && script_path
-                    .parent()
-                    .and_then(|parent| parent.parent())
-                    .map(|root| root.join("node_modules").exists())
-                    .unwrap_or(false)
-        })
-        .cloned()
-        .or_else(|| {
-            candidates
-                .into_iter()
-                .find(|script_path| script_path.exists())
-        })
-        .ok_or_else(|| {
-            "找不到音乐 API 脚本，请确认 bin/alger-music-api.js 已随 exe 一起打包".to_string()
-        })
-}
-
-#[cfg(not(mobile))]
-fn resolve_music_api_runtime(app: &AppHandle) -> Result<(PathBuf, PathBuf, PathBuf), String> {
-    let runtime_dir = embedded_runtime_dir()?;
-    let current_dir = std::env::current_dir().map_err(|error| error.to_string())?;
-    let exe_dir = current_exe_dir().unwrap_or_else(|| current_dir.clone());
-    let node_command = resolve_node_command(&runtime_dir, &runtime_dir);
-    let script_path = runtime_dir.join("bin").join("alger-music-api.js");
-
-    if node_command.exists() && script_path.exists() {
-        return Ok((runtime_dir, node_command, script_path));
-    }
-
-    // 开发兜底：如果本地尚未生成内置运行时，仍允许 `tauri dev` 使用工程内脚本。
-    let fallback_script = resolve_music_api_script(app)?;
-    let fallback_node = resolve_node_command(&current_dir, &exe_dir);
-    let fallback_root = fallback_script
-        .parent()
-        .and_then(|parent| parent.parent())
-        .map(Path::to_path_buf)
-        .unwrap_or(current_dir);
-
-    Ok((fallback_root, fallback_node, fallback_script))
 }
 
 #[cfg(not(mobile))]
@@ -895,7 +717,8 @@ fn create_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
 #[tauri::command]
 fn get_default_settings() -> Value {
-    serde_json::from_str(include_str!("../../src/main/set.json")).unwrap_or_else(|_| json!({}))
+    serde_json::from_str(include_str!("../../src/shared/defaultSettings.json"))
+        .unwrap_or_else(|_| json!({}))
 }
 
 #[tauri::command]
@@ -918,10 +741,10 @@ fn get_downloads_path(app: AppHandle) -> Result<String, String> {
 
     #[cfg(not(mobile))]
     {
-    app.path()
-        .download_dir()
-        .map(|path| path.to_string_lossy().to_string())
-        .map_err(|error| format!("读取系统下载目录失败：{error}"))
+        app.path()
+            .download_dir()
+            .map(|path| path.to_string_lossy().to_string())
+            .map_err(|error| format!("读取系统下载目录失败：{error}"))
     }
 }
 
@@ -935,14 +758,14 @@ fn write_local_file(request: WriteLocalFileRequest) -> Result<(), String> {
 
     #[cfg(not(mobile))]
     {
-    let path = PathBuf::from(&request.path);
-    if path.as_os_str().is_empty() {
-        return Err("写入文件路径为空".to_string());
-    }
-    if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent).map_err(|error| format!("创建下载目录失败：{error}"))?;
-    }
-    fs::write(&path, request.bytes).map_err(|error| format!("写入下载文件失败：{error}"))
+        let path = PathBuf::from(&request.path);
+        if path.as_os_str().is_empty() {
+            return Err("写入文件路径为空".to_string());
+        }
+        if let Some(parent) = path.parent() {
+            fs::create_dir_all(parent).map_err(|error| format!("创建下载目录失败：{error}"))?;
+        }
+        fs::write(&path, request.bytes).map_err(|error| format!("写入下载文件失败：{error}"))
     }
 }
 
@@ -956,14 +779,14 @@ fn write_local_text_file(request: WriteTextFileRequest) -> Result<(), String> {
 
     #[cfg(not(mobile))]
     {
-    let path = PathBuf::from(&request.path);
-    if path.as_os_str().is_empty() {
-        return Err("写入文本文件路径为空".to_string());
-    }
-    if let Some(parent) = path.parent() {
-        fs::create_dir_all(parent).map_err(|error| format!("创建文本文件目录失败：{error}"))?;
-    }
-    fs::write(&path, request.content).map_err(|error| format!("写入文本文件失败：{error}"))
+        let path = PathBuf::from(&request.path);
+        if path.as_os_str().is_empty() {
+            return Err("写入文本文件路径为空".to_string());
+        }
+        if let Some(parent) = path.parent() {
+            fs::create_dir_all(parent).map_err(|error| format!("创建文本文件目录失败：{error}"))?;
+        }
+        fs::write(&path, request.content).map_err(|error| format!("写入文本文件失败：{error}"))
     }
 }
 
@@ -977,12 +800,12 @@ fn delete_local_file(path: String) -> Result<bool, String> {
 
     #[cfg(not(mobile))]
     {
-    let path = PathBuf::from(path);
-    if !path.exists() {
-        return Ok(false);
-    }
-    fs::remove_file(&path).map_err(|error| format!("删除本地文件失败：{error}"))?;
-    Ok(true)
+        let path = PathBuf::from(path);
+        if !path.exists() {
+            return Ok(false);
+        }
+        fs::remove_file(&path).map_err(|error| format!("删除本地文件失败：{error}"))?;
+        Ok(true)
     }
 }
 
@@ -996,7 +819,7 @@ fn local_file_exists(path: String) -> bool {
 
     #[cfg(not(mobile))]
     {
-    PathBuf::from(path).exists()
+        PathBuf::from(path).exists()
     }
 }
 
@@ -1010,7 +833,7 @@ fn minimize_window(window: WebviewWindow) -> Result<(), String> {
 
     #[cfg(not(mobile))]
     {
-    window.minimize().map_err(|error| error.to_string())
+        window.minimize().map_err(|error| error.to_string())
     }
 }
 
@@ -1024,11 +847,11 @@ fn maximize_window(window: WebviewWindow) -> Result<(), String> {
 
     #[cfg(not(mobile))]
     {
-    if window.is_maximized().map_err(|error| error.to_string())? {
-        window.unmaximize().map_err(|error| error.to_string())
-    } else {
-        window.maximize().map_err(|error| error.to_string())
-    }
+        if window.is_maximized().map_err(|error| error.to_string())? {
+            window.unmaximize().map_err(|error| error.to_string())
+        } else {
+            window.maximize().map_err(|error| error.to_string())
+        }
     }
 }
 
@@ -1042,7 +865,7 @@ fn close_window(window: WebviewWindow) -> Result<(), String> {
 
     #[cfg(not(mobile))]
     {
-    window.close().map_err(|error| error.to_string())
+        window.close().map_err(|error| error.to_string())
     }
 }
 
@@ -1056,7 +879,7 @@ fn quit_app(app: AppHandle) {
 
     #[cfg(not(mobile))]
     {
-    app.exit(0);
+        app.exit(0);
     }
 }
 
@@ -1155,25 +978,25 @@ fn open_lyric_window(app: AppHandle) -> Result<(), String> {
     }
     #[cfg(not(mobile))]
     {
-    let window = ensure_lyric_window(&app)?;
+        let window = ensure_lyric_window(&app)?;
 
-    if window.is_minimized().unwrap_or(false) {
+        if window.is_minimized().unwrap_or(false) {
+            window
+                .unminimize()
+                .map_err(|error| format!("恢复桌面歌词窗口失败：{error}"))?;
+        }
+
         window
-            .unminimize()
-            .map_err(|error| format!("恢复桌面歌词窗口失败：{error}"))?;
-    }
+            .set_always_on_top(true)
+            .map_err(|error| format!("设置桌面歌词窗口置顶失败：{error}"))?;
+        window
+            .show()
+            .map_err(|error| format!("显示桌面歌词窗口失败：{error}"))?;
+        window
+            .set_focus()
+            .map_err(|error| format!("聚焦桌面歌词窗口失败：{error}"))?;
 
-    window
-        .set_always_on_top(true)
-        .map_err(|error| format!("设置桌面歌词窗口置顶失败：{error}"))?;
-    window
-        .show()
-        .map_err(|error| format!("显示桌面歌词窗口失败：{error}"))?;
-    window
-        .set_focus()
-        .map_err(|error| format!("聚焦桌面歌词窗口失败：{error}"))?;
-
-    Ok(())
+        Ok(())
     }
 }
 
@@ -1197,13 +1020,13 @@ fn set_lyric_ignore_mouse(app: AppHandle, ignore: bool) -> Result<(), String> {
     }
     #[cfg(not(mobile))]
     {
-    if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
-        window
-            .set_ignore_cursor_events(ignore)
-            .map_err(|error| format!("更新桌面歌词鼠标穿透状态失败：{error}"))?;
-    }
+        if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
+            window
+                .set_ignore_cursor_events(ignore)
+                .map_err(|error| format!("更新桌面歌词鼠标穿透状态失败：{error}"))?;
+        }
 
-    Ok(())
+        Ok(())
     }
 }
 
@@ -1231,19 +1054,19 @@ fn move_lyric_window(app: AppHandle, delta_x: f64, delta_y: f64) -> Result<(), S
     }
     #[cfg(not(mobile))]
     {
-    if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
-        let current_position = window
-            .outer_position()
-            .map_err(|error| format!("读取桌面歌词窗口位置失败：{error}"))?;
-        let next_x = current_position.x + delta_x.round() as i32;
-        let next_y = current_position.y + delta_y.round() as i32;
+        if let Some(window) = app.get_webview_window(LYRIC_WINDOW_LABEL) {
+            let current_position = window
+                .outer_position()
+                .map_err(|error| format!("读取桌面歌词窗口位置失败：{error}"))?;
+            let next_x = current_position.x + delta_x.round() as i32;
+            let next_y = current_position.y + delta_y.round() as i32;
 
-        window
-            .set_position(Position::Physical(PhysicalPosition::new(next_x, next_y)))
-            .map_err(|error| format!("移动桌面歌词窗口失败：{error}"))?;
-    }
+            window
+                .set_position(Position::Physical(PhysicalPosition::new(next_x, next_y)))
+                .map_err(|error| format!("移动桌面歌词窗口失败：{error}"))?;
+        }
 
-    Ok(())
+        Ok(())
     }
 }
 
@@ -1256,17 +1079,17 @@ fn emit_to_main(app: AppHandle, event: String, payload: Value) -> Result<(), Str
     }
     #[cfg(not(mobile))]
     {
-    let target_label = match event.as_str() {
-        "tray-panel-state" => TRAY_PANEL_WINDOW_LABEL,
-        "receive-lyric" => LYRIC_WINDOW_LABEL,
-        "tray-panel-command"
-        | "tray-panel-opened"
-        | "lyric-window-ready"
-        | "lyric-window-closed"
-        | "lyric-control-back" => MAIN_WINDOW_LABEL,
-        _ => MAIN_WINDOW_LABEL,
-    };
-    emit_to_window(&app, target_label, &event, payload)
+        let target_label = match event.as_str() {
+            "tray-panel-state" => TRAY_PANEL_WINDOW_LABEL,
+            "receive-lyric" => LYRIC_WINDOW_LABEL,
+            "tray-panel-command"
+            | "tray-panel-opened"
+            | "lyric-window-ready"
+            | "lyric-window-closed"
+            | "lyric-control-back" => MAIN_WINDOW_LABEL,
+            _ => MAIN_WINDOW_LABEL,
+        };
+        emit_to_window(&app, target_label, &event, payload)
     }
 }
 
@@ -1279,182 +1102,29 @@ fn update_tray_state(app: AppHandle, state: TrayState) -> Result<(), String> {
     }
     #[cfg(not(mobile))]
     {
-    let tray = app
-        .tray_by_id(TRAY_ID)
-        .ok_or_else(|| "系统托盘尚未创建，请稍后再试".to_string())?;
+        let tray = app
+            .tray_by_id(TRAY_ID)
+            .ok_or_else(|| "系统托盘尚未创建，请稍后再试".to_string())?;
 
-    tray.set_tooltip(Some(tray_tooltip_text(&state)))
-        .map_err(|error| format!("更新托盘提示失败：{error}"))?;
+        tray.set_tooltip(Some(tray_tooltip_text(&state)))
+            .map_err(|error| format!("更新托盘提示失败：{error}"))?;
 
-    Ok(())
-    }
-}
-
-#[tauri::command]
-fn start_music_api(
-    app: AppHandle,
-    state: tauri::State<MusicApiProcess>,
-    port: u16,
-) -> Result<Value, String> {
-    #[cfg(mobile)]
-    {
-        let _ = (app, state, port);
-        return Ok(json!({ "running": false, "mobile": true }));
-    }
-    #[cfg(not(mobile))]
-    {
-    let mut process_guard = state.0.lock().map_err(|error| error.to_string())?;
-    if let Some(api_child) = process_guard.as_mut() {
-        if api_child
-            .child
-            .try_wait()
-            .map_err(|error| error.to_string())?
-            .is_none()
-        {
-            return Ok(json!({ "port": api_child.port, "running": true }));
-        }
-    }
-
-    let (runtime_dir, node_command, resolved_script_path) = resolve_music_api_runtime(&app)?;
-
-    let mut command = Command::new(&node_command);
-    command
-        .arg(&resolved_script_path)
-        .arg("--port")
-        .arg(port.to_string())
-        .arg("--host")
-        .arg("127.0.0.1")
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .current_dir(&runtime_dir);
-
-    // 根因：Windows GUI 程序启动 Node 后端时，默认可能给子进程分配控制台窗口，
-    // 用户双击 exe 就会看到黑色 cmd 框。这里仅在 Windows 下使用 CREATE_NO_WINDOW，
-    // 保持 stdout 管道读取 ready 消息不变，同时彻底隐藏后端子进程控制台。
-    #[cfg(target_os = "windows")]
-    command.creation_flags(CREATE_NO_WINDOW);
-
-    let mut child = command
-        .spawn()
-        .map_err(|error| format!("启动音乐 API 子进程失败：{error}"))?;
-
-    let stdout = child
-        .stdout
-        .take()
-        .ok_or_else(|| "无法读取音乐 API 子进程输出".to_string())?;
-    let stderr = child
-        .stderr
-        .take()
-        .ok_or_else(|| "无法读取音乐 API 子进程错误输出".to_string())?;
-    let (ready_sender, ready_receiver) = mpsc::channel::<u16>();
-    let (error_sender, error_receiver) = mpsc::channel::<String>();
-
-    thread::spawn(move || {
-        let reader = BufReader::new(stdout);
-        let mut ready_sent = false;
-        for line in reader.lines().map_while(Result::ok) {
-            if let Ok(value) = serde_json::from_str::<Value>(&line) {
-                if value.get("type").and_then(Value::as_str) == Some("ready") {
-                    if let Some(actual_port) = value.get("port").and_then(Value::as_u64) {
-                        if !ready_sent {
-                            let _ = ready_sender.send(actual_port as u16);
-                            ready_sent = true;
-                        }
-                    }
-                }
-            }
-
-            // 根因：内置的 netease-cloud-music-api-alger 会先输出普通文本
-            // `server running @ http://127.0.0.1:30488`，随后包装脚本才输出 JSON ready。
-            // Windows GUI 打包后 stdout 管道偶发只读到前一条文本，Rust 端如果只等 JSON
-            // 会误判“音乐 API 子进程启动超时”，导致首页、搜索、播放全部请求 30488 失败。
-            // 这里兼容普通文本启动日志，只要服务端已经监听端口，就立即通知前端可用。
-            if let Some(port_text) = line.rsplit(':').next() {
-                if line.contains("server running @") {
-                    if let Ok(actual_port) = port_text.trim().parse::<u16>() {
-                        if !ready_sent {
-                            let _ = ready_sender.send(actual_port);
-                            ready_sent = true;
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    thread::spawn(move || {
-        let reader = BufReader::new(stderr);
-        for line in reader.lines().map_while(Result::ok) {
-            let _ = error_sender.send(line);
-        }
-    });
-
-    let wait_started_at = Instant::now();
-    let mut stderr_lines = Vec::new();
-    let actual_port = loop {
-        if let Ok(actual_port) = ready_receiver.try_recv() {
-            break actual_port;
-        }
-
-        while let Ok(line) = error_receiver.try_recv() {
-            stderr_lines.push(line);
-            if stderr_lines.len() >= 5 {
-                break;
-            }
-        }
-
-        if let Some(status) = child.try_wait().map_err(|error| error.to_string())? {
-            let detail = if stderr_lines.is_empty() {
-                String::new()
-            } else {
-                format!("，错误输出：{}", stderr_lines.join(" | "))
-            };
-            return Err(format!(
-                "音乐 API 子进程提前退出，退出状态：{}，Node 路径：{}，脚本路径：{}{}",
-                status,
-                node_command.display(),
-                resolved_script_path.display(),
-                detail
-            ));
-        }
-
-        if wait_started_at.elapsed() >= Duration::from_secs(30) {
-            let detail = if stderr_lines.is_empty() {
-                String::new()
-            } else {
-                format!("，错误输出：{}", stderr_lines.join(" | "))
-            };
-            return Err(format!(
-                "音乐 API 子进程启动超时，Node 路径：{}，脚本路径：{}{}",
-                node_command.display(),
-                resolved_script_path.display(),
-                detail
-            ));
-        }
-
-        thread::sleep(Duration::from_millis(100));
-    };
-
-    *process_guard = Some(MusicApiChild {
-        child,
-        port: actual_port,
-    });
-    Ok(json!({ "port": actual_port, "running": true }))
+        Ok(())
     }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let builder = tauri::Builder::default()
-        .manage(MusicApiProcess(Mutex::new(None)))
         .manage(MiniWindowRestoreState(Mutex::new(None)))
         .setup(|app| {
             #[cfg(not(mobile))]
             {
                 create_tray(app)?;
-                let app_handle = app.handle().clone();
-                let state = app.state::<MusicApiProcess>();
-                let _ = start_music_api(app_handle, state, 30488);
+                app.manage(music_service::MusicService::default());
+                app.manage(updates::UpdateManager::default());
+                app.handle()
+                    .plugin(tauri_plugin_updater::Builder::new().build())?;
             }
             Ok(())
         })
@@ -1466,9 +1136,6 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init());
 
     let builder = builder.plugin(tauri_plugin_http::init());
-
-    #[cfg(not(mobile))]
-    let builder = builder.plugin(tauri_plugin_shell::init());
 
     builder
         .plugin(tauri_plugin_store::Builder::new().build())
@@ -1500,7 +1167,10 @@ pub fn run() {
             end_lyric_drag,
             emit_to_main,
             update_tray_state,
-            start_music_api
+            check_app_update,
+            download_app_update,
+            install_app_update,
+            music_request
         ])
         .on_window_event(|window, event| {
             #[cfg(mobile)]
@@ -1511,54 +1181,51 @@ pub fn run() {
 
             #[cfg(not(mobile))]
             {
-            if window.label() == TRAY_PANEL_WINDOW_LABEL {
-                match event {
-                    WindowEvent::Focused(false) => {
-                        let _ = window.hide();
-                    }
-                    WindowEvent::CloseRequested { api, .. } => {
-                        api.prevent_close();
-                        let _ = window.hide();
-                    }
-                    _ => {}
-                }
-            }
-
-            if window.label() == LYRIC_WINDOW_LABEL {
-                if matches!(event, WindowEvent::CloseRequested { .. }) {
-                    // 根本原因：Tauri v2 的全局 on_window_event 回调给到的是通用 Window，
-                    // 但桌面歌词窗口状态保存需要 WebviewWindow 才能复用现有的尺寸、位置和
-                    // app 数据目录读取逻辑。这里不能直接把 Window 传进去，否则 release 打包
-                    // 会在 Rust 编译阶段报类型不匹配；按窗口 label 重新拿 WebviewWindow 后再保存，
-                    // 既保留关闭前持久化窗口几何状态的行为，也避免为通用 Window 复制一套保存逻辑。
-                    if let Some(lyric_window) =
-                        window.app_handle().get_webview_window(LYRIC_WINDOW_LABEL)
-                    {
-                        let _ = persist_lyric_window_bounds(&lyric_window);
-                    }
-                }
-
-                if matches!(event, tauri::WindowEvent::Destroyed) {
-                    let _ = emit_to_window(
-                        &window.app_handle(),
-                        MAIN_WINDOW_LABEL,
-                        "lyric-window-closed",
-                        json!({ "closedAt": chrono_free_timestamp() }),
-                    );
-                }
-            }
-
-            if window.label() == MAIN_WINDOW_LABEL && matches!(event, tauri::WindowEvent::Destroyed)
-            {
-                {
-                    let state = window.state::<MusicApiProcess>();
-                    if let Ok(mut process_guard) = state.0.lock() {
-                        if let Some(mut api_child) = process_guard.take() {
-                            let _ = api_child.child.kill();
+                if window.label() == TRAY_PANEL_WINDOW_LABEL {
+                    match event {
+                        WindowEvent::Focused(false) => {
+                            let _ = window.hide();
                         }
-                    };
+                        WindowEvent::CloseRequested { api, .. } => {
+                            api.prevent_close();
+                            let _ = window.hide();
+                        }
+                        _ => {}
+                    }
                 }
-            }
+
+                if window.label() == LYRIC_WINDOW_LABEL {
+                    if matches!(event, WindowEvent::CloseRequested { .. }) {
+                        // 根本原因：Tauri v2 的全局 on_window_event 回调给到的是通用 Window，
+                        // 但桌面歌词窗口状态保存需要 WebviewWindow 才能复用现有的尺寸、位置和
+                        // app 数据目录读取逻辑。这里不能直接把 Window 传进去，否则 release 打包
+                        // 会在 Rust 编译阶段报类型不匹配；按窗口 label 重新拿 WebviewWindow 后再保存，
+                        // 既保留关闭前持久化窗口几何状态的行为，也避免为通用 Window 复制一套保存逻辑。
+                        if let Some(lyric_window) =
+                            window.app_handle().get_webview_window(LYRIC_WINDOW_LABEL)
+                        {
+                            let _ = persist_lyric_window_bounds(&lyric_window);
+                        }
+                    }
+
+                    if matches!(event, tauri::WindowEvent::Destroyed) {
+                        let _ = emit_to_window(
+                            &window.app_handle(),
+                            MAIN_WINDOW_LABEL,
+                            "lyric-window-closed",
+                            json!({ "closedAt": chrono_free_timestamp() }),
+                        );
+                    }
+                }
+
+                if window.label() == MAIN_WINDOW_LABEL
+                    && matches!(event, tauri::WindowEvent::Destroyed)
+                {
+                    let app = window.app_handle().clone();
+                    tauri::async_runtime::spawn(async move {
+                        app.state::<music_service::MusicService>().stop().await;
+                    });
+                }
             }
         })
         .run(tauri::generate_context!())

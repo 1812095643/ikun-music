@@ -18,6 +18,22 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     vue(),
+    {
+      name: 'music-modern-icons',
+      enforce: 'pre',
+      transform(code, id) {
+        if (!id.replaceAll('\\', '/').endsWith('/remixicon/fonts/remixicon.css')) return;
+        // 在 Vite 收集 CSS 资源之前只保留官方 WOFF2 字体，不维护手写字形子集。
+        // 完整图标映射保持原样，新增播放器按钮不会因缺字而显示方框。
+        return {
+          code: code.replace(
+            /@font-face\s*\{[\s\S]*?\}/,
+            '@font-face { font-family: "remixicon"; src: url("./remixicon.woff2") format("woff2"); font-display: swap; }'
+          ),
+          map: null
+        };
+      }
+    },
     // Tauri 直接读取嵌入资源，额外的 .gz 文件无人使用，只在 Web 构建时生成。
     viteCompression({ disable: mode === 'desktop' }),
     AutoImport({

@@ -394,10 +394,10 @@ export class LxMusicSourceRunner {
     const requestId = `lx_http_${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
     const hasMainProcessHttp =
-      isDesktopRuntime && typeof window.api?.lxMusicHttpRequest === 'function';
+      isDesktopRuntime && typeof window.desktop?.lxMusicHttpRequest === 'function';
 
     if (hasMainProcessHttp) {
-      window.api
+      window.desktop
         .lxMusicHttpRequest({
           url,
           options: {
@@ -414,7 +414,7 @@ export class LxMusicSourceRunner {
         });
 
       return () => {
-        void window.api?.lxMusicHttpCancel?.(requestId);
+        void window.desktop?.lxMusicHttpCancel?.(requestId);
       };
     }
 

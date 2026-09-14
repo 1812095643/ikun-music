@@ -10,7 +10,6 @@
   "realIP": "",
   "noAnimate": false,
   "animationSpeed": 1,
-  "musicApiPort": 30488,
   "closeAction": "ask",
   "musicQuality": "higher",
   "lyricTranslationEngine": "none",

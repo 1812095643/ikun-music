@@ -301,11 +301,11 @@ const getGDMusicAudio = async (id: number, data: SongResult): Promise<ParsedMusi
  */
 const getUnblockMusicAudio = (id: number, data: SongResult, sources: any[]) => {
   // Android 第一阶段不启动桌面内置音乐服务，避免播放解析误走本地代理链路。
-  if (!isDesktopRuntime || !window.api?.unblockMusic) return null;
+  if (!isDesktopRuntime || !window.desktop?.unblockMusic) return null;
 
   const filteredSources = sources.filter((source) => UNBLOCK_SOURCE_KEYS.includes(source));
   console.log(`使用unblockMusic解析，音源:`, filteredSources);
-  return window.api.unblockMusic(id, cloneDeep(data), cloneDeep(filteredSources));
+  return window.desktop.unblockMusic(id, cloneDeep(data), cloneDeep(filteredSources));
 };
 
 /**
@@ -670,9 +670,9 @@ export class MusicParser {
     const startTime = performance.now();
 
     try {
-      // 非Electron环境直接使用API请求
+      // 非桌面环境直接使用API请求
       if (!isDesktopRuntime) {
-        console.log('非Electron环境，使用API请求');
+        console.log('非桌面环境，使用API请求');
         return await requestMusic.get<any>('/music', { params: { id } });
       }
 

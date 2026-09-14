@@ -36,8 +36,8 @@
       <div v-if="hasReleaseNotes" class="update-content-card mb-6 overflow-hidden rounded-lg">
         <n-scrollbar style="max-height: 300px">
           <div
-            class="update-body p-5 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
-            v-html="parsedReleaseNotes"
+            class="update-body whitespace-pre-wrap p-5 text-sm leading-relaxed text-neutral-600 dark:text-neutral-300"
+            v-text="parsedReleaseNotes"
           />
         </n-scrollbar>
       </div>
@@ -91,7 +91,6 @@
 </template>
 
 <script setup lang="ts">
-import { marked } from 'marked';
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
@@ -99,8 +98,6 @@ import { useAppUpdateState } from '@/hooks/useAppUpdateState';
 import { useSettingsStore } from '@/store/modules/settings';
 
 import { APP_UPDATE_STATUS } from '../../../shared/appUpdate';
-
-marked.setOptions({ breaks: true, gfm: true });
 
 const { t } = useI18n();
 const message = useMessage();
@@ -132,17 +129,8 @@ const updateVersionText = computed(() => updateState.value.availableVersion || '
 const progressPercent = computed(() => Math.round(updateState.value.downloadProgress));
 const errorText = computed(() => updateState.value.errorMessage || t('comp.update.downloadFailed'));
 
-const parsedReleaseNotes = computed(() => {
-  const releaseNotes = updateState.value.releaseNotes;
-  if (!releaseNotes) return '';
-
-  try {
-    return marked.parse(releaseNotes) as string;
-  } catch (error) {
-    console.error('Markdown 解析失败:', error);
-    return releaseNotes;
-  }
-});
+// 发行说明来自网络，使用文本渲染，避免 HTML 进入具备桌面权限的 WebView。
+const parsedReleaseNotes = computed(() => updateState.value.releaseNotes);
 
 const progressText = computed(() => {
   if (isDownloaded.value) {
@@ -196,16 +184,16 @@ const handlePrimaryAction = async () => {
   try {
     switch (updateState.value.status) {
       case APP_UPDATE_STATUS.available:
-        await window.api.downloadAppUpdate();
+        await window.desktop.downloadAppUpdate();
         break;
       case APP_UPDATE_STATUS.downloading:
         closeModal();
         break;
       case APP_UPDATE_STATUS.downloaded:
-        await window.api.installAppUpdate();
+        await window.desktop.installAppUpdate();
         break;
       case APP_UPDATE_STATUS.error:
-        await window.api.openAppUpdatePage();
+        await window.desktop.openAppUpdatePage();
         break;
       default:
         break;
@@ -218,7 +206,7 @@ const handlePrimaryAction = async () => {
 
 const initializeUpdateState = async () => {
   try {
-    const currentState = await window.api.getAppUpdateState();
+    const currentState = await window.desktop.getAppUpdateState();
     settingsStore.setAppUpdateState(currentState);
   } catch (error) {
     console.error('初始化更新状态失败:', error);

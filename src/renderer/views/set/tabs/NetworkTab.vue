@@ -1,20 +1,6 @@
 <template>
   <setting-section v-if="isDesktopRuntime" :title="t('settings.sections.network')">
     <setting-item
-      :title="t('settings.network.apiPort')"
-      :description="t('settings.network.apiPortDesc')"
-    >
-      <s-input
-        v-model="setData.musicApiPort"
-        type="number"
-        :min="1024"
-        :max="65535"
-        :step="1"
-        width="w-[140px] max-md:w-32"
-      />
-    </setting-item>
-
-    <setting-item
       :title="t('settings.network.proxy')"
       :description="t('settings.network.proxyDesc')"
     >

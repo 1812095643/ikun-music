@@ -253,10 +253,7 @@ const withTimeout = async <T>(task: Promise<T>, timeoutMs: number, label: string
 const readCachedRawLyric = async (id: number) => {
   if (!isDesktopRuntime) return null;
   try {
-    return (await window.electron.ipcRenderer.invoke(
-      'get-cached-lyric',
-      id
-    )) as RawLyricPayload | null;
+    return (await window.desktop.invoke('get-cached-lyric', id)) as RawLyricPayload | null;
   } catch (error) {
     console.warn('读取磁盘歌词候选缓存失败:', error);
     return null;
@@ -272,7 +269,7 @@ const fetchRawLyricById = async (id: string | number): Promise<RawLyricPayload |
 
   const { data } = await getMusicLrc(numericId);
   if (isDesktopRuntime && data) {
-    void window.electron.ipcRenderer
+    void window.desktop
       .invoke('cache-lyric', numericId, data)
       .catch((error) => console.warn('写入歌词候选缓存失败:', error));
   }
@@ -381,8 +378,8 @@ const requestTextOrJson = async (
     ...headers
   };
 
-  if (isDesktopRuntime && window.api?.lxMusicHttpRequest) {
-    const response = await window.api.lxMusicHttpRequest({
+  if (isDesktopRuntime && window.desktop?.lxMusicHttpRequest) {
+    const response = await window.desktop.lxMusicHttpRequest({
       url,
       requestId: `lyric-${Date.now()}-${Math.random().toString(16).slice(2)}`,
       options: {

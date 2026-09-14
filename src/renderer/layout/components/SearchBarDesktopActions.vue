@@ -53,7 +53,7 @@ const handleAppUpdateClick = async () => {
   }
 
   try {
-    const result = await window.api.checkAppUpdate(true);
+    const result = await window.desktop.checkAppUpdate(true);
     settingsStore.setAppUpdateState(result);
     if (result.status === APP_UPDATE_STATUS.available) {
       settingsStore.setShowUpdateModal(true);

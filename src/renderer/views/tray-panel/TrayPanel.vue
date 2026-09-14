@@ -152,7 +152,7 @@ const syncProgressFromState = () => {
 };
 
 const closeTrayPanel = () => {
-  window.api?.hideTrayPanel?.();
+  window.desktop?.hideTrayPanel?.();
 };
 
 const sendPanelCommand = (action: string, value?: number) => {
@@ -162,7 +162,7 @@ const sendPanelCommand = (action: string, value?: number) => {
   if (blockingCommandActions.has(action)) {
     pendingCommand.value = action;
   }
-  window.api?.sendTrayPanelCommand?.({
+  window.desktop?.sendTrayPanelCommand?.({
     action,
     value
   });
@@ -257,7 +257,7 @@ const togglePlayMode = () => {
 };
 
 const quitApp = () => {
-  window.api?.quitApp?.();
+  window.desktop?.quitApp?.();
 };
 
 const getPanelStatePayload = (eventOrPayload: unknown, payload?: TrayPanelState) => {
@@ -305,17 +305,11 @@ onMounted(() => {
   syncProgressFromState();
   progressTimer = window.setInterval(syncProgressFromState, 500);
 
-  if (window.electron?.ipcRenderer) {
-    removeTrayPanelStateListener.value = window.electron.ipcRenderer.on(
-      'tray-panel-state',
-      handlePanelState
-    );
-    removeTrayPanelOpenedListener.value = window.electron.ipcRenderer.on(
-      'tray-panel-opened',
-      handlePanelOpened
-    );
+  if (window.desktop) {
+    removeTrayPanelStateListener.value = window.desktop.on('tray-panel-state', handlePanelState);
+    removeTrayPanelOpenedListener.value = window.desktop.on('tray-panel-opened', handlePanelOpened);
   }
-  // 根因：Tauri listen 底层是异步注册，兼容层为了保持 Electron 风格返回了同步取消函数。
+  // 根因：Tauri listen 底层是异步注册，兼容层为了保持 桌面运行时 风格返回了同步取消函数。
   // 如果面板 mounted 后立刻发送 requestState，主窗口可能马上回推 tray-panel-state，
   // 但当前 WebView 监听尚未真正落到 Tauri 事件系统里，第一包状态就被丢掉。
   // 解决：下一轮事件循环再请求一次，并由主窗口 500ms 定时推送兜底，确保首次打开能拿到真实播放数据。

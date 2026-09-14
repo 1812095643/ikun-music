@@ -67,7 +67,7 @@ const autoGetCookie = () => {
   }
 
   message.info(t('login.message.autoGetCookieTip'));
-  window.electron.ipcRenderer.send('open-login');
+  window.desktop.send('open-login');
 };
 
 // 监听Cookie接收
@@ -100,14 +100,14 @@ const handleCookieReceived = async (_event: any, cookieValue: string) => {
 // 在组件挂载时添加监听器
 onMounted(() => {
   if (isDesktopRuntime) {
-    window.electron.ipcRenderer.on('send-cookies', handleCookieReceived);
+    window.desktop.on('send-cookies', handleCookieReceived);
   }
 });
 
 // 在组件卸载时移除监听器
 onBeforeUnmount(() => {
   if (isDesktopRuntime) {
-    window.electron.ipcRenderer.removeAllListeners('send-cookies');
+    window.desktop.removeAllListeners('send-cookies');
   }
 });
 </script>

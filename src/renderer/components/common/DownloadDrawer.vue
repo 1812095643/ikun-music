@@ -31,10 +31,10 @@ const navigateToDownloads = () => {
 
 // 监听下载进度
 onMounted(() => {
-  if (!isDesktopRuntime || !window.electron?.ipcRenderer) return;
+  if (!isDesktopRuntime || !window.desktop) return;
 
   // 监听下载进度
-  window.electron.ipcRenderer.on('music-download-progress', (_, data) => {
+  window.desktop.on('music-download-progress', (_, data) => {
     const existingItem = downloadList.value.find((item) => item.filename === data.filename);
 
     // 如果进度为100%，将状态设置为已完成
@@ -61,7 +61,7 @@ onMounted(() => {
   });
 
   // 监听下载完成
-  window.electron.ipcRenderer.on('music-download-complete', async (_, data) => {
+  window.desktop.on('music-download-complete', async (_, data) => {
     if (data.success) {
       downloadList.value = downloadList.value.filter((item) => item.filename !== data.filename);
     } else {
@@ -80,7 +80,7 @@ onMounted(() => {
   });
 
   // 监听下载队列
-  window.electron.ipcRenderer.on('music-download-queued', (_, data) => {
+  window.desktop.on('music-download-queued', (_, data) => {
     const existingItem = downloadList.value.find((item) => item.filename === data.filename);
     if (!existingItem) {
       downloadList.value.push({

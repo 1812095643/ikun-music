@@ -1,4 +1,4 @@
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 
 export interface ExternalMusicHttpResponse<T = any> {
   statusCode: number;
@@ -28,9 +28,9 @@ export const requestExternalMusic = async <T = any>(
     ...(options.headers || {})
   };
 
-  if (isElectron && window.api?.lxMusicHttpRequest) {
+  if (isDesktopRuntime && window.desktop?.lxMusicHttpRequest) {
     // 外站请求由桌面 HTTP 插件直接执行，无需等待本地 Node 服务。
-    return (await window.api.lxMusicHttpRequest({
+    return (await window.desktop.lxMusicHttpRequest({
       url,
       requestId: buildRequestId(options.requestPrefix),
       options: {

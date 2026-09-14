@@ -86,7 +86,7 @@ const checkForUpdates = async (isClick = false) => {
   checking.value = true;
   try {
     if (isDesktopRuntime) {
-      const result = await window.api.checkAppUpdate(isClick);
+      const result = await window.desktop.checkAppUpdate(isClick);
       settingsStore.setAppUpdateState(result);
 
       if (hasAvailableAppUpdate(result)) {
@@ -136,7 +136,7 @@ const openReleasePage = () => {
 
 const openManualUpdatePage = async () => {
   if (isDesktopRuntime) {
-    await window.api.openAppUpdatePage();
+    await window.desktop.openAppUpdatePage();
     return;
   }
 

@@ -47,7 +47,8 @@
         />
       </template>
     </div>
-    <update-modal v-if="isElectron" />
+    <update-modal v-if="isDesktopRuntime" />
+    <app-update-notice v-if="isDesktopRuntime" />
     <playlist-drawer v-model="showPlaylistDrawer" :song-id="currentSongId" />
     <sleep-timer-top v-if="!settingsStore.isMobile" />
     <!-- 播放列表抽屉 -->
@@ -59,6 +60,7 @@
 import { computed, defineAsyncComponent, onMounted, provide, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
+import AppUpdateNotice from '@/components/common/AppUpdateNotice.vue';
 import PlayBottom from '@/components/common/PlayBottom.vue';
 import UpdateModal from '@/components/common/UpdateModal.vue';
 import SleepTimerTop from '@/components/player/SleepTimerTop.vue';
@@ -67,7 +69,7 @@ import otherRouter from '@/router/other';
 import { useMenuStore } from '@/store/modules/menu';
 import { usePlayerStore } from '@/store/modules/player';
 import { useSettingsStore } from '@/store/modules/settings';
-import { isElectron } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 import { consumeMiniModePlaylistDrawerSongId } from '@/utils/miniModeNavigation';
 
 // 关键布局组件同步导入（始终可见，避免加载闪烁）
@@ -123,13 +125,6 @@ const isPhone = computed(() => settingsStore.isMobile);
 onMounted(() => {
   settingsStore.initializeSettings();
   settingsStore.initializeTheme();
-  if (isElectron && window.api?.checkAppUpdate) {
-    window.setTimeout(() => {
-      void window.api.checkAppUpdate(false).then((state) => {
-        settingsStore.setAppUpdateState(state);
-      });
-    }, 1200);
-  }
 });
 
 const showPlaylistDrawer = ref(false);

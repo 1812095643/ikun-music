@@ -17,10 +17,10 @@ export function useZoom() {
 
   // 初始化获取当前缩放比例
   const initZoomFactor = async () => {
-    if (!isDesktopRuntime || !window.ipcRenderer?.invoke) return;
+    if (!isDesktopRuntime || !window.desktop?.invoke) return;
 
     try {
-      const currentZoom = await window.ipcRenderer.invoke('get-content-zoom');
+      const currentZoom = await window.desktop.invoke('get-content-zoom');
       zoomFactor.value = currentZoom;
     } catch (error) {
       console.error('获取缩放比例失败:', error);
@@ -71,12 +71,12 @@ export function useZoom() {
 
   // 设置缩放比例
   const setZoomFactor = (zoom: number) => {
-    if (!isDesktopRuntime || !window.ipcRenderer?.send) {
+    if (!isDesktopRuntime || !window.desktop?.send) {
       zoomFactor.value = zoom;
       return;
     }
 
-    window.ipcRenderer.send('set-content-zoom', zoom);
+    window.desktop.send('set-content-zoom', zoom);
     zoomFactor.value = zoom;
   };
 

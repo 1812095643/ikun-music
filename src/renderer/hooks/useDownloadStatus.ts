@@ -20,9 +20,9 @@ export const useDownloadStatus = () => {
   const initDownloadListeners = () => {
     if (isInitialized.value) return;
 
-    if (!isDesktopRuntime || !window.electron?.ipcRenderer) return;
+    if (!isDesktopRuntime || !window.desktop) return;
 
-    window.electron.ipcRenderer.on('music-download-progress', (_, data) => {
+    window.desktop.on('music-download-progress', (_, data) => {
       const existingItem = downloadList.value.find((item) => item.filename === data.filename);
 
       if (data.progress === 100) {
@@ -46,7 +46,7 @@ export const useDownloadStatus = () => {
       }
     });
 
-    window.electron.ipcRenderer.on('music-download-complete', async (_, data) => {
+    window.desktop.on('music-download-complete', async (_, data) => {
       if (data.success) {
         downloadList.value = downloadList.value.filter((item) => item.filename !== data.filename);
       } else {
@@ -66,7 +66,7 @@ export const useDownloadStatus = () => {
       }
     });
 
-    window.electron.ipcRenderer.on('music-download-queued', (_, data) => {
+    window.desktop.on('music-download-queued', (_, data) => {
       const existingItem = downloadList.value.find((item) => item.filename === data.filename);
       if (!existingItem) {
         downloadList.value.push({

@@ -243,7 +243,7 @@ const handleDisagree = () => {
   isTransitioning.value = true;
 
   if (isDesktopRuntime) {
-    window.api?.quitApp?.();
+    window.desktop?.quitApp?.();
   } else {
     window.close();
   }

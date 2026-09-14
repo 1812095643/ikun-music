@@ -215,7 +215,7 @@ const { navigateToArtist } = useArtist();
 /** 从标题空白处调用 Tauri 原生拖动，按钮仍只响应点击。 */
 const startWindowDrag = (event: MouseEvent) => {
   if (event.button === 0 && !(event.target as HTMLElement).closest('button'))
-    window.api.dragStart();
+    window.desktop.dragStart();
 };
 const toggleDesktopLyric = () => openLyric();
 const seekFromRange = (event: Event) => {
@@ -242,7 +242,7 @@ withDefaults(
 const handleClose = () => {
   if (settingsStore.isMiniMode) {
     closePlaylist();
-    window.api.restore();
+    window.desktop.restore();
   }
 };
 
@@ -310,8 +310,8 @@ const resetMiniPlaylistStyles = () => {
 
 const syncMiniWindowSize = (showPlaylist: boolean) => {
   if (!settingsStore.isMiniMode) return;
-  if (window.api && typeof window.api.resizeMiniWindow === 'function') {
-    window.api.resizeMiniWindow(showPlaylist);
+  if (window.desktop && typeof window.desktop.resizeMiniWindow === 'function') {
+    window.desktop.resizeMiniWindow(showPlaylist);
   }
 };
 
@@ -328,14 +328,14 @@ const closePlaylist = () => {
 
 // 迷你窗里无法直接承接歌单抽屉，需要先恢复主窗口再由主布局打开抽屉。
 provide('openPlaylistDrawer', (songId: number | string) => {
-  if (settingsStore.isMiniMode && window.api?.restore) {
+  if (settingsStore.isMiniMode && window.desktop?.restore) {
     restoreMainWindowFromMiniMode({
       beforeRestore: () => {
         closePlaylist();
         playerStore.setMusicFull(false);
       },
       playlistDrawerSongId: songId,
-      restore: window.api.restore
+      restore: window.desktop.restore
     });
   }
 });
@@ -411,14 +411,14 @@ const playMusicEvent = async () => {
 
 // 切换到完整播放器
 const setMusicFull = () => {
-  if (settingsStore.isMiniMode && window.api?.restore) {
+  if (settingsStore.isMiniMode && window.desktop?.restore) {
     // 迷你窗本身不承载完整播放器，先把状态切到展开，再恢复主窗口承接完整播放页。
     restoreMainWindowFromMiniMode({
       beforeRestore: () => {
         closePlaylist();
         playerStore.setMusicFull(true);
       },
-      restore: window.api.restore
+      restore: window.desktop.restore
     });
     return;
   }

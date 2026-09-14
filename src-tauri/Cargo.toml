@@ -1,6 +1,6 @@
 [package]
 name = "ikun-music-tauri"
-version = "5.2.0"
+version = "5.3.0"
 description = "ikun音乐 Tauri"
 edition = "2021"
 
@@ -16,9 +16,22 @@ tauri = { version = "2.9.3", features = ["tray-icon", "image-ico", "image-png"] 
 tauri-plugin-opener = "2.5.0"
 tauri-plugin-dialog = "2.4.0"
 tauri-plugin-fs = "2.4.2"
-tauri-plugin-http = "2.5.2"
-tauri-plugin-shell = "2.3.1"
+# HTTP 正文传输协议需要与前端插件保持一致，锁定已验证版本，避免补丁升级造成挂起。
+tauri-plugin-http = "=2.5.9"
 tauri-plugin-store = "2.4.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 zip = "5.1.1"
+tokio = { version = "1", features = ["process", "io-util", "sync", "time"] }
+dunce = "1.0"
+sha2 = "0.10"
+tempfile = "3"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-updater = "2.11.0"
+
+[profile.release]
+# 剥离调试符号并跨编译单元优化，运行时资源由 Tauri 打包，不再塞入代码常量。
+strip = true
+lto = "thin"
+codegen-units = 1

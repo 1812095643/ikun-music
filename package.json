@@ -1,6 +1,6 @@
 {
   "name": "ikun-music",
-  "version": "5.2.0",
+  "version": "5.3.0",
   "description": "ikun音乐",
   "scripts": {
     "prepare": "husky",
@@ -23,7 +23,9 @@
     "android:dev": "tauri android dev",
     "android:build": "tauri android build --apk true",
     "android:run": "tauri android run",
-    "lint:i18n": "jiti scripts/check_i18n.ts"
+    "lint:i18n": "jiti scripts/check_i18n.ts",
+    "check:music-service": "node scripts/check-music-service.mjs",
+    "package:desktop": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/package-desktop.ps1 -Target all"
   },
   "lint-staged": {
     "*.{ts,tsx,vue,js}": [
@@ -34,39 +36,25 @@
     ]
   },
   "dependencies": {
-    "@tauri-apps/api": "2.9.0",
-    "@tauri-apps/plugin-dialog": "2.4.0",
-    "@tauri-apps/plugin-fs": "2.4.2",
-    "@tauri-apps/plugin-http": "2.5.2",
+    "@tauri-apps/api": "2.11.1",
+    "@tauri-apps/plugin-dialog": "2.7.3",
+    "@tauri-apps/plugin-fs": "2.5.2",
+    "@tauri-apps/plugin-http": "2.5.9",
     "@tauri-apps/plugin-opener": "2.5.0",
-    "@tauri-apps/plugin-shell": "2.3.1",
     "@tauri-apps/plugin-store": "2.4.0",
-    "@unblockneteasemusic/server": "^0.27.10",
-    "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
-    "express": "^4.22.1",
-    "file-type": "^21.1.1",
-    "flac-tagger": "^1.0.7",
-    "font-list": "^1.6.0",
-    "form-data": "^4.0.5",
     "husky": "^9.1.7",
     "jsencrypt": "^3.5.4",
-    "music-metadata": "^11.10.3",
-    "netease-cloud-music-api-alger": "^4.30.0",
-    "node-fetch": "^2.7.0",
-    "node-id3": "^0.2.9",
-    "node-machine-id": "^1.1.12",
     "pinia-plugin-persistedstate": "^4.7.1",
     "vue-i18n": "^11.2.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@rushstack/eslint-patch": "^1.15.0",
-    "@tauri-apps/cli": "2.9.1",
+    "@tauri-apps/cli": "2.11.4",
     "@types/crypto-js": "^4.2.2",
     "@types/howler": "^2.2.12",
     "@types/node": "^20.19.26",
-    "@types/node-fetch": "^2.6.13",
     "@types/tinycolor2": "^1.4.6",
     "@typescript-eslint/eslint-plugin": "^8.49.0",
     "@typescript-eslint/parser": "^8.49.0",

@@ -103,7 +103,7 @@
       </n-badge>
     </button>
 
-    <n-tooltip v-if="isElectron" trigger="hover">
+    <n-tooltip v-if="isDesktopRuntime" trigger="hover">
       <template #trigger>
         <button
           class="action-btn"
@@ -173,7 +173,7 @@
           <div class="menu-row" @click="selectItem('set')">
             <i class="ri-settings-3-line" /><span>{{ t('comp.searchBar.set') }}</span>
           </div>
-          <div v-if="isElectron" class="menu-row">
+          <div v-if="isDesktopRuntime" class="menu-row">
             <i class="ri-zoom-in-line" /><span>{{ t('comp.searchBar.zoom') }}</span>
             <div class="zoom-ctrl ml-auto">
               <button class="zoom-btn" @click.stop="decreaseZoom">
@@ -232,7 +232,7 @@ import { useNavTitleStore } from '@/store/modules/navTitle';
 import { useSearchStore } from '@/store/modules/search';
 import { useSettingsStore } from '@/store/modules/settings';
 import { useUserStore } from '@/store/modules/user';
-import { getImgUrl, isElectron } from '@/utils';
+import { getImgUrl, isDesktopRuntime } from '@/utils';
 
 import { APP_UPDATE_STATUS } from '../../../shared/appUpdate';
 
@@ -251,7 +251,8 @@ const { downloadingCount, navigateToDownloads } = useDownloadStatus();
 const { appUpdateState, hasAppUpdate } = useAppUpdateState();
 const showDownloadButton = computed(
   () =>
-    isElectron && (settingsStore.setData?.alwaysShowDownloadButton || downloadingCount.value > 0)
+    isDesktopRuntime &&
+    (settingsStore.setData?.alwaysShowDownloadButton || downloadingCount.value > 0)
 );
 const { zoomFactor, initZoomFactor, increaseZoom, decreaseZoom, resetZoom, isZoom100 } = useZoom();
 const updateChecking = computed(() => appUpdateState.value.status === APP_UPDATE_STATUS.checking);
@@ -293,10 +294,10 @@ const tabs = computed(() => {
       key: 'localMusic',
       label: t('comp.localMusic'),
       path: '/local-music',
-      electronOnly: true
+      desktopOnly: true
     }
   ];
-  return items.filter((tab) => !tab.electronOnly || isElectron);
+  return items.filter((tab) => !tab.desktopOnly || isDesktopRuntime);
 });
 const isTabActive = (path: string) => route.path === path;
 
@@ -397,7 +398,7 @@ const rawSearchTypes = ref(SEARCH_TYPES);
 const searchTypeOptions = computed(() => {
   locale.value;
   return rawSearchTypes.value
-    .filter(() => isElectron)
+    .filter(() => isDesktopRuntime)
     .map((type) => ({ label: t(type.label), key: type.key }));
 });
 
@@ -483,7 +484,7 @@ watchEffect(() => {
     : USER_SET_OPTIONS.filter((i) => i.key !== 'logout');
 });
 
-const restartApp = () => window.electron.ipcRenderer.send('restart');
+const restartApp = () => window.desktop.send('restart');
 const toLogin = () => router.push('/user');
 
 const isDark = computed({
@@ -515,7 +516,7 @@ const handleAppUpdateClick = async () => {
   }
 
   try {
-    const result = await window.api.checkAppUpdate(true);
+    const result = await window.desktop.checkAppUpdate(true);
     settingsStore.setAppUpdateState(result);
     if (result.status === APP_UPDATE_STATUS.available) {
       settingsStore.setShowUpdateModal(true);
@@ -535,7 +536,7 @@ onMounted(() => {
     hotSearchKeyword.value = t('comp.searchBar.searchPlaceholder');
   });
   void loadPage().catch((error) => console.warn('用户信息暂未刷新：', error));
-  isElectron && initZoomFactor();
+  isDesktopRuntime && initZoomFactor();
 });
 </script>
 

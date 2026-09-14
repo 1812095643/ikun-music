@@ -10,7 +10,7 @@ import type { SongResult } from '@/types/music';
 import { isDesktopRuntime } from '@/utils';
 import { getDefaultDownloadQuality, getKuwoDownloadQuality } from '@/utils/downloadQuality';
 
-const getIpcRenderer = () => (isDesktopRuntime ? window.electron?.ipcRenderer || null : null);
+const getDesktopBridge = () => (isDesktopRuntime ? window.desktop || null : null);
 const buildDownloadKey = (filename: string, quality?: string) =>
   `${filename}::${quality || 'default'}`;
 const getDownloadEventKey = (data: any) =>
@@ -69,11 +69,11 @@ const createDownloadManager = () => {
 
       // 移除可能存在的旧监听器
       if (completeListener) {
-        getIpcRenderer()?.removeListener('music-download-complete', completeListener);
+        getDesktopBridge()?.removeListener('music-download-complete', completeListener);
       }
 
       if (errorListener) {
-        getIpcRenderer()?.removeListener('music-download-error', errorListener);
+        getDesktopBridge()?.removeListener('music-download-error', errorListener);
       }
 
       // 创建新的监听器
@@ -114,8 +114,8 @@ const createDownloadManager = () => {
       };
 
       // 添加监听器
-      getIpcRenderer()?.on('music-download-complete', completeListener);
-      getIpcRenderer()?.on('music-download-error', errorListener);
+      getDesktopBridge()?.on('music-download-complete', completeListener);
+      getDesktopBridge()?.on('music-download-error', errorListener);
 
       isInitialized = true;
     },
@@ -125,12 +125,12 @@ const createDownloadManager = () => {
       if (!isInitialized) return;
 
       if (completeListener) {
-        getIpcRenderer()?.removeListener('music-download-complete', completeListener);
+        getDesktopBridge()?.removeListener('music-download-complete', completeListener);
         completeListener = null;
       }
 
       if (errorListener) {
-        getIpcRenderer()?.removeListener('music-download-error', errorListener);
+        getDesktopBridge()?.removeListener('music-download-error', errorListener);
         errorListener = null;
       }
 
@@ -208,7 +208,7 @@ export const useDownload = () => {
       songData.ar = songData.ar || songData.song?.artists;
 
       // 发送下载请求
-      getIpcRenderer()?.send('download-music', {
+      getDesktopBridge()?.send('download-music', {
         url: typeof musicUrl === 'string' ? musicUrl : musicUrl.url,
         filename,
         songInfo: {
@@ -323,7 +323,7 @@ export const useDownload = () => {
           downloadQualityLabel: downloadQuality.label
         };
 
-        getIpcRenderer()?.send('download-music', {
+        getDesktopBridge()?.send('download-music', {
           url,
           filename,
           songInfo,
@@ -374,7 +374,7 @@ export const useDownload = () => {
       const artistNames = (song.ar || song.song?.artists)?.map((a) => a.name).join(',');
       const filename = `${song.name} - ${artistNames}`;
 
-      const result = await getIpcRenderer()?.invoke('save-lyric-file', { filename, lrcContent });
+      const result = await getDesktopBridge()?.invoke('save-lyric-file', { filename, lrcContent });
 
       if (result?.success) {
         message.success(t('songItem.message.lyricDownloaded'));

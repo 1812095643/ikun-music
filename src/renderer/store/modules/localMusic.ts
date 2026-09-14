@@ -129,7 +129,7 @@ export const useLocalMusicStore = defineStore(
         for (const folderPath of folderPaths.value) {
           try {
             // 1. 调用 IPC 扫描文件夹，获取文件路径与修改时间
-            const result = await window.api.scanLocalMusicWithStats(folderPath);
+            const result = await window.desktop.scanLocalMusicWithStats(folderPath);
 
             // 检查是否返回错误
             if ((result as any).error) {
@@ -152,7 +152,7 @@ export const useLocalMusicStore = defineStore(
 
             // 3. 仅解析新增或变更文件，避免对未变更文件重复解析元数据
             if (parseTargets.length > 0) {
-              const metas = await window.api.parseLocalMusicMetadata(parseTargets);
+              const metas = await window.desktop.parseLocalMusicMetadata(parseTargets);
               for (const meta of metas) {
                 const entry: LocalMusicEntry = {
                   ...meta,
@@ -210,10 +210,7 @@ export const useLocalMusicStore = defineStore(
         for (const entry of allEntries) {
           try {
             // 使用已有的 IPC 通道检查文件是否存在
-            const exists = await window.electron.ipcRenderer.invoke(
-              'check-file-exists',
-              entry.filePath
-            );
+            const exists = await window.desktop.invoke('check-file-exists', entry.filePath);
             existsMap[entry.filePath] = exists !== false;
           } catch {
             // 检查失败时假设文件存在，避免误删

@@ -19,9 +19,9 @@ export const useArtist = () => {
     const targetRoute = `/artist/detail/${id}`;
 
     // 迷你模式下直接路由跳转会被全局守卫拦住，所以先记录目标页，再恢复主窗口。
-    if (settingsStore.isMiniMode && isDesktopRuntime && window.api?.restore) {
+    if (settingsStore.isMiniMode && isDesktopRuntime && window.desktop?.restore) {
       restoreMainWindowFromMiniMode({
-        restore: window.api.restore,
+        restore: window.desktop.restore,
         targetRoute
       });
       return;

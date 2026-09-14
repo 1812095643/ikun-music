@@ -7,5 +7,9 @@
     "security": {
       "capabilities": ["android-main"]
     }
+  },
+  "bundle": {
+    "resources": [],
+    "createUpdaterArtifacts": false
   }
 }

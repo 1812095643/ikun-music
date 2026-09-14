@@ -2,7 +2,7 @@ import { cloneDeep, isArray, mergeWith } from 'lodash';
 import { defineStore } from 'pinia';
 import { ref, watch } from 'vue';
 
-import setDataDefault from '@/../main/set.json';
+import setDataDefault from '@/../shared/defaultSettings.json';
 import homeRouter from '@/router/home';
 import { useMenuStore } from '@/store/modules/menu';
 import { DEFAULT_PLATFORMS } from '@/types/music';
@@ -17,7 +17,7 @@ import {
 
 import { type AppUpdateState, createDefaultAppUpdateState } from '../../../shared/appUpdate';
 
-const getSafeIpcRenderer = () => (isDesktopRuntime ? window.electron?.ipcRenderer || null : null);
+const getDesktopBridge = () => (isDesktopRuntime ? window.desktop || null : null);
 
 const getLocalSettings = () => {
   try {
@@ -65,10 +65,10 @@ export const useSettingsStore = defineStore('settings', () => {
       ...data
     };
 
-    const ipcRenderer = getSafeIpcRenderer();
+    const desktopBridge = getDesktopBridge();
 
-    if (ipcRenderer) {
-      ipcRenderer.send('set-store-value', 'set', cloneDeep(mergedData));
+    if (desktopBridge) {
+      desktopBridge.send('set-store-value', 'set', cloneDeep(mergedData));
     } else {
       localStorage.setItem('appSettings', JSON.stringify(cloneDeep(mergedData)));
     }
@@ -78,9 +78,9 @@ export const useSettingsStore = defineStore('settings', () => {
   // 初始化时先从存储中读取设置
   const getInitialSettings = () => {
     // 从存储中获取保存的设置
-    const ipcRenderer = getSafeIpcRenderer();
-    const savedSettings = ipcRenderer
-      ? ipcRenderer.sendSync('get-store-value', 'set')
+    const desktopBridge = getDesktopBridge();
+    const savedSettings = desktopBridge
+      ? desktopBridge.sendSync('get-store-value', 'set')
       : getLocalSettings();
 
     // 自定义合并策略：如果是数组，直接使用源数组（覆盖默认值）
@@ -209,7 +209,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
   const setLanguage = (language: string) => {
     setSetData({ language });
-    getSafeIpcRenderer()?.send('change-language', language);
+    getDesktopBridge()?.send('change-language', language);
   };
 
   const initializeSettings = () => {
@@ -229,11 +229,11 @@ export const useSettingsStore = defineStore('settings', () => {
   };
 
   const initializeSystemFonts = async () => {
-    if (!isDesktopRuntime || !window.api?.invoke) return;
+    if (!isDesktopRuntime || !window.desktop?.invoke) return;
     if (systemFonts.value.length > 1) return;
 
     try {
-      const fonts = await window.api.invoke('get-system-fonts');
+      const fonts = await window.desktop.invoke('get-system-fonts');
       setSystemFonts(fonts);
     } catch (error) {
       console.error('获取系统字体失败:', error);

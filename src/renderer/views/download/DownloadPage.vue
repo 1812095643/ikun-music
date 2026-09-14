@@ -555,14 +555,14 @@ const getLocalFilePath = (path: string) => {
 
 // 打开目录
 const openDirectory = (path: string) => {
-  window.electron.ipcRenderer.send('open-directory', path);
+  window.desktop.send('open-directory', path);
 };
 
 // 播放音乐
 const handlePlayMusic = async (item: DownloadedItem) => {
   try {
     // 先检查文件是否存在
-    const fileExists = await window.electron.ipcRenderer.invoke('check-file-exists', item.path);
+    const fileExists = await window.desktop.invoke('check-file-exists', item.path);
 
     if (!fileExists) {
       message.error(t('download.delete.fileNotFound', { name: item.displayName || item.filename }));
@@ -632,7 +632,7 @@ const confirmDelete = async () => {
   if (!item) return;
 
   try {
-    const success = await window.electron.ipcRenderer.invoke('delete-downloaded-music', item.path);
+    const success = await window.desktop.invoke('delete-downloaded-music', item.path);
 
     if (success) {
       const newList = downloadedList.value.filter((i) => i.id !== item.id);
@@ -659,7 +659,7 @@ const clearDownloadRecords = async () => {
   try {
     downloadedList.value = [];
     localStorage.setItem('downloadedList', '[]');
-    await window.electron.ipcRenderer.invoke('clear-downloaded-music');
+    await window.desktop.invoke('clear-downloaded-music');
     message.success(t('download.clear.success'));
   } catch (error) {
     console.error('Failed to clear download records:', error);
@@ -697,7 +697,7 @@ const refreshDownloadedList = async () => {
 
   try {
     isLoadingDownloaded.value = true;
-    const list = await window.electron.ipcRenderer.invoke('get-downloaded-music');
+    const list = await window.desktop.invoke('get-downloaded-music');
 
     if (!Array.isArray(list) || list.length === 0) {
       downloadedList.value = [];
@@ -778,7 +778,7 @@ onMounted(() => {
   const processedDownloads = new Set<string>();
 
   // 监听下载进度
-  window.electron.ipcRenderer.on('music-download-progress', (_, data) => {
+  window.desktop.on('music-download-progress', (_, data) => {
     const existingItem = downloadList.value.find((item) => item.filename === data.filename);
 
     // 如果进度为100%，将状态设置为已完成
@@ -806,7 +806,7 @@ onMounted(() => {
   });
 
   // 监听下载完成
-  window.electron.ipcRenderer.on('music-download-complete', async (_, data) => {
+  window.desktop.on('music-download-complete', async (_, data) => {
     // 如果已经处理过此文件的完成事件，则跳过
     if (processedDownloads.has(data.filename)) {
       return;
@@ -852,7 +852,7 @@ onMounted(() => {
   });
 
   // 监听下载队列
-  window.electron.ipcRenderer.on('music-download-queued', (_, data) => {
+  window.desktop.on('music-download-queued', (_, data) => {
     const existingItem = downloadList.value.find((item) => item.filename === data.filename);
     if (!existingItem) {
       downloadList.value.push({
@@ -958,7 +958,7 @@ const formatNamePreview = computed(() => {
 
 // 选择下载路径
 const selectDownloadPath = async () => {
-  const result = await window.electron.ipcRenderer.invoke('select-directory');
+  const result = await window.desktop.invoke('select-directory');
   if (result && !result.canceled && result.filePaths.length > 0) {
     downloadSettings.value.path = result.filePaths[0];
   }
@@ -967,7 +967,7 @@ const selectDownloadPath = async () => {
 // 打开下载路径
 const openDownloadPath = () => {
   if (downloadSettings.value.path) {
-    window.electron.ipcRenderer.send('open-directory', downloadSettings.value.path);
+    window.desktop.send('open-directory', downloadSettings.value.path);
   } else {
     message.warning(t('download.settingsPanel.noPathSelected'));
   }
@@ -976,26 +976,14 @@ const openDownloadPath = () => {
 // 保存下载设置
 const saveDownloadSettings = () => {
   // 保存到配置
-  window.electron.ipcRenderer.send(
-    'set-store-value',
-    'set.downloadPath',
-    downloadSettings.value.path
-  );
-  window.electron.ipcRenderer.send(
+  window.desktop.send('set-store-value', 'set.downloadPath', downloadSettings.value.path);
+  window.desktop.send(
     'set-store-value',
     'set.downloadNameFormat',
     downloadSettings.value.nameFormat
   );
-  window.electron.ipcRenderer.send(
-    'set-store-value',
-    'set.downloadSeparator',
-    downloadSettings.value.separator
-  );
-  window.electron.ipcRenderer.send(
-    'set-store-value',
-    'set.downloadSaveLyric',
-    downloadSettings.value.saveLyric
-  );
+  window.desktop.send('set-store-value', 'set.downloadSeparator', downloadSettings.value.separator);
+  window.desktop.send('set-store-value', 'set.downloadSaveLyric', downloadSettings.value.saveLyric);
 
   // 如果是在已下载页面，刷新列表以更新显示
   if (tabName.value === 'downloaded') {
@@ -1009,22 +997,13 @@ const saveDownloadSettings = () => {
 // 初始化下载设置
 const initDownloadSettings = async () => {
   // 获取当前配置
-  const path = await window.electron.ipcRenderer.invoke('get-store-value', 'set.downloadPath');
-  const nameFormat = await window.electron.ipcRenderer.invoke(
-    'get-store-value',
-    'set.downloadNameFormat'
-  );
-  const separator = await window.electron.ipcRenderer.invoke(
-    'get-store-value',
-    'set.downloadSeparator'
-  );
-  const saveLyric = await window.electron.ipcRenderer.invoke(
-    'get-store-value',
-    'set.downloadSaveLyric'
-  );
+  const path = await window.desktop.invoke('get-store-value', 'set.downloadPath');
+  const nameFormat = await window.desktop.invoke('get-store-value', 'set.downloadNameFormat');
+  const separator = await window.desktop.invoke('get-store-value', 'set.downloadSeparator');
+  const saveLyric = await window.desktop.invoke('get-store-value', 'set.downloadSaveLyric');
 
   downloadSettings.value = {
-    path: path || (await window.electron.ipcRenderer.invoke('get-downloads-path')),
+    path: path || (await window.desktop.invoke('get-downloads-path')),
     nameFormat: nameFormat || '{songName} - {artistName}',
     separator: separator || ' - ',
     saveLyric: saveLyric || false

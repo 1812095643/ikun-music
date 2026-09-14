@@ -16,9 +16,8 @@ import {
 import { parseLyrics } from '@/utils/yrcParser';
 
 const windowData = window as any;
-const getCompatApi = () => (isDesktopRuntime ? window.api || null : null);
-const getCompatIpcRenderer = () =>
-  isDesktopRuntime ? windowData.electron?.ipcRenderer || null : null;
+const getCompatApi = () => (isDesktopRuntime ? window.desktop || null : null);
+const getDesktopBridge = () => (isDesktopRuntime ? windowData.desktop || null : null);
 let lyricWindowListenersInitialized = false;
 let lastLyricWindowOpenRequestedAt = 0;
 
@@ -957,10 +956,10 @@ export const openLyric = (forceOpen = false) => {
 
 // 修改closeLyric函数，确保停止定时同步
 export const closeLyric = () => {
-  const ipcRenderer = getCompatIpcRenderer();
-  if (!ipcRenderer) return;
+  const desktopBridge = getDesktopBridge();
+  if (!desktopBridge) return;
   isLyricWindowOpen.value = false; // 确保状态更新
-  ipcRenderer.send('close-lyric');
+  desktopBridge.send('close-lyric');
 
   // 停止歌词同步
   stopLyricSync();
@@ -998,7 +997,7 @@ onUnmounted(() => {
 export { parseLyricsString };
 
 // 添加播放控制命令监听
-const lyricControlIpcRenderer = getCompatIpcRenderer();
+const lyricControlIpcRenderer = getDesktopBridge();
 if (lyricControlIpcRenderer) {
   lyricControlIpcRenderer.on('lyric-control-back', (_, command: string) => {
     // 浏览器本地调试时，歌词页可能在没有主播放器上下文的情况下被直接打开；

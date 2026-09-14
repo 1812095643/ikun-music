@@ -180,8 +180,8 @@ export const useSleepTimerStore = defineStore('sleepTimer', () => {
     }
 
     // 发送通知
-    if (isDesktopRuntime && window.electron?.ipcRenderer) {
-      window.electron.ipcRenderer.send('show-notification', {
+    if (isDesktopRuntime && window.desktop) {
+      window.desktop.send('show-notification', {
         title: i18n.global.t('player.sleepTimer.timerEnded'),
         body: i18n.global.t('player.sleepTimer.playbackStopped')
       });

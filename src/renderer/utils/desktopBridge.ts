@@ -8,16 +8,20 @@ import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
 import { openPath, openUrl } from '@tauri-apps/plugin-opener';
 import { Store } from '@tauri-apps/plugin-store';
 
-import config from '../../../package.json';
-import defaultSettings from '../../main/set.json';
 import {
-  APP_UPDATE_CURRENT_RELEASE_TAG,
-  APP_UPDATE_RELEASE_API_URL,
-  APP_UPDATE_RELEASE_URL,
-  APP_UPDATE_STATUS,
-  type AppUpdateState,
-  createDefaultAppUpdateState
-} from '../../shared/appUpdate';
+  checkAppUpdate,
+  downloadAppUpdate,
+  getAppUpdateState,
+  installAppUpdate,
+  onAppUpdateState,
+  openAppUpdatePage,
+  removeAppUpdateListeners
+} from '@/services/appUpdater';
+import { requestMusicService } from '@/services/musicService';
+
+import config from '../../../package.json';
+import defaultSettings from '../../shared/defaultSettings.json';
+import { getShortcutConflicts, normalizeShortcutsConfig } from '../../shared/shortcuts';
 import {
   consumeMiniModeRestoreRoute,
   rememberMiniModeReturnRoute,
@@ -48,30 +52,6 @@ type TrayStatePayload = {
   muted: boolean;
 };
 
-type GiteeReleaseAsset = {
-  name?: string;
-  browser_download_url?: string;
-  size?: number;
-};
-
-type GiteeRelease = {
-  tag_name?: string;
-  name?: string;
-  body?: string;
-  created_at?: string;
-  published_at?: string;
-  html_url?: string;
-  prerelease?: boolean;
-  assets?: GiteeReleaseAsset[];
-};
-
-type ParsedReleaseVersion = {
-  major: number;
-  minor: number;
-  patch: number;
-  date: number;
-};
-
 const isTauriRuntime = Boolean((window as any).__TAURI_INTERNALS__);
 const BROWSER_STORE_KEY = 'alger-music-tauri-browser-store';
 const BROWSER_LYRIC_RETURN_ROUTE_KEY = 'alger-music-browser-lyric-return-route';
@@ -80,13 +60,11 @@ const TRAY_PANEL_WINDOW_LABEL = 'tray-panel';
 const LYRIC_WINDOW_LABEL = 'lyric-window';
 const listeners = new Map<string, Set<Listener>>();
 const unlisteners = new Map<string, UnlistenFn>();
+const externalRequests = new Map<string, AbortController>();
 let appWindow: ReturnType<typeof getCurrentWindow> | null = null;
 let currentWebviewWindow: ReturnType<typeof getCurrentWebviewWindow> | null = null;
 let storePromise: Promise<CompatStore> | null = null;
-let musicApiReadyPromise: Promise<number | null> | null = null;
-let musicApiCheckedAt = 0;
-let appUpdateState: AppUpdateState = createDefaultAppUpdateState(config.version);
-let appUpdateCheckPromise: Promise<AppUpdateState> | null = null;
+
 let storeCache: StoreData = {
   set: { ...(defaultSettings as Record<string, any>) },
   shortcuts: {},
@@ -162,36 +140,6 @@ const getStore = async (): Promise<CompatStore> => {
   return storePromise;
 };
 
-export const ensureMusicApiReady = async () => {
-  if (!isTauriRuntime) return null;
-  // 成功不能永久缓存：Node 意外退出后下一次操作应能重新拉起。
-  // 启动中的调用共用 Promise，启动后最多每五秒向 Rust 核对一次子进程状态。
-  if (musicApiReadyPromise && (!musicApiCheckedAt || Date.now() - musicApiCheckedAt < 5000))
-    return musicApiReadyPromise;
-  musicApiCheckedAt = 0;
-
-  musicApiReadyPromise = (async () => {
-    await getStore();
-    const result = await invoke<{ port?: number }>('start_music_api', {
-      port: storeCache.set.musicApiPort || 30488
-    }).catch((error) => {
-      const message = error instanceof Error ? error.message : String(error);
-      console.error('启动音乐 API 服务失败:', message);
-      throw new Error(`音乐 API 服务没有启动起来：${message}`);
-    });
-    if (result?.port && result.port !== storeCache.set.musicApiPort) {
-      await setStoreValue('set.musicApiPort', result.port);
-    }
-    musicApiCheckedAt = Date.now();
-    return result?.port || storeCache.set.musicApiPort || 30488;
-  })().catch((error) => {
-    musicApiReadyPromise = null;
-    throw error;
-  });
-
-  return musicApiReadyPromise;
-};
-
 const getByPath = (path: string) => {
   const keys = path.split('.');
   let current: any = storeCache;
@@ -212,24 +160,10 @@ const setByPath = (path: string, value: any) => {
   current[keys[keys.length - 1]] = value;
 };
 
-const postToMusicApi = async (path: string, body: Record<string, any>) => {
-  const actualPort = await ensureMusicApiReady();
-  const url = new URL(
-    `http://127.0.0.1:${actualPort || storeCache.set.musicApiPort || 30488}${path}`
-  );
-  // 根因：内置 NCM API 在全局层面对所有路由启用了 2 分钟缓存，缓存 key 只包含
-  // method + originalUrl，不包含 POST body。自定义解析接口如果固定访问同一路径，
-  // 搜索后播放不同歌曲时可能拿到上一首歌的解析结果，表现为按钮进入播放态但无声。
-  // 每次 POST 增加唯一参数，让扫描本地音乐、元数据解析和 unblockMusic 都按真实请求执行。
-  url.searchParams.set('_tauriRequestId', `${Date.now()}-${Math.random().toString(16).slice(2)}`);
-  const response = await fetch(url.toString(), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-    signal: AbortSignal.timeout(45000)
-  });
-  if (!response.ok) throw new Error(`音乐服务暂时未完成请求（HTTP ${response.status}），请重试`);
-  return response.json();
+const postToMusicApi = async (path: string, data: Record<string, any>) => {
+  const result = await requestMusicService(path, data);
+  if (result.status >= 400) throw new Error(result.body?.message || '音乐服务暂时不可用，请重试');
+  return result.body;
 };
 
 const emitLocal = (channel: string, ...args: any[]) => {
@@ -238,198 +172,6 @@ const emitLocal = (channel: string, ...args: any[]) => {
 
 const hasLocalListeners = (channel: string) => {
   return (listeners.get(channel)?.size || 0) > 0;
-};
-
-const emitAppUpdateState = () => {
-  emitLocal('app-update:state', appUpdateState);
-};
-
-const setAppUpdateState = (partial: Partial<AppUpdateState>) => {
-  appUpdateState = {
-    ...appUpdateState,
-    ...partial
-  };
-  emitAppUpdateState();
-};
-
-const parseReleaseVersion = (value: string): ParsedReleaseVersion | null => {
-  const match = value.trim().match(/^v?(\d+)\.(\d+)\.(\d+)(?:[-_.]?(\d{8}))?/i);
-  if (!match) return null;
-  return {
-    major: Number(match[1]),
-    minor: Number(match[2]),
-    patch: Number(match[3]),
-    date: Number(match[4] || 0)
-  };
-};
-
-const compareReleaseVersions = (nextVersion: string, currentVersion: string) => {
-  const next = parseReleaseVersion(nextVersion);
-  const current = parseReleaseVersion(currentVersion);
-  if (!next || !current) return nextVersion.localeCompare(currentVersion);
-
-  for (const key of ['major', 'minor', 'patch', 'date'] as const) {
-    if (next[key] > current[key]) return 1;
-    if (next[key] < current[key]) return -1;
-  }
-  return 0;
-};
-
-const getCurrentReleaseTag = () => {
-  // 当前发版仍是 5.1.0 + 日期 tag，后续版本号开始迭代后，如果 package.json 已经高于
-  // 旧的日期 tag，就自动以 package.json 为准，避免新版本继续拿旧 tag 做比较。
-  if (compareReleaseVersions(config.version, APP_UPDATE_CURRENT_RELEASE_TAG) > 0) {
-    return config.version;
-  }
-  return APP_UPDATE_CURRENT_RELEASE_TAG;
-};
-
-const isNewerThanCurrentRelease = (latestTag: string) => {
-  const latest = parseReleaseVersion(latestTag);
-  const currentTag = getCurrentReleaseTag();
-  const current = parseReleaseVersion(currentTag);
-  if (!latest || !current) return compareReleaseVersions(latestTag, currentTag) > 0;
-
-  for (const key of ['major', 'minor', 'patch'] as const) {
-    if (latest[key] > current[key]) return true;
-    if (latest[key] < current[key]) return false;
-  }
-
-  // 当前构建如果只有 package.json 版本号而没有日期后缀，说明新版发版已开始按主版本迭代；
-  // 此时同一个主版本的日期 tag 不再当作更新，防止刚打出的新包启动后提示自己需要更新。
-  if (current.date === 0) return false;
-  return latest.date > current.date;
-};
-
-const isInstallAsset = (asset: GiteeReleaseAsset) => {
-  const name = asset.name || '';
-  return /\.exe$/i.test(name) && !/\.(zip|tar\.gz)$/i.test(name);
-};
-
-const getReleasePageUrl = (release: GiteeRelease) => {
-  return release.html_url || `${APP_UPDATE_RELEASE_URL}/tag/${release.tag_name || ''}`;
-};
-
-const getReleaseDownloadUrl = (release: GiteeRelease) => {
-  return release.assets?.find(isInstallAsset)?.browser_download_url || getReleasePageUrl(release);
-};
-
-const normalizeReleaseBody = (release: GiteeRelease) => {
-  const body = release.body || '';
-  const downloadUrl = getReleaseDownloadUrl(release);
-  if (!downloadUrl || downloadUrl === getReleasePageUrl(release)) return body;
-  return `${body}\n\n## 下载\n\n- [打开便携版下载链接](${downloadUrl})`;
-};
-
-const fetchGiteeReleases = async (): Promise<GiteeRelease[]> => {
-  const response = await (isTauriRuntime ? tauriFetch : fetch)(APP_UPDATE_RELEASE_API_URL, {
-    headers: {
-      Accept: 'application/json',
-      'User-Agent': 'ikun-music-updater'
-    },
-    connectTimeout: 8000
-  } as RequestInit & { connectTimeout?: number });
-  if (!response.ok) {
-    throw new Error(`Gitee Release 接口返回 HTTP ${response.status}`);
-  }
-  const data = await response.json();
-  if (!Array.isArray(data)) {
-    throw new Error('Gitee Release 接口返回格式不正确');
-  }
-  return data as GiteeRelease[];
-};
-
-const findLatestRelease = (releases: GiteeRelease[]) => {
-  return releases
-    .filter((release) => release.tag_name && !release.prerelease)
-    .sort((a, b) => compareReleaseVersions(b.tag_name || '', a.tag_name || ''))[0];
-};
-
-const checkTauriAppUpdate = async (options: { manual?: boolean } = {}) => {
-  if (appUpdateCheckPromise) return appUpdateCheckPromise;
-
-  appUpdateCheckPromise = (async () => {
-    try {
-      setAppUpdateState({
-        supported: true,
-        status: APP_UPDATE_STATUS.checking,
-        currentVersion: config.version,
-        errorMessage: null,
-        checkedAt: Date.now()
-      });
-
-      const latestRelease = findLatestRelease(await fetchGiteeReleases());
-      if (!latestRelease?.tag_name) {
-        throw new Error('没有找到可用于更新的 Gitee Release');
-      }
-
-      const latestVersion = latestRelease.tag_name.replace(/^v/i, '');
-      if (!isNewerThanCurrentRelease(latestRelease.tag_name)) {
-        setAppUpdateState({
-          status: APP_UPDATE_STATUS.notAvailable,
-          availableVersion: null,
-          releaseNotes: '',
-          releaseDate: null,
-          releasePageUrl: APP_UPDATE_RELEASE_URL,
-          errorMessage: null,
-          checkedAt: Date.now()
-        });
-        return appUpdateState;
-      }
-
-      setAppUpdateState({
-        status: APP_UPDATE_STATUS.available,
-        availableVersion: latestVersion,
-        releaseNotes: normalizeReleaseBody(latestRelease),
-        releaseDate: latestRelease.published_at || latestRelease.created_at || null,
-        releasePageUrl: getReleaseDownloadUrl(latestRelease),
-        errorMessage: null,
-        checkedAt: Date.now()
-      });
-      return appUpdateState;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      setAppUpdateState({
-        // 根因：Tauri 便携版没有 Electron autoUpdater 的安装器通道，旧兼容层还返回固定 idle，
-        // 导致用户既看不到可更新红点，也打不开下载页。这里把失败状态也广播出去，手动检查时
-        // 能看到清晰原因；启动静默检查虽然不弹错误，但状态保留给关于页和后续排查使用。
-        supported: true,
-        status: options.manual ? APP_UPDATE_STATUS.error : APP_UPDATE_STATUS.idle,
-        errorMessage: options.manual ? errorMessage : null,
-        checkedAt: Date.now()
-      });
-      return appUpdateState;
-    } finally {
-      appUpdateCheckPromise = null;
-    }
-  })();
-
-  return appUpdateCheckPromise;
-};
-
-const openTauriAppUpdatePage = async () => {
-  const targetUrl = appUpdateState.releasePageUrl || APP_UPDATE_RELEASE_URL;
-  if (!isTauriRuntime) {
-    window.open(targetUrl, '_blank');
-    return true;
-  }
-  await openUrl(targetUrl);
-  return true;
-};
-
-const downloadTauriAppUpdate = async () => {
-  // 根因：当前 Windows 产物是单 exe 便携版，运行中覆盖自身会被系统文件锁和安装路径权限影响，
-  // 比自动下载安装更容易失败。按产品要求，检测到新版后直接打开 Gitee 附件/Release 链接，
-  // 让用户手动下载新便携版，状态仍保持 available 以便红点继续提示。
-  if (appUpdateState.status !== APP_UPDATE_STATUS.available) {
-    setAppUpdateState({
-      status: APP_UPDATE_STATUS.error,
-      errorMessage: '当前没有可下载的更新'
-    });
-    return appUpdateState;
-  }
-  await openTauriAppUpdatePage();
-  return appUpdateState;
 };
 
 const getBrowserHashRoute = () => window.location.hash.replace(/^#/, '') || '/';
@@ -854,6 +596,12 @@ const send = (channel: string, ...args: any[]) => {
       void setStoreValue('set.language', args[0]);
       emitLocal('language-changed', args[0]);
       break;
+    case 'disable-shortcuts':
+      void import('./appShortcuts').then((module) => module.setAppShortcutsSuspended(true));
+      break;
+    case 'enable-shortcuts':
+      void import('./appShortcuts').then((module) => module.setAppShortcutsSuspended(false));
+      break;
     case 'restart':
       window.location.reload();
       break;
@@ -911,21 +659,24 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
       return window.devicePixelRatio || 1;
     case 'shortcuts:get-config':
       return storeCache.shortcuts || {};
-    case 'shortcuts:validate':
-      return { valid: true, conflicts: [] };
+    case 'shortcuts:validate': {
+      const conflicts = getShortcutConflicts(normalizeShortcutsConfig(args[0]));
+      return { valid: conflicts.length === 0, conflicts };
+    }
     case 'shortcuts:save':
-      await setStoreValue('shortcuts', args[0]);
+      await setStoreValue('shortcuts', normalizeShortcutsConfig(args[0]));
+      emitLocal('update-app-shortcuts', args[0]);
       return { success: true };
     case 'app-update:get-state':
-      return appUpdateState;
+      return getAppUpdateState();
     case 'app-update:check':
-      return checkTauriAppUpdate(args[0] || {});
+      return checkAppUpdate(Boolean(args[0]?.manual));
     case 'app-update:download':
-      return downloadTauriAppUpdate();
+      return downloadAppUpdate();
     case 'app-update:quit-and-install':
-      return openTauriAppUpdatePage();
+      return installAppUpdate();
     case 'app-update:open-release-page':
-      return openTauriAppUpdatePage();
+      return openAppUpdatePage();
     case 'get-downloads-path':
       return ensureDefaultDownloadPath();
     case 'get-downloaded-music': {
@@ -1025,6 +776,20 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
     case 'lx-music-http-request': {
       const request = args[0] || {};
       const options = request.options || {};
+      const controller = new AbortController();
+      const requestId = String(request.requestId || '');
+      if (requestId) externalRequests.set(requestId, controller);
+      // 根因：旧 HTTP 插件在收到响应头后可能一直等待正文，AbortSignal 本身不能
+      // 保证调用 Promise 一定结束。把取响应和读正文一起纳入超时竞争，保证首页
+      // 在五秒预算后能回退备用歌单；同时让音源脚本的取消操作真正中止原生请求。
+      const timer = setTimeout(() => controller.abort(), options.timeout || 15000);
+      const cancelled = new Promise<never>((_resolve, reject) => {
+        controller.signal.addEventListener(
+          'abort',
+          () => reject(new Error('音乐接口等待时间较长或请求已取消，请重试')),
+          { once: true }
+        );
+      });
       const headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         ...(options.headers || {})
@@ -1032,7 +797,7 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
       const fetchOptions: RequestInit = {
         method: options.method || 'GET',
         headers,
-        signal: AbortSignal.timeout(options.timeout || 15000)
+        signal: controller.signal
       };
       if (options.body) fetchOptions.body = options.body;
       else if (options.form) {
@@ -1040,35 +805,46 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
         (fetchOptions.headers as Record<string, string>)['Content-Type'] =
           'application/x-www-form-urlencoded';
       }
-      const response = await (isTauriRuntime ? tauriFetch : fetch)(request.url, fetchOptions);
-      const rawBody = await response.text();
-      let body: any = rawBody;
-      const contentType = response.headers.get('content-type') || '';
-      if (
-        contentType.includes('application/json') ||
-        rawBody.startsWith('{') ||
-        rawBody.startsWith('[')
-      ) {
-        try {
-          body = JSON.parse(rawBody);
-        } catch (error) {
-          console.warn('解析音乐接口响应 JSON 失败，保留原始文本内容。', error);
-        }
+      try {
+        return await Promise.race([
+          (async () => {
+            const response = await (isTauriRuntime ? tauriFetch : fetch)(request.url, fetchOptions);
+            const rawBody = fetchOptions.method === 'HEAD' ? '' : await response.text();
+            let body: any = rawBody;
+            const contentType = response.headers.get('content-type') || '';
+            if (
+              contentType.includes('application/json') ||
+              rawBody.startsWith('{') ||
+              rawBody.startsWith('[')
+            ) {
+              try {
+                body = JSON.parse(rawBody);
+              } catch (error) {
+                console.warn('解析音乐接口响应 JSON 失败，保留原始文本内容。', error);
+              }
+            }
+            return {
+              statusCode: response.status,
+              headers: Object.fromEntries(response.headers.entries()),
+              body
+            };
+          })(),
+          cancelled
+        ]);
+      } finally {
+        clearTimeout(timer);
+        if (externalRequests.get(requestId) === controller) externalRequests.delete(requestId);
       }
-      return {
-        statusCode: response.status,
-        headers: Object.fromEntries(response.headers.entries()),
-        body
-      };
     }
     case 'lx-music-http-cancel':
+      externalRequests.get(String(args[0]))?.abort();
       return undefined;
     case 'scan-local-music':
-      return postToMusicApi('/alger-tauri/scan-local-music', { folderPath: args[0] });
+      return postToMusicApi('/desktop/scan-local-music', { folderPath: args[0] });
     case 'scan-local-music-with-stats':
-      return postToMusicApi('/alger-tauri/scan-local-music-with-stats', { folderPath: args[0] });
+      return postToMusicApi('/desktop/scan-local-music-with-stats', { folderPath: args[0] });
     case 'parse-local-music-metadata':
-      return postToMusicApi('/alger-tauri/parse-local-music-metadata', {
+      return postToMusicApi('/desktop/parse-local-music-metadata', {
         filePaths: args[0] || []
       });
     case 'import-custom-api-plugin': {
@@ -1105,7 +881,7 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
       return { name, content };
     }
     case 'unblock-music':
-      return postToMusicApi('/alger-tauri/unblock-music', {
+      return postToMusicApi('/desktop/unblock-music', {
         id: args[0],
         songData: args[1],
         enabledSources: args[2]
@@ -1131,7 +907,7 @@ const removeAllListeners = (channel: string) => {
   listeners.delete(channel);
 };
 
-const ipcRenderer = {
+const desktopBridge = {
   send,
   sendSync,
   invoke: invokeChannel,
@@ -1169,9 +945,8 @@ const api = {
   downloadAppUpdate: () => invokeChannel('app-update:download'),
   installAppUpdate: () => invokeChannel('app-update:quit-and-install'),
   openAppUpdatePage: () => invokeChannel('app-update:open-release-page'),
-  onAppUpdateState: (callback: (state: any) => void) =>
-    on('app-update:state', (_event: any, state: any) => callback(state)),
-  removeAppUpdateListeners: () => removeAllListeners('app-update:state'),
+  onAppUpdateState,
+  removeAppUpdateListeners,
   onLanguageChanged: (callback: (locale: string) => void) =>
     on('language-changed', (_event: any, locale: string) => callback(locale)),
   updateTrayState: (state: TrayStatePayload) => send('update-tray-state', state),
@@ -1193,15 +968,14 @@ const api = {
     invokeChannel('parse-local-music-metadata', filePaths)
 };
 
-const electron = {
-  ipcRenderer,
+const desktop = {
+  ...desktopBridge,
+  ...api,
   process: {
     platform: sendSync('get-platform'),
     arch: sendSync('get-arch')
   }
 };
 
-(window as any).electron = electron;
-(window as any).api = api;
-(window as any).ipcRenderer = ipcRenderer;
+(window as any).desktop = desktop;
 export const initializeDesktopSettings = () => getStore();

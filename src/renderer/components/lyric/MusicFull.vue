@@ -70,7 +70,7 @@
           type="button"
           title="精简模式"
           aria-label="精简模式"
-          @click="window.api.miniWindow()"
+          @click="window.desktop.miniWindow()"
         >
           <i class="ri-picture-in-picture-line" />
         </button>

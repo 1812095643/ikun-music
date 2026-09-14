@@ -128,9 +128,7 @@ const memberLinks = [
 const { t } = useI18n();
 const setData = inject(SETTINGS_DATA_KEY)!;
 const platform =
-  isDesktopRuntime && window.electron
-    ? window.electron.ipcRenderer.sendSync('get-platform')
-    : 'web';
+  isDesktopRuntime && window.desktop ? window.desktop.sendSync('get-platform') : 'web';
 
 const showMusicSourcesModal = ref(false);
 

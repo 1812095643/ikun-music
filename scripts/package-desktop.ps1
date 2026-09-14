@@ -1,98 +1,57 @@
-﻿param(
+﻿#requires -Version 5.1
+param(
   [string]$ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path,
   [string]$OutputRoot = '',
-  [ValidateSet('portable', 'all')]
-  [string]$Target = 'portable'
+  [ValidateSet('portable','all')][string]$Target = 'all'
 )
-
 $ErrorActionPreference = 'Stop'
-$OutputEncoding = [System.Text.UTF8Encoding]::new()
-[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
-
-function Join-Chars([int[]]$Codes) {
-  return -join ($Codes | ForEach-Object { [char]$_ })
+$ProjectRoot = (Resolve-Path -LiteralPath $ProjectRoot).Path
+$version = (Get-Content -LiteralPath (Join-Path $ProjectRoot 'package.json') -Raw -Encoding UTF8 | ConvertFrom-Json).version
+if ([string]::IsNullOrWhiteSpace($OutputRoot)) { $OutputRoot = Join-Path (Split-Path $ProjectRoot -Parent) ('打包产物\' + $version) }
+$OutputRoot = [IO.Path]::GetFullPath($OutputRoot)
+$releaseExe = Join-Path $ProjectRoot 'src-tauri\target\release\ikun-music-tauri.exe'
+$portableRoot = Join-Path $OutputRoot 'ikun-music-portable'
+$runtimeSource = Join-Path $ProjectRoot 'src-tauri\runtime-stage'
+$packageName = 'ikun-music-' + $version
+$keyPath = Join-Path $env:USERPROFILE '.tauri\ikun-music-updater.key'
+if (!$env:TAURI_SIGNING_PRIVATE_KEY) {
+  if (!(Test-Path -LiteralPath $keyPath)) { throw '请先配置 TAURI_SIGNING_PRIVATE_KEY 签名密钥。' }
+  $env:TAURI_SIGNING_PRIVATE_KEY = $keyPath
 }
+$env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = ''
+$env:PATH = (Join-Path $env:USERPROFILE '.cargo\bin') + ';' + $env:PATH
 
-$cargoBin = Join-Path $env:USERPROFILE '.cargo\bin'
-if (Test-Path -LiteralPath $cargoBin) {
-  $env:PATH = "$cargoBin;$env:PATH"
-}
-
-$outputDirName = Join-Chars @(0x6253, 0x5305, 0x4EA7, 0x7269)
-if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
-  $OutputRoot = Join-Path (Split-Path -Parent $ProjectRoot) $outputDirName
-}
-
-$appVersion = (Get-Content -LiteralPath (Join-Path $ProjectRoot 'package.json') -Raw | ConvertFrom-Json).version
-$musicText = Join-Chars @(0x97F3, 0x4E50)
-$portableText = Join-Chars @(0x4FBF, 0x643A, 0x7248)
-$setupText = Join-Chars @(0x5B89, 0x88C5, 0x7248)
-$appProcessName = "ikun$musicText"
-$portableProcessName = "ikun$musicText-$appVersion-$portableText"
-
-$releaseDir = Join-Path $ProjectRoot 'src-tauri\target\release'
-$bundleDir = Join-Path $releaseDir 'bundle\nsis'
-$portableSource = Join-Path $releaseDir 'ikun-music-tauri.exe'
-$portableTarget = Join-Path $OutputRoot "ikun$musicText-$appVersion-$portableText.exe"
-$setupTarget = Join-Path $OutputRoot "ikun$musicText-$appVersion-$setupText.exe"
-$portableCopiedText = Join-Chars @(0x4FBF, 0x643A, 0x7248, 0x5DF2, 0x590D, 0x5236, 0xFF1A)
-$setupCopiedText = Join-Chars @(0x5B89, 0x88C5, 0x7248, 0x5DF2, 0x590D, 0x5236, 0xFF1A)
-$portableMissingText = Join-Chars @(0x672A, 0x627E, 0x5230, 0x4FBF, 0x643A, 0x7248, 0x0020, 0x0065, 0x0078, 0x0065, 0xFF1A)
-$setupMissingText = Join-Chars @(0x672A, 0x627E, 0x5230, 0x5B89, 0x88C5, 0x7248, 0x0020, 0x0073, 0x0065, 0x0074, 0x0075, 0x0070, 0x0020, 0x0065, 0x0078, 0x0065, 0xFF1A)
-
-function Stop-DesktopProcess {
-  # 只停止本次构建路径对应的程序及其直接 Node 子进程，避免误关其它工作区或已发布旧版。
-  $processes = @(Get-CimInstance Win32_Process)
-  $targets = @($processes | Where-Object { $_.ExecutablePath -in @($portableSource, $portableTarget) })
-  $targetIds = @($targets | ForEach-Object { $_.ProcessId })
-  $children = @($processes | Where-Object { $_.Name -eq 'node.exe' -and $_.ParentProcessId -in $targetIds })
-  @($targets) + @($children) | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
-}
-Stop-DesktopProcess
-Start-Sleep -Seconds 1
-
-if (Test-Path -LiteralPath $portableSource) {
-  Remove-Item -LiteralPath $portableSource -Force
-}
-
+# 已运行的测试程序只能按精确路径结束；不枚举其它项目的 Node 进程。
+$targets = @(Get-CimInstance Win32_Process | Where-Object { $_.ExecutablePath -in @($releaseExe, (Join-Path $portableRoot 'ikun-music-tauri.exe')) })
+foreach ($process in $targets) { Stop-Process -Id $process.ProcessId -Force }
 Push-Location $ProjectRoot
 try {
-  # 根本原因：旧脚本先构建前端，再直接执行 cargo build --release 复制 release exe。
-  # 这种方式绕过了 Tauri CLI 的正式生产构建流程，devUrl 会被编译进 exe，
-  # 用户双击便携版时窗口就会访问 http://localhost:5173，导致没有本地 Vite 服务时白屏/拒绝连接。
-  # 这里按 D:\scada-modbus-simulator 的方式统一走 tauri build；
-  # 便携版使用 --no-bundle，只生成正式 release exe，不再额外产出安装包。
-  if ($Target -eq 'all') {
-    & npm.cmd run 'tauri:build'
-  } else {
-    & npm.cmd run 'tauri:build' '--' '--no-bundle'
-  }
+  & node.exe scripts/tauri-release.mjs build
   if ($LASTEXITCODE -ne 0) { throw "桌面构建未完成，退出码：$LASTEXITCODE" }
-} finally {
-  Pop-Location
-}
-
-Stop-DesktopProcess
-Start-Sleep -Seconds 1
-
-if (!(Test-Path -LiteralPath $portableSource)) {
-  throw ($portableMissingText + $portableSource)
-}
-
-New-Item -ItemType Directory -Path $OutputRoot -Force | Out-Null
-Copy-Item -LiteralPath $portableSource -Destination $portableTarget -Force
-
-Write-Host ($portableCopiedText + $portableTarget)
-
-if ($Target -eq 'all') {
-  $setupSource = Get-ChildItem -Path $bundleDir -Filter '*setup.exe' -File |
-    Sort-Object LastWriteTime -Descending |
-    Select-Object -First 1
-
-  if ($null -eq $setupSource) {
-    throw ($setupMissingText + $bundleDir)
+  & node.exe scripts/check-music-service.mjs $runtimeSource
+  if ($LASTEXITCODE -ne 0) { throw '随包音乐服务验收未通过，停止交付。' }
+  New-Item -ItemType Directory -Path $OutputRoot -Force | Out-Null
+  # 便携包需同时包含 EXE 与运行时资源。只复制小 EXE 会缺少协议库，不能作为便携版交付。
+  if (Test-Path -LiteralPath $portableRoot) {
+    $resolved = (Resolve-Path -LiteralPath $portableRoot).Path
+    if ([IO.Path]::GetDirectoryName($resolved) -ne $OutputRoot -or (Get-Item -LiteralPath $resolved).Attributes -band [IO.FileAttributes]::ReparsePoint) { throw '便携输出目录不符合预期，停止清理。' }
+    Remove-Item -LiteralPath $resolved -Recurse -Force
   }
-
-  Copy-Item -LiteralPath $setupSource.FullName -Destination $setupTarget -Force
-  Write-Host ($setupCopiedText + $setupTarget)
-}
+  New-Item -ItemType Directory -Path $portableRoot | Out-Null
+  Copy-Item -LiteralPath $releaseExe -Destination (Join-Path $portableRoot 'ikun-music-tauri.exe')
+  Copy-Item -LiteralPath $runtimeSource -Destination (Join-Path $portableRoot 'runtime') -Recurse
+  @{product='ikun音乐'; version=$version; format=1} | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $portableRoot 'portable.json') -Encoding UTF8
+  $zip = Join-Path $OutputRoot ($packageName + '-portable.zip')
+  if (Test-Path -LiteralPath $zip) { Remove-Item -LiteralPath $zip -Force }
+  Add-Type -AssemblyName System.IO.Compression.FileSystem
+  [IO.Compression.ZipFile]::CreateFromDirectory($portableRoot, $zip, [IO.Compression.CompressionLevel]::Optimal, $true)
+  & node.exe scripts/tauri-release.mjs signer sign $zip
+  if ($LASTEXITCODE -ne 0) { throw '便携包签名未完成。' }
+  $setupSource = Join-Path $ProjectRoot ('src-tauri\target\release\bundle\nsis\ikun音乐_' + $version + '_x64-setup.exe')
+  $setup = Join-Path $OutputRoot ($packageName + '-setup.exe')
+  Copy-Item -LiteralPath $setupSource -Destination $setup -Force
+  Copy-Item -LiteralPath ($setupSource + '.sig') -Destination ($setup + '.sig') -Force
+  & node.exe scripts/prepare-release.mjs $OutputRoot
+  if ($LASTEXITCODE -ne 0) { throw '发布清单验证未通过。' }
+  Get-ChildItem -LiteralPath $OutputRoot -File | Select-Object Name, Length
+} finally { Pop-Location }

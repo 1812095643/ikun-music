@@ -141,19 +141,19 @@ const minimize = () => {
   if (!isDesktopRuntime) {
     return;
   }
-  window.api.minimize();
+  window.desktop.minimize();
 };
 
 const maximize = () => {
   if (!isDesktopRuntime) {
     return;
   }
-  window.api.maximize();
+  window.desktop.maximize();
 };
 
 const miniWindow = () => {
   if (!isDesktopRuntime) return;
-  window.api.miniWindow();
+  window.desktop.miniWindow();
 };
 
 const handleAction = (action: 'minimize' | 'close') => {
@@ -169,11 +169,11 @@ const handleAction = (action: 'minimize' | 'close') => {
   if (action === 'minimize') {
     showCloseModal.value = false;
     setTimeout(() => {
-      window.api.miniTray();
+      window.desktop.miniTray();
     }, 200);
   } else {
     // Fix: Use quitApp instead of close to ensure app exits on macOS
-    window.api.quitApp();
+    window.desktop.quitApp();
     showCloseModal.value = false;
   }
 };
@@ -184,9 +184,9 @@ const handleClose = () => {
   const { closeAction } = settingsStore.setData;
 
   if (closeAction === 'minimize') {
-    window.api.miniTray();
+    window.desktop.miniTray();
   } else if (closeAction === 'close') {
-    window.api.close();
+    window.desktop.close();
   } else {
     showCloseModal.value = true;
   }
@@ -204,7 +204,7 @@ const drag = (event: MouseEvent) => {
     return;
   }
 
-  window.api.dragStart();
+  window.desktop.dragStart();
 };
 </script>
 

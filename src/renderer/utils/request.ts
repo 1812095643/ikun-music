@@ -1,9 +1,9 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
 
+import { musicServiceAdapter } from '@/services/musicService';
 import { useUserStore } from '@/store/modules/user';
 
-import { getSetData, isElectron, isMobile } from '.';
-import { ensureMusicApiReady } from './tauriElectronCompat';
+import { getSetData, isDesktopRuntime, isMobile } from '.';
 
 let setData: any = null;
 
@@ -13,12 +13,9 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   noRetry?: boolean;
 }
 
-const baseURL = window.electron
-  ? `http://127.0.0.1:${setData?.musicApiPort || 30488}`
-  : import.meta.env.VITE_API;
-
 const request = axios.create({
-  baseURL,
+  baseURL: import.meta.env.VITE_API,
+  adapter: isDesktopRuntime ? musicServiceAdapter : undefined,
   timeout: 15000,
   withCredentials: true
 });
@@ -31,19 +28,7 @@ const RETRY_DELAY = 500;
 // 请求拦截器
 request.interceptors.request.use(
   async (config: CustomAxiosRequestConfig) => {
-    let actualPort: number | null = null;
-    if (isElectron) {
-      // 根因：Tauri 打包版启动时 Vue 首屏会立刻请求首页、搜索和歌词接口，
-      // 但内置 Node 音乐 API 需要先完成脚本加载、端口监听和酷我等音源模块初始化。
-      // 之前请求层没有等待后端 ready，首次双击 exe 时就可能把请求打到尚未监听的
-      // 30488，页面拿到的都是空数据。这里在所有桌面音乐 API 请求发出前统一等待
-      // Rust 端确认服务可用，并同步可能被端口占用后自动漂移的实际端口。
-      actualPort = await ensureMusicApiReady();
-    }
     setData = getSetData();
-    config.baseURL = window.electron
-      ? `http://127.0.0.1:${actualPort || setData?.musicApiPort || 30488}`
-      : import.meta.env.VITE_API;
     // 只在retryCount未定义时初始化为0
     if (config.retryCount === undefined) {
       config.retryCount = 0;
@@ -54,7 +39,7 @@ request.interceptors.request.use(
     config.params = {
       ...config.params,
       timestamp: Date.now(),
-      device: isElectron ? 'pc' : isMobile ? 'mobile' : 'web'
+      device: isDesktopRuntime ? 'pc' : isMobile.value ? 'mobile' : 'web'
     };
     const token = localStorage.getItem('token');
     if (token && config.method !== 'post') {
@@ -65,7 +50,7 @@ request.interceptors.request.use(
         cookie: token
       };
     }
-    if (isElectron) {
+    if (isDesktopRuntime) {
       const proxyConfig = setData?.proxyConfig;
       if (proxyConfig?.enable && ['http', 'https'].includes(proxyConfig?.protocol)) {
         config.params.proxy = `${proxyConfig.protocol}://${proxyConfig.host}:${proxyConfig.port}`;

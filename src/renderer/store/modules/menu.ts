@@ -24,7 +24,7 @@ export const useMenuStore = defineStore('menu', () => {
         if (isAndroidRuntime && !androidFirstStageMenuPaths.has(item.path)) {
           return false;
         }
-        if (item.meta?.electronOnly && !isDesktopRuntime) {
+        if (item.meta?.desktopOnly && !isDesktopRuntime) {
           return false;
         }
         if ((item.meta as any)?.hideInSidebar) {

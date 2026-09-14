@@ -104,25 +104,21 @@ export const isMobile = computed(() => {
   return settingsStore.isMobile;
 });
 
-export const isElectron = Boolean(
-  (window as any).electron || (window as any).api || (window as any).__TAURI_INTERNALS__
-);
-
 export const isTauriRuntime = Boolean((window as any).__TAURI_INTERNALS__);
 
 export const isAndroidRuntime =
   isTauriRuntime && /Android/i.test(navigator.userAgent || navigator.platform || '');
 
-export const isDesktopRuntime = isElectron && !isAndroidRuntime;
-
+// 桌面能力只在 Tauri WebView 存在；浏览器调试仍保留前端兼容分支。
+export const isDesktopRuntime = isTauriRuntime && !isAndroidRuntime;
 export const isLyricWindow = computed(() => {
   return window.location.hash.includes('lyric');
 });
 
 export const getSetData = (): any => {
   let setData = null;
-  if (isDesktopRuntime && window.electron?.ipcRenderer) {
-    setData = window.electron.ipcRenderer.sendSync('get-store-value', 'set');
+  if (isDesktopRuntime && window.desktop) {
+    setData = window.desktop.sendSync('get-store-value', 'set');
   } else {
     const settingsStore = useSettingsStore();
     setData = settingsStore.setData;

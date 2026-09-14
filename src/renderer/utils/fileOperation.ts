@@ -8,13 +8,13 @@ import { isDesktopRuntime } from '@/utils';
  * @returns Promise<string | undefined> 返回选择的目录路径，如果取消则返回 undefined
  */
 export const selectDirectory = async (message: MessageApi): Promise<string | undefined> => {
-  if (!isDesktopRuntime || !window.electron?.ipcRenderer) {
+  if (!isDesktopRuntime || !window.desktop) {
     message.info('当前环境暂不支持选择目录');
     return undefined;
   }
 
   try {
-    const result = await window.electron.ipcRenderer.invoke('select-directory');
+    const result = await window.desktop.invoke('select-directory');
     if (result.filePaths?.[0]) {
       return result.filePaths[0];
     }
@@ -32,13 +32,13 @@ export const selectDirectory = async (message: MessageApi): Promise<string | und
  * @param showTip 是否显示提示信息
  */
 export const openDirectory = (path: string | undefined, message: MessageApi, showTip = true) => {
-  if (!isDesktopRuntime || !window.electron?.ipcRenderer) {
+  if (!isDesktopRuntime || !window.desktop) {
     if (showTip) message.info('当前环境暂不支持打开目录');
     return;
   }
 
   if (path) {
-    window.electron.ipcRenderer.send('open-directory', path);
+    window.desktop.send('open-directory', path);
   } else if (showTip) {
     message.info('目录不存在');
   }

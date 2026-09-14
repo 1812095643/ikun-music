@@ -1,7 +1,7 @@
 <template>
   <div
     class="app-container h-full w-full"
-    :class="{ mobile: isMobile, noElectron: !isDesktopRuntime }"
+    :class="{ mobile: isMobile, noDesktop: !isDesktopRuntime }"
   >
     <n-config-provider :theme="theme === 'dark' ? darkTheme : lightTheme">
       <n-dialog-provider>
@@ -148,7 +148,7 @@ const syncTrayState = () => {
     !shouldUseDesktopShell ||
     isLyricWindow.value ||
     isTrayPanelWindow.value ||
-    !window.api?.updateTrayState
+    !window.desktop?.updateTrayState
   ) {
     return;
   }
@@ -156,7 +156,7 @@ const syncTrayState = () => {
   const song = playerStore.playMusic as SongResult | undefined;
   const volume = getTrayVolume();
 
-  window.api.updateTrayState({
+  window.desktop.updateTrayState({
     title: song?.name || '',
     artist: getArtistText(song),
     isPlaying: Boolean(playerStore.play),
@@ -258,10 +258,10 @@ const executeTrayPlaybackCommand = async (payload: any) => {
       playerStore.togglePlayMode();
       return true;
     case 'restoreWindow':
-      window.api?.restore?.();
+      window.desktop?.restore?.();
       return true;
     case 'miniWindow':
-      window.api?.miniWindow?.();
+      window.desktop?.miniWindow?.();
       return true;
     case 'openLyric':
       openLyric(true);
@@ -302,12 +302,7 @@ const handleTrayControl = async (action: string) => {
 };
 
 const broadcastTrayPanelState = () => {
-  if (
-    !shouldUseDesktopShell ||
-    isLyricWindow.value ||
-    isTrayPanelWindow.value ||
-    !window.electron?.ipcRenderer
-  ) {
+  if (!shouldUseDesktopShell || isLyricWindow.value || isTrayPanelWindow.value || !window.desktop) {
     return;
   }
 
@@ -328,7 +323,7 @@ const broadcastTrayPanelState = () => {
     updatedAt: Date.now()
   };
 
-  window.electron.ipcRenderer.send('tray-panel-state', state);
+  window.desktop.send('tray-panel-state', state);
 };
 
 const handleTrayPanelCommand = async (payload: any) => {
@@ -413,14 +408,9 @@ if (!isLyricWindow.value && !isTrayPanelWindow.value) {
 handleSetLanguage(settingsStore.setData.language);
 
 // 监听迷你模式状态
-if (
-  shouldUseDesktopShell &&
-  !isTrayPanelWindow.value &&
-  window.api &&
-  window.electron?.ipcRenderer
-) {
-  window.api.onLanguageChanged(handleSetLanguage);
-  window.electron.ipcRenderer.on('mini-mode', (_, value) => {
+if (shouldUseDesktopShell && !isTrayPanelWindow.value && window.desktop && window.desktop) {
+  window.desktop.onLanguageChanged(handleSetLanguage);
+  window.desktop.on('mini-mode', (_, value) => {
     const nextMiniMode = Boolean(value);
     const currentMiniMode = settingsStore.isMiniMode;
     // Tauri 调整迷你窗尺寸、隐藏到托盘时会复用 mini-mode 事件；重复态不能再次覆盖返回路由。
@@ -447,28 +437,20 @@ if (
   shouldUseDesktopShell &&
   !isLyricWindow.value &&
   !isTrayPanelWindow.value &&
-  window.api?.onTrayControl
+  window.desktop?.onTrayControl
 ) {
-  removeTrayControlListener = window.api.onTrayControl((action) => {
+  removeTrayControlListener = window.desktop.onTrayControl((action) => {
     void handleTrayControl(action);
   });
 }
 
-if (
-  shouldUseDesktopShell &&
-  !isLyricWindow.value &&
-  !isTrayPanelWindow.value &&
-  window.electron?.ipcRenderer
-) {
-  removeTrayPanelOpenedListener = window.electron.ipcRenderer.on('tray-panel-opened', () => {
+if (shouldUseDesktopShell && !isLyricWindow.value && !isTrayPanelWindow.value && window.desktop) {
+  removeTrayPanelOpenedListener = window.desktop.on('tray-panel-opened', () => {
     broadcastTrayPanelState();
   });
-  removeTrayPanelCommandListener = window.electron.ipcRenderer.on(
-    'tray-panel-command',
-    (_, payload) => {
-      void handleTrayPanelCommand(payload);
-    }
-  );
+  removeTrayPanelCommandListener = window.desktop.on('tray-panel-command', (_, payload) => {
+    void handleTrayPanelCommand(payload);
+  });
 }
 
 watch(
@@ -556,8 +538,8 @@ onMounted(async () => {
     // 使用 nextTick 确保 DOM 更新后再初始化
     await nextTick();
     initAudioListeners();
-    if (shouldUseDesktopShell && window.api) {
-      window.api.sendSong(cloneDeep(playerStore.playMusic));
+    if (shouldUseDesktopShell && window.desktop) {
+      window.desktop.sendSong(cloneDeep(playerStore.playMusic));
     }
   }
 

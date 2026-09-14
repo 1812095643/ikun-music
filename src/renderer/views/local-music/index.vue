@@ -230,7 +230,7 @@ const filteredSongResults = computed(() => {
  */
 async function handleAddFolder(): Promise<void> {
   try {
-    const result = await window.electron.ipcRenderer.invoke('select-directory');
+    const result = await window.desktop.invoke('select-directory');
     if (result && !result.canceled && result.filePaths?.length > 0) {
       localMusicStore.addFolder(result.filePaths[0]);
       // 添加文件夹后自动触发扫描
@@ -289,7 +289,7 @@ async function handlePlayAll(): Promise<void> {
     const entry = filteredList.value[0];
 
     // 检查第一首歌文件是否存在
-    const exists = await window.electron.ipcRenderer.invoke('check-file-exists', entry.filePath);
+    const exists = await window.desktop.invoke('check-file-exists', entry.filePath);
     if (!exists) {
       message.error(t('localMusic.fileNotFound'));
       return;

@@ -152,7 +152,7 @@ const resolveCachedPlaybackUrl = async (
   }
 
   try {
-    const result = (await window.electron.ipcRenderer.invoke('resolve-cached-music-url', {
+    const result = (await window.desktop.invoke('resolve-cached-music-url', {
       songId: Number(songData.id),
       source: songData.source,
       url,
@@ -514,7 +514,7 @@ export const loadLrc = async (id: string | number): Promise<ILyric> => {
 
     if (isDesktopRuntime) {
       try {
-        lyricData = await window.electron.ipcRenderer.invoke('get-cached-lyric', numericId);
+        lyricData = await window.desktop.invoke('get-cached-lyric', numericId);
       } catch (error) {
         console.warn('读取磁盘歌词缓存失败:', error);
       }
@@ -525,7 +525,7 @@ export const loadLrc = async (id: string | number): Promise<ILyric> => {
       lyricData = data;
 
       if (isDesktopRuntime && lyricData) {
-        void window.electron.ipcRenderer
+        void window.desktop
           .invoke('cache-lyric', numericId, lyricData)
           .catch((error) => console.warn('写入磁盘歌词缓存失败:', error));
       }

@@ -126,21 +126,21 @@ provide(SETTINGS_DIALOG_KEY, dialog);
 // ==================== 导航相关 ====================
 type SettingSectionConfig = {
   id: string;
-  electron?: boolean;
+  desktop?: boolean;
 };
 
 const settingSections: SettingSectionConfig[] = [
   { id: 'basic' },
   { id: 'playback' },
-  { id: 'application', electron: true },
-  { id: 'network', electron: true },
-  { id: 'system', electron: true },
+  { id: 'application', desktop: true },
+  { id: 'network', desktop: true },
+  { id: 'system', desktop: true },
   { id: 'about' }
 ];
 
 const navSections = computed(() => {
   return settingSections
-    .filter((section) => !section.electron || isDesktopRuntime)
+    .filter((section) => !section.desktop || isDesktopRuntime)
     .map((section) => ({
       id: section.id,
       title: t(`settings.sections.${section.id}`)

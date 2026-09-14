@@ -1,44 +1,22 @@
 #!/usr/bin/env node
 const fs = require('fs');
-const net = require('net');
+// 第三方库在 import 阶段会打印默认 Cookie；关闭通用日志，避免凭据进入管道或磁盘。
+console.log = console.info = console.debug = console.warn = console.error = () => {};
+const readline = require('node:readline');
 const os = require('os');
 const path = require('path');
-const mm = require('music-metadata');
-const request = require('@unblockneteasemusic/server/src/request');
 
 if (!fs.existsSync(path.resolve(os.tmpdir(), 'anonymous_token'))) {
   fs.writeFileSync(path.resolve(os.tmpdir(), 'anonymous_token'), '', 'utf-8');
 }
 
-const { serveNcmApi, getModulesDefinitions } = require('netease-cloud-music-api-alger/server');
-const match = require('@unblockneteasemusic/server');
+// 依赖的调试输出可能包含 Cookie，协议只输出明确的请求结果，正常日志不写入 stdout。
 
 const ALL_PLATFORMS = ['kuwo', 'migu', 'kugou', 'pyncmd'];
 const SUPPORTED_AUDIO_FORMATS = ['.mp3', '.flac', '.wav', '.ogg', '.m4a', '.aac'];
 const METADATA_PARSE_CONCURRENCY = Math.min(8, Math.max(2, os.cpus().length));
 const MAX_COVER_BYTES = 1024 * 1024;
 const MIN_PLAYABLE_AUDIO_BYTES = 1024 * 1024;
-
-function parseArgs() {
-  const args = process.argv.slice(2);
-  const options = { port: 30488, host: '127.0.0.1' };
-  for (let index = 0; index < args.length; index += 1) {
-    const arg = args[index];
-    if (arg === '--port') options.port = Number(args[index + 1] || options.port);
-    if (arg === '--host') options.host = args[index + 1] || options.host;
-  }
-  return options;
-}
-
-function checkPortAvailable(port, host) {
-  return new Promise((resolve) => {
-    const tester = net
-      .createServer()
-      .once('error', () => resolve(false))
-      .once('listening', () => tester.close(() => resolve(true)))
-      .listen(port, host);
-  });
-}
 
 function ensureDataStructure(data) {
   if (!data) return { name: '', artists: [], album: { name: '' } };
@@ -72,7 +50,7 @@ function getResponseAudioSize(response) {
 async function assertPlayableAudioUrl(url) {
   if (!url || !/^https?:\/\//i.test(url)) return;
 
-  const response = await request('GET', url, {
+  const response = await require('@unblockneteasemusic/server/src/request')('GET', url, {
     range: 'bytes=0-8191',
     'accept-encoding': 'identity'
   });
@@ -105,7 +83,11 @@ async function unblockMusic(id, songData, retryCount = 1, enabledPlatforms) {
       // 试听/错误文件直接丢弃，继续尝试下一个音源。
       for (const platform of filteredPlatforms) {
         try {
-          const data = await match(parsedId, [platform], processedSongData);
+          const data = await require('@unblockneteasemusic/server')(
+            parsedId,
+            [platform],
+            processedSongData
+          );
           await assertPlayableAudioUrl(data.url);
           return { data: { data, params: { id: parsedId, type: 'song' } } };
         } catch (error) {
@@ -204,7 +186,7 @@ async function parseMetadata(filePath) {
     modifiedTime: stat.mtimeMs
   };
   try {
-    const metadata = await mm.parseFile(filePath);
+    const metadata = await require('music-metadata').parseFile(filePath);
     const { common, format } = metadata;
     return {
       filePath,
@@ -240,73 +222,106 @@ async function batchParseMetadata(filePaths) {
   return results;
 }
 
-async function getDefaultModuleDefinitions() {
-  const apiRoot = path.dirname(require.resolve('netease-cloud-music-api-alger/package.json'));
-  return getModulesDefinitions(path.join(apiRoot, 'module'), {
-    'daily_signin.js': '/daily_signin',
-    'fm_trash.js': '/fm_trash',
-    'personal_fm.js': '/personal_fm'
-  });
-}
+// 路由来自原库真实模块目录，调用原库公开函数，保留 Cookie、加密及返回值语义。
+const apiRoot = path.dirname(require.resolve('netease-cloud-music-api-alger/package.json'));
+const routes = new Map(
+  fs
+    .readdirSync(path.join(apiRoot, 'module'))
+    .filter((file) => file.endsWith('.js'))
+    .map((file) => {
+      const name = file.slice(0, -3);
+      return [
+        ['daily_signin', 'fm_trash', 'personal_fm'].includes(name)
+          ? '/' + name
+          : '/' + name.replaceAll('_', '/'),
+        name
+      ];
+    })
+);
 
-async function main() {
-  const options = parseArgs();
-  let port = options.port;
-  for (let attempt = 0; attempt < 10; attempt += 1) {
-    if (await checkPortAvailable(port, options.host)) break;
-    port += 1;
+/** 根据已注册接口分发请求；仅返回原协议数据，不启动 HTTP 监听。 */
+async function dispatch(message) {
+  const query = { ...message.params, ...message.data };
+  switch (message.path) {
+    case '/desktop/health':
+      return { status: 200, body: { running: true, transport: 'stdio', pid: process.pid } };
+    case '/desktop/scan-local-music': {
+      const files = await scanMusicFiles(query.folderPath);
+      return { status: 200, body: { files, count: files.length } };
+    }
+    case '/desktop/scan-local-music-with-stats': {
+      const files = await scanMusicFilesWithStats(query.folderPath);
+      return { status: 200, body: { files, count: files.length } };
+    }
+    case '/desktop/parse-local-music-metadata':
+      if (!Array.isArray(query.filePaths)) throw new Error('请选择需要读取的音乐文件');
+      return { status: 200, body: await batchParseMetadata(query.filePaths) };
+    case '/desktop/unblock-music':
+      return {
+        status: 200,
+        body: await unblockMusic(query.id, query.songData, 1, query.enabledSources)
+      };
+    default: {
+      const name = routes.get(message.path);
+      if (!name) return { status: 404, body: { code: 404, message: '该音乐接口不存在' } };
+      const handler = require(path.join(apiRoot, 'module', name + '.js'));
+      const { cookieToJson } = require(path.join(apiRoot, 'util'));
+      const request = require(path.join(apiRoot, 'util/request'));
+      return handler(
+        {
+          ...query,
+          cookie: typeof query.cookie === 'string' ? cookieToJson(query.cookie) : query.cookie || {}
+        },
+        request
+      );
+    }
   }
-
-  const customModuleDefs = [
-    {
-      route: '/alger-tauri/scan-local-music',
-      module: async (query) => {
-        const files = await scanMusicFiles(query.folderPath);
-        return { status: 200, body: { files, count: files.length } };
-      }
-    },
-    {
-      route: '/alger-tauri/scan-local-music-with-stats',
-      module: async (query) => {
-        const files = await scanMusicFilesWithStats(query.folderPath);
-        return { status: 200, body: { files, count: files.length } };
-      }
-    },
-    {
-      route: '/alger-tauri/parse-local-music-metadata',
-      module: async (query) => {
-        const metadata = await batchParseMetadata(query.filePaths || []);
-        return { status: 200, body: metadata };
-      }
-    },
-    {
-      route: '/alger-tauri/unblock-music',
-      module: async (query) => {
-        const result = await unblockMusic(query.id, query.songData, 1, query.enabledSources);
-        return { status: 200, body: { ...result, noCache: Date.now() } };
-      }
-    },
-    ...(await getDefaultModuleDefinitions())
-  ];
-
-  const app = await serveNcmApi({
-    port,
-    host: options.host,
-    checkVersion: false,
-    moduleDefs: customModuleDefs
-  });
-
-  console.log(JSON.stringify({ type: 'ready', port }));
-
-  const shutdown = () => {
-    app.server?.close(() => process.exit(0));
-    setTimeout(() => process.exit(0), 1000).unref();
-  };
-  process.on('SIGTERM', shutdown);
-  process.on('SIGINT', shutdown);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
+// Node 新版 readline 把 Unicode 段落分隔符也视为换行；专辑简介、歌词中会真实出现。
+// JSON 允许这些字符原样存在，但行协议必须转义，避免一条完整响应被拆成多个无效 JSON。
+const output = (message) =>
+  process.stdout.write(
+    JSON.stringify(message).replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029') + '\n'
+  );
+let pendingCount = 0;
+const input = readline.createInterface({ input: process.stdin, crlfDelay: Infinity });
+input.on('line', async (line) => {
+  let message;
+  try {
+    if (Buffer.byteLength(line) > 8 * 1024 * 1024) throw new Error('请求数据过大，请分批处理');
+    message = JSON.parse(line);
+    if (
+      !Number.isSafeInteger(message.id) ||
+      typeof message.path !== 'string' ||
+      !['GET', 'POST'].includes(message.method) ||
+      !message.path.startsWith('/')
+    ) {
+      throw new Error('音乐请求格式不完整');
+    }
+    if (pendingCount >= 32) throw new Error('音乐服务忙，请稍后重试');
+    pendingCount++;
+    try {
+      const result = await dispatch(message);
+      output({
+        id: message.id,
+        status: result.status || 200,
+        body: result.body,
+        cookies: result.cookie || []
+      });
+    } finally {
+      pendingCount--;
+    }
+  } catch (error) {
+    output({
+      id: Number.isSafeInteger(message?.id) ? message.id : null,
+      status: error.status || 500,
+      body: error.body || { message: error.message || '音乐服务未完成请求，请重试' },
+      cookies: error.cookie || []
+    });
+  }
 });
+// 父进程退出会关闭 stdin；即使被任务管理器结束也不遗留后台 Node。
+input.on('close', () => process.exit(0));
+process.stdin.on('error', () => process.exit(1));
+output({ type: 'ready', protocol: 1 });

@@ -20,10 +20,10 @@ export const useAppUpdateState = () => {
   };
 
   const initializeUpdateState = async () => {
-    if (!isDesktopRuntime || !window.api?.getAppUpdateState) return;
+    if (!isDesktopRuntime || !window.desktop?.getAppUpdateState) return;
 
     try {
-      const currentState = await window.api.getAppUpdateState();
+      const currentState = await window.desktop.getAppUpdateState();
       syncUpdateState(currentState);
     } catch (error) {
       console.error('初始化更新状态失败:', error);
@@ -31,22 +31,22 @@ export const useAppUpdateState = () => {
   };
 
   onMounted(() => {
-    if (!isDesktopRuntime || !window.api?.onAppUpdateState) return;
+    if (!isDesktopRuntime || !window.desktop?.onAppUpdateState) return;
 
     listenerCount += 1;
     if (listenerCount === 1) {
-      window.api.removeAppUpdateListeners();
+      window.desktop.removeAppUpdateListeners();
     }
-    window.api.onAppUpdateState(syncUpdateState);
+    window.desktop.onAppUpdateState(syncUpdateState);
     void initializeUpdateState();
   });
 
   onUnmounted(() => {
-    if (!isDesktopRuntime || !window.api?.removeAppUpdateListeners) return;
+    if (!isDesktopRuntime || !window.desktop?.removeAppUpdateListeners) return;
 
     listenerCount = Math.max(listenerCount - 1, 0);
     if (listenerCount === 0) {
-      window.api.removeAppUpdateListeners();
+      window.desktop.removeAppUpdateListeners();
     }
   });
 
