@@ -4,7 +4,7 @@ use std::fs::{self, File};
 use std::io::{BufRead, BufReader, Cursor};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
-use std::sync::{mpsc, Mutex};
+use std::sync::{mpsc, Mutex, OnceLock};
 use std::thread;
 use std::time::{Duration, Instant};
 use zip::ZipArchive;
@@ -67,14 +67,11 @@ const MAIN_WINDOW_LABEL: &str = "main";
 const TRAY_PANEL_WINDOW_LABEL: &str = "tray-panel";
 const LYRIC_WINDOW_LABEL: &str = "lyric-window";
 const TRAY_ID: &str = "ikun-music-tray";
-const NORMAL_WINDOW_WIDTH: f64 = 1280.0;
-const NORMAL_WINDOW_HEIGHT: f64 = 840.0;
-// 与前端 MiniPlayBar 的 64px 顶栏和 330px 播放列表高度保持一致，
-// 避免 Tauri 精简模式相比 Electron 多出空白区域，恢复时观感不一致。
-const MINI_WINDOW_WIDTH: f64 = 340.0;
-const MINI_WINDOW_HEIGHT: f64 = 64.0;
-const MINI_PLAYLIST_WINDOW_WIDTH: f64 = 340.0;
-const MINI_PLAYLIST_WINDOW_HEIGHT: f64 = 400.0;
+// 与 MiniPlayBar 两行控制区的 164px 高度一致；旧 340x64 无法同时容纳歌名与操作按钮。
+const MINI_WINDOW_WIDTH: f64 = 420.0;
+const MINI_WINDOW_HEIGHT: f64 = 164.0;
+const MINI_PLAYLIST_WINDOW_WIDTH: f64 = 420.0;
+const MINI_PLAYLIST_WINDOW_HEIGHT: f64 = 460.0;
 const MINI_WINDOW_MARGIN: f64 = 20.0;
 const LYRIC_WINDOW_WIDTH: f64 = 800.0;
 const LYRIC_WINDOW_HEIGHT: f64 = 200.0;
@@ -82,7 +79,9 @@ const LYRIC_WINDOW_POSITION_MARGIN: i32 = 50;
 const TRAY_PANEL_WIDTH: f64 = 336.0;
 const TRAY_PANEL_HEIGHT: f64 = 492.0;
 const TRAY_PANEL_MARGIN: f64 = 12.0;
-const EMBEDDED_MUSIC_API_RUNTIME: &[u8] =
+// const 在哈希闭包和解压函数中各自提升为独立的大字节数组，实测 EXE 含两份 ZIP。
+// 使用 static 明确共享同一地址，保证整个程序只嵌入一份内置运行时。
+static EMBEDDED_MUSIC_API_RUNTIME: &[u8] =
     include_bytes!("../embedded-runtime/music-api-runtime.zip");
 
 #[derive(Debug, Clone, Deserialize)]
@@ -113,12 +112,15 @@ fn embedded_runtime_hash() -> u64 {
     // 根因：旧逻辑按 exe 修改时间生成临时运行时目录。某些打包/复制场景下 exe 时间不变，
     // 会继续复用旧目录里的 alger-music-api.js，导致明明重新打包了，用户机器仍跑旧后端。
     // 这里直接对内置 zip 内容做轻量 FNV-1a 哈希；只要后端运行时内容变化，释放目录就变化。
-    let mut hash = 0xcbf29ce484222325u64;
-    for byte in EMBEDDED_MUSIC_API_RUNTIME {
-        hash ^= u64::from(*byte);
-        hash = hash.wrapping_mul(0x100000001b3);
-    }
-    hash
+    static RUNTIME_HASH: OnceLock<u64> = OnceLock::new();
+    *RUNTIME_HASH.get_or_init(|| {
+        let mut hash = 0xcbf29ce484222325u64;
+        for byte in EMBEDDED_MUSIC_API_RUNTIME {
+            hash ^= u64::from(*byte);
+            hash = hash.wrapping_mul(0x100000001b3);
+        }
+        hash
+    })
 }
 
 fn current_exe_dir() -> Option<PathBuf> {
@@ -141,6 +143,7 @@ fn embedded_runtime_dir() -> Result<PathBuf, String> {
     if runtime_dir.join(node_file_name).exists()
         && runtime_dir.join("bin").join("alger-music-api.js").exists()
         && runtime_dir.join("node_modules").exists()
+        && runtime_dir.join(".ready").is_file()
     {
         return Ok(runtime_dir);
     }
@@ -182,6 +185,9 @@ fn embedded_runtime_dir() -> Result<PathBuf, String> {
             .map_err(|error| format!("写入运行时文件失败：{}，{error}", out_path.display()))?;
     }
 
+    // 解压可能被上次退出打断；只有所有文件写完后才允许下次复用。
+    fs::write(runtime_dir.join(".ready"), b"ready")
+        .map_err(|error| format!("保存运行时完成标记失败：{error}"))?;
     Ok(runtime_dir)
 }
 
@@ -1038,12 +1044,8 @@ fn update_tray_state(app: AppHandle, state: TrayState) -> Result<(), String> {
     Ok(())
 }
 
-#[tauri::command]
-fn start_music_api(
-    app: AppHandle,
-    state: tauri::State<MusicApiProcess>,
-    port: u16,
-) -> Result<Value, String> {
+fn start_music_api_process(app: AppHandle, port: u16) -> Result<Value, String> {
+    let state = app.state::<MusicApiProcess>();
     let mut process_guard = state.0.lock().map_err(|error| error.to_string())?;
     if let Some(api_child) = process_guard.as_mut() {
         if api_child
@@ -1165,6 +1167,8 @@ fn start_music_api(
             } else {
                 format!("，错误输出：{}", stderr_lines.join(" | "))
             };
+            let _ = child.kill();
+            let _ = child.wait();
             return Err(format!(
                 "音乐 API 子进程启动超时，Node 路径：{}，脚本路径：{}{}",
                 node_command.display(),
@@ -1183,6 +1187,15 @@ fn start_music_api(
     Ok(json!({ "port": actual_port, "running": true }))
 }
 
+#[tauri::command]
+async fn start_music_api(app: AppHandle, port: u16) -> Result<Value, String> {
+    // 根因：setup 和同步 IPC 在 UI 线程解压并等待 Node，最坏会冻结窗口三十秒。
+    // 交给阻塞任务池处理，前端等待同一个就绪 Promise，窗口仍能拖动和切换页面。
+    tauri::async_runtime::spawn_blocking(move || start_music_api_process(app, port))
+        .await
+        .map_err(|error| format!("启动音乐服务任务未完成：{error}"))?
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -1190,9 +1203,7 @@ pub fn run() {
         .manage(MiniWindowRestoreState(Mutex::new(None)))
         .setup(|app| {
             create_tray(app)?;
-            let app_handle = app.handle().clone();
-            let state = app.state::<MusicApiProcess>();
-            let _ = start_music_api(app_handle, state, 30488);
+            // 前端读取保存的端口后再异步启动，避免固定 30488 覆盖用户配置。
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())

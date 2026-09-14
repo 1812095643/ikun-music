@@ -23,32 +23,31 @@ if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
   $OutputRoot = Join-Path (Split-Path -Parent $ProjectRoot) $outputDirName
 }
 
+$appVersion = (Get-Content -LiteralPath (Join-Path $ProjectRoot 'package.json') -Raw | ConvertFrom-Json).version
 $musicText = Join-Chars @(0x97F3, 0x4E50)
 $portableText = Join-Chars @(0x4FBF, 0x643A, 0x7248)
 $setupText = Join-Chars @(0x5B89, 0x88C5, 0x7248)
 $appProcessName = "ikun$musicText"
-$portableProcessName = "ikun$musicText-5.1.0-$portableText"
+$portableProcessName = "ikun$musicText-$appVersion-$portableText"
 
 $releaseDir = Join-Path $ProjectRoot 'src-tauri\target\release'
 $bundleDir = Join-Path $releaseDir 'bundle\nsis'
 $portableSource = Join-Path $releaseDir 'ikun-music-tauri.exe'
-$portableTarget = Join-Path $OutputRoot "ikun$musicText-5.1.0-$portableText.exe"
-$setupTarget = Join-Path $OutputRoot "ikun$musicText-5.1.0-$setupText.exe"
+$portableTarget = Join-Path $OutputRoot "ikun$musicText-$appVersion-$portableText.exe"
+$setupTarget = Join-Path $OutputRoot "ikun$musicText-$appVersion-$setupText.exe"
 $portableCopiedText = Join-Chars @(0x4FBF, 0x643A, 0x7248, 0x5DF2, 0x590D, 0x5236, 0xFF1A)
 $setupCopiedText = Join-Chars @(0x5B89, 0x88C5, 0x7248, 0x5DF2, 0x590D, 0x5236, 0xFF1A)
 $portableMissingText = Join-Chars @(0x672A, 0x627E, 0x5230, 0x4FBF, 0x643A, 0x7248, 0x0020, 0x0065, 0x0078, 0x0065, 0xFF1A)
 $setupMissingText = Join-Chars @(0x672A, 0x627E, 0x5230, 0x5B89, 0x88C5, 0x7248, 0x0020, 0x0073, 0x0065, 0x0074, 0x0075, 0x0070, 0x0020, 0x0065, 0x0078, 0x0065, 0xFF1A)
 
 function Stop-DesktopProcess {
-  Get-Process 'ikun-music-tauri', $appProcessName, $portableProcessName -ErrorAction SilentlyContinue | Stop-Process -Force
-  Get-CimInstance Win32_Process |
-    Where-Object {
-      $_.ExecutablePath -in @($portableSource, $portableTarget) -or
-      ($_.Name -eq 'node.exe' -and $_.CommandLine -like '*alger-music-api.js*')
-    } |
-    ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+  # 只停止本次构建路径对应的程序及其直接 Node 子进程，避免误关其它工作区或已发布旧版。
+  $processes = @(Get-CimInstance Win32_Process)
+  $targets = @($processes | Where-Object { $_.ExecutablePath -in @($portableSource, $portableTarget) })
+  $targetIds = @($targets | ForEach-Object { $_.ProcessId })
+  $children = @($processes | Where-Object { $_.Name -eq 'node.exe' -and $_.ParentProcessId -in $targetIds })
+  @($targets) + @($children) | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
 }
-
 Stop-DesktopProcess
 Start-Sleep -Seconds 1
 
@@ -68,6 +67,7 @@ try {
   } else {
     & npm.cmd run 'tauri:build' '--' '--no-bundle'
   }
+  if ($LASTEXITCODE -ne 0) { throw "桌面构建未完成，退出码：$LASTEXITCODE" }
 } finally {
   Pop-Location
 }

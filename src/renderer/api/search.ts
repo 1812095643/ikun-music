@@ -1,4 +1,3 @@
-import { isElectron } from '@/utils';
 import request from '@/utils/request';
 
 import { getKuwoSearchSuggestions, searchKuwoArtists, searchKuwoSongs } from './kuwo';
@@ -125,54 +124,29 @@ interface NeteaseSuggestResult {
  * 获取搜索建议
  * @param keyword 搜索关键词
  */
-export const getSearchSuggestions = async (keyword: string) => {
-  console.log('[API] getSearchSuggestions: 开始执行');
-
-  if (!keyword || !keyword.trim()) {
-    return Promise.resolve([]);
-  }
-
-  console.log(`[API] getSearchSuggestions: 准备请求，关键词: "${keyword}"`);
-
+export const getSearchSuggestions = async (keyword: string): Promise<string[]> => {
+  const query = keyword.trim();
+  if (!query) return [];
   try {
-    const kuwoSuggestions = await getKuwoSearchSuggestions(keyword);
-    if (kuwoSuggestions.length > 0) {
-      console.log('[API] getSearchSuggestions: 酷我建议解析成功:', kuwoSuggestions);
-      return kuwoSuggestions;
-    }
-
-    let responseData: KugouSuggestionResponse;
-    if (isElectron) {
-      console.log('[API] Running in desktop compatibility layer, using IPC proxy fallback.');
-      responseData = await window.api.getSearchSuggestions(keyword);
-    } else {
-      // 非桌面环境下，使用网易云兜底接口
-      const res = await request.get<NeteaseSuggestResult>('/search/suggest', {
-        params: { keywords: keyword }
-      });
-
-      const result = res?.data?.result || {};
-      const names: string[] = [];
-      if (Array.isArray(result.songs)) names.push(...result.songs.map((s) => s.name));
-      if (Array.isArray(result.artists)) names.push(...result.artists.map((a) => a.name));
-      if (Array.isArray(result.albums)) names.push(...result.albums.map((al) => al.name));
-
-      // 去重并截取前10个
-      const unique = Array.from(new Set(names)).slice(0, 10);
-      console.log('[API] getSearchSuggestions: 解析成功:', unique);
-      return unique;
-    }
-
-    if (responseData && Array.isArray(responseData.data)) {
-      const suggestions = responseData.data.map((item) => item.keyword).slice(0, 10);
-      console.log('[API] getSearchSuggestions: 成功解析建议:', suggestions);
-      return suggestions;
-    }
-
-    console.warn('[API] getSearchSuggestions: 响应数据格式不正确，返回空数组。');
-    return [];
-  } catch (error) {
-    console.error('[API] getSearchSuggestions: 请求失败，错误信息:', error);
+    const suggestions = await getKuwoSearchSuggestions(query);
+    if (suggestions.length) return suggestions;
+  } catch {
+    // 输入联想不等待完整搜索的三轮重试；两秒内未返回就尝试本地建议接口。
+  }
+  try {
+    const { data } = await request.get<NeteaseSuggestResult>('/search/suggest', {
+      params: { keywords: query },
+      timeout: 3000
+    });
+    const result = data?.result || {};
+    return [
+      ...new Set([
+        ...(result.songs || []).map((item) => item.name),
+        ...(result.artists || []).map((item) => item.name),
+        ...(result.albums || []).map((item) => item.name)
+      ])
+    ].slice(0, 10);
+  } catch {
     return [];
   }
 };

@@ -146,7 +146,9 @@ const parseLyricsString = async (
         duration: line.duration
       });
 
-      lrcTimeArray.push(line.startTime);
+      // 播放器 seek/nowTime 和 usePlayerHooks 的时间轴均为秒；逐字 words 仍保留解析器的毫秒。
+      // 旧字符串歌词分支直接写毫秒，会让整行高亮与点击跳转错位一千倍。
+      lrcTimeArray.push(line.startTime < 0 ? -1 : line.startTime / 1000);
     }
     return { lrcArray, lrcTimeArray, hasWordByWord };
   } catch (error) {
@@ -323,6 +325,7 @@ const setupAudioListeners = () => {
                 type: 'update',
                 nowIndex: nowIndex.value,
                 nowTime: nowTime.value,
+                correctionTime: correctionTime.value,
                 isPlay: getPlayerStore().play
               })
             );
@@ -656,7 +659,13 @@ export const getLrcIndex = (time: number): number => {
 
   // 如果歌词数组为空，返回当前索引
   if (lrcTimeArray.value.length === 0) {
-    return nowIndex.value;
+    nowIndex.value = 0;
+    return 0;
+  }
+  // 进度归零或前奏早于第一句时不能沿用上一首/上一位置的高亮索引。
+  if (correctedTime < lrcTimeArray.value[0]) {
+    nowIndex.value = 0;
+    return 0;
   }
 
   // 处理最后一句歌词的情况
@@ -770,6 +779,7 @@ export const sendLyricToWin = () => {
         type: 'full',
         nowIndex,
         nowTime: nowTime.value,
+        correctionTime: correctionTime.value,
         startCurrentTime: lrcTimeArray.value[nowIndex] || 0,
         nextTime: lrcTimeArray.value[nowIndex + 1] || 0,
         isPlay: getPlayerStore().play,
@@ -789,6 +799,7 @@ export const sendLyricToWin = () => {
         type: 'empty',
         nowIndex: 0,
         nowTime: nowTime.value,
+        correctionTime: correctionTime.value,
         startCurrentTime: 0,
         nextTime: 0,
         isPlay: getPlayerStore().play,
@@ -858,6 +869,7 @@ const startLyricSync = () => {
           type: 'update',
           nowIndex: getLrcIndex(nowTime.value),
           nowTime: nowTime.value,
+          correctionTime: correctionTime.value,
           isPlay: getPlayerStore().play
         };
         getCompatApi()?.sendLyric(JSON.stringify(updateData));
@@ -906,6 +918,7 @@ export const openLyric = (forceOpen = false) => {
         type: 'empty',
         nowIndex: 0,
         nowTime: nowTime.value,
+        correctionTime: correctionTime.value,
         startCurrentTime: 0,
         nextTime: 0,
         isPlay: getPlayerStore().play,

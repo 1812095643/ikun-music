@@ -1,58 +1,65 @@
-param(
+﻿param(
   [string]$ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path,
-  [string]$NodeExe = "C:\Users\Administrator\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe"
+  [string]$NodeExe = ''
 )
 
 $ErrorActionPreference = 'Stop'
-$OutputEncoding = [System.Text.UTF8Encoding]::new()
-[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
-
-function Join-Chars([int[]]$Codes) {
-  return -join ($Codes | ForEach-Object { [char]$_ })
+$OutputEncoding = New-Object System.Text.UTF8Encoding($false)
+[Console]::OutputEncoding = $OutputEncoding
+$ProjectRoot = (Resolve-Path -LiteralPath $ProjectRoot).Path
+if ([string]::IsNullOrWhiteSpace($NodeExe)) {
+  $NodeExe = (Get-Command node.exe -ErrorAction Stop).Source
 }
-
-function Build-Message([int[]]$Codes, [string]$Value) {
-  return (Join-Chars $Codes) + $Value
-}
-
-$runtimeRoot = Join-Path $ProjectRoot 'src-tauri\embedded-runtime'
+$NodeExe = (Resolve-Path -LiteralPath $NodeExe).Path
+$runtimeRoot = [IO.Path]::GetFullPath((Join-Path $ProjectRoot 'src-tauri\embedded-runtime'))
 $runtimeDir = Join-Path $runtimeRoot 'music-api-runtime'
 $zipPath = Join-Path $runtimeRoot 'music-api-runtime.zip'
+$signaturePath = Join-Path $runtimeRoot '.runtime-signature'
 $scriptSource = Join-Path $ProjectRoot 'src-tauri\bin\alger-music-api.js'
-$packageJson = Join-Path $ProjectRoot 'package.json'
-$packageLock = Join-Path $ProjectRoot 'package-lock.json'
+$manifestDir = Join-Path $ProjectRoot 'src-tauri\runtime'
+$manifestPath = Join-Path $manifestDir 'package.json'
+$lockPath = Join-Path $manifestDir 'package-lock.json'
 
-if (!(Test-Path -LiteralPath $NodeExe)) {
-  throw (Build-Message @(0x627E, 0x4E0D, 0x5230, 0x0020, 0x004E, 0x006F, 0x0064, 0x0065, 0x0020, 0x8FD0, 0x884C, 0x65F6, 0xFF1A) $NodeExe)
-}
-if (!(Test-Path -LiteralPath $scriptSource)) {
-  throw (Build-Message @(0x627E, 0x4E0D, 0x5230, 0x97F3, 0x4E50, 0x0020, 0x0041, 0x0050, 0x0049, 0x0020, 0x811A, 0x672C, 0xFF1A) $scriptSource)
+# 根因：根项目的生产依赖也包含前端 Vue/Pinia 及其 TypeScript 对等依赖，
+# 直接复制根 package.json 会把与 Node 服务无关的工具链打进 EXE。
+# 独立清单只声明服务使用的依赖，由 npm ci 安装完整且锁定的传递依赖，不裁剪依赖实现。
+$inputPaths = @($NodeExe, $scriptSource, $manifestPath, $lockPath, $PSCommandPath)
+$signature = ($inputPaths | ForEach-Object {
+  (Get-FileHash -LiteralPath $_ -Algorithm SHA256).Hash
+}) -join ':'
+if ((Test-Path -LiteralPath $zipPath) -and (Test-Path -LiteralPath $signaturePath)) {
+  if ((Get-Content -LiteralPath $signaturePath -Raw).Trim() -eq $signature) {
+    Write-Host '内置音乐服务没有变化，复用已验证的运行时压缩包。'
+    exit 0
+  }
 }
 
+# 删除前校验绝对路径，清理范围严格限定在当前工程生成的运行时目录。
+$expectedRoot = Join-Path $ProjectRoot 'src-tauri\embedded-runtime'
+if ($runtimeRoot -ne $expectedRoot -or !$runtimeRoot.StartsWith($ProjectRoot + '\', [StringComparison]::OrdinalIgnoreCase)) {
+  throw '运行时目录不在当前工程内，已停止清理。'
+}
 if (Test-Path -LiteralPath $runtimeRoot) {
   Remove-Item -LiteralPath $runtimeRoot -Recurse -Force
 }
-
 New-Item -ItemType Directory -Path (Join-Path $runtimeDir 'bin') -Force | Out-Null
-
-Copy-Item -LiteralPath $NodeExe -Destination (Join-Path $runtimeDir 'node.exe') -Force
-Copy-Item -LiteralPath $scriptSource -Destination (Join-Path $runtimeDir 'bin\alger-music-api.js') -Force
-Copy-Item -LiteralPath $packageJson -Destination (Join-Path $runtimeDir 'package.json') -Force
-Copy-Item -LiteralPath $packageLock -Destination (Join-Path $runtimeDir 'package-lock.json') -Force
+Copy-Item -LiteralPath $NodeExe -Destination (Join-Path $runtimeDir 'node.exe')
+Copy-Item -LiteralPath $scriptSource -Destination (Join-Path $runtimeDir 'bin\alger-music-api.js')
+Copy-Item -LiteralPath $manifestPath -Destination (Join-Path $runtimeDir 'package.json')
+Copy-Item -LiteralPath $lockPath -Destination (Join-Path $runtimeDir 'package-lock.json')
 
 Push-Location $runtimeDir
 try {
-  npm ci --omit=dev --ignore-scripts
+  & npm.cmd ci --omit=dev --ignore-scripts --no-audit --no-fund
+  # Windows PowerShell 5 不会因外部命令非零退出而自动 throw，必须显式阻止打包半成品。
+  if ($LASTEXITCODE -ne 0) { throw "内置音乐服务依赖安装未完成，退出码：$LASTEXITCODE" }
+  & $NodeExe --check (Join-Path $runtimeDir 'bin\alger-music-api.js')
+  if ($LASTEXITCODE -ne 0) { throw '内置音乐服务脚本语法检查未通过。' }
 } finally {
   Pop-Location
 }
 
-Get-ChildItem -LiteralPath (Join-Path $runtimeDir 'node_modules') -Directory -Force |
-  Where-Object { $_.Name -in '.bin', '.cache', '.vite', '.vue-global-types' } |
-  Remove-Item -Recurse -Force
-
-Compress-Archive -Path (Join-Path $runtimeDir '*') -DestinationPath $zipPath -Force
-
+Compress-Archive -Path (Join-Path $runtimeDir '*') -DestinationPath $zipPath -CompressionLevel Optimal
+[IO.File]::WriteAllText($signaturePath, $signature, (New-Object System.Text.UTF8Encoding($false)))
 $zipInfo = Get-Item -LiteralPath $zipPath
-$message = Join-Chars @(0x97F3, 0x4E50, 0x0020, 0x0041, 0x0050, 0x0049, 0x0020, 0x5185, 0x7F6E, 0x8FD0, 0x884C, 0x65F6, 0x5DF2, 0x751F, 0x6210, 0xFF1A)
-Write-Host ($message + $zipInfo.FullName + " ($([math]::Round($zipInfo.Length / 1MB, 2)) MB)")
+Write-Host ("音乐 API 内置运行时已生成：{0} ({1} MiB)" -f $zipInfo.FullName, [math]::Round($zipInfo.Length / 1MB, 2))

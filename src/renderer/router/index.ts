@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 
 import AppLayout from '@/layout/AppLayout.vue';
-import MiniLayout from '@/layout/MiniLayout.vue';
 import homeRouter from '@/router/home';
 import otherRouter from '@/router/other';
 import { useSettingsStore } from '@/store/modules/settings';
@@ -52,7 +51,7 @@ const routes = [
   },
   {
     path: '/mini',
-    component: MiniLayout
+    component: () => import('@/layout/MiniLayout.vue')
   }
 ];
 
@@ -64,8 +63,7 @@ const router = createRouter({
 // 添加全局前置守卫
 router.beforeEach((to, _, next) => {
   const settingsStore = getSettingsStore();
-  const isBrowserMiniMode =
-    !(window as any).__TAURI_INTERNALS__ && hasBrowserMiniModeFlag();
+  const isBrowserMiniMode = !(window as any).__TAURI_INTERNALS__ && hasBrowserMiniModeFlag();
 
   // 如果是迷你模式
   if (settingsStore.isMiniMode || isBrowserMiniMode) {

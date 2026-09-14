@@ -6,7 +6,7 @@ import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
 import viteCompression from 'vite-plugin-compression';
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base: './',
   root: resolve('src/renderer'),
   resolve: {
@@ -18,7 +18,8 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    viteCompression(),
+    // Tauri 直接读取嵌入资源，额外的 .gz 文件无人使用，只在 Web 构建时生成。
+    viteCompression({ disable: mode === 'desktop' }),
     AutoImport({
       imports: [
         'vue',
@@ -43,4 +44,4 @@ export default defineConfig({
     strictPort: true,
     proxy: {}
   }
-});
+}));

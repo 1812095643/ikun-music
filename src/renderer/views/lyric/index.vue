@@ -11,54 +11,91 @@
     <div class="control-bar" :class="{ 'control-bar-show': showControls }">
       <div class="font-size-controls">
         <n-button-group>
-          <div class="control-button" @click="decreaseFontSize">
+          <button
+            type="button"
+            class="control-button"
+            title="缩小字号"
+            aria-label="缩小字号"
+            @click="decreaseFontSize"
+          >
             <i class="ri-subtract-line"></i>
-          </div>
-          <div class="control-button" @click="increaseFontSize">
+          </button>
+          <button
+            type="button"
+            class="control-button"
+            title="放大字号"
+            aria-label="放大字号"
+            @click="increaseFontSize"
+          >
             <i class="ri-add-line"></i>
-          </div>
+          </button>
         </n-button-group>
-        <div v-html="staticData.playMusic.name"></div>
+        <div class="desktop-song-title" :title="staticData.playMusic.name">
+          {{ staticData.playMusic.name || '桌面歌词' }}
+        </div>
       </div>
       <!-- 添加播放控制按钮 -->
       <div class="play-controls">
-        <div class="control-button" @click="handlePrev">
+        <button
+          type="button"
+          class="control-button"
+          title="上一首"
+          aria-label="上一首"
+          @click="handlePrev"
+        >
           <i class="ri-skip-back-fill"></i>
-        </div>
-        <div class="control-button play-button" @click="handlePlayPause">
+        </button>
+        <button
+          class="control-button play-button"
+          title="播放或暂停"
+          aria-label="播放或暂停"
+          @click="handlePlayPause"
+        >
           <i :class="dynamicData.isPlay ? 'ri-pause-fill' : 'ri-play-fill'"></i>
-        </div>
-        <div class="control-button" @click="handleNext">
+        </button>
+        <button
+          type="button"
+          class="control-button"
+          title="下一首"
+          aria-label="下一首"
+          @click="handleNext"
+        >
           <i class="ri-skip-forward-fill"></i>
-        </div>
+        </button>
       </div>
       <div class="control-buttons">
-        <div class="control-button" @click="checkTheme">
+        <button
+          type="button"
+          class="control-button"
+          title="切换明暗"
+          aria-label="切换明暗"
+          @click="checkTheme"
+        >
           <i v-if="lyricSetting.theme === 'light'" class="ri-sun-line"></i>
           <i v-else class="ri-moon-line"></i>
-        </div>
-        <div
+        </button>
+        <button
           class="control-button theme-color-button"
           :class="{ active: showThemeColorPanel }"
           @click="toggleThemeColorPanel"
         >
           <i class="ri-palette-line"></i>
-        </div>
-        <!-- <div class="control-button" @click="handleTop">
+        </button>
+        <!-- <button type="button" class="control-button" @click="handleTop">
           <i class="ri-pushpin-line" :class="{ active: lyricSetting.isTop }"></i>
-        </div> -->
+        </button> -->
         <!-- 翻译开关按钮（仅当歌词有翻译时显示） -->
-        <div
+        <button
           v-if="hasTranslation"
           class="control-button"
           :title="showTranslation ? '隐藏翻译' : '显示翻译'"
           @click="lyricSetting.showTranslation = !lyricSetting.showTranslation"
         >
           <i class="ri-translate-2" :class="{ active: showTranslation }"></i>
-        </div>
+        </button>
 
         <!-- 显示模式切换按钮（scroll → single → double → scroll 循环） -->
-        <div
+        <button
           class="control-button"
           :title="
             displayMode === 'scroll'
@@ -76,15 +113,28 @@
               'ri-layout-row-line': displayMode === 'double'
             }"
           ></i>
-        </div>
+        </button>
 
-        <div id="lyric-lock" class="control-button" @click="handleLock">
+        <button
+          id="lyric-lock"
+          type="button"
+          class="control-button"
+          title="锁定或解锁歌词"
+          aria-label="锁定或解锁歌词"
+          @click="handleLock"
+        >
           <i v-if="lyricSetting.isLock" class="ri-lock-line"></i>
           <i v-else class="ri-lock-unlock-line"></i>
-        </div>
-        <div class="control-button" @click="handleClose">
+        </button>
+        <button
+          type="button"
+          class="control-button"
+          title="关闭桌面歌词"
+          aria-label="关闭桌面歌词"
+          @click="handleClose"
+        >
           <i class="ri-close-line"></i>
-        </div>
+        </button>
       </div>
     </div>
 
@@ -104,7 +154,15 @@
         <div class="lyric-wrapper" :style="wrapperStyle">
           <template v-if="staticData.lrcArray?.length > 0">
             <div
-              v-for="(line, index) in staticData.lrcArray"
+              v-for="{ line, index } in scrollLines"
+              v-memo="[
+                line,
+                index === currentIndex,
+                index === currentIndex ? actualTime : -1,
+                fontSize,
+                showTranslation,
+                currentHighlightColor
+              ]"
               :key="index"
               class="lyric-line"
               :style="getDynamicLineStyle(line, showTranslation)"
@@ -222,7 +280,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 import ThemeColorPanel from '@/components/lyric/ThemeColorPanel.vue';
 import { SongResult } from '@/types/music';
@@ -272,9 +330,10 @@ const staticData = ref<{
 // 动态数据
 const dynamicData = ref({
   nowTime: 0,
+  correctionTime: 0,
   startCurrentTime: 0,
   nextTime: 0,
-  isPlay: true
+  isPlay: false
 });
 
 // 安全加载歌词设置
@@ -314,7 +373,7 @@ const loadLyricSettings = () => {
     isLock: false,
     highlightColor: undefined as string | undefined,
     showTranslation: true,
-    displayMode: 'scroll' as 'scroll' | 'single' | 'double'
+    displayMode: 'double' as 'scroll' | 'single' | 'double'
   };
 };
 
@@ -438,80 +497,36 @@ onUnmounted(() => {
 });
 
 // 计算歌词滚动位置
-const wrapperStyle = computed(() => {
-  // 非 scroll 模式不渲染 .lyric-wrapper，提前返回空对象避免无效计算
-  if (displayMode.value !== 'scroll') {
-    return {};
-  }
-
-  if (!containerHeight.value) {
-    return {
-      transform: 'translateY(0)',
-      transition: 'none'
-    };
-  }
-
-  // 计算容器中心点
-  const containerCenter = containerHeight.value / 2;
-
-  // 计算每行的实际高度
-  const getLineHeight = (line: { text: string; trText: string }) => {
-    const baseHeight = lineHeight.value;
-    if (showTranslation.value && line.trText) {
-      // 新增 showTranslation.value 判断
-      const extraHeight = Math.round(fontSize.value * 0.6 * 1.4);
-      return baseHeight + extraHeight;
-    }
-    return baseHeight;
-  };
-
-  // 计算当前行之前所有行的累积高度
-  let accumulatedHeight = containerHeight.value * 0.2; // 顶部padding
-  for (let i = 0; i < currentIndex.value; i++) {
-    if (i < staticData.value.lrcArray.length) {
-      accumulatedHeight += getLineHeight(staticData.value.lrcArray[i]);
-    } else {
-      accumulatedHeight += lineHeight.value;
-    }
-  }
-
-  // 加上当前行的一半高度，使其居中
-  const currentLineHeight =
-    currentIndex.value < staticData.value.lrcArray.length
-      ? getLineHeight(staticData.value.lrcArray[currentIndex.value])
-      : lineHeight.value;
-  accumulatedHeight += currentLineHeight;
-
-  // 计算偏移量，使当前行居中
-  const targetOffset = containerCenter - accumulatedHeight;
-
-  // 计算内容总高度（包含padding）
-  let contentHeight = containerHeight.value * 0.4; // 上下padding总和
-  for (const line of staticData.value.lrcArray) {
-    contentHeight += getLineHeight(line);
-  }
-
-  // 计算最小和最大偏移量
-  const minOffset = -(contentHeight - containerHeight.value);
-  const maxOffset = 0;
-
-  // 限制偏移量在合理范围内
-  const finalOffset = Math.min(maxOffset, Math.max(minOffset, targetOffset));
-
-  return {
-    transform: `translateY(${finalOffset}px)`,
-    transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-  };
+const scrollOffset = ref(0);
+const scrollLines = computed(() => {
+  const start = Math.max(0, currentIndex.value - 4);
+  return staticData.value.lrcArray
+    .slice(start, currentIndex.value + 5)
+    .map((line, offset) => ({ line, index: start + offset }));
 });
-
+const wrapperStyle = computed(() => ({ transform: `translateY(${scrollOffset.value}px)` }));
+const measureCurrentLine = () => {
+  if (displayMode.value !== 'scroll') return;
+  const current = containerRef.value?.querySelector<HTMLElement>('.lyric-line-current');
+  if (!current || !containerRef.value) return;
+  // 根因：按固定行高累加忽略长歌词换行，字体变大或显示翻译时当前句会偏离窗口。
+  // 仅渲染当前行前后各四句，并用真实布局测量居中，长歌词也不会与下一句重叠。
+  scrollOffset.value =
+    containerRef.value.clientHeight / 2 - current.offsetTop - current.offsetHeight / 2;
+};
+watch(
+  [currentIndex, fontSize, showTranslation, displayMode, () => staticData.value.lrcArray],
+  () => nextTick(measureCurrentLine),
+  { flush: 'post' }
+);
 // 新增：根据是否有翻译文本动态计算每行的样式
 const getDynamicLineStyle = (line: { text: string; trText: string }, withTranslation = true) => {
   const defaultHeight = lineHeight.value;
   if (withTranslation && line.trText) {
     const extraHeight = Math.round(fontSize.value * 0.6 * 1.4);
-    return { height: `${defaultHeight + extraHeight}px` };
+    return { minHeight: `${defaultHeight + extraHeight}px` };
   }
-  return { height: `${defaultHeight}px` };
+  return { minHeight: `${defaultHeight}px` };
 };
 
 // 更新容器高度和行高
@@ -565,6 +580,7 @@ const saveFontSize = () => {
 onMounted(() => {
   const resizeObserver = new ResizeObserver(() => {
     updateContainerHeight();
+    measureCurrentLine();
   });
 
   if (containerRef.value) {
@@ -579,18 +595,19 @@ onMounted(() => {
 const actualTime = ref(0);
 
 // 计算当前行的进度（从本地 lrcTimeArray 取时间，避免依赖 IPC 传入的 startCurrentTime/nextTime）
-// 注意：lrcTimeArray 单位为毫秒（来自 yrcParser），actualTime 单位为秒，需要 * 1000 对齐
+// 行时间轴与播放器统一为秒；仅逐字 words 的时间仍为毫秒。
 const currentProgress = computed(() => {
   const times = staticData.value.lrcTimeArray;
   const idx = currentIndex.value;
-  const startTimeMs = times[idx];
-  const endTimeMs = times[idx + 1];
-  // 使用严格判断，避免 startTimeMs=0 时被误判为无效
-  if (startTimeMs === undefined || endTimeMs === undefined || endTimeMs <= startTimeMs) return 0;
+  const startTimeSec = times[idx];
+  const endTimeSec = times[idx + 1] ?? staticData.value.allTime;
+  // 使用严格判断，避免 startTimeSec=0 时被误判为无效
+  if (startTimeSec === undefined || endTimeSec === undefined || endTimeSec <= startTimeSec)
+    return 0;
 
-  const currentTimeMs = actualTime.value * 1000; // seconds → ms，与 lrcTimeArray 单位对齐
-  const elapsed = currentTimeMs - startTimeMs;
-  const duration = endTimeMs - startTimeMs;
+  const currentTimeSec = actualTime.value; // 与 IPC 行时间轴保持相同单位
+  const elapsed = currentTimeSec - startTimeSec;
+  const duration = endTimeSec - startTimeSec;
   return Math.min(Math.max(elapsed / duration, 0), 1);
 });
 
@@ -668,65 +685,58 @@ const getWordStyle = (
   }
 };
 
-// 时间偏移量（毫秒）
-const TIME_OFFSET = 400;
-
-// 更新动画
-const updateProgress = () => {
-  if (!dynamicData.value.isPlay) {
-    if (animationFrameId.value) {
-      cancelAnimationFrame(animationFrameId.value);
-      animationFrameId.value = null;
+let lastPaintTime = 0;
+const stopProgressAnimation = () => {
+  if (animationFrameId.value !== null) cancelAnimationFrame(animationFrameId.value);
+  animationFrameId.value = null;
+};
+const updateProgress = (frameTime: number) => {
+  animationFrameId.value = null;
+  if (!dynamicData.value.isPlay || document.hidden) return;
+  // 根因：两个 watch 原先同时启动 RAF，循环数随暂停/播放增长；每帧还会刷新整首歌词。
+  // 保留唯一循环，以 30fps 推进当前句，暂停、窗口隐藏和卸载时立即停止。
+  if (frameTime - lastPaintTime >= 32) {
+    lastPaintTime = frameTime;
+    actualTime.value =
+      dynamicData.value.nowTime +
+      dynamicData.value.correctionTime +
+      (performance.now() - lastUpdateTime.value) / 1000;
+    let nextIndex = -1;
+    for (let index = staticData.value.lrcTimeArray.length - 1; index >= 0; index -= 1) {
+      if (staticData.value.lrcTimeArray[index] <= actualTime.value) {
+        nextIndex = index;
+        break;
+      }
     }
-    return;
+    currentIndex.value = Math.max(0, nextIndex);
   }
-
-  // 计算实际时间，添加偏移量
-  const timeDiff = (performance.now() - lastUpdateTime.value) / 1000;
-  actualTime.value = dynamicData.value.nowTime + timeDiff + TIME_OFFSET / 1000;
-
-  // 继续动画
   animationFrameId.value = requestAnimationFrame(updateProgress);
 };
-
-// 记录上次更新时间
-
-// 监听据更新
+const syncProgressAnimation = () => {
+  stopProgressAnimation();
+  lastUpdateTime.value = performance.now();
+  actualTime.value = dynamicData.value.nowTime + dynamicData.value.correctionTime;
+  if (dynamicData.value.isPlay && !document.hidden) {
+    animationFrameId.value = requestAnimationFrame(updateProgress);
+  }
+};
 watch(
-  () => dynamicData.value,
-  (newData: any) => {
-    // 更新最后更新时间
-    lastUpdateTime.value = performance.now();
-
-    // 更新实际时间，包含偏移量
-    actualTime.value = newData.nowTime + TIME_OFFSET / 1000;
-
-    // 如果正在播放且没有动画，启动动画
-    if (newData.isPlay && !animationFrameId.value) {
-      updateProgress();
-    }
-  },
-  { deep: true }
-);
-
-// 监听播放状态变化
-watch(
-  () => dynamicData.value.isPlay,
-  (isPlaying: boolean) => {
-    if (isPlaying) {
-      lastUpdateTime.value = performance.now();
-      updateProgress();
-    } else if (animationFrameId.value) {
-      cancelAnimationFrame(animationFrameId.value);
-      animationFrameId.value = null;
-    }
+  () => [dynamicData.value.nowTime, dynamicData.value.isPlay, dynamicData.value.correctionTime],
+  syncProgressAnimation,
+  {
+    immediate: true
   }
 );
-
+onMounted(() => document.addEventListener('visibilitychange', syncProgressAnimation));
+onUnmounted(() => {
+  stopProgressAnimation();
+  document.removeEventListener('visibilitychange', syncProgressAnimation);
+});
 // 修改数据更新处
 const handleDataUpdate = (parsedData: {
   type?: string;
   nowTime: number;
+  correctionTime?: number;
   startCurrentTime: number;
   nextTime: number;
   isPlay: boolean;
@@ -747,7 +757,8 @@ const handleDataUpdate = (parsedData: {
     // 增量更新，只更新动态数据
     dynamicData.value = {
       ...dynamicData.value,
-      nowTime: parsedData.nowTime || dynamicData.value.nowTime,
+      correctionTime: parsedData.correctionTime ?? dynamicData.value.correctionTime,
+      nowTime: Number.isFinite(parsedData.nowTime) ? parsedData.nowTime : dynamicData.value.nowTime,
       isPlay: typeof parsedData.isPlay === 'boolean' ? parsedData.isPlay : dynamicData.value.isPlay
     };
 
@@ -770,6 +781,7 @@ const handleDataUpdate = (parsedData: {
   // 更新动态数据
   dynamicData.value = {
     nowTime: parsedData.nowTime || 0,
+    correctionTime: parsedData.correctionTime || 0,
     startCurrentTime: parsedData.startCurrentTime || 0,
     nextTime: parsedData.nextTime || 0,
     isPlay: parsedData.isPlay
@@ -781,11 +793,14 @@ const handleDataUpdate = (parsedData: {
   }
 };
 
+let removeLyricDataListener: (() => void) | undefined;
+
 onMounted(() => {
   // 加载保存的字体大小
   const savedFontSize = localStorage.getItem('lyricFontSize');
   if (savedFontSize) {
-    fontSize.value = Number(savedFontSize);
+    const savedSize = Number(savedFontSize);
+    fontSize.value = Number.isFinite(savedSize) ? Math.min(48, Math.max(12, savedSize)) : 24;
     lineHeight.value = fontSize.value * 2.5;
   }
 
@@ -794,7 +809,7 @@ onMounted(() => {
   window.addEventListener('resize', updateContainerHeight);
 
   // 监听歌词数据
-  windowData.electron.ipcRenderer.on('receive-lyric', (_, data) => {
+  removeLyricDataListener = windowData.electron.ipcRenderer.on('receive-lyric', (_, data) => {
     try {
       const parsedData = JSON.parse(data);
       handleDataUpdate(parsedData);
@@ -809,6 +824,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('resize', updateContainerHeight);
+  removeLyricDataListener?.();
 });
 
 const checkTheme = () => {
@@ -1507,6 +1523,126 @@ body {
     top: 0;
     right: 72px;
     background: var(--control-bg);
+  }
+}
+
+/* 工具栏只占一行，留出歌词的主要视区；透明桌面下使用细描边保住文字轮廓。 */
+.control-bar {
+  top: 8px;
+  left: 10px;
+  right: 10px;
+  height: 36px;
+  padding: 0;
+  gap: 10px;
+  align-items: center;
+}
+.lyric-window:focus-within .control-bar {
+  opacity: 1;
+  visibility: visible;
+}
+.control-bar .font-size-controls {
+  flex: 1;
+  min-width: 0;
+  gap: 6px;
+  padding: 3px;
+  border-radius: 8px;
+  border: 0;
+}
+.desktop-song-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
+  font-size: 12px;
+}
+.control-bar .play-controls {
+  position: static;
+  transform: none;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 8px;
+  border: 0;
+}
+.control-bar .control-buttons {
+  flex: 0 0 auto;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 8px;
+  border: 0;
+}
+.control-bar .control-button {
+  width: 27px;
+  height: 27px;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.control-bar .control-button i {
+  font-size: 16px;
+}
+.control-bar .play-button {
+  width: 30px;
+  height: 30px;
+}
+.control-button:focus-visible {
+  outline: 2px solid var(--highlight-color);
+  outline-offset: 2px;
+}
+.lyric-container {
+  top: 48px;
+}
+.lyric-wrapper {
+  width: 100%;
+  padding: 0;
+  position: relative;
+  flex-shrink: 0;
+}
+.lyric-text {
+  font-weight: 650;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  paint-order: stroke fill;
+}
+.lyric-window.dark .lyric-text {
+  -webkit-text-stroke: 0.65px rgba(9, 16, 12, 0.78);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+.lyric-window.light .lyric-text {
+  -webkit-text-stroke: 0.65px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.7);
+}
+.lyric-window.light:hover:not(.lyric_lock) {
+  background: rgba(245, 248, 246, 0.94) !important;
+}
+.lyric-window.dark:hover:not(.lyric_lock) {
+  background: rgba(16, 25, 20, 0.9) !important;
+}
+.lyric-line-current .lyric-text {
+  text-shadow: inherit;
+}
+.lyric-translation {
+  opacity: 0.85;
+}
+.lyric-empty {
+  border: 0;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+}
+@media (max-width: 640px) {
+  .desktop-song-title {
+    display: none;
+  }
+  .control-bar {
+    gap: 4px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lyric-wrapper,
+  .lyric-line,
+  .lyric-double-mode {
+    transition: none !important;
   }
 }
 </style>

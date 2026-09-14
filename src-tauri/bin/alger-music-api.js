@@ -3,7 +3,6 @@ const fs = require('fs');
 const net = require('net');
 const os = require('os');
 const path = require('path');
-const express = require('express');
 const mm = require('music-metadata');
 const request = require('@unblockneteasemusic/server/src/request');
 

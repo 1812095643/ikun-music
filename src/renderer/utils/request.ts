@@ -14,7 +14,7 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 }
 
 const baseURL = window.electron
-  ? `http://127.0.0.1:${setData?.musicApiPort}`
+  ? `http://127.0.0.1:${setData?.musicApiPort || 30488}`
   : import.meta.env.VITE_API;
 
 const request = axios.create({
@@ -31,17 +31,18 @@ const RETRY_DELAY = 500;
 // 请求拦截器
 request.interceptors.request.use(
   async (config: CustomAxiosRequestConfig) => {
+    let actualPort: number | null = null;
     if (isElectron) {
       // 根因：Tauri 打包版启动时 Vue 首屏会立刻请求首页、搜索和歌词接口，
       // 但内置 Node 音乐 API 需要先完成脚本加载、端口监听和酷我等音源模块初始化。
       // 之前请求层没有等待后端 ready，首次双击 exe 时就可能把请求打到尚未监听的
       // 30488，页面拿到的都是空数据。这里在所有桌面音乐 API 请求发出前统一等待
       // Rust 端确认服务可用，并同步可能被端口占用后自动漂移的实际端口。
-      await ensureMusicApiReady();
+      actualPort = await ensureMusicApiReady();
     }
     setData = getSetData();
     config.baseURL = window.electron
-      ? `http://127.0.0.1:${setData?.musicApiPort}`
+      ? `http://127.0.0.1:${actualPort || setData?.musicApiPort || 30488}`
       : import.meta.env.VITE_API;
     // 只在retryCount未定义时初始化为0
     if (config.retryCount === undefined) {
@@ -107,8 +108,14 @@ request.interceptors.response.use(
       config.retryCount = 3;
     }
 
+    // 只重试网络错误和服务端错误。4xx 通常是参数/权限问题，重复发送只会让
+    // 搜索、详情等页面多等一轮，无法改变结果。
+    const status = error.response?.status;
+    const shouldRetry = status == null || status >= 500;
+
     // 检查是否还可以重试
     if (
+      shouldRetry &&
       config.retryCount !== undefined &&
       config.retryCount < MAX_RETRIES &&
       !NO_RETRY_URLS.includes(config.url as string) &&

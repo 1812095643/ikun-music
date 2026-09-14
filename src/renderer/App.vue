@@ -474,9 +474,8 @@ if (!isTrayPanelWindow.value) {
 }
 
 onMounted(async () => {
-  setTimeout(() => {
-    showSplash.value = false;
-  }, 1500);
+  // 页面已经挂载后立即让出启动遮罩；旧的固定 1.5 秒延迟会挡住已经可操作的首页。
+  showSplash.value = false;
 
   if (isTrayPanelWindow.value) {
     showSplash.value = false;

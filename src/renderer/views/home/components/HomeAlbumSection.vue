@@ -41,6 +41,7 @@
         :show-hover-tracks="!isMobile"
         @click="handleAlbumClick(album)"
         @play="playAlbum(album)"
+        @mouseenter="loadTracksOnHover(album.id)"
       />
     </div>
 
@@ -89,6 +90,7 @@ const router = useRouter();
 const albums = ref<any[]>([]);
 const loading = ref(true);
 const albumTracksMap = reactive<Record<number, any[]>>({});
+const loadingTracksMap = reactive<Record<number, boolean>>({});
 
 // Calculate display count to fill exactly N rows
 const displayCount = computed(() => {
@@ -108,10 +110,6 @@ const fetchAlbums = async () => {
     const { data } = await getTopAlbum({ limit: props.limit || displayCount.value + 5 });
     if (data.code === 200) {
       albums.value = data.weekData || data.monthData || data.albums || [];
-      // Preload tracks for displayed albums (Electron only)
-      if (isElectron && !isMobile.value) {
-        preloadAllTracks();
-      }
     }
   } catch (error) {
     console.error('Failed to fetch albums:', error);
@@ -120,29 +118,21 @@ const fetchAlbums = async () => {
   }
 };
 
-const preloadAllTracks = async () => {
-  const albumsToLoad = displayAlbums.value;
-
-  // Load tracks in parallel with concurrency limit
-  const batchSize = 4;
-  for (let i = 0; i < albumsToLoad.length; i += batchSize) {
-    const batch = albumsToLoad.slice(i, i + batchSize);
-    await Promise.all(
-      batch.map(async (album) => {
-        if (albumTracksMap[album.id]) return;
-        try {
-          const { data } = await getAlbum(album.id);
-          if (data.code === 200 && data.songs) {
-            albumTracksMap[album.id] = data.songs.slice(0, 3).map((s: any) => ({
-              id: s.id,
-              name: s.name
-            }));
-          }
-        } catch (error) {
-          console.debug('Failed to load tracks for album:', album.id, error);
-        }
-      })
-    );
+const loadTracksOnHover = async (id: number) => {
+  if (!isElectron || isMobile.value || albumTracksMap[id] || loadingTracksMap[id]) return;
+  loadingTracksMap[id] = true;
+  try {
+    const { data } = await getAlbum(id);
+    if (data.code === 200 && data.songs) {
+      albumTracksMap[id] = data.songs.slice(0, 3).map((s: any) => ({
+        id: s.id,
+        name: s.name
+      }));
+    }
+  } catch (error) {
+    console.debug('专辑曲目预览加载失败，将在下次悬停时重试：', id, error);
+  } finally {
+    loadingTracksMap[id] = false;
   }
 };
 

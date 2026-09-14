@@ -889,8 +889,7 @@ body {
 }
 
 .music-full-container,
-.music-drawer .n-drawer-content,
-#drawer-target {
+.music-drawer .n-drawer-content {
   background: var(--qqm-bg) !important;
 }
 

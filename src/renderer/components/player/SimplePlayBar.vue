@@ -96,20 +96,12 @@ const play = computed(() => playerStore.isPlay);
 // 播放模式
 const { playMode, playModeIcon, togglePlayMode } = usePlayMode();
 
-// 音量控制
-const audioVolume = ref(
-  localStorage.getItem('volume') ? parseFloat(localStorage.getItem('volume') as string) : 1
-);
-
+// 音量统一使用播放器 store，避免全屏与主窗口、迷你窗显示出三套不同音量。
+const audioVolume = computed(() => playerStore.volume);
 const volumeSlider = computed({
-  get: () => audioVolume.value * 100,
-  set: (value) => {
-    localStorage.setItem('volume', (value / 100).toString());
-    audioService.setVolume(value / 100);
-    audioVolume.value = value / 100;
-  }
+  get: () => playerStore.volume * 100,
+  set: (value: number) => playerStore.setVolume(Math.min(100, Math.max(0, value)) / 100)
 });
-
 // 音量图标
 const getVolumeIcon = computed(() => {
   if (audioVolume.value === 0) return 'ri-volume-mute-line';

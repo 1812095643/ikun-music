@@ -22,7 +22,7 @@
               :class="route.meta.noScroll && !settingsStore.isMobile ? 'pr-3' : ''"
             >
               <Transition name="fade-slide" mode="out-in">
-                <keep-alive :include="keepAliveInclude">
+                <keep-alive :include="keepAliveInclude" :max="8">
                   <component :is="Component" />
                 </keep-alive>
               </Transition>
@@ -36,12 +36,12 @@
       <!-- 底部音乐播放 -->
       <template v-if="!settingsStore.isMiniMode">
         <play-bar
-          v-if="!settingsStore.isMobile"
+          v-if="!settingsStore.isMobile && isPlay"
           v-show="isPlay"
           :style="playerStore.musicFull ? 'bottom: 0;' : ''"
         />
         <mobile-play-bar
-          v-else
+          v-else-if="settingsStore.isMobile && isPlay"
           v-show="isPlay"
           :style="settingsStore.isMobile && playerStore.musicFull ? 'bottom: 0;' : ''"
         />
@@ -75,7 +75,7 @@ import AppMenu from './components/AppMenu.vue';
 import SearchBar from './components/SearchBar.vue';
 import TitleBar from './components/TitleBar.vue';
 // 移动端专用布局
-import MobileLayout from './MobileLayout.vue';
+const MobileLayout = defineAsyncComponent(() => import('./MobileLayout.vue'));
 
 const keepAliveInclude = computed(() => {
   const allRoutes = [...homeRouter, ...otherRouter];

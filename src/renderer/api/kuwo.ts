@@ -1,7 +1,6 @@
 import type { SongResult } from '@/types/music';
 import { isElectron } from '@/utils';
 import { type DownloadQualityKey, getKuwoDownloadQuality } from '@/utils/downloadQuality';
-import { ensureMusicApiReady } from '@/utils/tauriElectronCompat';
 
 import { assertExternalOk, requestExternalMusic } from './externalMusicRequest';
 
@@ -93,7 +92,6 @@ const waitForRetry = (attempt: number) =>
 
 const requestKuwoOnce = async <T = any>(url: string, timeout = 15000): Promise<T> => {
   if (isElectron && window.api?.lxMusicHttpRequest) {
-    await ensureMusicApiReady();
     const response = (await window.api.lxMusicHttpRequest({
       url,
       requestId: buildRequestId(),
@@ -144,7 +142,6 @@ const requestKuwoPublic = async <T = any>(
 
 const requestKuwoHead = async (url: string, timeout = 8000) => {
   if (isElectron && window.api?.lxMusicHttpRequest) {
-    await ensureMusicApiReady();
     return (await window.api.lxMusicHttpRequest({
       url,
       requestId: buildRequestId(),
@@ -487,7 +484,8 @@ const normalizeKuwoRankSongs = (payload: any) => {
 
 export const getKuwoRecommendPlaylists = async (limit = 30) => {
   const url = `https://wapi.kuwo.cn/api/pc/classify/playlist/getRcmPlayList?pn=1&rn=${limit}&order=hot`;
-  const response = await kuwoRequest<any>(url);
+  // 推荐歌单属于首页非关键数据。外站不可用时应快速回退本地后端，避免三轮重试拖慢首屏。
+  const response = await kuwoRequest<any>(url, 5000, 1);
   const list = Array.isArray(response?.data?.data) ? response.data.data : [];
   return {
     data: {
@@ -723,7 +721,12 @@ export const getKuwoSearchSuggestions = async (keyword: string): Promise<string[
   const normalizedKeyword = keyword.trim();
   if (!normalizedKeyword) return [];
 
-  const { data } = await searchKuwoSongs({ keywords: normalizedKeyword, limit: 10, offset: 0 });
+  // 联想只取十条名称，不能沿用完整搜索每次 15 秒、最多三次的等待预算。
+  const url = `http://search.kuwo.cn/r.s?client=kt&all=${encodeURIComponent(normalizedKeyword)}&pn=0&rn=10&ft=music&encoding=utf8&rformat=json&mobi=1`;
+  const response = await kuwoRequest<any>(url, 2000, 1);
+  const data = {
+    result: { songs: Array.isArray(response?.abslist) ? response.abslist.map(mapKuwoSong) : [] }
+  };
   const songs = (data.result.songs || []) as SongResult[];
   const names: string[] = songs
     .map((song) => song.name)

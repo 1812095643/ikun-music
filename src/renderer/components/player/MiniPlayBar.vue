@@ -1,152 +1,232 @@
 <template>
-  <div
-    class="mini-play-bar"
-    :class="{ 'pure-mode': pureModeEnabled, 'mini-mode': settingsStore.isMiniMode }"
-  >
-    <div class="mini-bar-container">
-      <!-- 专辑封面 -->
-      <div class="album-cover" @click="setMusicFull">
-        <n-image
-          :src="getImgUrl(playMusic?.picUrl, '100y100')"
-          fallback-src="/placeholder.png"
-          class="cover-img"
-          preview-disabled
-        />
+  <div class="mini-play-bar" :class="{ 'mini-mode': settingsStore.isMiniMode }">
+    <div class="mini-main">
+      <div class="mini-heading" @mousedown="startWindowDrag">
+        <span class="mini-state">{{
+          playMusic?.playLoading ? '正在准备音乐' : play ? '正在播放' : '随时继续听'
+        }}</span>
+        <button
+          class="mini-restore"
+          type="button"
+          title="还原主窗口"
+          aria-label="还原主窗口"
+          @click="handleClose"
+        >
+          <i class="ri-fullscreen-line" aria-hidden="true" />
+        </button>
       </div>
-
-      <!-- 歌曲信息 -->
-      <div class="song-info" @click="setMusicFull">
-        <div class="song-title" v-html="playMusic?.name || '未播放'"></div>
-        <div class="song-artist">
-          <span
-            v-for="(artists, artistsindex) in artistList"
-            :key="artistsindex"
-            class="cursor-pointer hover:text-primary"
-            @click.stop="handleArtistClick(artists.id)"
+      <div class="mini-track">
+        <button
+          class="album-cover"
+          type="button"
+          title="打开完整播放器"
+          aria-label="打开完整播放器"
+          @click="setMusicFull"
+        >
+          <img
+            v-if="playMusic?.picUrl"
+            :src="getImgUrl(playMusic.picUrl, '100y100')"
+            alt="当前歌曲封面"
+            decoding="async"
+          />
+          <i v-else class="ri-music-2-line" aria-hidden="true" />
+        </button>
+        <div class="song-info">
+          <button
+            type="button"
+            class="song-title"
+            :title="playMusic?.name || '选择一首喜欢的歌'"
+            @click="setMusicFull"
           >
-            {{ artists.name }}{{ artistsindex < artistList.length - 1 ? ' / ' : '' }}
-          </span>
+            {{ playMusic?.name || '选择一首喜欢的歌' }}
+          </button>
+          <div class="song-artist" :title="artistList.map((artist) => artist.name).join(' / ')">
+            <span
+              v-for="(artist, index) in artistList"
+              :key="index"
+              @click="handleArtistClick(artist.id)"
+              >{{ artist.name }}{{ index < artistList.length - 1 ? ' / ' : '' }}</span
+            >
+          </div>
+        </div>
+        <div class="control-buttons">
+          <button
+            class="control-button"
+            type="button"
+            aria-label="上一首"
+            title="上一首"
+            :disabled="!playMusic?.id"
+            @click="handlePrev"
+          >
+            <i class="ri-skip-back-fill" aria-hidden="true" />
+          </button>
+          <button
+            class="control-button play"
+            type="button"
+            :aria-label="play ? '暂停' : '播放'"
+            :title="play ? '暂停' : '播放'"
+            :disabled="!playMusic?.id || playMusic?.playLoading"
+            @click="playMusicEvent"
+          >
+            <i
+              :class="
+                playMusic?.playLoading
+                  ? 'ri-loader-4-line is-spinning'
+                  : play
+                    ? 'ri-pause-fill'
+                    : 'ri-play-fill'
+              "
+              aria-hidden="true"
+            />
+          </button>
+          <button
+            class="control-button"
+            type="button"
+            aria-label="下一首"
+            title="下一首"
+            :disabled="!playMusic?.id"
+            @click="handleNext"
+          >
+            <i class="ri-skip-forward-fill" aria-hidden="true" />
+          </button>
         </div>
       </div>
-
-      <!-- 控制按钮区域 -->
-      <div class="control-buttons">
-        <div class="control-button previous" @click="handlePrev">
-          <i class="iconfont icon-prev"></i>
-        </div>
-        <div class="control-button play" @click="playMusicEvent">
-          <i class="iconfont" :class="play ? 'icon-stop' : 'icon-play'"></i>
-        </div>
-        <div class="control-button next" @click="handleNext">
-          <i class="iconfont icon-next"></i>
-        </div>
-      </div>
-
-      <!-- 右侧功能按钮 -->
-      <div class="function-buttons">
+      <div class="mini-tools">
+        <button
+          class="tool-button"
+          type="button"
+          :aria-label="isFavorite ? '取消收藏' : '收藏'"
+          :title="isFavorite ? '取消收藏' : '收藏'"
+          :disabled="!playMusic?.id"
+          @click="toggleFavorite"
+        >
+          <i
+            :class="isFavorite ? 'ri-heart-fill like-active' : 'ri-heart-line'"
+            aria-hidden="true"
+          />
+        </button>
         <song-download-button
           v-if="playMusic?.id"
           :item="playMusic"
           size="small"
-          button-class="function-button"
+          button-class="tool-button"
           title="下载歌曲"
         />
-
-        <div class="function-button">
-          <i
-            class="iconfont icon-likefill"
-            :class="{ 'like-active': isFavorite }"
-            @click="toggleFavorite"
-          ></i>
-        </div>
-
-        <n-popover
-          v-if="component"
-          trigger="hover"
-          :z-index="99999999"
-          placement="top"
-          :show-arrow="false"
+        <button
+          class="tool-button"
+          type="button"
+          title="桌面歌词"
+          aria-label="桌面歌词"
+          @click="toggleDesktopLyric"
         >
-          <template #trigger>
-            <div class="function-button" @click="mute" @wheel.prevent="handleVolumeWheel">
-              <i class="iconfont" :class="getVolumeIcon"></i>
-            </div>
-          </template>
-          <div class="volume-slider-wrapper transparent-popover">
-            <n-slider
-              v-model:value="volumeSlider"
-              :step="0.01"
-              :tooltip="false"
-              vertical
-              @wheel.prevent="handleVolumeWheel"
-            ></n-slider>
-          </div>
-        </n-popover>
-
-        <!-- 播放列表按钮 -->
-        <div v-if="!component" class="function-button" @click="togglePlaylist">
-          <i class="iconfont icon-list"></i>
+          <i class="ri-text" aria-hidden="true" />
+        </button>
+        <div class="mini-volume" @wheel.prevent="handleVolumeWheel">
+          <button
+            class="tool-button"
+            type="button"
+            title="静音 / 恢复音量"
+            aria-label="静音或恢复音量"
+            @click="mute"
+          >
+            <i :class="getVolumeIcon" aria-hidden="true" />
+          </button>
+          <input
+            v-model.number="volumeSlider"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            aria-label="音量"
+          />
         </div>
+        <button
+          class="tool-button queue-button"
+          type="button"
+          :aria-expanded="isPlaylistOpen"
+          aria-label="播放列表"
+          title="播放列表"
+          @click="togglePlaylist"
+        >
+          <i class="ri-play-list-2-line" aria-hidden="true" /><span>{{ playList.length }}</span>
+        </button>
       </div>
-
-      <!-- 关闭按钮 -->
-      <div v-if="!component" class="close-button" @click="handleClose">
-        <i class="iconfont ri-close-line"></i>
+      <div class="mini-timeline">
+        <span>{{ secondToMinute(nowTime) }}</span>
+        <input
+          type="range"
+          min="0"
+          :max="allTime || 1"
+          step="0.1"
+          :value="nowTime"
+          :disabled="allTime <= 0"
+          aria-label="播放进度"
+          @change="seekFromRange"
+        />
+        <span>{{ secondToMinute(allTime) }}</span>
       </div>
     </div>
-
-    <!-- 进度条 -->
-    <div
-      class="progress-bar"
-      @click="handleProgressClick"
-      @mousemove="handleProgressHover"
-      @mouseleave="handleProgressLeave"
-    >
-      <div class="progress-track"></div>
-      <div class="progress-fill" :style="{ width: `${progressPercent}%` }"></div>
-    </div>
-
-    <!-- 播放列表 - 单独放在外层，不再使用 popover -->
-    <div
-      v-if="!component"
-      v-show="isPlaylistOpen"
-      class="playlist-container"
-      :class="{ 'mini-mode-list': settingsStore.isMiniMode }"
-    >
+    <div v-if="!component && isPlaylistOpen" class="playlist-container">
+      <div class="playlist-heading">
+        <span>播放列表 · {{ playList.length }} 首</span
+        ><button type="button" class="tool-button" aria-label="收起播放列表" @click="closePlaylist">
+          <i class="ri-arrow-up-s-line" aria-hidden="true" />
+        </button>
+      </div>
       <n-scrollbar ref="palyListRef" class="playlist-scrollbar">
-        <div class="playlist-items">
-          <div v-for="item in playList" :key="item.id" class="music-play-list-content">
-            <div class="flex items-center justify-between">
-              <song-item :key="item.id" class="flex-1" :item="item" mini></song-item>
-              <div class="delete-btn" @click.stop="handleDeleteSong(item)">
-                <i
-                  class="iconfont ri-delete-bin-line text-neutral-400 hover:text-primary dark:hover:text-primary transition-colors"
-                ></i>
-              </div>
-            </div>
-          </div>
+        <div v-if="!playList.length" class="mini-empty">从首页或本地音乐选一首歌，开始播放</div>
+        <div
+          v-for="item in playList"
+          :key="`${item.source}-${item.id}`"
+          class="music-play-list-content"
+        >
+          <song-item class="mini-song" :item="item" mini />
+          <button
+            class="tool-button"
+            type="button"
+            :aria-label="`移除 ${item.name}`"
+            title="从播放列表移除"
+            @click.stop="handleDeleteSong(item)"
+          >
+            <i class="ri-close-line" aria-hidden="true" />
+          </button>
         </div>
       </n-scrollbar>
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
 import { computed, onUnmounted, provide, ref, useTemplateRef, watch } from 'vue';
 
 import SongDownloadButton from '@/components/common/SongDownloadButton.vue';
 import SongItem from '@/components/common/SongItem.vue';
-import { allTime, artistList, nowTime, playMusic } from '@/hooks/MusicHook';
+import { allTime, artistList, nowTime, openLyric, playMusic } from '@/hooks/MusicHook';
 import { useArtist } from '@/hooks/useArtist';
 import { audioService } from '@/services/audioService';
 import { usePlayerStore, useSettingsStore } from '@/store';
 import type { SongResult } from '@/types/music';
-import { getImgUrl } from '@/utils';
+import { getImgUrl, secondToMinute } from '@/utils';
 import { restoreMainWindowFromMiniMode } from '@/utils/miniModeNavigation';
 
 const playerStore = usePlayerStore();
 const settingsStore = useSettingsStore();
 const { navigateToArtist } = useArtist();
+
+/** 从标题空白处调用 Tauri 原生拖动，按钮仍只响应点击。 */
+const startWindowDrag = (event: MouseEvent) => {
+  if (event.button === 0 && !(event.target as HTMLElement).closest('button'))
+    window.api.dragStart();
+};
+const toggleDesktopLyric = () => openLyric();
+const seekFromRange = (event: Event) => {
+  if (allTime.value <= 0) return;
+  const time = Math.max(
+    0,
+    Math.min(allTime.value, Number((event.target as HTMLInputElement).value))
+  );
+  audioService.seek(time);
+  nowTime.value = time;
+};
 
 withDefaults(
   defineProps<{
@@ -316,35 +396,6 @@ const handleArtistClick = (id: number) => {
   navigateToArtist(id);
 };
 
-// 进度条相关
-const handleProgressClick = (e: MouseEvent) => {
-  if (allTime.value <= 0) return;
-  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-  const percent = (e.clientX - rect.left) / rect.width;
-  audioService.seek(allTime.value * percent);
-  nowTime.value = allTime.value * percent;
-};
-
-const hoverTime = ref(0);
-const isHovering = ref(false);
-
-const handleProgressHover = (e: MouseEvent) => {
-  if (allTime.value <= 0) return;
-  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-  const percent = (e.clientX - rect.left) / rect.width;
-  hoverTime.value = allTime.value * percent;
-  isHovering.value = true;
-};
-
-const handleProgressLeave = () => {
-  isHovering.value = false;
-};
-
-const progressPercent = computed(() => {
-  if (allTime.value <= 0) return 0;
-  return Math.min((nowTime.value / allTime.value) * 100, 100);
-});
-
 // 播放控制
 const handlePrev = () => playerStore.prevPlay();
 const handleNext = () => playerStore.nextPlay();
@@ -388,344 +439,218 @@ onUnmounted(() => {
   closePlaylist();
 });
 </script>
-
-<style lang="scss" scoped>
+<style scoped lang="scss">
 .mini-play-bar {
-  @apply w-full flex flex-col bg-light-200 dark:bg-dark-200;
-  height: 64px;
-  border-radius: 8px;
-  position: relative;
-
-  &.mini-mode {
-    -webkit-app-region: drag;
-    height: 100vh;
-    min-height: 64px;
-    border-radius: 0;
-    overflow: hidden;
-
-    .mini-bar-container {
-      @apply px-2;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .song-info {
-      -webkit-app-region: no-drag;
-      flex: 1 1 auto;
-      min-width: 0;
-      width: auto;
-      margin-right: 2px;
-
-      .song-title {
-        @apply text-xs font-medium;
-      }
-
-      .song-artist {
-        @apply text-xs opacity-50;
-      }
-    }
-
-    .function-buttons {
-      -webkit-app-region: no-drag;
-      flex-shrink: 0;
-      @apply space-x-1 ml-1;
-
-      .function-button {
-        width: 28px;
-        height: 28px;
-
-        .iconfont {
-          @apply text-base;
-        }
-      }
-    }
-
-    .control-buttons {
-      @apply mx-1 space-x-0.5;
-      -webkit-app-region: no-drag;
-      flex-shrink: 0;
-      .control-button {
-        width: 28px;
-        height: 28px;
-
-        .iconfont {
-          @apply text-base;
-        }
-      }
-    }
-
-    .close-button {
-      -webkit-app-region: no-drag;
-      flex-shrink: 0;
-      width: 28px;
-      height: 28px;
-    }
-
-    .album-cover {
-      @apply flex-shrink-0 mr-2;
-      width: 36px;
-      height: 36px;
-      -webkit-app-region: no-drag;
-    }
-
-    .progress-bar {
-      height: 3px !important;
-      transform: scaleY(0.67);
-
-      &:hover {
-        transform: scaleY(1);
-      }
-    }
-  }
+  height: 100%;
+  min-height: 164px;
+  overflow: hidden;
+  background: var(--qqm-surface, #f8faf9);
+  color: var(--qqm-text, #202724);
 }
-
-.mini-bar-container {
-  @apply flex items-center px-3 h-full relative;
+.mini-main {
+  height: 164px;
+  padding: 8px 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.mini-heading {
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: grab;
+}
+.mini-state {
+  color: var(--qqm-muted);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+.mini-restore {
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  color: var(--qqm-muted);
+}
+.mini-track {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+}
+.album-cover {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--qqm-surface-muted);
+  color: var(--qqm-muted);
+  font-size: 24px;
+}
+.album-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.song-info {
+  flex: 1;
   min-width: 0;
 }
-
-.album-cover {
-  @apply flex-shrink-0 mr-3 cursor-pointer;
-  width: 40px;
-  height: 40px;
-
-  .cover-img {
-    @apply w-full h-full rounded-md object-cover pointer-events-none;
-  }
+.song-title {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: inherit;
 }
-
-.song-info {
-  @apply flex flex-col justify-center min-w-0 flex-shrink mr-4 cursor-pointer;
-  width: 200px;
-
-  .song-title {
-    @apply text-sm font-medium truncate;
-    color: var(--text-color-1, #000);
-  }
-
-  .song-artist {
-    @apply text-xs truncate mt-0.5 opacity-60;
-    color: var(--text-color-2, #666);
-  }
+.song-artist {
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--qqm-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-
 .control-buttons {
-  @apply flex items-center space-x-1 mx-4;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
 }
-
 .control-button {
-  @apply flex items-center justify-center rounded-lg transition-colors duration-200 border-0 bg-transparent cursor-pointer text-neutral-600 hover:text-primary dark:text-neutral-400 dark:hover:text-primary;
-  width: 32px;
-  height: 32px;
-
-  &:hover {
-    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
-  }
-
-  &.play {
-    background-color: var(--qqm-primary, #22c55e);
-    color: white;
-    &:hover {
-      background-color: var(--qqm-primary, #22c55e);
-    }
-  }
-
-  .iconfont {
-    @apply text-lg;
-  }
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  color: inherit;
+  font-size: 19px;
+  border: 0 !important;
+  background: transparent !important;
+  border-radius: 50% !important;
 }
-
-.function-buttons {
-  @apply flex items-center ml-auto space-x-2;
+.control-button.play {
+  width: 36px;
+  height: 36px;
+  color: #f8fffb !important;
+  background: var(--qqm-primary-strong, #159a61) !important;
+  font-size: 22px;
 }
-
-.function-button {
-  @apply flex items-center justify-center rounded-lg transition-colors duration-200 border-0 bg-transparent cursor-pointer text-neutral-600 hover:text-primary dark:text-neutral-400 dark:hover:text-primary;
-  width: 32px;
-  height: 32px;
-
-  &:hover {
-    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 6%, var(--qqm-surface));
-    color: var(--qqm-primary, #22c55e);
-  }
-
-  .iconfont {
-    @apply text-lg;
-  }
+.mini-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
 }
-
-:deep(.function-button.song-download-button) {
-  width: 32px;
-  height: 32px;
-  border: 0;
-  border-radius: 0.5rem;
-  color: rgb(82 82 82);
-  background: transparent;
+.tool-button {
+  height: 26px;
+  min-width: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: var(--qqm-muted);
+  font-size: 15px;
+  border-radius: 6px;
 }
-
-.close-button {
-  @apply flex items-center justify-center rounded-lg transition-colors duration-200 border-0 bg-transparent cursor-pointer ml-2;
-  width: 32px;
-  height: 32px;
-  color: var(--text-color-2, #666);
-
-  &:hover {
-    background: var(--qqm-surface);
-    color: var(--qqm-primary, #22c55e);
-  }
+.tool-button:hover,
+.mini-restore:hover {
+  color: var(--qqm-primary-strong);
+  background: var(--qqm-primary-soft);
 }
-
-.progress-bar {
-  @apply relative w-full cursor-pointer;
-  height: 4px;
-  transform: scaleY(0.5);
-  transform-origin: bottom center;
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: scaleY(1);
-  }
-}
-
-.progress-track {
-  @apply absolute inset-x-0 bottom-0 transition-colors duration-200;
-  height: 4px;
-  background: rgba(0, 0, 0, 0.1);
-
-  .dark & {
-    background: rgba(255, 255, 255, 0.15);
-  }
-}
-
-.progress-fill {
-  @apply absolute bottom-0 left-0;
-  height: 4px;
-  background: var(--primary-color, #18a058);
-  transition: background-color 0.2s ease;
-}
-
 .like-active {
-  @apply text-primary hover:text-primary !important;
+  color: var(--qqm-primary-strong);
 }
-
-.volume-slider-wrapper {
-  @apply p-2 py-4 rounded-lg;
-  background: color-mix(in srgb, var(--qqm-surface, #fff) 96%, transparent);
-  border: 1px solid var(--qqm-border, rgba(20, 24, 31, 0.08));
-  height: 160px;
-
-  :deep(.n-slider) {
-    --n-rail-height: 4px;
-    --n-rail-color: theme('colors.gray.200');
-    --n-rail-color-dark: theme('colors.gray.700');
-    --n-fill-color: theme('colors.green.500');
-    --n-handle-size: 12px;
-    --n-handle-color: theme('colors.green.500');
-
-    &.n-slider--vertical {
-      height: 100%;
-
-      .n-slider-rail {
-        width: 4px;
-      }
-
-      &:hover {
-        .n-slider-rail {
-          width: 6px;
-        }
-
-        .n-slider-handle {
-          width: 14px;
-          height: 14px;
-        }
-      }
-    }
-
-    .n-slider-rail {
-      @apply overflow-hidden transition-colors duration-200;
-      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, var(--qqm-border)) !important;
-    }
-
-    .n-slider-handle {
-      @apply transition-colors duration-200;
-      opacity: 0;
-    }
-
-    &:hover {
-      .n-slider-handle {
-        opacity: 1;
-      }
-    }
-  }
+.mini-volume {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: auto;
 }
-
-// 播放列表样式
+.mini-volume input {
+  width: 64px;
+}
+.queue-button {
+  font-size: 12px;
+  margin-left: 6px;
+}
+.mini-timeline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--qqm-muted);
+}
+.mini-timeline input {
+  flex: 1;
+  min-width: 0;
+}
+input[type='range'] {
+  height: 16px;
+  accent-color: var(--qqm-primary-strong);
+  cursor: pointer;
+}
+button {
+  cursor: pointer;
+}
+button:disabled,
+input:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--qqm-primary-strong);
+  outline-offset: 2px;
+}
 .playlist-container {
-  @apply fixed left-0 right-0 overflow-hidden;
-  border: 1px solid var(--qqm-border, rgba(15, 23, 42, 0.08));
-  background: color-mix(in srgb, var(--qqm-surface, #fff) 92%, transparent);
-  backdrop-filter: blur(14px) saturate(1.08);
-  top: 64px;
-  height: 330px;
-  max-height: 330px;
-
-  &.mini-mode-list {
-    width: 100vw;
-    top: 64px;
-    height: calc(100vh - 64px);
-    max-height: calc(100vh - 64px);
-    @apply bg-opacity-90 dark:bg-opacity-90;
-  }
+  height: calc(100vh - 164px);
+  background: var(--qqm-surface);
+  border-top: 1px solid var(--qqm-border);
 }
-
-// 播放列表内容样式
-.music-play-list-content {
-  @apply px-2 py-1;
-
-  .delete-btn {
-    @apply p-2 rounded-lg transition-colors duration-200 cursor-pointer;
-    &:hover {
-      background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, transparent);
-    }
-
-    .iconfont {
-      @apply text-lg;
-    }
-  }
+.playlist-heading {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 600;
 }
-
-// 过渡动画
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.18s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
 .playlist-scrollbar {
-  height: 100%;
+  height: calc(100% - 38px);
 }
-
-.playlist-items {
-  padding: 4px 0;
+.music-play-list-content {
+  display: flex;
+  align-items: center;
+  padding: 4px 10px;
 }
-
-.dark {
-  .song-info {
-    .song-title {
-      color: var(--text-color-1, #fff);
-    }
-
-    .song-artist {
-      color: var(--text-color-2, #fff);
-    }
+.mini-song {
+  flex: 1;
+  min-width: 0;
+}
+.mini-empty {
+  padding: 26px 14px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--qqm-muted);
+}
+.is-spinning {
+  animation: mini-spin 1s linear infinite;
+}
+@keyframes mini-spin {
+  to {
+    transform: rotate(360deg);
   }
 }
-
-:deep(.n-popover) {
-  background-color: transparent !important;
+@media (prefers-reduced-motion: reduce) {
+  .is-spinning {
+    animation: none;
+  }
 }
 </style>

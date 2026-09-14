@@ -14,6 +14,7 @@ const getTodayDateString = (): string => {
 export const useRecommendStore = defineStore('recommend', () => {
   const dailyRecommendSongs = ref<SongResult[]>([]);
   const lastFetchDate = ref<string>('');
+  let pendingRequest: Promise<void> | null = null;
 
   // 检查数据是否过期（跨天）
   const isDataStale = (): boolean => {
@@ -23,7 +24,7 @@ export const useRecommendStore = defineStore('recommend', () => {
     return lastFetchDate.value !== getTodayDateString();
   };
 
-  const fetchDailyRecommendSongs = async () => {
+  const loadDailyRecommendSongs = async () => {
     try {
       const { data } = await getDayRecommend();
       const recommendData = data.data as unknown as IDayRecommend;
@@ -39,6 +40,17 @@ export const useRecommendStore = defineStore('recommend', () => {
       console.error('[Recommend Store] 获取每日推荐失败:', error);
       dailyRecommendSongs.value = [];
     }
+  };
+
+  /** 合并 mounted/activated 的日推请求，返回同一完成结果，结束后允许主动刷新。 */
+  const fetchDailyRecommendSongs = () => {
+    // KeepAlive 首次挂载也会触发 activated；旧逻辑在响应前判断“过期”会并发请求两次。
+    if (!pendingRequest) {
+      pendingRequest = loadDailyRecommendSongs().finally(() => {
+        pendingRequest = null;
+      });
+    }
+    return pendingRequest;
   };
 
   // 如果数据过期则刷新

@@ -163,7 +163,12 @@
       </n-tooltip>
     </div>
     <!-- 全屏播放器 -->
-    <music-full-wrapper ref="MusicFullRef" v-model="musicFullVisible" :background="background" />
+    <music-full-wrapper
+      v-if="hasOpenedMusicFull"
+      ref="MusicFullRef"
+      v-model="musicFullVisible"
+      :background="background"
+    />
   </div>
 </template>
 
@@ -171,11 +176,13 @@
 import { useThrottleFn } from '@vueuse/core';
 import { useMessage } from 'naive-ui';
 import { storeToRefs } from 'pinia';
-import { computed, ref, watch } from 'vue';
+import { computed, defineAsyncComponent, ref, shallowRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import SongDownloadButton from '@/components/common/SongDownloadButton.vue';
-import MusicFullWrapper from '@/components/lyric/MusicFullWrapper.vue';
+const MusicFullWrapper = defineAsyncComponent(
+  () => import('@/components/lyric/MusicFullWrapper.vue')
+);
 import AdvancedControlsPopover from '@/components/player/AdvancedControlsPopover.vue';
 import ReparsePopover from '@/components/player/ReparsePopover.vue';
 import {
@@ -311,6 +318,15 @@ function handlePrev() {
 }
 
 const MusicFullRef = ref<any>(null);
+const hasOpenedMusicFull = shallowRef(false);
+// 全屏歌词首次打开才挂载；之后保留实例，让关闭动画和滚动位置继续正常工作。
+watch(
+  () => playerStore.musicFull,
+  (visible) => {
+    if (visible) hasOpenedMusicFull.value = true;
+  },
+  { immediate: true }
+);
 const showSliderTooltip = ref(false);
 
 // 播放暂停按钮事件

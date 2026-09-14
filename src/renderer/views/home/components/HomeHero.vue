@@ -307,7 +307,7 @@ import { computed, onActivated, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
-import { getHotSinger, getPersonalFM, getPersonalizedPlaylist } from '@/api/home';
+import { getPersonalFM, getPersonalizedPlaylist } from '@/api/home';
 import { fmTrash } from '@/api/music';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
 import {
@@ -334,7 +334,6 @@ const fmNextSong = ref<any>(null);
 const fmLoading = ref(false);
 
 const hotPlaylists = ref<any[]>([]);
-const hotArtistsList = ref<any[]>([]);
 const dailyCoverRef = ref<HTMLImageElement | null>(null);
 const fmCoverRef = ref<HTMLImageElement | null>(null);
 const dailyCardBg = ref(
@@ -601,14 +600,6 @@ const fetchHeroData = async () => {
 
     if (isLoggedIn.value) {
       promises.push(loadFmSongs());
-    } else {
-      promises.push(
-        getHotSinger({ offset: 0, limit: 6 })
-          .then((res: any) => {
-            if (res.artists) hotArtistsList.value = res.artists;
-          })
-          .catch(() => {})
-      );
     }
 
     await Promise.all(promises);

@@ -24,6 +24,14 @@ interface PersonalizedPlaylistPayload {
   [key: string]: any;
 }
 
+const HOME_DATA_CACHE_TTL = 5 * 60 * 1000;
+const HOME_DATA_LIMIT = 30;
+
+let personalizedPlaylistCache: {
+  key: string;
+  expiresAt: number;
+  request: Promise<PersonalizedPlaylistPayload>;
+} | null = null;
 const normalizePersonalizedPlaylistResponse = (payload: PersonalizedPlaylistPayload) => {
   const result = Array.isArray(payload?.result) ? payload.result : [];
   return {
@@ -49,11 +57,10 @@ const normalizeFallbackPlaylistResponse = (payload: PersonalizedPlaylistPayload)
   });
 };
 
-// 获取热门歌手
+// 获取热门歌手，保留分页参数；首页重复请求在组件层消除。
 export const getHotSinger = (params: IHotSingerParams) => {
   return request.get<IHotSinger>('/top/artists', { params });
 };
-
 // 获取搜索推荐词
 export const getSearchKeyword = () => {
   return request.get<ISearchKeyword>('/search/default');
@@ -89,28 +96,53 @@ export const getBanners = (type: number = 0) => {
   return request.get<any>('/banner', { params: { type } });
 };
 
-// 获取推荐歌单
-export const getPersonalizedPlaylist = async (limit: number = 30) => {
-  try {
-    const kuwoResponse = await getKuwoRecommendPlaylists(limit);
-    if (Array.isArray(kuwoResponse.data?.result) && kuwoResponse.data.result.length > 0) {
-      return normalizePersonalizedPlaylistResponse(kuwoResponse.data);
-    }
-    console.warn('酷我推荐歌单返回为空，已切换到本地后端推荐歌单。');
-  } catch (error) {
-    // 根因：首页歌单之前只依赖酷我推荐歌单接口，酷我外站偶发超时或返回空数组时，
-    // 首页会直接进入空态，用户看到的就是“后端启动了但歌单区域没有内容”。酷我请求层
-    // 已经连续尝试三次；三次都不行才回退到本地后端 /personalized，既保证酷我优先，
-    // 又避免首页因为单个外部音源波动而空白。
-    console.warn('酷我推荐歌单三次尝试后仍不可用，已切换到本地后端推荐歌单。', error);
+/** 获取推荐歌单；并发首屏调用共享请求，成功结果在同一登录态内保留五分钟。 */
+export const getPersonalizedPlaylist = async (limit = 30) => {
+  const normalizedLimit = Number.isFinite(limit) ? Math.max(1, Math.floor(limit)) : 30;
+  const requestLimit = Math.max(HOME_DATA_LIMIT, normalizedLimit);
+  // 根因：Hero 和歌单区同时请求不同数量的推荐，重复占用连接；统一拉取后各自切片。
+  // 缓存还必须包含登录态和数量，避免切换账号或请求超过 30 条时复用不匹配的结果。
+  const key = JSON.stringify([requestLimit, localStorage.getItem('token') || '']);
+  if (
+    !personalizedPlaylistCache ||
+    personalizedPlaylistCache.key !== key ||
+    personalizedPlaylistCache.expiresAt <= Date.now()
+  ) {
+    const pending = (async () => {
+      try {
+        const { data } = await getKuwoRecommendPlaylists(requestLimit);
+        if (Array.isArray(data?.result) && data.result.length > 0) return data;
+      } catch (error) {
+        // 原先单个外站最多等待三轮 15 秒，改为 5 秒内回退，避免首页长期显示骨架。
+        console.warn('推荐歌单暂时未返回，正在使用备用推荐：', error);
+      }
+      const { data } = await request.get<PersonalizedPlaylistPayload>('/personalized', {
+        params: { limit: requestLimit }
+      });
+      if (!Array.isArray(data?.result) || data.result.length === 0) {
+        throw new Error('暂时没有获取到推荐歌单，请稍后重试');
+      }
+      return data;
+    })();
+    personalizedPlaylistCache = { key, expiresAt: Infinity, request: pending };
+    // 同时处理成功和失败分支，失败不缓存，也不产生未处理的 rejected Promise。
+    void pending.then(
+      () => {
+        if (personalizedPlaylistCache?.request === pending) {
+          personalizedPlaylistCache.expiresAt = Date.now() + HOME_DATA_CACHE_TTL;
+        }
+      },
+      () => {
+        if (personalizedPlaylistCache?.request === pending) personalizedPlaylistCache = null;
+      }
+    );
   }
-
-  const fallbackResponse = await request.get<PersonalizedPlaylistPayload>('/personalized', {
-    params: { limit }
+  const payload = await personalizedPlaylistCache.request;
+  return normalizeFallbackPlaylistResponse({
+    ...payload,
+    result: payload.result?.slice(0, normalizedLimit) || []
   });
-  return normalizeFallbackPlaylistResponse(fallbackResponse.data);
 };
-
 // 获取私人漫游（request 拦截器已自动添加 timestamp）
 export const getPersonalFM = () => {
   return request.get<any>('/personal_fm');

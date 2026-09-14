@@ -49,6 +49,8 @@
             <i class="iconfont icon-search search-icon-glyph" />
             <input
               ref="inputRef"
+              name="music-search"
+              aria-label="搜索歌曲、歌手或歌单"
               v-model="searchValue"
               class="search-input"
               :placeholder="cleanHotSearchKeyword"
@@ -370,11 +372,10 @@ watch(
 );
 
 const search = () => {
-  const val = searchValue.value;
-  if (!val) {
-    searchValue.value = hotSearchValue.value;
-    return;
-  }
+  const val = searchValue.value.trim() || hotSearchValue.value;
+  if (!val) return;
+  searchValue.value = val;
+  suggestionSequence++;
   const q = { keyword: val, type: searchStore.searchType };
   if (router.currentRoute.value.path === '/search-result') {
     searchStore.searchValue = val;
@@ -405,21 +406,31 @@ const showSuggestions = ref(false);
 const suggestionsLoading = ref(false);
 const highlightedIndex = ref(-1);
 
-const debouncedSuggest = useDebounceFn(async (kw: string) => {
-  if (!kw.trim()) {
+let suggestionSequence = 0;
+const debouncedSuggest = useDebounceFn(async (kw: string, sequence: number) => {
+  if (!kw.trim()) return;
+  suggestionsLoading.value = true;
+  try {
+    const result = await getSearchSuggestions(kw);
+    // 根因：较早的慢响应会覆盖新输入并重新弹出已关闭的下拉框；只接收当前输入的结果。
+    if (sequence !== suggestionSequence || searchValue.value !== kw) return;
+    suggestions.value = result;
+    showSuggestions.value = inputFocused.value && result.length > 0;
+    highlightedIndex.value = -1;
+  } finally {
+    if (sequence === suggestionSequence) suggestionsLoading.value = false;
+  }
+}, 250);
+const handleInput = (value: string) => {
+  const sequence = ++suggestionSequence;
+  if (!value.trim()) {
     suggestions.value = [];
+    suggestionsLoading.value = false;
     showSuggestions.value = false;
     return;
   }
-  suggestionsLoading.value = true;
-  suggestions.value = await getSearchSuggestions(kw);
-  suggestionsLoading.value = false;
-  showSuggestions.value = suggestions.value.length > 0;
-  highlightedIndex.value = -1;
-}, 300);
-
-const handleInput = (v: string) => debouncedSuggest(v);
-
+  void debouncedSuggest(value, sequence);
+};
 const selectSuggestion = (s: string) => {
   searchValue.value = s;
   showSuggestions.value = false;
@@ -466,7 +477,6 @@ const loadPage = async () => {
     data.profile || userStore.user || JSON.parse(localStorage.getItem('user') || '{}');
   localStorage.setItem('user', JSON.stringify(userStore.user));
 };
-loadPage();
 watchEffect(() => {
   userSetOptions.value = userStore.user
     ? USER_SET_OPTIONS
@@ -521,8 +531,10 @@ const handleAppUpdateClick = async () => {
 };
 
 onMounted(() => {
-  loadHotSearch();
-  loadPage();
+  void loadHotSearch().catch(() => {
+    hotSearchKeyword.value = t('comp.searchBar.searchPlaceholder');
+  });
+  void loadPage().catch((error) => console.warn('用户信息暂未刷新：', error));
   isElectron && initZoomFactor();
 });
 </script>

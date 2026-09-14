@@ -77,15 +77,26 @@ export const getImgUrl = (url: string | undefined, size: string = '') => {
   if (!url) return '';
 
   // base64 Data URL 和本地文件路径不需要添加尺寸参数
-  if (url.startsWith('data:') || url.startsWith('local://')) return url;
+  if (!size || url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('local://'))
+    return url;
 
   if (url.includes('thumbnail')) {
     // 只替换最后一个 thumbnail 参数的尺寸
     return url.replace(/thumbnail=\d+y\d+(?!.*thumbnail)/, `thumbnail=${size}`);
   }
 
-  const imgUrl = `${url}?param=${size}`;
-  return imgUrl;
+  // 根因：旧逻辑给任何图片追加 ?param，已有 query/签名的海报会变成两个问号，
+  // 酷我、YouTube 等外站也不支持网易云尺寸参数。只为已知支持该参数的 CDN 更新尺寸。
+  try {
+    const imageUrl = new URL(url);
+    if (/(^|\.)music\.126\.net$/i.test(imageUrl.hostname)) {
+      imageUrl.searchParams.set('param', size);
+      return imageUrl.toString();
+    }
+  } catch {
+    // 本地相对资源保持原地址。
+  }
+  return url;
 };
 
 export const isMobile = computed(() => {

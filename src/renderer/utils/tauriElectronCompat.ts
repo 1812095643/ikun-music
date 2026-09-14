@@ -84,6 +84,7 @@ let appWindow: ReturnType<typeof getCurrentWindow> | null = null;
 let currentWebviewWindow: ReturnType<typeof getCurrentWebviewWindow> | null = null;
 let storePromise: Promise<CompatStore> | null = null;
 let musicApiReadyPromise: Promise<number | null> | null = null;
+let musicApiCheckedAt = 0;
 let appUpdateState: AppUpdateState = createDefaultAppUpdateState(config.version);
 let appUpdateCheckPromise: Promise<AppUpdateState> | null = null;
 let storeCache: StoreData = {
@@ -135,30 +136,39 @@ const getStore = async (): Promise<CompatStore> => {
       storePromise = Promise.resolve(createBrowserStore());
       return storePromise;
     }
-    storePromise = Store.load('config.json');
-    const store = await storePromise;
-    const storedSet = await store.get<Record<string, any>>('set');
-    const storedShortcuts = await store.get<Record<string, any>>('shortcuts');
-    const storedDownloadedSongs = await store.get<Record<string, any>>('downloadedSongs');
-    const storedDownloadHistory = await store.get<any[]>('downloadHistory');
-    storeCache = {
-      set: { ...(defaultSettings as Record<string, any>), ...(storedSet || {}) },
-      shortcuts: storedShortcuts || {},
-      downloadedSongs: storedDownloadedSongs || {},
-      downloadHistory: storedDownloadHistory || []
-    };
-    await store.set('set', storeCache.set);
-    await store.set('shortcuts', storeCache.shortcuts);
-    await store.set('downloadedSongs' as any, storeCache.downloadedSongs);
-    await store.set('downloadHistory' as any, storeCache.downloadHistory);
-    await store.save();
+    storePromise = (async () => {
+      const store = await Store.load('config.json');
+      const storedSet = await store.get<Record<string, any>>('set');
+      const storedShortcuts = await store.get<Record<string, any>>('shortcuts');
+      const storedDownloadedSongs = await store.get<Record<string, any>>('downloadedSongs');
+      const storedDownloadHistory = await store.get<any[]>('downloadHistory');
+      storeCache = {
+        set: { ...(defaultSettings as Record<string, any>), ...(storedSet || {}) },
+        shortcuts: storedShortcuts || {},
+        downloadedSongs: storedDownloadedSongs || {},
+        downloadHistory: storedDownloadHistory || []
+      };
+      await store.set('set', storeCache.set);
+      await store.set('shortcuts', storeCache.shortcuts);
+      await store.set('downloadedSongs' as any, storeCache.downloadedSongs);
+      await store.set('downloadHistory' as any, storeCache.downloadHistory);
+      await store.save();
+      return store;
+    })().catch((error) => {
+      storePromise = null;
+      throw error;
+    });
   }
   return storePromise;
 };
 
 export const ensureMusicApiReady = async () => {
   if (!isTauriRuntime) return null;
-  if (musicApiReadyPromise) return musicApiReadyPromise;
+  // 成功不能永久缓存：Node 意外退出后下一次操作应能重新拉起。
+  // 启动中的调用共用 Promise，启动后最多每五秒向 Rust 核对一次子进程状态。
+  if (musicApiReadyPromise && (!musicApiCheckedAt || Date.now() - musicApiCheckedAt < 5000))
+    return musicApiReadyPromise;
+  musicApiCheckedAt = 0;
 
   musicApiReadyPromise = (async () => {
     await getStore();
@@ -172,6 +182,7 @@ export const ensureMusicApiReady = async () => {
     if (result?.port && result.port !== storeCache.set.musicApiPort) {
       await setStoreValue('set.musicApiPort', result.port);
     }
+    musicApiCheckedAt = Date.now();
     return result?.port || storeCache.set.musicApiPort || 30488;
   })().catch((error) => {
     musicApiReadyPromise = null;
@@ -202,8 +213,10 @@ const setByPath = (path: string, value: any) => {
 };
 
 const postToMusicApi = async (path: string, body: Record<string, any>) => {
-  await ensureMusicApiReady();
-  const url = new URL(`http://127.0.0.1:${storeCache.set.musicApiPort}${path}`);
+  const actualPort = await ensureMusicApiReady();
+  const url = new URL(
+    `http://127.0.0.1:${actualPort || storeCache.set.musicApiPort || 30488}${path}`
+  );
   // 根因：内置 NCM API 在全局层面对所有路由启用了 2 分钟缓存，缓存 key 只包含
   // method + originalUrl，不包含 POST body。自定义解析接口如果固定访问同一路径，
   // 搜索后播放不同歌曲时可能拿到上一首歌的解析结果，表现为按钮进入播放态但无声。
@@ -212,8 +225,10 @@ const postToMusicApi = async (path: string, body: Record<string, any>) => {
   const response = await fetch(url.toString(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(45000)
   });
+  if (!response.ok) throw new Error(`音乐服务暂时未完成请求（HTTP ${response.status}），请重试`);
   return response.json();
 };
 
@@ -1189,4 +1204,4 @@ const electron = {
 (window as any).electron = electron;
 (window as any).api = api;
 (window as any).ipcRenderer = ipcRenderer;
-void getStore();
+export const initializeDesktopSettings = () => getStore();

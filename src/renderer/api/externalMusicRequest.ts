@@ -1,5 +1,4 @@
 import { isElectron } from '@/utils';
-import { ensureMusicApiReady } from '@/utils/tauriElectronCompat';
 
 export interface ExternalMusicHttpResponse<T = any> {
   statusCode: number;
@@ -30,7 +29,7 @@ export const requestExternalMusic = async <T = any>(
   };
 
   if (isElectron && window.api?.lxMusicHttpRequest) {
-    await ensureMusicApiReady();
+    // 外站请求由桌面 HTTP 插件直接执行，无需等待本地 Node 服务。
     return (await window.api.lxMusicHttpRequest({
       url,
       requestId: buildRequestId(options.requestPrefix),
