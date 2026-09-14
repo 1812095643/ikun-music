@@ -105,16 +105,15 @@ const TRAY_ID: &str = "ikun-music-tray";
 const NORMAL_WINDOW_WIDTH: f64 = 1280.0;
 #[cfg(not(mobile))]
 const NORMAL_WINDOW_HEIGHT: f64 = 840.0;
-// 与前端 MiniPlayBar 的 64px 顶栏和 330px 播放列表高度保持一致，
-// 避免 Tauri 精简模式相比 Electron 多出空白区域，恢复时观感不一致。
+// 与前端 MiniPlayBar 两行控制区的 164px 高度保持一致；旧 340x64 会挤压歌名和工具栏。
 #[cfg(not(mobile))]
-const MINI_WINDOW_WIDTH: f64 = 340.0;
+const MINI_WINDOW_WIDTH: f64 = 420.0;
 #[cfg(not(mobile))]
-const MINI_WINDOW_HEIGHT: f64 = 64.0;
+const MINI_WINDOW_HEIGHT: f64 = 164.0;
 #[cfg(not(mobile))]
-const MINI_PLAYLIST_WINDOW_WIDTH: f64 = 340.0;
+const MINI_PLAYLIST_WINDOW_WIDTH: f64 = 420.0;
 #[cfg(not(mobile))]
-const MINI_PLAYLIST_WINDOW_HEIGHT: f64 = 400.0;
+const MINI_PLAYLIST_WINDOW_HEIGHT: f64 = 460.0;
 #[cfg(not(mobile))]
 const MINI_WINDOW_MARGIN: f64 = 20.0;
 #[cfg(not(mobile))]
