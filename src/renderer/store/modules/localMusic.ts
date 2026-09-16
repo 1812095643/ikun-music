@@ -4,7 +4,7 @@
 
 import { createDiscreteApi } from 'naive-ui';
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, onScopeDispose, ref, shallowRef } from 'vue';
 
 import useIndexedDB from '@/hooks/IndexDBHook';
 import type { LocalMusicEntry } from '@/types/localMusic';
@@ -59,11 +59,45 @@ export const useLocalMusicStore = defineStore(
     /** 已配置的文件夹路径列表 */
     const folderPaths = ref<string[]>([]);
     /** 本地音乐列表（从 IndexedDB 加载） */
-    const musicList = ref<LocalMusicEntry[]>([]);
+    const musicList = shallowRef<LocalMusicEntry[]>([]);
     /** 是否正在扫描 */
     const scanning = ref(false);
     /** 已扫描文件数（用于显示进度） */
     const scanProgress = ref(0);
+    const downloadFolder = ref('');
+    const scanPaths = computed(() => [
+      ...new Set([downloadFolder.value, ...folderPaths.value].filter(Boolean))
+    ]);
+    let initialized = false;
+    let rescanRequested = false;
+    let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    let removeLibraryListener: (() => void) | undefined;
+
+    const containsPath = (folder: string, file: string) =>
+      file
+        .replace(/\\/g, '/')
+        .toLowerCase()
+        .startsWith(`${folder.replace(/\\/g, '/').replace(/\/$/, '').toLowerCase()}/`);
+
+    function scheduleScan() {
+      clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => void scanFolders(), 400);
+    }
+
+    async function initialize() {
+      if (initialized) return;
+      initialized = true;
+      removeLibraryListener = window.desktop.on('music-library-changed', scheduleScan);
+      window.addEventListener('focus', scheduleScan);
+      await loadFromCache();
+      await scanFolders();
+    }
+
+    onScopeDispose(() => {
+      clearTimeout(refreshTimer);
+      removeLibraryListener?.();
+      window.removeEventListener('focus', scheduleScan);
+    });
 
     /** IndexedDB 实例（延迟初始化） */
     let db: Awaited<ReturnType<typeof initLocalMusicDB>> | null = null;
@@ -100,6 +134,7 @@ export const useLocalMusicStore = defineStore(
       const index = folderPaths.value.indexOf(path);
       if (index !== -1) {
         folderPaths.value.splice(index, 1);
+        scheduleScan();
       }
     }
 
@@ -108,7 +143,8 @@ export const useLocalMusicStore = defineStore(
      * 流程：IPC 扫描文件 → 增量对比 → 解析变更文件元数据 → 存入 IndexedDB → 更新列表
      */
     async function scanFolders(): Promise<void> {
-      if (scanning.value || folderPaths.value.length === 0) {
+      if (scanning.value) {
+        rescanRequested = true;
         return;
       }
 
@@ -116,6 +152,8 @@ export const useLocalMusicStore = defineStore(
       scanProgress.value = 0;
 
       try {
+        downloadFolder.value = await window.desktop.invoke('get-downloads-path');
+        const folders = [...scanPaths.value];
         const localDB = await getDB();
 
         // 加载当前缓存数据用于增量对比
@@ -126,7 +164,7 @@ export const useLocalMusicStore = defineStore(
         }
 
         // 遍历每个文件夹进行扫描
-        for (const folderPath of folderPaths.value) {
+        for (const folderPath of folders) {
           try {
             // 1. 调用 IPC 扫描文件夹，获取文件路径与修改时间
             const result = await window.desktop.scanLocalMusicWithStats(folderPath);
@@ -139,6 +177,13 @@ export const useLocalMusicStore = defineStore(
             }
 
             const { files } = result;
+            const present = new Set(files.map((file) => file.path));
+            for (const entry of cachedMap.values()) {
+              if (containsPath(folderPath, entry.filePath) && !present.has(entry.filePath)) {
+                await localDB.deleteData(LOCAL_MUSIC_STORE, entry.id);
+                cachedMap.delete(entry.filePath);
+              }
+            }
             scanProgress.value += files.length;
 
             // 2. 增量扫描：基于修改时间筛选需重新解析的文件
@@ -151,8 +196,10 @@ export const useLocalMusicStore = defineStore(
             }
 
             // 3. 仅解析新增或变更文件，避免对未变更文件重复解析元数据
-            if (parseTargets.length > 0) {
-              const metas = await window.desktop.parseLocalMusicMetadata(parseTargets);
+            for (let offset = 0; offset < parseTargets.length; offset += 40) {
+              const metas = await window.desktop.parseLocalMusicMetadata(
+                parseTargets.slice(offset, offset + 40)
+              );
               for (const meta of metas) {
                 const entry: LocalMusicEntry = {
                   ...meta,
@@ -169,12 +216,18 @@ export const useLocalMusicStore = defineStore(
         }
 
         // 5. 从 IndexedDB 重新加载完整列表
-        musicList.value = await localDB.getAllData(LOCAL_MUSIC_STORE);
+        musicList.value = [...cachedMap.values()].filter((entry) =>
+          folders.some((folder) => containsPath(folder, entry.filePath))
+        );
       } catch (error) {
         console.error('扫描本地音乐失败:', error);
         message.error('扫描本地音乐失败');
       } finally {
         scanning.value = false;
+        if (rescanRequested) {
+          rescanRequested = false;
+          scheduleScan();
+        }
       }
     }
 
@@ -242,13 +295,16 @@ export const useLocalMusicStore = defineStore(
       musicList,
       scanning,
       scanProgress,
+      downloadFolder,
+      scanPaths,
 
       // 动作
       addFolder,
       removeFolder,
       scanFolders,
       loadFromCache,
-      clearCache
+      clearCache,
+      initialize
     };
   },
   {

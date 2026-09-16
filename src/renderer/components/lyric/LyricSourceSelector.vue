@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import type { LyricCandidate } from '@/types/music';
 
@@ -8,12 +8,25 @@ const props = defineProps<{
   activeKey: string;
   loading: boolean;
   errorMessage?: string;
+  songName?: string;
+  artist?: string;
 }>();
 
 const emit = defineEmits<{
   (e: 'select', key: string): void;
-  (e: 'refresh'): void;
+  (e: 'refresh', query?: { name: string; artist: string }): void;
 }>();
+const queryName = ref('');
+const queryArtist = ref('');
+watch(
+  () => [props.songName, props.artist],
+  () => {
+    queryName.value = props.songName || '';
+    queryArtist.value = props.artist || '';
+  },
+  { immediate: true }
+);
+const search = () => emit('refresh', { name: queryName.value, artist: queryArtist.value });
 
 const skeletonRows = computed(() => Array.from({ length: 3 }, (_, index) => index));
 </script>
@@ -25,10 +38,17 @@ const skeletonRows = computed(() => Array.from({ length: 3 }, (_, index) => inde
         <div class="lyric-source-title">切换歌词</div>
         <div class="lyric-source-subtitle">按歌名和歌手从多个渠道匹配</div>
       </div>
-      <button class="lyric-source-refresh" :disabled="loading" @click="emit('refresh')">
+      <button class="lyric-source-refresh" :disabled="loading" title="重新搜索歌词" @click="search">
         <i class="ri-refresh-line" :class="{ spinning: loading }"></i>
       </button>
     </div>
+
+    <form class="lyric-search-form" @submit.prevent="search">
+      <input v-model="queryName" aria-label="歌词歌名" placeholder="歌名" />
+      <input v-model="queryArtist" aria-label="歌词歌手" placeholder="歌手" />
+      <button class="lyric-source-retry" :disabled="loading || !queryName.trim()">搜索歌词</button>
+    </form>
+    <p v-if="errorMessage" class="lyric-source-subtitle" role="status">{{ errorMessage }}</p>
 
     <div v-if="loading && candidates.length === 0" class="lyric-source-skeleton">
       <div v-for="row in skeletonRows" :key="row" class="skeleton-row">
@@ -62,12 +82,30 @@ const skeletonRows = computed(() => Array.from({ length: 3 }, (_, index) => inde
     <div v-else class="lyric-source-empty">
       <i class="ri-file-list-3-line"></i>
       <span>{{ errorMessage || '暂时没有匹配到歌词' }}</span>
-      <button class="lyric-source-retry" @click="emit('refresh')">重新搜索</button>
+      <button class="lyric-source-retry" @click="search">重新搜索</button>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
+.lyric-search-form {
+  display: grid;
+  gap: 8px;
+  margin: 4px 0 12px;
+}
+.lyric-search-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #ffffff12;
+  color: inherit;
+  border: 1px solid #ffffff24;
+}
+.lyric-search-form input:focus {
+  outline: 2px solid var(--qqm-primary);
+  outline-offset: 1px;
+}
 .lyric-source-selector {
   width: 320px;
   max-width: calc(100vw - 32px);

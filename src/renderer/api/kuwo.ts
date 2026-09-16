@@ -62,6 +62,7 @@ interface KuwoSongItem {
   ALBUMID?: string;
   albumpic?: string;
   pic?: string;
+  web_albumpic_short?: string;
   duration?: string;
   DURATION?: string;
   hasmv?: string;
@@ -87,29 +88,53 @@ interface KuwoArtistItem {
 
 const buildRequestId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
-const waitForRetry = (attempt: number) =>
-  new Promise((resolve) => setTimeout(resolve, KUWO_RETRY_BASE_DELAY * attempt));
+const waitForRetry = (attempt: number, signal?: AbortSignal) =>
+  new Promise<void>((resolve, reject) => {
+    const finish = () => {
+      signal?.removeEventListener('abort', abort);
+      resolve();
+    };
+    const timer = setTimeout(finish, KUWO_RETRY_BASE_DELAY * attempt);
+    const abort = () => {
+      clearTimeout(timer);
+      reject(new DOMException('请求已取消', 'AbortError'));
+    };
+    if (signal?.aborted) abort();
+    else signal?.addEventListener('abort', abort, { once: true });
+  });
 
-const requestKuwoOnce = async <T = any>(url: string, timeout = 15000): Promise<T> => {
+const requestKuwoOnce = async <T = any>(
+  url: string,
+  timeout = 15000,
+  signal?: AbortSignal
+): Promise<T> => {
+  signal?.throwIfAborted();
   if (isDesktopRuntime && window.desktop?.lxMusicHttpRequest) {
-    const response = (await window.desktop.lxMusicHttpRequest({
-      url,
-      requestId: buildRequestId(),
-      options: {
-        method: 'GET',
-        timeout,
-        headers: {
-          Accept: 'application/json,text/plain,*/*',
-          Referer: 'http://www.kuwo.cn/',
-          'User-Agent': KUWO_USER_AGENT
+    const requestId = buildRequestId();
+    const abort = () => window.desktop.lxMusicHttpCancel(requestId);
+    signal?.addEventListener('abort', abort, { once: true });
+    try {
+      const response = (await window.desktop.lxMusicHttpRequest({
+        url,
+        requestId,
+        options: {
+          method: 'GET',
+          timeout,
+          headers: {
+            Accept: 'application/json,text/plain,*/*',
+            Referer: 'http://www.kuwo.cn/',
+            'User-Agent': KUWO_USER_AGENT
+          }
         }
-      }
-    })) as KuwoHttpResponse<T>;
+      })) as KuwoHttpResponse<T>;
 
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw new Error(`酷我接口请求失败：HTTP ${response.statusCode}`);
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw new Error(`酷我接口请求失败：HTTP ${response.statusCode}`);
+      }
+      return response.body;
+    } finally {
+      signal?.removeEventListener('abort', abort);
     }
-    return response.body;
   }
 
   const response = await fetch(url, {
@@ -118,7 +143,9 @@ const requestKuwoOnce = async <T = any>(url: string, timeout = 15000): Promise<T
       Referer: 'http://www.kuwo.cn/',
       'User-Agent': KUWO_USER_AGENT
     },
-    signal: AbortSignal.timeout(timeout)
+    signal: signal
+      ? AbortSignal.any([signal, AbortSignal.timeout(timeout)])
+      : AbortSignal.timeout(timeout)
   });
   if (!response.ok) throw new Error(`酷我接口请求失败：HTTP ${response.status}`);
   return (await response.json()) as T;
@@ -175,17 +202,19 @@ const requestKuwoHead = async (url: string, timeout = 8000) => {
 const kuwoRequest = async <T = any>(
   url: string,
   timeout = 15000,
-  maxAttempts = KUWO_MAX_ATTEMPTS
+  maxAttempts = KUWO_MAX_ATTEMPTS,
+  signal?: AbortSignal
 ): Promise<T> => {
   let lastError: unknown;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      return await requestKuwoOnce<T>(url, timeout);
+      return await requestKuwoOnce<T>(url, timeout, signal);
     } catch (error) {
+      signal?.throwIfAborted();
       lastError = error;
       if (attempt < maxAttempts) {
         console.warn(`酷我接口请求第 ${attempt} 次失败，准备重试。`, error);
-        await waitForRetry(attempt);
+        await waitForRetry(attempt, signal);
       }
     }
   }
@@ -217,6 +246,18 @@ const normalizeKuwoArtistImage = (item: KuwoArtistItem) => {
 
   const base = item.BASEPICPATH || 'http://img1.kuwo.cn/star/starheads/';
   return normalizeImageUrl(`${base.replace(/\/?$/, '/')}${pic.replace(/^\/+/, '')}`);
+};
+
+const normalizeKuwoAlbumImage = (song: KuwoSongItem) => {
+  const rawImage = song.albumpic || song.pic || song.web_albumpic_short;
+  if (!rawImage) return '';
+  if (/^https?:\/\//i.test(rawImage) || rawImage.startsWith('//')) {
+    return normalizeImageUrl(rawImage);
+  }
+
+  return normalizeImageUrl(
+    `http://img1.kwcdn.kuwo.cn/star/albumcover/${rawImage.replace(/^\/+/, '')}`
+  );
 };
 
 const normalizePlaybackUrl = (url?: string) => {
@@ -312,11 +353,14 @@ const splitArtists = (artistText?: string, artistId?: string) => {
 
 export const mapKuwoSong = (song: KuwoSongItem): SongResult => {
   const id = getKuwoSongId(song);
-  const name = song.name || song.NAME || song.SONGNAME || '未知歌曲';
+  // SONGNAME 包含 Live 等版本信息，NAME 往往仅保留主标题，不能丢失版本后混用歌词。
+  const name = song.name || song.SONGNAME || song.NAME || '未知歌曲';
   const artists = splitArtists(song.artist || song.ARTIST, song.artistid || song.ARTISTID);
   const albumName = song.album || song.ALBUM || '酷我音乐';
   const albumId = parseNumber(song.albumid || song.ALBUMID);
-  const picUrl = normalizeImageUrl(song.albumpic || song.pic);
+  // 搜索接口当前稳定返回 web_albumpic_short（相对路径），旧字段 albumpic/pic 只在部分接口存在。
+  // 未拼接相对路径时，前端会拿到空 picUrl，搜索列表因此完全不渲染封面。
+  const picUrl = normalizeKuwoAlbumImage(song);
   const duration = parseNumber(song.duration || song.DURATION) * 1000;
   const mvId = parseNumber(song.mvpayinfo?.vid || 0);
   const mvFlag = parseNumber(song.hasmv || song.MVFLAG || mvId);
@@ -348,7 +392,8 @@ export const mapKuwoSong = (song: KuwoSongItem): SongResult => {
 
 export const getKuwoMusicUrl = async (
   id: number | string,
-  quality?: DownloadQualityKey | string
+  quality?: DownloadQualityKey | string,
+  signal?: AbortSignal
 ) => {
   const rid = String(id).replace(/^MUSIC_/i, '');
   const qualityOption = getKuwoDownloadQuality(quality);
@@ -364,9 +409,10 @@ export const getKuwoMusicUrl = async (
       // /api/v1/www/music/playUrl，但该外站接口现场验证存在偶发 502。
       // 每轮先试文档接口；如果文档接口不可用，马上切到已验证可返回真实 mp3 的
       // anti.s 兼容接口，避免用户点歌后长时间无声。
-      const documentedResponse = await kuwoRequest<any>(documentedUrl, 5000, 1);
+      const documentedResponse = await kuwoRequest<any>(documentedUrl, 5000, 1, signal);
       musicUrl = extractKuwoPlaybackUrl(documentedResponse);
     } catch (error) {
+      signal?.throwIfAborted();
       lastError = error;
       console.warn(`酷我文档播放地址接口第 ${attempt} 次不可用，准备切换兼容接口。`, error);
     }
@@ -374,15 +420,16 @@ export const getKuwoMusicUrl = async (
     if (musicUrl) break;
 
     try {
-      const fallbackResponse = await kuwoRequest<any>(fallbackUrl, 12000, 1);
+      const fallbackResponse = await kuwoRequest<any>(fallbackUrl, 12000, 1, signal);
       musicUrl = extractKuwoPlaybackUrl(fallbackResponse);
     } catch (error) {
+      signal?.throwIfAborted();
       lastError = error;
       console.warn(`酷我兼容播放地址接口第 ${attempt} 次不可用。`, error);
     }
 
     if (musicUrl) break;
-    if (attempt < KUWO_MAX_ATTEMPTS) await waitForRetry(attempt);
+    if (attempt < KUWO_MAX_ATTEMPTS) await waitForRetry(attempt, signal);
   }
 
   if (!musicUrl) {
@@ -390,7 +437,9 @@ export const getKuwoMusicUrl = async (
     throw new Error(`酷我播放地址解析失败：${rid}`);
   }
 
-  await assertPlayableKuwoUrl(musicUrl);
+  signal?.throwIfAborted();
+  // 播放时由音频加载校验可用性，避免每次切歌额外串行等待一次 HEAD。
+  if (!signal) await assertPlayableKuwoUrl(musicUrl);
 
   return {
     data: {
@@ -632,16 +681,19 @@ export const getKuwoRankDetail = async (
   throw lastError instanceof Error ? lastError : new Error(String(lastError));
 };
 
-export const searchKuwoSongs = async (params: {
-  keywords: string;
-  limit?: number;
-  offset?: number;
-}) => {
+export const searchKuwoSongs = async (
+  params: {
+    keywords: string;
+    limit?: number;
+    offset?: number;
+  },
+  signal?: AbortSignal
+) => {
   const limit = params.limit || 30;
   const page = Math.floor((params.offset || 0) / limit);
   const keyword = encodeURIComponent(params.keywords);
   const url = `http://search.kuwo.cn/r.s?client=kt&all=${keyword}&pn=${page}&rn=${limit}&uid=0&ver=kwplayer_ar_9.2.2.0&vipver=1&show_copyright_off=1&newver=1&ft=music&cluster=0&strategy=2012&encoding=utf8&rformat=json&mobi=1`;
-  const response = await kuwoRequest<any>(url);
+  const response = await kuwoRequest<any>(url, 15000, KUWO_MAX_ATTEMPTS, signal);
   const songs = Array.isArray(response?.abslist) ? response.abslist.map(mapKuwoSong) : [];
 
   return {

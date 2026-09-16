@@ -1,4 +1,3 @@
-import { useThrottleFn } from '@vueuse/core';
 import { debounce } from 'lodash';
 import { createDiscreteApi } from 'naive-ui';
 import { defineStore, storeToRefs } from 'pinia';
@@ -6,6 +5,7 @@ import { computed, ref, shallowRef, triggerRef } from 'vue';
 
 import i18n from '@/../i18n/renderer';
 import { useSongDetail } from '@/hooks/usePlayerHooks';
+import { playbackRequestManager } from '@/services/playbackRequestManager';
 import { preloadService } from '@/services/preloadService';
 import type { SongResult } from '@/types/music';
 import { getImgUrl, isAndroidRuntime } from '@/utils';
@@ -33,7 +33,11 @@ const minifySong = (s: SongResult) => ({
   ar: s.ar?.map((a) => ({ id: a.id, name: a.name })),
   al: s.al,
   source: s.source,
-  dt: s.dt
+  dt: s.dt,
+  localFilePath: s.localFilePath,
+  onlineId: s.onlineId,
+  lyricPath: s.lyricPath,
+  playMusicUrl: s.playMusicUrl?.startsWith('local://') ? s.playMusicUrl : undefined
 });
 
 const minifySongList = (list: SongResult[] | undefined) => list?.map(minifySong) ?? [];
@@ -84,13 +88,20 @@ export const usePlaylistStore = defineStore(
     const originalPlayList = shallowRef<SongResult[]>([]);
     const playListDrawerVisible = ref(false);
 
-    // 连续失败计数器（用于防止无限循环）
-    const consecutiveFailCount = ref(0);
-    const MAX_CONSECUTIVE_FAILS = 5; // 最大连续失败次数
-    const SINGLE_TRACK_MAX_RETRIES = 3; // 单曲最大重试次数
     const YOUTUBE_RECOMMEND_APPEND_LIMIT = 18;
     const youtubeRecommendLoading = ref(false);
     const youtubeRecommendSeedCache = new Set<string>();
+    let navigationVersion = 0;
+    let navigationTimer: ReturnType<typeof setTimeout> | undefined;
+    let settleNavigation: (() => void) | undefined;
+
+    const cancelNavigation = () => {
+      navigationVersion++;
+      clearTimeout(navigationTimer);
+      navigationTimer = undefined;
+      settleNavigation?.();
+      settleNavigation = undefined;
+    };
 
     // ==================== Computed ====================
     const currentPlayList = computed(() => playList.value);
@@ -111,8 +122,10 @@ export const usePlaylistStore = defineStore(
 
       try {
         youtubeRecommendLoading.value = true;
+        const listSnapshot = playList.value;
         const { getYoutubeMusicNextSongs } = await import('@/api/youtubeMusic');
         const songs = await getYoutubeMusicNextSongs(videoId, YOUTUBE_RECOMMEND_APPEND_LIMIT);
+        if (playList.value !== listSnapshot) return false;
         const existingKeys = new Set(
           playList.value.map((song) => `${song.source || 'netease'}-${String(song.id)}`)
         );
@@ -155,6 +168,8 @@ export const usePlaylistStore = defineStore(
      */
     const fetchSongs = async (startIndex: number, endIndex: number) => {
       try {
+        const listSnapshot = playList.value;
+        const requestId = playbackRequestManager.getCurrentRequestId();
         const songs = playList.value.slice(
           Math.max(0, startIndex),
           Math.min(endIndex, playList.value.length)
@@ -165,7 +180,7 @@ export const usePlaylistStore = defineStore(
           songs.map(async (song: SongResult) => {
             try {
               if (!song.playMusicUrl || (song.source === 'netease' && !song.backgroundColor)) {
-                return await getSongDetail(song);
+                return await getSongDetail({ ...song }, requestId || undefined);
               }
               return song;
             } catch (error) {
@@ -176,9 +191,18 @@ export const usePlaylistStore = defineStore(
         );
 
         const nextSong = detailedSongs[0];
+        if (
+          playList.value !== listSnapshot ||
+          requestId !== playbackRequestManager.getCurrentRequestId()
+        )
+          return;
 
         detailedSongs.forEach((song, index) => {
-          if (song && startIndex + index < playList.value.length) {
+          if (
+            song &&
+            startIndex + index < playList.value.length &&
+            playList.value[startIndex + index]?.id === song.id
+          ) {
             playList.value[startIndex + index] = song;
           }
         });
@@ -297,6 +321,7 @@ export const usePlaylistStore = defineStore(
       keepIndex: boolean = false,
       fromIntelligenceMode: boolean = false
     ) => {
+      cancelNavigation();
       // 如果不是从心动模式调用，清除心动模式状态并切换播放模式
       if (!fromIntelligenceMode) {
         const intelligenceStore = useIntelligenceModeStore();
@@ -399,25 +424,29 @@ export const usePlaylistStore = defineStore(
       const playerCore = usePlayerCoreStore();
       const { playMusic } = storeToRefs(playerCore);
 
-      // 如果删除的是当前播放的歌曲，先切换到下一首
-      if (id === playMusic.value.id) {
-        nextPlay();
-      }
+      const removedCurrent = id === playMusic.value.id;
 
       const newPlayList = [...playList.value];
       newPlayList.splice(index, 1);
       setPlayList(newPlayList);
+      if (removedCurrent) {
+        const nextSong = newPlayList[Math.min(index, newPlayList.length - 1)];
+        if (nextSong) void setPlay(nextSong);
+        else void clearPlayAll();
+      }
     };
 
     /**
      * 清空播放列表
      */
     const clearPlayAll = async () => {
+      cancelNavigation();
+      playbackRequestManager.cancelAllRequests();
       const { audioService } = await import('@/services/audioService');
       const playerCore = usePlayerCoreStore();
 
       audioService.pause();
-      setTimeout(() => {
+      {
         playerCore.playMusic = {} as SongResult;
         playerCore.playMusicUrl = '';
         playList.value = [];
@@ -427,7 +456,7 @@ export const usePlaylistStore = defineStore(
         localStorage.removeItem('currentPlayMusic');
         localStorage.removeItem('currentPlayMusicUrl');
         // playlist 状态由 pinia-plugin-persistedstate 自动管理
-      }, 500);
+      }
     };
 
     /**
@@ -466,199 +495,61 @@ export const usePlaylistStore = defineStore(
       }
     };
 
-    /**
-     * 下一首
-     * @param singleTrackRetryCount 单曲重试次数（同一首歌的重试）
-     */
-    const _nextPlay = async (singleTrackRetryCount: number = 0) => {
-      try {
-        if (playList.value.length === 0) {
-          return;
-        }
-
-        const playerCore = usePlayerCoreStore();
-        const sleepTimerStore = useSleepTimerStore();
-
-        // 检查是否超过最大连续失败次数
-        if (consecutiveFailCount.value >= MAX_CONSECUTIVE_FAILS) {
-          console.error(`[nextPlay] 连续${MAX_CONSECUTIVE_FAILS}首歌曲播放失败，停止播放`);
-          getMessage().warning(i18n.global.t('player.consecutiveFailsError'));
-          consecutiveFailCount.value = 0; // 重置计数器
-          playerCore.setIsPlay(false);
-          return;
-        }
-
-        // 顺序播放模式：播放到最后一首后停止；YouTube/Piped 队列先尝试按文档 next 接口续上推荐。
-        if (playMode.value === 0 && playListIndex.value >= playList.value.length - 1) {
-          const appended = await appendYoutubeRecommendations(playList.value[playListIndex.value]);
-          if (appended) {
-            return _nextPlay(singleTrackRetryCount);
-          }
-
-          if (sleepTimerStore.sleepTimer.type === 'end') {
-            sleepTimerStore.stopPlayback();
-          }
-          console.log('[nextPlay] 顺序播放模式：已播放到最后一首，停止播放');
-          playerCore.setIsPlay(false);
-          const { audioService } = await import('@/services/audioService');
-          audioService.pause();
-          return;
-        }
-
-        const currentIndex = playListIndex.value;
-        const nowPlayListIndex = (playListIndex.value + 1) % playList.value.length;
-        const nextSong = { ...playList.value[nowPlayListIndex] };
-
-        // 同一首歌重试时强制刷新在线 URL，避免卡在失效链接上
-        if (singleTrackRetryCount > 0 && !nextSong.playMusicUrl?.startsWith('local://')) {
-          nextSong.playMusicUrl = undefined;
-          nextSong.expiredAt = undefined;
-        }
-
-        console.log(
-          `[nextPlay] 尝试播放: ${nextSong.name}, 索引: ${currentIndex} -> ${nowPlayListIndex}, 单曲重试: ${singleTrackRetryCount}/${SINGLE_TRACK_MAX_RETRIES}, 连续失败: ${consecutiveFailCount.value}/${MAX_CONSECUTIVE_FAILS}`
-        );
-        console.log(
-          '[nextPlay] Current mode:',
-          playMode.value,
-          'Playlist length:',
-          playList.value.length
-        );
-
-        // 先尝试播放歌曲
-        const success = await playerCore.handlePlayMusic(nextSong, true);
-
-        if (success) {
-          // 播放成功，重置所有计数器并更新索引
-          consecutiveFailCount.value = 0;
-          playListIndex.value = nowPlayListIndex;
-          console.log(`[nextPlay] 播放成功，索引已更新为: ${nowPlayListIndex}`);
-          console.log(
-            '[nextPlay] New current song in list:',
-            playList.value[playListIndex.value]?.name
-          );
-          void ensureYoutubeRecommendationsNearEnd(nowPlayListIndex);
-          sleepTimerStore.handleSongChange();
-        } else {
-          console.error(`[nextPlay] 播放失败: ${nextSong.name}`);
-          playerCore.clearVolatilePlaybackState(nextSong);
-
-          // 单曲重试逻辑
-          if (singleTrackRetryCount < SINGLE_TRACK_MAX_RETRIES) {
-            console.log(
-              `[nextPlay] 单曲重试 ${singleTrackRetryCount + 1}/${SINGLE_TRACK_MAX_RETRIES}`
-            );
-            // 不更新索引，重试同一首歌
-            setTimeout(() => {
-              _nextPlay(singleTrackRetryCount + 1);
-            }, 1000);
-          } else {
-            // 单曲重试次数用尽，递增连续失败计数，尝试下一首
-            consecutiveFailCount.value++;
-            console.log(
-              `[nextPlay] 单曲重试用尽，连续失败计数: ${consecutiveFailCount.value}/${MAX_CONSECUTIVE_FAILS}`
-            );
-
-            if (playList.value.length > 1) {
-              // 更新索引到失败的歌曲位置，这样下次递归调用会继续往下
-              playListIndex.value = nowPlayListIndex;
-              getMessage().warning(i18n.global.t('player.parseFailedPlayNext'));
-
-              // 延迟后尝试下一首（重置单曲重试计数）
-              setTimeout(() => {
-                _nextPlay(0);
-              }, 500);
-            } else {
-              // 只有一首歌且失败
-              getMessage().error(i18n.global.t('player.playFailed'));
-              playerCore.setIsPlay(false);
-            }
-          }
-        }
-      } catch (error) {
-        console.error('切换下一首出错:', error);
-      }
-    };
-
-    const nextPlay = useThrottleFn(_nextPlay, 500);
-
-    /**
-     * 上一首
-     */
-    const _prevPlay = async () => {
-      try {
-        if (playList.value.length === 0) {
-          return;
-        }
-
-        const playerCore = usePlayerCoreStore();
-        const currentIndex = playListIndex.value;
-        const nowPlayListIndex =
-          (playListIndex.value - 1 + playList.value.length) % playList.value.length;
-
-        const prevSong = { ...playList.value[nowPlayListIndex] };
-
-        console.log(
-          `[prevPlay] 尝试播放上一首: ${prevSong.name}, 索引: ${currentIndex} -> ${nowPlayListIndex}`
-        );
-
-        let success = false;
-        let retryCount = 0;
-        const maxRetries = 2;
-
-        // 先尝试播放歌曲，成功后再更新索引
-        while (!success && retryCount < maxRetries) {
-          success = await playerCore.handlePlayMusic(prevSong);
-
-          if (!success) {
-            retryCount++;
-            console.error(`播放上一首失败，尝试 ${retryCount}/${maxRetries}`);
-            playerCore.clearVolatilePlaybackState(prevSong);
-
-            if (retryCount >= maxRetries) {
-              console.error('多次尝试播放失败，将从播放列表中移除此歌曲');
-              const newPlayList = [...playList.value];
-              newPlayList.splice(nowPlayListIndex, 1);
-
-              if (newPlayList.length > 0) {
-                const keepCurrentIndexPosition = true;
-                setPlayList(newPlayList, keepCurrentIndexPosition);
-
-                if (newPlayList.length === 1) {
-                  playListIndex.value = 0;
-                } else {
-                  const newPrevIndex =
-                    (playListIndex.value - 1 + newPlayList.length) % newPlayList.length;
-                  playListIndex.value = newPrevIndex;
+    /** 快速点击只加载最后选择的歌曲，旧请求和失败重试不能改写新目标。 */
+    const requestNavigation = (direction: 1 | -1): Promise<void> => {
+      if (!playList.value.length) return Promise.resolve();
+      const playerCore = usePlayerCoreStore();
+      const fromIndex = playListIndex.value;
+      const atEnd =
+        direction === 1 && playMode.value === 0 && fromIndex >= playList.value.length - 1;
+      if (atEnd && (navigationTimer || playerCore.playMusic.playLoading)) return Promise.resolve();
+      cancelNavigation();
+      playbackRequestManager.cancelAllRequests();
+      playerCore.userPlayIntent = true;
+      const version = navigationVersion;
+      const targetIndex = atEnd
+        ? fromIndex
+        : (fromIndex + direction + playList.value.length) % playList.value.length;
+      playListIndex.value = targetIndex;
+      const target = playList.value[targetIndex];
+      return new Promise<void>((resolve) => {
+        settleNavigation = resolve;
+        navigationTimer = setTimeout(() => {
+          navigationTimer = undefined;
+          void (async () => {
+            try {
+              if (version !== navigationVersion || !playerCore.userPlayIntent) return;
+              if (atEnd) {
+                const appended = await appendYoutubeRecommendations(target);
+                if (version !== navigationVersion) return;
+                if (appended) {
+                  void requestNavigation(1);
+                  return;
                 }
-
-                setTimeout(() => {
-                  prevPlay();
-                }, 300);
+                await playerCore.handlePause();
+                const sleepTimer = useSleepTimerStore();
+                if (sleepTimer.sleepTimer.type === 'end') sleepTimer.stopPlayback();
                 return;
-              } else {
-                console.error('播放列表为空，停止尝试');
-                break;
               }
+              const success = await playerCore.handlePlayMusic({ ...target }, true);
+              if (version !== navigationVersion) return;
+              if (success) {
+                void ensureYoutubeRecommendationsNearEnd(targetIndex);
+                useSleepTimerStore().handleSongChange();
+              }
+            } catch (error) {
+              if (version === navigationVersion) console.warn('切歌暂未完成：', error);
+            } finally {
+              if (version === navigationVersion) settleNavigation = undefined;
+              resolve();
             }
-          }
-        }
-
-        if (success) {
-          // 播放成功，更新索引
-          playListIndex.value = nowPlayListIndex;
-          console.log(`[prevPlay] 播放成功，索引已更新为: ${nowPlayListIndex}`);
-        } else {
-          console.error(`[prevPlay] 播放上一首失败，保持当前索引: ${currentIndex}`);
-          playerCore.setIsPlay(false);
-          getMessage().error(i18n.global.t('player.playFailed'));
-        }
-      } catch (error) {
-        console.error('切换上一首出错:', error);
-      }
+          })();
+        }, 100);
+      });
     };
 
-    const prevPlay = useThrottleFn(_prevPlay, 500);
+    const nextPlay = () => requestNavigation(1);
+    const prevPlay = () => requestNavigation(-1);
 
     /**
      * 设置播放列表抽屉显示状态
@@ -671,6 +562,7 @@ export const usePlaylistStore = defineStore(
      * 设置播放（兼容旧API）
      */
     const setPlay = async (song: SongResult) => {
+      cancelNavigation();
       try {
         const playerCore = usePlayerCoreStore();
 
@@ -683,10 +575,21 @@ export const usePlaylistStore = defineStore(
             song.expiredAt = undefined;
           }
         }
+        if (
+          playerCore.playMusic.id === song.id &&
+          playerCore.playMusic.source === song.source &&
+          playerCore.playMusic.playLoading &&
+          !song.isFirstPlay
+        ) {
+          await playerCore.handlePause();
+          return true;
+        }
 
         // 如果是当前正在播放的音乐，则切换播放/暂停状态
         if (
           playerCore.playMusic.id === song.id &&
+          playerCore.playMusic.source === song.source &&
+          !playerCore.playMusic.playLoading &&
           playerCore.playMusic.playMusicUrl === song.playMusicUrl &&
           !song.isFirstPlay
         ) {
@@ -742,16 +645,6 @@ export const usePlaylistStore = defineStore(
 
         // playerCore 的状态由其自己的 store 管理
 
-        if (success) {
-          playerCore.isPlay = true;
-
-          // 预加载下一首歌曲
-          if (songIndex !== -1) {
-            setTimeout(() => {
-              preloadNextSongs(playListIndex.value);
-            }, 3000);
-          }
-        }
         return success;
       } catch (error) {
         console.error('设置播放失败:', error);
@@ -797,8 +690,8 @@ export const usePlaylistStore = defineStore(
       shufflePlayList,
       restoreOriginalOrder,
       preloadNextSongs,
-      nextPlay: nextPlay as unknown as typeof _nextPlay,
-      prevPlay: prevPlay as unknown as typeof _prevPlay,
+      nextPlay,
+      prevPlay,
       setPlayListDrawerVisible,
       setPlay,
       initializePlaylist,

@@ -2,6 +2,9 @@ import { getMusicLrc } from '@/api/music';
 import { parseRawLyrics } from '@/hooks/usePlayerHooks';
 import type { ILyric, LyricCandidate, LyricCandidateResult, SongResult } from '@/types/music';
 import { isAndroidRuntime, isDesktopRuntime } from '@/utils';
+import { getLocalAudioPath } from '@/utils/audioUrl';
+import { parseLrcToILyric } from '@/utils/localMusicUtils';
+import { withPlaybackSignal } from '@/utils/playbackCancellation';
 import request from '@/utils/request';
 
 type RawLyricPayload = {
@@ -24,7 +27,7 @@ const LYRIC_SEARCH_TIMEOUT = 9000;
 const MAX_CANDIDATES_PER_CHANNEL = 4;
 
 const sourceLabelMap: Record<LyricCandidate['source'], string> = {
-  embedded: '本地内嵌',
+  embedded: '本地歌词',
   current: '当前歌曲',
   kuwo: '酷我音乐',
   kugou: '酷狗歌词',
@@ -54,6 +57,18 @@ const decodeHtmlText = (value: string) => {
   const textarea = document.createElement('textarea');
   textarea.innerHTML = value;
   return textarea.value;
+};
+
+export const decodeMaybeBase64 = (value: string) => {
+  const text = decodeHtmlText(value).trim();
+  if (!/^[A-Za-z0-9+/=\r\n]+$/.test(text) || text.length < 24) return text;
+  try {
+    const binary = atob(text.replace(/\s+/g, ''));
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    return new TextDecoder('utf-8').decode(bytes).replace(/^\uFEFF/, '');
+  } catch {
+    return text;
+  }
 };
 
 const hasValidLyric = (lyric: ILyric | null | undefined) =>
@@ -260,14 +275,18 @@ const readCachedRawLyric = async (id: number) => {
   }
 };
 
-const fetchRawLyricById = async (id: string | number): Promise<RawLyricPayload | null> => {
+const fetchRawLyricById = async (
+  id: string | number,
+  signal?: AbortSignal
+): Promise<RawLyricPayload | null> => {
   const numericId = Number(id);
   if (!Number.isFinite(numericId)) return null;
 
   const cached = await readCachedRawLyric(numericId);
   if (cached) return cached;
 
-  const { data } = await getMusicLrc(numericId);
+  signal?.throwIfAborted();
+  const { data } = await getMusicLrc(numericId, signal);
   if (isDesktopRuntime && data) {
     void window.desktop
       .invoke('cache-lyric', numericId, data)
@@ -286,23 +305,29 @@ const getLocalCandidate = (song: SongResult): LyricCandidate[] => {
       artist: getArtistText(song),
       album: song.al?.name || song.album?.name,
       duration: getDurationMs(song),
-      score: 105,
+      score: 200,
       lyric: song.lyric as ILyric
     })
   ];
 };
 
-const getCurrentSongCandidate = async (song: SongResult): Promise<LyricCandidate[]> => {
-  // 根因：酷我歌曲 id 不是网易云 id，直接拿酷我 id 调本地后端 /lyric/new
-  // 大概率返回空歌词。这里先走酷我自己的歌词接口，失败后才回退通用歌词接口，
-  // 避免播放酷我音源时歌词区域长期空白。
+const getCurrentSongCandidate = async (
+  song: SongResult,
+  signal?: AbortSignal
+): Promise<LyricCandidate[]> => {
+  const id = song.onlineId || song.id;
+  if (
+    (song.localFilePath && !song.onlineId) ||
+    String(id).startsWith('local:') ||
+    String(id).startsWith('query:')
+  )
+    return [];
   const lyric =
     song.source === 'kuwo'
-      ? (await fetchKuwoLyricById(song.id).catch((error) => {
-          console.warn('当前酷我歌曲歌词接口不可用，回退通用歌词接口。', error);
-          return null;
-        })) || buildLyricFromPayload(await fetchRawLyricById(song.id))
-      : buildLyricFromPayload(await fetchRawLyricById(song.id));
+      ? await fetchKuwoLyricById(id, signal)
+      : !song.source || song.source === 'netease'
+        ? buildLyricFromPayload(await fetchRawLyricById(id, signal))
+        : null;
   if (!hasValidLyric(lyric)) return [];
 
   return [
@@ -313,28 +338,32 @@ const getCurrentSongCandidate = async (song: SongResult): Promise<LyricCandidate
       artist: getArtistText(song),
       album: song.al?.name || song.album?.name,
       duration: getDurationMs(song),
-      score: song.source === 'kuwo' ? 68 : 96,
+      // 同平台同 ID 的歌词优先，避免现场版被同名录音室版的时间轴覆盖。
+      score: 160,
       lyric: lyric as ILyric
     })
   ];
 };
 
-const getKuwoCandidates = async (song: SongResult): Promise<LyricCandidate[]> => {
+const getKuwoCandidates = async (
+  song: SongResult,
+  signal?: AbortSignal
+): Promise<LyricCandidate[]> => {
   const keyword = [song.name, getArtistText(song)].filter(Boolean).join(' ').trim();
   if (!keyword) return [];
 
   const { searchKuwoSongs } = await import('@/api/kuwo');
-  const response = await searchKuwoSongs({ keywords: keyword, limit: 6, offset: 0 });
+  const response = await searchKuwoSongs({ keywords: keyword, limit: 6, offset: 0 }, signal);
   const songs = (response.data?.result?.songs || []) as SongResult[];
   const candidates: LyricCandidate[] = [];
 
   for (const kuwoSong of songs.slice(0, MAX_CANDIDATES_PER_CHANNEL)) {
     try {
-      const lyric =
-        (await fetchKuwoLyricById(kuwoSong.id).catch((error) => {
-          console.warn('酷我候选歌词接口不可用，回退通用歌词接口。', error);
-          return null;
-        })) || buildLyricFromPayload(await fetchRawLyricById(kuwoSong.id));
+      signal?.throwIfAborted();
+      const lyric = await fetchKuwoLyricById(kuwoSong.id, signal).catch((error) => {
+        console.warn('酷我候选歌词接口不可用，回退通用歌词接口。', error);
+        return null;
+      });
       if (!hasValidLyric(lyric)) continue;
 
       candidates.push(
@@ -368,8 +397,10 @@ const getKuwoCandidates = async (song: SongResult): Promise<LyricCandidate[]> =>
 const requestTextOrJson = async (
   url: string,
   timeout = LYRIC_SEARCH_TIMEOUT,
-  headers: Record<string, string> = {}
+  headers: Record<string, string> = {},
+  signal?: AbortSignal
 ) => {
+  signal?.throwIfAborted();
   const finalHeaders = {
     Accept: 'application/json,text/plain,*/*',
     Referer: 'https://lyrics.kugou.com/',
@@ -379,21 +410,37 @@ const requestTextOrJson = async (
   };
 
   if (isDesktopRuntime && window.desktop?.lxMusicHttpRequest) {
-    const response = await window.desktop.lxMusicHttpRequest({
-      url,
-      requestId: `lyric-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-      options: {
-        method: 'GET',
-        timeout,
-        headers: finalHeaders
+    const requestId = `lyric-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const abort = () => window.desktop.lxMusicHttpCancel(requestId);
+    signal?.addEventListener('abort', abort, { once: true });
+    try {
+      const response = await window.desktop.lxMusicHttpRequest({
+        url,
+        requestId,
+        options: {
+          method: 'GET',
+          timeout,
+          headers: finalHeaders
+        }
+      });
+      if (typeof response.body === 'string') {
+        try {
+          return JSON.parse(response.body.replace(/^\uFEFF/, '').trim());
+        } catch {
+          return response.body;
+        }
       }
-    });
-    return response.body;
+      return response.body;
+    } finally {
+      signal?.removeEventListener('abort', abort);
+    }
   }
 
   const response = await fetch(url, {
     headers: finalHeaders,
-    signal: AbortSignal.timeout(timeout)
+    signal: signal
+      ? AbortSignal.any([signal, AbortSignal.timeout(timeout)])
+      : AbortSignal.timeout(timeout)
   });
   const raw = await response.text();
   try {
@@ -403,18 +450,33 @@ const requestTextOrJson = async (
   }
 };
 
-const fetchKuwoLyricById = async (id: string | number): Promise<ILyric | null> => {
+const fetchKuwoLyricById = async (
+  id: string | number,
+  signal?: AbortSignal
+): Promise<ILyric | null> => {
   const rid = String(id).replace(/^MUSIC_/i, '');
-  return await retryTask(async () => {
-    const url = `https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId=${encodeURIComponent(rid)}`;
-    const response = await requestTextOrJson(url, 7000, {
-      Referer: 'https://m.kuwo.cn/'
-    });
-    return buildLyricFromText(buildKuwoLrcText(response));
-  }, '酷我歌词接口');
+  return await retryTask(
+    async () => {
+      const url = `https://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId=${encodeURIComponent(rid)}`;
+      const response = await requestTextOrJson(
+        url,
+        7000,
+        {
+          Referer: 'https://m.kuwo.cn/'
+        },
+        signal
+      );
+      return buildLyricFromText(buildKuwoLrcText(response));
+    },
+    '酷我歌词接口',
+    1
+  );
 };
 
-const getKugouCandidates = async (song: SongResult): Promise<LyricCandidate[]> => {
+const getKugouCandidates = async (
+  song: SongResult,
+  signal?: AbortSignal
+): Promise<LyricCandidate[]> => {
   const keyword = [getArtistText(song), song.name].filter(Boolean).join('-').trim();
   if (!keyword) return [];
 
@@ -426,13 +488,19 @@ const getKugouCandidates = async (song: SongResult): Promise<LyricCandidate[]> =
   const duration = getDurationMs(song);
   if (duration > 0) searchUrl.searchParams.set('duration', String(duration));
 
-  const searchResponse = await requestTextOrJson(searchUrl.toString());
+  const searchResponse = await requestTextOrJson(
+    searchUrl.toString(),
+    LYRIC_SEARCH_TIMEOUT,
+    {},
+    signal
+  );
   const info = Array.isArray(searchResponse?.candidates)
     ? (searchResponse.candidates as KugouSearchCandidate[])
     : [];
   const candidates: LyricCandidate[] = [];
 
   for (const item of info.slice(0, MAX_CANDIDATES_PER_CHANNEL)) {
+    signal?.throwIfAborted();
     if (!item.id || !item.accesskey) continue;
 
     try {
@@ -443,10 +511,15 @@ const getKugouCandidates = async (song: SongResult): Promise<LyricCandidate[]> =
       downloadUrl.searchParams.set('accesskey', item.accesskey);
       downloadUrl.searchParams.set('fmt', 'lrc');
       downloadUrl.searchParams.set('charset', 'utf8');
-      const downloadResponse = await requestTextOrJson(downloadUrl.toString());
+      const downloadResponse = await requestTextOrJson(
+        downloadUrl.toString(),
+        LYRIC_SEARCH_TIMEOUT,
+        {},
+        signal
+      );
       const lyricText =
         typeof downloadResponse?.content === 'string'
-          ? decodeHtmlText(downloadResponse.content)
+          ? decodeMaybeBase64(downloadResponse.content)
           : '';
       const lyric = buildLyricFromText(lyricText);
       if (!hasValidLyric(lyric)) continue;
@@ -457,9 +530,14 @@ const getKugouCandidates = async (song: SongResult): Promise<LyricCandidate[]> =
         translateUrl.searchParams.set('client', 'pc');
         translateUrl.searchParams.set('id', item.id);
         translateUrl.searchParams.set('accesskey', item.accesskey);
-        const translateResponse = await requestTextOrJson(translateUrl.toString(), 6000);
+        const translateResponse = await requestTextOrJson(
+          translateUrl.toString(),
+          6000,
+          {},
+          signal
+        );
         if (typeof translateResponse?.content === 'string') {
-          mergeTranslatedText(lyric as ILyric, translateResponse.content);
+          mergeTranslatedText(lyric as ILyric, decodeMaybeBase64(translateResponse.content));
         }
       } catch (error) {
         // 根因：酷狗翻译接口是锦上添花能力，偶发为空或不可用不能影响歌词本体。
@@ -519,20 +597,25 @@ const mapNeteaseSong = (rawSong: any): SongResult => {
   };
 };
 
-const getNeteaseCandidates = async (song: SongResult): Promise<LyricCandidate[]> => {
+const getNeteaseCandidates = async (
+  song: SongResult,
+  signal?: AbortSignal
+): Promise<LyricCandidate[]> => {
   const keyword = [song.name, getArtistText(song)].filter(Boolean).join(' ').trim();
   if (!keyword) return [];
 
   const response = await request.get<any>('/cloudsearch', {
-    params: { keywords: keyword, type: 1, limit: 8, offset: 0 }
+    params: { keywords: keyword, type: 1, limit: 8, offset: 0 },
+    signal
   });
   const songs = response.data?.result?.songs || [];
   const candidates: LyricCandidate[] = [];
 
   for (const rawSong of songs.slice(0, MAX_CANDIDATES_PER_CHANNEL)) {
+    signal?.throwIfAborted();
     const neteaseSong = mapNeteaseSong(rawSong);
     try {
-      const rawLyric = await fetchRawLyricById(neteaseSong.id);
+      const rawLyric = await fetchRawLyricById(neteaseSong.id, signal);
       const lyric = buildLyricFromPayload(rawLyric);
       if (!hasValidLyric(lyric)) continue;
 
@@ -564,7 +647,10 @@ const getNeteaseCandidates = async (song: SongResult): Promise<LyricCandidate[]>
   return candidates;
 };
 
-const getYoutubeCandidates = async (song: SongResult): Promise<LyricCandidate[]> => {
+const getYoutubeCandidates = async (
+  song: SongResult,
+  signal?: AbortSignal
+): Promise<LyricCandidate[]> => {
   const keyword = [song.name, getArtistText(song)].filter(Boolean).join(' ').trim();
   if (!keyword) return [];
 
@@ -574,6 +660,7 @@ const getYoutubeCandidates = async (song: SongResult): Promise<LyricCandidate[]>
   const candidates: LyricCandidate[] = [];
 
   for (const youtubeSong of songs.slice(0, MAX_CANDIDATES_PER_CHANNEL)) {
+    signal?.throwIfAborted();
     try {
       const lyric = await getYoutubeMusicLyrics(String(youtubeSong.id));
       if (!hasValidLyric(lyric)) continue;
@@ -617,16 +704,32 @@ const uniqueCandidates = (candidates: LyricCandidate[]) => {
   });
 };
 
-export const loadLyricCandidates = async (song: SongResult): Promise<LyricCandidateResult> => {
+export const loadLyricCandidates = async (
+  song: SongResult,
+  options: { signal?: AbortSignal; background?: boolean } = {}
+): Promise<LyricCandidateResult> => {
+  const signal = options.signal
+    ? AbortSignal.any([options.signal, AbortSignal.timeout(10000)])
+    : AbortSignal.timeout(10000);
+  signal.throwIfAborted();
+  const localPath = song.localFilePath || getLocalAudioPath(song.playMusicUrl);
+  if (isDesktopRuntime && localPath) {
+    const stored = await window.desktop.invoke('read-local-music-lyric', localPath);
+    const lyric = parseLrcToILyric(stored?.lyrics);
+    if (lyric) song = { ...song, lyric };
+  }
   if (!song?.id || !song.name) {
     return { candidates: [], activeCandidate: null };
   }
 
   const immediateCandidates = getLocalCandidate(song);
-  if (isAndroidRuntime) {
+  if (navigator.onLine === false || (options.background && immediateCandidates.length)) {
+    return { candidates: immediateCandidates, activeCandidate: immediateCandidates[0] || null };
+  }
+  if (isAndroidRuntime || options.background) {
     // Android 第一阶段只保证基础歌词尽快可用，先不等待多平台歌词候选搜索。
     const currentCandidates = await withTimeout(
-      getCurrentSongCandidate(song),
+      getCurrentSongCandidate(song, signal),
       LYRIC_SEARCH_TIMEOUT,
       '当前歌曲歌词'
     ).catch((error) => {
@@ -643,14 +746,14 @@ export const loadLyricCandidates = async (song: SongResult): Promise<LyricCandid
   }
 
   const tasks = [
-    withTimeout(getCurrentSongCandidate(song), LYRIC_SEARCH_TIMEOUT, '当前歌曲歌词'),
-    withTimeout(getKuwoCandidates(song), LYRIC_SEARCH_TIMEOUT, '酷我歌词'),
-    withTimeout(getKugouCandidates(song), LYRIC_SEARCH_TIMEOUT, '酷狗歌词'),
-    withTimeout(getNeteaseCandidates(song), LYRIC_SEARCH_TIMEOUT, '网易云歌词'),
-    withTimeout(getYoutubeCandidates(song), LYRIC_SEARCH_TIMEOUT, 'YouTube Music 歌词')
+    withTimeout(getCurrentSongCandidate(song, signal), LYRIC_SEARCH_TIMEOUT, '当前歌曲歌词'),
+    withTimeout(getKuwoCandidates(song, signal), LYRIC_SEARCH_TIMEOUT, '酷我歌词'),
+    withTimeout(getKugouCandidates(song, signal), LYRIC_SEARCH_TIMEOUT, '酷狗歌词'),
+    withTimeout(getNeteaseCandidates(song, signal), LYRIC_SEARCH_TIMEOUT, '网易云歌词'),
+    withTimeout(getYoutubeCandidates(song, signal), LYRIC_SEARCH_TIMEOUT, 'YouTube Music 歌词')
   ];
 
-  const results = await Promise.allSettled(tasks);
+  const results = await withPlaybackSignal(Promise.allSettled(tasks), signal);
   const remoteCandidates = results.flatMap((result) => {
     if (result.status === 'fulfilled') return result.value;
     console.warn('歌词候选渠道不可用，已跳过。', result.reason);

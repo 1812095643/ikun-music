@@ -76,6 +76,8 @@ request.interceptors.response.use(
     return response;
   },
   async (error) => {
+    if (axios.isCancel(error) || error.code === 'ERR_CANCELED' || error.config?.signal?.aborted)
+      return Promise.reject(error);
     console.error('error', error);
     const config = error.config as CustomAxiosRequestConfig;
 

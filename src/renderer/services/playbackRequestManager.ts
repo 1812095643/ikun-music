@@ -64,6 +64,7 @@ class PlaybackRequestManager {
 
     this.requestMap.set(requestId, request);
     this.currentRequestId = requestId;
+    this.cleanupOldRequests();
 
     console.log(`[PlaybackRequestManager] 创建新请求: ${requestId}, 歌曲: ${song.name}`);
 
@@ -81,7 +82,7 @@ class PlaybackRequestManager {
       return false;
     }
 
-    if (request.status === RequestStatus.CANCELLED) {
+    if (request.status === RequestStatus.CANCELLED || request.status === RequestStatus.FAILED) {
       console.warn(`[PlaybackRequestManager] 请求已被取消: ${requestId}`);
       return false;
     }
@@ -157,10 +158,7 @@ class PlaybackRequestManager {
     console.log(`[PlaybackRequestManager] 取消所有请求，当前请求数: ${this.requestMap.size}`);
 
     this.requestMap.forEach((request) => {
-      if (
-        request.status !== RequestStatus.COMPLETED &&
-        request.status !== RequestStatus.CANCELLED
-      ) {
+      if (request.status !== RequestStatus.CANCELLED) {
         this.cancelRequest(request.id);
       }
     });
@@ -187,7 +185,7 @@ class PlaybackRequestManager {
     }
 
     // 检查请求状态
-    if (request.status === RequestStatus.CANCELLED) {
+    if (request.status === RequestStatus.CANCELLED || request.status === RequestStatus.FAILED) {
       console.warn(`[PlaybackRequestManager] 请求已被取消: ${requestId}`);
       return false;
     }

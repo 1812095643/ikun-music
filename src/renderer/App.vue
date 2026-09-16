@@ -510,6 +510,11 @@ onMounted(async () => {
   // 初始化 MusicHook，注入 playerStore
   initMusicHook(playerStore);
   // 初始化播放状态
+  if (shouldUseDesktopShell) {
+    void import('@/store/modules/localMusic').then(({ useLocalMusicStore }) =>
+      useLocalMusicStore().initialize()
+    );
+  }
   await playerStore.initializePlayState();
 
   // Android 第一阶段不初始化桌面音频输出设备监听，避免启动阶段触发不必要的设备 API。

@@ -124,7 +124,7 @@
                 <div v-for="(item, index) in searchDetail?.songs" :key="item.id" class="mb-2">
                   <song-item
                     :index="index"
-                    :item="formatSong(item)"
+                    :item="item"
                     :compact="isCompactLayout"
                     :selectable="isSelecting"
                     :selected="selectedSongs.includes(item.id)"
@@ -238,15 +238,30 @@ const searchStore = useSearchStore();
 const formatSong = (item: any) => {
   if (!item) return null;
   const artists = item.ar || item.artists || item.song?.artists || [];
-  const album = item.al || item.album || { id: 0, name: '酷我音乐', picUrl: item.picUrl || '' };
+  const rawAlbum = item.al || item.album || item.song?.al || item.song?.album;
+  const album =
+    rawAlbum && typeof rawAlbum === 'object'
+      ? rawAlbum
+      : { id: 0, name: typeof rawAlbum === 'string' ? rawAlbum : '酷我音乐' };
+  const picUrl =
+    item.picUrl ||
+    item.cover ||
+    item.albumpic ||
+    album.picUrl ||
+    (typeof album.pic === 'string' ? album.pic : '') ||
+    item.song?.picUrl ||
+    item.song?.album?.picUrl ||
+    (typeof item.song?.album?.pic === 'string' ? item.song.album.pic : '') ||
+    '';
   return {
     ...item,
     ar: artists,
     artists,
     al: album,
     album,
-    picUrl: album.picUrl || item.picUrl || '',
+    picUrl,
     song: {
+      ...item.song,
       artists,
       name: item.name,
       id: item.id
@@ -280,6 +295,7 @@ const ITEMS_PER_PAGE = 30;
 const page = ref(0);
 const hasMore = ref(true);
 const isLoadingMore = ref(false);
+let searchVersion = 0;
 const currentKeyword = computed(
   () => (route.query.keyword as string) || (route.query.keywords as string) || ''
 );
@@ -371,6 +387,7 @@ const loadSearch = async (isLoadMore = false) => {
   const type = searchType.value;
 
   if (!isLoadMore) {
+    searchVersion++;
     searchDetail.value = undefined;
     page.value = 0;
     hasMore.value = true;
@@ -379,6 +396,7 @@ const loadSearch = async (isLoadMore = false) => {
     if (isLoadingMore.value || !hasMore.value) return;
     isLoadingMore.value = true;
   }
+  const version = searchVersion;
 
   try {
     const { data } = await getSearch({
@@ -388,6 +406,7 @@ const loadSearch = async (isLoadMore = false) => {
       offset: page.value * ITEMS_PER_PAGE
     });
 
+    if (version !== searchVersion) return;
     const songs = data.result.songs || [];
     const artists = (data.result.artists || []).map(formatArtist);
     const albums = data.result.albums || [];
@@ -446,8 +465,10 @@ const loadSearch = async (isLoadMore = false) => {
   } catch (error) {
     console.error(t('search.error.searchFailed'), error);
   } finally {
-    searchDetailLoading.value = false;
-    isLoadingMore.value = false;
+    if (version === searchVersion) {
+      searchDetailLoading.value = false;
+      isLoadingMore.value = false;
+    }
   }
 };
 

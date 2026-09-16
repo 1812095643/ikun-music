@@ -99,6 +99,9 @@ export interface SongResult {
   album?: Album;
   count: number;
   playMusicUrl?: string;
+  localFilePath?: string;
+  lyricPath?: string;
+  onlineId?: string | number;
   playLoading?: boolean;
   lyric?: ILyric;
   backgroundColor?: string;

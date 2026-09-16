@@ -9,6 +9,8 @@ export const useLyricStore = defineStore('lyric', () => {
   const activeCandidateKey = ref('');
   const loading = ref(false);
   const errorMessage = ref('');
+  const requestVersion = ref(0);
+  const beginRequest = () => ++requestVersion.value;
 
   const setLyric = (newLyric: any) => {
     lyric.value = newLyric;
@@ -43,6 +45,7 @@ export const useLyricStore = defineStore('lyric', () => {
   };
 
   const clearCandidates = () => {
+    beginRequest();
     candidates.value = [];
     activeCandidateKey.value = '';
     lyric.value = {};
@@ -57,6 +60,8 @@ export const useLyricStore = defineStore('lyric', () => {
     activeCandidate,
     loading,
     errorMessage,
+    requestVersion,
+    beginRequest,
     setLyric,
     setLoading,
     setErrorMessage,

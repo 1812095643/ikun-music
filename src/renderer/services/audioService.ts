@@ -1,10 +1,10 @@
-import { convertFileSrc } from '@tauri-apps/api/core';
 import { Howl, Howler } from 'howler';
 import Tuna from 'tunajs';
 
 import type { AudioOutputDevice } from '@/types/audio';
 import type { SongResult } from '@/types/music';
 import { isDesktopRuntime } from '@/utils';
+import { resolveAudioUrl } from '@/utils/audioUrl';
 
 export type AudioEffectPreset = 'off' | 'ktv' | 'studio' | 'spatial3d' | 'concert';
 
@@ -69,10 +69,7 @@ const isTunaEffectNode = (node: EffectNode): node is TunaEffectNode => {
 };
 
 function normalizeAudioUrl(url: string): string {
-  if (!url.startsWith('local:///')) return url;
-  let filePath = decodeURIComponent(url.replace('local:///', ''));
-  if (/^\/[a-zA-Z]:\//.test(filePath)) filePath = filePath.slice(1);
-  return convertFileSrc(filePath);
+  return resolveAudioUrl(url);
 }
 
 function shouldBypassAudioGraph(url: string, track?: SongResult | null): boolean {
@@ -960,7 +957,8 @@ class AudioService {
     track: SongResult,
     isPlay: boolean = true,
     seekTime: number = 0,
-    existingSound?: Howl
+    existingSound?: Howl,
+    isCurrent: () => boolean = () => true
   ): Promise<Howl> {
     // 如果没有提供新的 URL 和 track，且当前有音频实例，则继续播放当前音频
     if (this.currentSound && !url && !track) {
@@ -1010,6 +1008,7 @@ class AudioService {
 
       const tryPlay = async () => {
         try {
+          if (!isCurrent()) throw new DOMException('播放请求已取消', 'AbortError');
           console.log('audioService: 开始创建音频对象');
 
           // 确保 Howler 上下文已初始化
@@ -1034,6 +1033,7 @@ class AudioService {
             console.log('audioService: 恢复暂停的音频上下文');
             await Howler.ctx.resume();
           }
+          if (!isCurrent()) throw new DOMException('播放请求已取消', 'AbortError');
 
           // 非热切换模式下，先停止并清理现有的音频实例
           if (!isHotSwap && this.currentSound) {
@@ -1055,6 +1055,7 @@ class AudioService {
             console.log('audioService: 清理 EQ');
             await this.disposeEQ(true);
           }
+          if (!isCurrent()) throw new DOMException('播放请求已取消', 'AbortError');
 
           // 如果不是热切换，立即更新 currentTrack
           if (!isHotSwap) {
@@ -1093,6 +1094,11 @@ class AudioService {
             newSound.off('load');
 
             newSound.on('loaderror', (_, error) => {
+              if (!isCurrent()) {
+                newSound.unload();
+                reject(new DOMException('播放请求已取消', 'AbortError'));
+                return;
+              }
               console.error('Audio load error:', error);
               this.emit('loaderror', { track, error });
               if (retryCount < maxRetries && !existingSound) {
@@ -1109,6 +1115,11 @@ class AudioService {
             });
 
             newSound.on('playerror', (_, error) => {
+              if (!isCurrent()) {
+                newSound.unload();
+                reject(new DOMException('播放请求已取消', 'AbortError'));
+                return;
+              }
               console.error('Audio play error:', error);
               this.emit('playerror', { track, error });
               if (retryCount < maxRetries) {
@@ -1125,6 +1136,10 @@ class AudioService {
 
             const onLoaded = async () => {
               try {
+                if (!isCurrent()) {
+                  newSound.unload();
+                  throw new DOMException('播放请求已取消', 'AbortError');
+                }
                 // 如果是热切换，现在执行切换逻辑
                 if (isHotSwap) {
                   console.log('audioService: 执行无缝切换');
@@ -1157,6 +1172,10 @@ class AudioService {
                   // 但 currentSound 仍指向旧音频，导致渐入/音量恢复打到旧实例上，
                   // 用户会看到按钮状态变化却听不到新音频的渐入效果。
                   // 解决：把新实例设为当前播放源，之后所有状态、音量和事件判断都落在新实例。
+                  if (!isCurrent()) {
+                    newSound.unload();
+                    throw new DOMException('播放请求已取消', 'AbortError');
+                  }
                   this.currentSound = newSound;
                   this.currentTrack = track;
                   this.pendingSound = null;
@@ -1180,6 +1199,10 @@ class AudioService {
                     console.warn('audioService: 远程音频缺少跨域授权，已绕过 EQ 音频图。');
                   } else {
                     await this.setupEQ(newSound);
+                  }
+                  if (!isCurrent()) {
+                    newSound.unload();
+                    throw new DOMException('播放请求已取消', 'AbortError');
                   }
                   this.currentSound = newSound;
                   this.currentTrack = track;

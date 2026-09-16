@@ -177,16 +177,30 @@ const performSearch = async (isLoadMore = false) => {
 
       const songs = (data.result.songs || []).map((item: any) => {
         const artists = item.ar || item.artists || item.song?.artists || [];
-        const album = item.al ||
-          item.album || { id: 0, name: '酷我音乐', picUrl: item.picUrl || '' };
+        const rawAlbum = item.al || item.album || item.song?.al || item.song?.album;
+        const album =
+          rawAlbum && typeof rawAlbum === 'object'
+            ? rawAlbum
+            : { id: 0, name: typeof rawAlbum === 'string' ? rawAlbum : '酷我音乐' };
+        const picUrl =
+          item.picUrl ||
+          item.cover ||
+          item.albumpic ||
+          album.picUrl ||
+          (typeof album.pic === 'string' ? album.pic : '') ||
+          item.song?.picUrl ||
+          item.song?.album?.picUrl ||
+          (typeof item.song?.album?.pic === 'string' ? item.song.album.pic : '') ||
+          '';
         return {
           ...item,
           ar: artists,
           artists,
           al: album,
           album,
-          picUrl: album.picUrl || item.picUrl || '',
+          picUrl,
           song: {
+            ...item.song,
             artists,
             name: item.name,
             id: item.id

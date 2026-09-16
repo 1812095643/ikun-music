@@ -4,6 +4,7 @@
 import type { LocalMusicEntry, LocalMusicMeta } from '@/types/localMusic';
 import { SUPPORTED_AUDIO_FORMATS } from '@/types/localMusic';
 import type { ILyric, ILyricText, IWordData, SongResult } from '@/types/music';
+import { createLocalAudioUrl } from '@/utils/audioUrl';
 import { parseLyrics as parseYrcLyrics } from '@/utils/yrcParser';
 
 /**
@@ -112,9 +113,9 @@ export function toSongResult(entry: LocalMusicEntry): SongResult {
   const lyric = parseLrcToILyric(entry.lyrics);
 
   return {
-    id: entry.id,
+    id: `local:${entry.filePath}`,
     name: entry.title,
-    picUrl: entry.cover || '/images/default_cover.png',
+    picUrl: entry.cover || '',
     ar: [
       {
         name: entry.artist,
@@ -176,10 +177,13 @@ export function toSongResult(entry: LocalMusicEntry): SongResult {
       artists: [{ name: entry.artist }],
       album: { name: entry.album }
     },
-    playMusicUrl: `local:///${entry.filePath}`,
+    playMusicUrl: createLocalAudioUrl(entry.filePath),
+    localFilePath: entry.filePath,
+    lyricPath: entry.lyricPath,
+    onlineId: entry.onlineId,
     duration: entry.duration,
     dt: entry.duration,
-    source: 'netease' as const,
+    source: entry.source || 'netease',
     count: 0,
     // 内嵌歌词（如果有）
     lyric: lyric ?? undefined,

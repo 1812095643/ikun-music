@@ -119,19 +119,20 @@ const resolveNeteaseFallbackSong = async (songData: SongResult): Promise<SongRes
 
     const sourceName = normalizeMatchText(songData.name || '');
     const sourceArtist = normalizeMatchText(artistText);
-    const matched =
-      songs.find((song: any) => {
-        const targetName = normalizeMatchText(song.name || '');
-        const targetArtist = normalizeMatchText(
-          (song.ar || song.artists || []).map((artist: any) => artist.name).join('')
-        );
-        return (
-          (targetName.includes(sourceName) || sourceName.includes(targetName)) &&
-          (!sourceArtist ||
-            targetArtist.includes(sourceArtist) ||
-            sourceArtist.includes(targetArtist))
-        );
-      }) || songs[0];
+    const matched = songs.find((song: any) => {
+      const targetName = normalizeMatchText(song.name || '');
+      const targetArtist = normalizeMatchText(
+        (song.ar || song.artists || []).map((artist: any) => artist.name).join('')
+      );
+      return (
+        targetName === sourceName &&
+        Boolean(targetName) &&
+        (!sourceArtist ||
+          targetArtist.includes(sourceArtist) ||
+          sourceArtist.includes(targetArtist))
+      );
+    });
+    if (!matched) return null;
 
     // 根因：酷我搜索结果的 id 是酷我曲库 id，不是网易云 id。酷我直链被判定为
     // 试听/错误文件后，如果继续拿酷我 id 调 /song/url 或 GD/pyncmd 这类网易源，
@@ -227,6 +228,11 @@ export const getSongUrl = async (
       skipKuwoForFallback && songData.source === 'kuwo'
         ? await resolveNeteaseFallbackSong(songData)
         : null;
+    if (skipKuwoForFallback && songData.source === 'kuwo' && !neteaseFallbackSong) {
+      throw new Error('当前歌曲暂时没有匹配的备用音源，请稍后重试');
+    }
+    if (requestId && !playbackRequestManager.isRequestValid(requestId))
+      throw new Error('Request cancelled');
     const fallbackSongData: SongResult =
       skipKuwoForFallback && neteaseFallbackSong
         ? neteaseFallbackSong
@@ -275,7 +281,11 @@ export const getSongUrl = async (
     if (songData.source === 'kuwo') {
       try {
         const { getKuwoMusicUrl } = await import('@/api/kuwo');
-        const kuwoResult = await getKuwoMusicUrl(numericId);
+        const kuwoResult = await getKuwoMusicUrl(
+          numericId,
+          undefined,
+          requestId ? playbackRequestManager.getAbortSignal(requestId) : undefined
+        );
 
         if (requestId && !playbackRequestManager.isRequestValid(requestId)) {
           console.log(`[getSongUrl] 酷我直链接析后请求已失效: ${requestId}`);
@@ -287,12 +297,17 @@ export const getSongUrl = async (
           return await resolveCachedPlaybackUrl(kuwoResult.data.data.url, songData);
         }
       } catch (error) {
+        if (requestId && !playbackRequestManager.isRequestValid(requestId))
+          throw new Error('Request cancelled');
         if ((error as Error).message === 'Request cancelled') {
           throw error;
         }
         console.warn('酷我直链接析失败，继续进入备用解析流程:', error);
         skipKuwoForFallback = true;
       }
+      const fallback = await runFallbackParsing();
+      if (isDownloaded) return fallback?.data?.data as any;
+      return (await resolvePlayableUrl(fallback?.data?.data, songData)) || null;
     }
 
     if (songData.source === 'ytmusic') {
@@ -445,6 +460,8 @@ export const getSongUrl = async (
     if ((error as Error).message === 'Request cancelled') {
       throw error;
     }
+    if (requestId && !playbackRequestManager.isRequestValid(requestId))
+      throw new Error('Request cancelled');
     console.error('官方API请求失败，进入内置备用解析流程:', error);
     const res = await runFallbackParsing();
     if (isDownloaded) return res?.data?.data as any;
@@ -625,6 +642,15 @@ export const useSongDetail = () => {
     if (requestId && !playbackRequestManager.isRequestValid(requestId)) {
       console.log(`[getSongDetail] 请求已失效: ${requestId}`);
       throw new Error('Request cancelled');
+    }
+
+    if (isDesktopRuntime && playMusic.playMusicUrl?.startsWith('local:///')) {
+      const { getLocalAudioPath } = await import('@/utils/audioUrl');
+      const exists = await window.desktop.invoke(
+        'check-file-exists',
+        getLocalAudioPath(playMusic.playMusicUrl)
+      );
+      if (!exists) throw new Error('音乐文件已移动，请重新扫描目录');
     }
 
     if (playMusic.expiredAt && playMusic.expiredAt < Date.now()) {

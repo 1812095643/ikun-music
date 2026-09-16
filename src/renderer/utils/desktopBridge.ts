@@ -18,6 +18,7 @@ import {
   removeAppUpdateListeners
 } from '@/services/appUpdater';
 import { requestMusicService } from '@/services/musicService';
+import type { LocalMusicMeta } from '@/types/localMusic';
 
 import config from '../../../package.json';
 import defaultSettings from '../../shared/defaultSettings.json';
@@ -183,7 +184,25 @@ const postToMusicApi = async (path: string, data: Record<string, any>) => {
   return result.body;
 };
 
+const downloadTasks = new Map<string, any>();
 const emitLocal = (channel: string, ...args: any[]) => {
+  const data = args[0];
+  if (channel.startsWith('music-download-') && data?.downloadKey) {
+    if (channel === 'music-download-complete' && data.success)
+      downloadTasks.delete(data.downloadKey);
+    else
+      downloadTasks.set(data.downloadKey, {
+        progress: 0,
+        loaded: 0,
+        total: 0,
+        path: '',
+        status: 'downloading',
+        ...downloadTasks.get(data.downloadKey),
+        ...data,
+        ...(channel === 'music-download-progress' ? { stage: data.stage || 'downloading' } : {}),
+        ...(channel === 'music-download-error' ? { status: 'error' } : {})
+      });
+  }
   listeners.get(channel)?.forEach((listener) => listener({ sender: null }, ...args));
 };
 
@@ -222,10 +241,13 @@ const sanitizeFilename = (filename: string) =>
     .trim() || `音乐_${Date.now()}`;
 
 const pathSeparator = navigator.platform.toLowerCase().includes('win') ? '\\' : '/';
+const normalizeFilePath = (path: string) =>
+  pathSeparator === '\\' ? path.replace(/\//g, '\\') : path;
 
 const joinPath = (...parts: string[]) =>
   parts
     .filter(Boolean)
+    .map(normalizeFilePath)
     .map((part, index) =>
       index === 0
         ? part.replace(/[\\/]+$/g, '')
@@ -243,7 +265,7 @@ const getDownloadExtension = (url: string, type?: string) => {
 
 const ensureDefaultDownloadPath = async () => {
   await getStore();
-  if (storeCache.set.downloadPath) return storeCache.set.downloadPath;
+  if (storeCache.set.downloadPath) return normalizeFilePath(storeCache.set.downloadPath);
   if (!isTauriRuntime) return '';
   const downloadsPath = await invoke<string>('get_downloads_path');
   await setStoreValue('set.downloadPath', downloadsPath);
@@ -252,7 +274,11 @@ const ensureDefaultDownloadPath = async () => {
 
 const getDownloadRecordStore = () => {
   const records = storeCache.downloadedSongs;
-  return records && typeof records === 'object' ? records : {};
+  return records && typeof records === 'object'
+    ? Object.fromEntries(
+        Object.entries(records).map(([path, record]) => [normalizeFilePath(path), record])
+      )
+    : {};
 };
 
 const setDownloadRecordStore = async (records: Record<string, any>) => {
@@ -271,7 +297,12 @@ const setDownloadHistoryStore = async (history: any[]) => {
   await store.save();
 };
 
-const getUniqueFilePath = async (directory: string, filename: string, extension: string) => {
+const getUniqueFilePath = async (
+  directory: string,
+  filename: string,
+  extension: string,
+  reserve = false
+) => {
   let counter = 0;
   while (true) {
     const suffix = counter === 0 ? '' : ` (${counter})`;
@@ -279,10 +310,101 @@ const getUniqueFilePath = async (directory: string, filename: string, extension:
     const existsOnDisk = isTauriRuntime
       ? await invoke<boolean>('local_file_exists', { path: filePath })
       : false;
-    if (!existsOnDisk) return filePath;
+    if (!existsOnDisk && !reservedDownloadPaths.has(filePath)) {
+      if (reserve) reservedDownloadPaths.add(filePath);
+      return filePath;
+    }
     counter += 1;
   }
 };
+
+const readLocalLyrics = (filePaths: string[], includeContent: boolean) =>
+  invoke<
+    Array<{ filePath: string; lyricPath: string; lyrics: string | null; modifiedTime: number }>
+  >('read_local_lyrics', { filePaths, includeContent });
+
+const parseLocalMetadata = async (filePaths: string[]): Promise<LocalMusicMeta[]> => {
+  if (!filePaths.length) return [];
+  const [metas, lyrics] = await Promise.all([
+    postToMusicApi('/desktop/parse-local-music-metadata', { filePaths }),
+    readLocalLyrics(filePaths, true)
+  ]);
+  const lyricMap = new Map(lyrics.map((item) => [item.filePath, item]));
+  const records = getDownloadRecordStore();
+  return metas.map((meta: LocalMusicMeta) => {
+    const record = records[meta.filePath];
+    const sidecar = lyricMap.get(meta.filePath);
+    return {
+      ...meta,
+      title: record?.name || meta.title,
+      artist: record?.ar?.map((artist: any) => artist.name).join(' / ') || meta.artist,
+      album: record?.al?.name || meta.album,
+      cover: meta.cover || record?.picUrl || null,
+      duration: meta.duration || record?.dt || record?.duration || 0,
+      lyrics: sidecar?.lyrics || meta.lyrics,
+      lyricPath: sidecar?.lyrics ? sidecar.lyricPath : undefined,
+      modifiedTime: Math.max(meta.modifiedTime, sidecar?.modifiedTime || 0),
+      onlineId: record?.onlineId || record?.id,
+      source: record?.source
+    };
+  });
+};
+
+const downloadedMetadataCache = new Map<string, LocalMusicMeta>();
+const scanLocalStats = async (folderPath: string) => {
+  const result = await postToMusicApi('/desktop/scan-local-music-with-stats', { folderPath });
+  const lyrics = await readLocalLyrics(
+    result.files.map((file: any) => file.path),
+    false
+  );
+  const modified = new Map(lyrics.map((item) => [item.filePath, item.modifiedTime]));
+  return {
+    ...result,
+    files: result.files.map((file: any) => ({
+      ...file,
+      modifiedTime: Math.max(file.modifiedTime, modified.get(file.path) || 0)
+    }))
+  };
+};
+
+const getDownloadedMusic = async () => {
+  const directory = await ensureDefaultDownloadPath();
+  const { files } = await scanLocalStats(directory);
+  const changed = files.filter(
+    (file: any) => downloadedMetadataCache.get(file.path)?.modifiedTime !== file.modifiedTime
+  );
+  for (let offset = 0; offset < changed.length; offset += 40) {
+    const entries = await parseLocalMetadata(
+      changed.slice(offset, offset + 40).map((file: any) => file.path)
+    );
+    entries.forEach((entry) => downloadedMetadataCache.set(entry.filePath, entry));
+  }
+  const paths = new Set(files.map((file: any) => file.path));
+  const records = getDownloadRecordStore();
+  for (const path of downloadedMetadataCache.keys()) {
+    if (!paths.has(path)) downloadedMetadataCache.delete(path);
+  }
+  return files
+    .map((file: any) => {
+      const meta = downloadedMetadataCache.get(file.path)!;
+      return {
+        ...meta,
+        id: `local:${meta.filePath}`,
+        path: meta.filePath,
+        name: meta.title,
+        filename: meta.filePath.split(/[\\/]/).pop() || meta.title,
+        size: meta.fileSize,
+        picUrl: meta.cover || '',
+        ar: [{ name: meta.artist }],
+        al: { name: meta.album, picUrl: meta.cover || '' },
+        downloadTime: records[meta.filePath]?.downloadTime || meta.modifiedTime
+      };
+    })
+    .sort((a: any, b: any) => b.downloadTime - a.downloadTime);
+};
+
+const reservedDownloadPaths = new Set<string>();
+let downloadRecordWrite: Promise<void> = Promise.resolve();
 
 const downloadMusicFile = async (payload: any) => {
   const { url, filename, songInfo, type, quality, downloadKey } = payload || {};
@@ -291,56 +413,70 @@ const downloadMusicFile = async (payload: any) => {
     return;
   }
 
-  const safeName = sanitizeFilename(filename);
+  const nameFormat = storeCache.set.downloadNameFormat || '{songName} - {artistName}';
+  const safeName = sanitizeFilename(
+    nameFormat
+      .replace(/\{songName\}/g, songInfo?.name || filename)
+      .replace(
+        /\{artistName\}/g,
+        (songInfo?.ar || songInfo?.song?.artists || [])
+          .map((artist: any) => artist.name)
+          .join(', ') || '未知歌手'
+      )
+      .replace(/\{albumName\}/g, songInfo?.al?.name || '未知专辑')
+  );
   const extension = getDownloadExtension(url, type);
+  let filePath = '';
   try {
     emitLocal('music-download-queued', { filename: safeName, songInfo, quality, downloadKey });
     const downloadPath = await ensureDefaultDownloadPath();
-    const filePath = downloadPath
-      ? await getUniqueFilePath(downloadPath, safeName, extension)
+    filePath = downloadPath
+      ? await getUniqueFilePath(downloadPath, safeName, extension, true)
       : `${safeName}${extension}`;
-
-    const response = await (isTauriRuntime ? tauriFetch : fetch)(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0' }
+    reservedDownloadPaths.add(filePath);
+    await ensureTauriListener('music-download-progress');
+    const size = await invoke<number>('download_music_file', {
+      request: { url, path: filePath, filename: safeName, songInfo, quality, downloadKey }
     });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const buffer = new Uint8Array(await response.arrayBuffer());
 
     emitLocal('music-download-progress', {
       filename: safeName,
-      progress: 100,
-      loaded: buffer.byteLength,
-      total: buffer.byteLength,
+      downloadKey,
       path: filePath,
-      status: 'completed',
-      songInfo,
-      quality,
-      downloadKey
+      loaded: size,
+      total: size,
+      progress: 99,
+      stage: 'lyrics'
     });
-
-    if (isTauriRuntime) {
-      // 根因：旧 Tauri 兼容层直接写 BaseDirectory.Download，完全绕开用户在设置里选择的
-      // downloadPath；并且前端 fs 插件对任意绝对路径有 scope 限制，用户选择 D 盘目录时会
-      // 写入失败或写到系统下载目录。这里把“已授权的下载目录绝对路径写入”收口到 Rust
-      // 命令，由 Rust 创建目录并落盘，前端只负责下载 URL 与事件协议。
-      await invoke('write_local_file', { request: { path: filePath, bytes: Array.from(buffer) } });
-    } else {
-      const blob = new Blob([buffer]);
-      const objectUrl = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = objectUrl;
-      link.download = filePath;
-      link.click();
-      URL.revokeObjectURL(objectUrl);
+    let lyricWarning = '';
+    let lyricPath: string | undefined;
+    if (storeCache.set.downloadSaveLyric !== false) {
+      try {
+        const { loadLyricCandidates } = await import('@/services/lyricCandidateService');
+        const { lyricToLrc } = await import('@/services/localLyricService');
+        const lyric = songInfo?.lyric?.lrcArray?.length
+          ? songInfo.lyric
+          : (await loadLyricCandidates(songInfo)).activeCandidate?.lyric;
+        const content = lyricToLrc(lyric);
+        if (content) {
+          lyricPath = `${getFileStem(filePath)}.lrc`;
+          await invoke('write_local_text_file', { request: { path: lyricPath, content } });
+        } else lyricWarning = '音乐已保存，暂未匹配到歌词，可在播放页重新搜索';
+      } catch {
+        lyricWarning = '音乐已保存，歌词暂未保存成功，可在播放页重新搜索';
+      }
     }
 
     const downloadedSong = {
-      ...(songInfo || {}),
       id: songInfo?.id || 0,
+      source: songInfo?.source,
+      picUrl: songInfo?.picUrl || songInfo?.al?.picUrl || '',
+      dt: songInfo?.dt || songInfo?.duration || 0,
       name: songInfo?.name || safeName,
       filename: safeName,
       path: filePath,
-      size: buffer.byteLength,
+      size,
+      lyricPath,
       type: extension.replace(/^\./, ''),
       downloadTime: Date.now(),
       downloadQuality: songInfo?.downloadQuality || quality || 'default',
@@ -350,9 +486,15 @@ const downloadMusicFile = async (payload: any) => {
     };
 
     if (isTauriRuntime) {
-      const records = { ...getDownloadRecordStore(), [filePath]: downloadedSong };
-      await setDownloadRecordStore(records);
-      await setDownloadHistoryStore([downloadedSong, ...(storeCache.downloadHistory || [])]);
+      const write = downloadRecordWrite
+        .catch(() => undefined)
+        .then(async () => {
+          await setDownloadRecordStore({ ...getDownloadRecordStore(), [filePath]: downloadedSong });
+          await setDownloadHistoryStore([downloadedSong, ...(storeCache.downloadHistory || [])]);
+        });
+      downloadRecordWrite = write;
+      await write;
+      downloadedMetadataCache.delete(filePath);
     }
 
     emitLocal('music-download-complete', {
@@ -360,12 +502,15 @@ const downloadMusicFile = async (payload: any) => {
       filename: safeName,
       path: filePath,
       filePath,
-      size: buffer.byteLength,
+      size,
+      lyricWarning,
       songInfo: downloadedSong,
       quality,
       downloadKey,
       status: 'completed'
     });
+    emitLocal('music-library-changed', { path: filePath });
+    return { success: true, path: filePath, lyricWarning };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     emitLocal('music-download-error', {
@@ -382,6 +527,9 @@ const downloadMusicFile = async (payload: any) => {
       error: errorMessage,
       status: 'error'
     });
+    return { success: false, error: errorMessage };
+  } finally {
+    reservedDownloadPaths.delete(filePath);
   }
 };
 
@@ -663,11 +811,18 @@ const sendSync = (channel: string, ...args: any[]) => {
 
 const setStoreValue = async (key: string, value: any) => {
   await getStore();
+  const previousDirectory = storeCache.set.downloadPath;
   setByPath(key, value);
   const store = await getStore();
   await store.set('set', storeCache.set);
   await store.set('shortcuts', storeCache.shortcuts);
   await store.save();
+  if (
+    (key === 'set.downloadPath' || key === 'set') &&
+    previousDirectory !== storeCache.set.downloadPath
+  ) {
+    emitLocal('music-library-changed', { directory: storeCache.set.downloadPath });
+  }
 };
 
 const invokeChannel = async (channel: string, ...args: any[]) => {
@@ -708,24 +863,27 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
       return openAppUpdatePage();
     case 'get-downloads-path':
       return ensureDefaultDownloadPath();
+    case 'download-music':
+      return downloadMusicFile(args[0]);
+    case 'queue-download-task':
+      emitLocal('music-download-queued', {
+        ...args[0],
+        stage: 'resolving',
+        status: 'downloading',
+        progress: 0,
+        loaded: 0,
+        total: 0,
+        error: undefined
+      });
+      return true;
+    case 'fail-download-task':
+      emitLocal('music-download-error', args[0]);
+      return true;
+    case 'get-download-tasks':
+      return Array.from(downloadTasks.values());
     case 'get-downloaded-music': {
       if (!isTauriRuntime) return [];
-      const records = getDownloadRecordStore();
-      const entries = await Promise.all(
-        Object.entries(records).map(async ([path, info]) => {
-          const existsOnDisk = await invoke<boolean>('local_file_exists', { path });
-          return existsOnDisk ? info : null;
-        })
-      );
-      const validSongs = entries
-        .filter(Boolean)
-        .sort((a: any, b: any) => (b.downloadTime || 0) - (a.downloadTime || 0));
-      const validRecords = validSongs.reduce<Record<string, any>>((acc, item: any) => {
-        if (item?.path) acc[item.path] = item;
-        return acc;
-      }, {});
-      await setDownloadRecordStore(validRecords);
-      return validSongs;
+      return getDownloadedMusic();
     }
     case 'delete-downloaded-music': {
       const targetPath = String(args[0] || '');
@@ -739,6 +897,8 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
       await setDownloadHistoryStore(
         (storeCache.downloadHistory || []).filter((item: any) => item?.path !== targetPath)
       );
+      downloadedMetadataCache.delete(targetPath);
+      emitLocal('music-library-changed', { path: targetPath });
       return deleted;
     }
     case 'clear-downloaded-music':
@@ -764,6 +924,22 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
           error: error instanceof Error ? error.message : String(error)
         };
       }
+    }
+    case 'read-local-music-lyric': {
+      if (!isTauriRuntime) return null;
+      return (await readLocalLyrics([String(args[0])], true))[0];
+    }
+    case 'save-local-music-lyric': {
+      const { filePath, lrcContent } = args[0] || {};
+      if (!isTauriRuntime || !filePath || !lrcContent) return { success: false };
+      if (!(await invoke<boolean>('local_file_exists', { path: filePath }))) {
+        throw new Error('音乐文件已移动，请重新扫描目录后再保存歌词');
+      }
+      const path = `${getFileStem(filePath)}.lrc`;
+      await invoke('write_local_text_file', { request: { path, content: String(lrcContent) } });
+      downloadedMetadataCache.delete(filePath);
+      emitLocal('music-library-changed', { path: filePath });
+      return { success: true, path };
     }
     case 'open-external':
       if (!isTauriRuntime) return window.open(String(args[0]), '_blank') !== null;
@@ -871,11 +1047,9 @@ const invokeChannel = async (channel: string, ...args: any[]) => {
     case 'scan-local-music':
       return postToMusicApi('/desktop/scan-local-music', { folderPath: args[0] });
     case 'scan-local-music-with-stats':
-      return postToMusicApi('/desktop/scan-local-music-with-stats', { folderPath: args[0] });
+      return scanLocalStats(args[0]);
     case 'parse-local-music-metadata':
-      return postToMusicApi('/desktop/parse-local-music-metadata', {
-        filePaths: args[0] || []
-      });
+      return parseLocalMetadata(args[0] || []);
     case 'import-custom-api-plugin': {
       if (!isTauriRuntime) return null;
       const selected = await open({

@@ -19,6 +19,7 @@
   "enablePlaybackFade": false,
   "playbackFadeDurationMs": 650,
   "downloadPath": "",
+  "downloadSaveLyric": true,
   "language": "zh-CN",
   "alwaysShowDownloadButton": false,
   "unlimitedDownload": false,

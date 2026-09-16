@@ -17,6 +17,9 @@
               <p class="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
                 {{ t('localMusic.songCount', { count: localMusicStore.musicList.length }) }}
               </p>
+              <p class="mt-2 text-xs text-neutral-500 break-all">
+                下载目录自动收录：{{ localMusicStore.downloadFolder }}
+              </p>
             </div>
             <div
               class="local-header-icon hidden md:flex h-10 w-10 items-center justify-center rounded-lg text-primary"
@@ -133,7 +136,7 @@
             >
               <template #default="{ item, index }">
                 <div>
-                  <song-item :index="index" :item="item" @play="handlePlaySong" />
+                  <song-item :index="index" :item="item" :is-next="true" @play="handlePlaySong" />
                   <!-- 列表末尾留白 -->
                   <div v-if="index === filteredSongResults.length - 1" class="h-36"></div>
                 </div>
@@ -254,7 +257,7 @@ function handleRemoveFolder(folder: string): void {
  * 触发扫描
  */
 async function handleScan(): Promise<void> {
-  if (localMusicStore.folderPaths.length === 0) {
+  if (localMusicStore.scanPaths.length === 0) {
     // 没有配置文件夹时，引导用户先添加文件夹
     await handleAddFolder();
     return;
@@ -264,14 +267,14 @@ async function handleScan(): Promise<void> {
 
 /**
  * 播放单曲
- * SongItem 内部已通过 playMusicEvent 调用 playerStore.setPlay 触发播放
- * 此处只需设置播放列表上下文，确保上下一首切换正常
+ * 父组件统一设置队列后再播放，避免子组件先播放导致索引尚未同步。
  * @param song SongItem 组件 emit 的 SongResult 对象
  */
-async function handlePlaySong(_song: SongResult): Promise<void> {
+async function handlePlaySong(song: SongResult): Promise<void> {
   try {
     // 设置播放列表上下文，确保上下一首切换正常
     playerStore.setPlayList(filteredSongResults.value);
+    await playerStore.setPlay(song);
   } catch (error) {
     console.error('播放本地音乐失败:', error);
   }
@@ -306,7 +309,7 @@ async function handlePlayAll(): Promise<void> {
 // ==================== Lifecycle ====================
 onMounted(async () => {
   // 进入页面时从 IndexedDB 缓存加载音乐列表
-  await localMusicStore.loadFromCache();
+  await localMusicStore.initialize();
 });
 </script>
 

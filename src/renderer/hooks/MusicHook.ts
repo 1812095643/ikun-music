@@ -4,6 +4,7 @@ import { computed, nextTick, ref, shallowRef, watch } from 'vue';
 
 import useIndexedDB from '@/hooks/IndexDBHook';
 import { audioService } from '@/services/audioService';
+import { playbackRequestManager } from '@/services/playbackRequestManager';
 import type { usePlayerStore } from '@/store';
 import type { Artist, ILyricText, SongResult } from '@/types/music';
 import { isDesktopRuntime } from '@/utils';
@@ -455,8 +456,7 @@ const setupAudioListeners = () => {
     }
   });
 
-  const replayMusic = async (retryCount: number = 0) => {
-    const MAX_REPLAY_RETRIES = 3;
+  const replayMusic = async () => {
     try {
       // 如果当前有音频实例，先停止并销毁
       const currentSound = audioService.getCurrentSound();
@@ -483,20 +483,14 @@ const setupAudioListeners = () => {
             : undefined
         };
         const success = await store.handlePlayMusic(song, true);
-        if (!success) throw new Error('单曲循环重建播放链路失败');
+        // 统一播放链路已负责失败状态；被手动切歌取消后不再排入延迟重播。
+        if (!success) return;
       } else {
         console.error('单曲循环：无可用 URL 或歌曲数据');
         getPlayerStore().nextPlay();
       }
     } catch (error) {
       console.error('单曲循环重播失败:', error);
-      if (retryCount < MAX_REPLAY_RETRIES) {
-        console.log(`单曲循环重试 ${retryCount + 1}/${MAX_REPLAY_RETRIES}`);
-        setTimeout(() => replayMusic(retryCount + 1), 1000 * (retryCount + 1));
-      } else {
-        console.error('单曲循环重试次数用尽，切换下一首');
-        getPlayerStore().nextPlay();
-      }
     }
   };
 
@@ -510,9 +504,15 @@ const setupAudioListeners = () => {
       replayMusic();
     } else if (getPlayerStore().isFmPlaying) {
       // 私人FM模式：自动获取下一首
+      const requestId = playbackRequestManager.getCurrentRequestId();
       try {
         const { getPersonalFM } = await import('@/api/home');
         const res = await getPersonalFM();
+        if (
+          requestId !== playbackRequestManager.getCurrentRequestId() ||
+          !getPlayerStore().userPlayIntent
+        )
+          return;
         const songs = res.data?.data;
         if (Array.isArray(songs) && songs.length > 0) {
           const song = songs[0];
@@ -1081,6 +1081,13 @@ export const initAudioListeners = async () => {
 // 监听URL过期事件，自动重新获取URL并恢复播放
 audioService.on('url_expired', async (expiredTrack) => {
   if (!expiredTrack) return;
+  const store = getPlayerStore();
+  if (
+    expiredTrack.id !== store.playMusic.id ||
+    expiredTrack.source !== store.playMusic.source ||
+    !store.userPlayIntent
+  )
+    return;
 
   console.log('检测到URL过期事件，准备重新获取URL', expiredTrack.name);
 

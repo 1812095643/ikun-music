@@ -1,5 +1,7 @@
+mod downloads;
 #[cfg(not(mobile))]
 mod music_service;
+use downloads::{download_music_file, read_local_lyrics, DownloadManager};
 #[cfg(not(mobile))]
 mod updates;
 #[cfg(not(mobile))]
@@ -762,10 +764,13 @@ fn get_downloads_path(app: AppHandle) -> Result<String, String> {
 
     #[cfg(not(mobile))]
     {
-        app.path()
+        let path = app
+            .path()
             .download_dir()
-            .map(|path| path.to_string_lossy().to_string())
-            .map_err(|error| format!("读取系统下载目录失败：{error}"))
+            .map_err(|error| format!("读取系统下载目录失败：{error}"))?
+            .join("ikun音乐");
+        fs::create_dir_all(&path).map_err(|error| format!("创建音乐下载目录失败：{error}"))?;
+        Ok(path.to_string_lossy().to_string())
     }
 }
 
@@ -831,16 +836,31 @@ fn delete_local_file(path: String) -> Result<bool, String> {
 }
 
 #[tauri::command]
-fn local_file_exists(path: String) -> bool {
+fn local_file_exists(app: AppHandle, path: String) -> bool {
     #[cfg(mobile)]
     {
-        let _ = path;
+        let _ = (app, path);
         return false;
     }
 
     #[cfg(not(mobile))]
     {
-        PathBuf::from(path).exists()
+        let path = PathBuf::from(path);
+        let exists = path.is_file();
+        if exists
+            && path
+                .extension()
+                .and_then(|extension| extension.to_str())
+                .is_some_and(|extension| {
+                    matches!(
+                        extension.to_ascii_lowercase().as_str(),
+                        "mp3" | "flac" | "wav" | "ogg" | "m4a" | "aac"
+                    )
+                })
+        {
+            let _ = app.asset_protocol_scope().allow_file(&path);
+        }
+        exists
     }
 }
 
@@ -1145,6 +1165,7 @@ fn update_tray_state(app: AppHandle, state: TrayState) -> Result<(), String> {
 pub fn run() {
     let builder = tauri::Builder::default()
         .manage(MiniWindowRestoreState(Mutex::new(None)))
+        .manage(DownloadManager::default())
         .setup(|app| {
             #[cfg(not(mobile))]
             {
@@ -1172,6 +1193,8 @@ pub fn run() {
             get_platform,
             get_arch,
             get_downloads_path,
+            download_music_file,
+            read_local_lyrics,
             write_local_file,
             write_local_text_file,
             delete_local_file,

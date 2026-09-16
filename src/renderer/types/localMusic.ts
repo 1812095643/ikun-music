@@ -1,3 +1,5 @@
+import type { SongResult } from './music';
+
 // 本地音乐相关类型定义
 
 /**
@@ -32,6 +34,9 @@ export type LocalMusicMeta = {
   fileSize: number;
   /** 文件修改时间戳 */
   modifiedTime: number;
+  lyricPath?: string;
+  onlineId?: string | number;
+  source?: SongResult['source'];
 };
 
 /**

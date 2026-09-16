@@ -1,6 +1,7 @@
 import { Howl } from 'howler';
 
 import type { SongResult } from '@/types/music';
+import { resolveAudioUrl } from '@/utils/audioUrl';
 
 const getSongArtistText = (song: SongResult) => {
   const artists = song.ar?.length ? song.ar : song.artists || song.song?.artists || [];
@@ -30,6 +31,7 @@ class PreloadService {
   private preloadedSounds: Map<string, Howl> = new Map();
   private canceledKeys: Set<string> = new Set();
   private cacheGenerations: Map<string, number> = new Map();
+  private cancelLoads = new Map<string, () => void>();
 
   private bindSongKey(songId: string | number, cacheKey: string) {
     if (!this.songKeyMap.has(songId)) this.songKeyMap.set(songId, new Set());
@@ -78,7 +80,7 @@ class PreloadService {
     }
 
     // 3. 开始新的加载过程
-    const loadPromise = this._performLoad(song);
+    const loadPromise = this._performLoad(song, cacheKey);
     this.loadingPromises.set(cacheKey, loadPromise);
 
     try {
@@ -100,7 +102,7 @@ class PreloadService {
   /**
    * 执行实际的加载和验证逻辑
    */
-  private async _performLoad(song: SongResult): Promise<Howl> {
+  private async _performLoad(song: SongResult, cacheKey: string): Promise<Howl> {
     console.log(`[PreloadService] 开始加载歌曲: ${song.name}`);
 
     if (!song.playMusicUrl) {
@@ -108,15 +110,15 @@ class PreloadService {
     }
 
     // 创建初始音频实例
-    const sound = await this._createSound(song.playMusicUrl);
+    const sound = await this._createSound(song.playMusicUrl, cacheKey);
 
     // 检查时长
     const duration = sound.duration();
-    const expectedDuration = (song.dt || 0) / 1000;
+    const expectedDuration = (song.dt || song.duration || 0) / 1000;
 
     if (expectedDuration > 0 && duration > 0) {
       const durationDiff = Math.abs(duration - expectedDuration);
-      // 如果实际时长远小于预期（可能是试听版），记录警告
+      // 部分接口把多首受限歌曲都指向同一段提示音，必须在出声前拒绝，不能只记录警告。
       if (duration < expectedDuration * 0.5 && durationDiff > 10) {
         console.warn(
           `[PreloadService] 时长严重不足：实际 ${duration.toFixed(1)}s, 预期 ${expectedDuration.toFixed(1)}s (${song.name})，可能是试听版`
@@ -132,6 +134,8 @@ class PreloadService {
             }
           })
         );
+        sound.unload();
+        throw new Error('音源返回的音频时长与歌曲不符，请切换音源或稍后重试');
       } else if (durationDiff > 5) {
         console.warn(
           `[PreloadService] 时长差异警告：实际 ${duration.toFixed(1)}s, 预期 ${expectedDuration.toFixed(1)}s (${song.name})`
@@ -142,26 +146,39 @@ class PreloadService {
     return sound;
   }
 
-  private _createSound(url: string): Promise<Howl> {
+  private _createSound(url: string, cacheKey: string): Promise<Howl> {
     return new Promise((resolve, reject) => {
+      const finish = (error?: unknown) => {
+        clearTimeout(timer);
+        this.cancelLoads.delete(cacheKey);
+        if (error) {
+          sound.unload();
+          reject(error);
+        } else resolve(sound);
+      };
       const sound = new Howl({
-        src: [url],
+        src: [resolveAudioUrl(url)],
         html5: true,
         preload: true,
         autoplay: false,
-        onload: () => resolve(sound),
-        onloaderror: (_, err) => reject(err)
+        onload: () => finish(),
+        onloaderror: (_, err) => finish(err || new Error('音频暂时无法加载'))
       });
+      this.cancelLoads.set(cacheKey, () =>
+        finish(new DOMException('播放请求已取消', 'AbortError'))
+      );
+      const timer = setTimeout(() => finish(new Error('音频加载超时，请稍后重试')), 20000);
     });
   }
 
   /**
    * 取消特定歌曲的预加载（如果可能）
-   * 注意：Promise 无法真正取消，但我们可以清理结果
+   * 卸载加载中的 Howl 并结束等待，后续请求无需等待旧音频超时。
    */
   public cancel(songId: string | number) {
     const cacheKeys = this.songKeyMap.get(songId);
     cacheKeys?.forEach((cacheKey) => {
+      this.cancelLoads.get(cacheKey)?.();
       if (this.preloadedSounds.has(cacheKey)) {
         const sound = this.preloadedSounds.get(cacheKey)!;
         sound.unload();
@@ -172,8 +189,6 @@ class PreloadService {
       this.bumpCacheGeneration(cacheKey);
     });
     this.songKeyMap.delete(songId);
-    // loadingPromises 中的任务会继续执行，但因为 preloadedSounds 中没有记录，
-    // 下次请求时会重新加载（或者我们可以让 _performLoad 检查一个取消标记，但这增加了复杂性）
   }
 
   /**
@@ -211,6 +226,8 @@ class PreloadService {
    * 清理所有预加载资源
    */
   public clearAll() {
+    this.cancelLoads.forEach((cancel) => cancel());
+    this.cancelLoads.clear();
     this.preloadedSounds.forEach((sound) => sound.unload());
     this.preloadedSounds.clear();
     this.loadingPromises.clear();
