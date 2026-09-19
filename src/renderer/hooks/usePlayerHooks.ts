@@ -54,6 +54,8 @@ const isTemporaryPlaybackUrl = (url?: string) => {
       hostname.includes('migu') ||
       hostname.includes('kugou') ||
       hostname.includes('bilivideo.com') ||
+      hostname.includes('music.126.net') ||
+      hostname.includes('music.163.com') ||
       parsedUrl.searchParams.has('token') ||
       parsedUrl.searchParams.has('expires') ||
       parsedUrl.searchParams.has('expire') ||

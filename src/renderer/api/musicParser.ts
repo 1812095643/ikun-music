@@ -42,6 +42,7 @@ const CACHE_CONFIG = {
   MAX_RETRY_COUNT: 2,
   RETRY_DELAY: 1000
 };
+const MUSIC_CACHE_SCHEMA_VERSION = '2';
 
 /**
  * 内存失败缓存（替代 IndexedDB，更轻量且应用重启后自动失效）
@@ -68,7 +69,9 @@ const buildMusicCacheKey = (id: number | string, song: SongResult, musicSources?
   const sourceKey = (musicSources || []).join(',');
   const title = normalizeCacheText(song.name);
   const artist = normalizeCacheText(getSongArtistText(song));
-  return [source, id, title, artist, sourceKey].join('|');
+  // 外站播放地址的来源和有效期规则已更新，旧版本缓存可能仍指向短试听或已过期直链。
+  // 升级缓存键让首轮播放重新解析，避免把旧坏链继续交给播放器。
+  return [MUSIC_CACHE_SCHEMA_VERSION, source, id, title, artist, sourceKey].join('|');
 };
 
 const isTemporaryPlaybackUrl = (url?: string) => {
@@ -84,6 +87,8 @@ const isTemporaryPlaybackUrl = (url?: string) => {
       hostname.includes('migu') ||
       hostname.includes('kugou') ||
       hostname.includes('bilivideo.com') ||
+      hostname.includes('music.126.net') ||
+      hostname.includes('music.163.com') ||
       parsedUrl.searchParams.has('token') ||
       parsedUrl.searchParams.has('expires') ||
       parsedUrl.searchParams.has('expire') ||

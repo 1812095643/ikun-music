@@ -1,6 +1,6 @@
-import axios from 'axios';
-
 import type { MusicSourceType } from '@/types/music';
+
+import { assertExternalOk, requestExternalMusic } from './externalMusicRequest';
 
 /**
  * GD音乐台解析服务
@@ -150,10 +150,15 @@ async function searchAndGetUrl(
   const searchUrl = `${baseUrl}?types=search&source=${source}&name=${encodeURIComponent(searchQuery)}&count=1&pages=1`;
   console.log(`GD音乐台尝试音源 ${source} 搜索:`, searchUrl);
 
-  const searchResponse = await axios.get(searchUrl, { timeout: 5000 });
+  const searchResponse = await requestExternalMusic<any>(searchUrl, {
+    timeout: 5000,
+    requestPrefix: 'gdmusic-search',
+    headers: { Referer: 'https://music-api.gdstudio.xyz/' }
+  });
+  const searchData = assertExternalOk(searchResponse, 'GD音乐台搜索');
 
-  if (searchResponse.data && Array.isArray(searchResponse.data) && searchResponse.data.length > 0) {
-    const firstResult = searchResponse.data[0];
+  if (Array.isArray(searchData) && searchData.length > 0) {
+    const firstResult = searchData[0];
     if (!firstResult || !firstResult.id) {
       console.log(`GD音乐台 ${source} 搜索结果无效`);
       return null;
@@ -166,13 +171,18 @@ async function searchAndGetUrl(
     const songUrl = `${baseUrl}?types=url&source=${trackSource}&id=${trackId}&br=${quality}`;
     console.log(`GD音乐台尝试获取 ${trackSource} 歌曲URL:`, songUrl);
 
-    const songResponse = await axios.get(songUrl, { timeout: 5000 });
+    const songResponse = await requestExternalMusic<any>(songUrl, {
+      timeout: 5000,
+      requestPrefix: 'gdmusic-url',
+      headers: { Referer: 'https://music-api.gdstudio.xyz/' }
+    });
+    const songData = assertExternalOk(songResponse, 'GD音乐台播放地址');
 
-    if (songResponse.data && songResponse.data.url) {
+    if (songData && songData.url) {
       return {
-        url: songResponse.data.url,
-        br: songResponse.data.br,
-        size: songResponse.data.size || 0,
+        url: songData.url,
+        br: songData.br,
+        size: songData.size || 0,
         source: trackSource
       };
     } else {
