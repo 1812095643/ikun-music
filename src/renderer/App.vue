@@ -10,16 +10,11 @@
 
           <!-- Splash Screen Overlay -->
           <transition name="splash-fade">
-            <div v-if="showSplash && !isLyricWindow && !isTrayPanelWindow" class="splash-screen">
-              <div class="splash-content">
-                <div class="splash-logo-container">
-                  <img src="@/assets/logo.png" class="splash-logo" alt="logo" />
-                  <div class="splash-spinner-disc"></div>
-                </div>
-                <h1 class="splash-title">IKUN 音乐</h1>
-                <p class="splash-subtitle">让生活充满音乐</p>
-              </div>
-            </div>
+            <startup-splash
+              v-if="showSplash && !isLyricWindow && !isTrayPanelWindow"
+              :ready="router.currentRoute.value.path !== '/' || homeDataReady"
+              @complete="showSplash = false"
+            />
           </transition>
         </n-message-provider>
       </n-dialog-provider>
@@ -34,6 +29,8 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
+import StartupSplash from '@/components/common/StartupSplash.vue';
+import { homeDataReady } from '@/services/startupReadiness';
 import { usePlayerStore } from '@/store/modules/player';
 import { usePlayerCoreStore } from '@/store/modules/playerCore';
 import { useSettingsStore } from '@/store/modules/settings';
@@ -479,9 +476,6 @@ watch(
 );
 
 onMounted(async () => {
-  // 页面已经挂载后立即让出启动遮罩；旧的固定 1.5 秒延迟会挡住已经可操作的首页。
-  showSplash.value = false;
-
   if (isTrayPanelWindow.value) {
     showSplash.value = false;
     return;
@@ -587,103 +581,15 @@ onUnmounted(() => {
   font-size: 14px;
 }
 
-/* Splash Screen CSS */
-.splash-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 999999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--qqm-bg, #f7f8fa);
-  color: var(--qqm-text, #151922);
-}
-
-.dark .splash-screen {
-  background: var(--qqm-bg, #111315);
-  color: var(--qqm-text, #f4f7f8);
-}
-
-.splash-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.splash-logo-container {
-  position: relative;
-  width: 96px;
-  height: 96px;
-  margin-bottom: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.splash-logo {
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  z-index: 2;
-  border-radius: 9999px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.splash-spinner-disc {
-  position: absolute;
-  width: 96px;
-  height: 96px;
-  border-radius: 9999px;
-  border: 2.5px solid transparent;
-  border-top-color: var(--qqm-primary, #1ecf73);
-  border-bottom-color: var(--qqm-primary, #1ecf73);
-  animation: spin-clockwise 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  z-index: 1;
-}
-
-.splash-title {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: 5px;
-  margin-bottom: 8px;
-  background: linear-gradient(
-    135deg,
-    var(--qqm-primary, #1ecf73) 0%,
-    var(--qqm-primary-strong, #0dbd62) 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.splash-subtitle {
-  font-size: 13px;
-  color: var(--qqm-muted, #6f7580);
-  font-weight: 600;
-  letter-spacing: 3px;
-  opacity: 0.8;
-}
-
-@keyframes spin-clockwise {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* transition fade out */
-.splash-fade-enter-active,
 .splash-fade-leave-active {
-  transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: opacity 260ms ease;
 }
-
-.splash-fade-enter-from,
 .splash-fade-leave-to {
   opacity: 0;
-  transform: scale(1.04);
-  filter: blur(8px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .splash-fade-leave-active {
+    transition-duration: 1ms;
+  }
 }
 </style>

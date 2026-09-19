@@ -35,7 +35,7 @@ import { computed, h } from 'vue';
 
 import type { SongResult } from '@/types/music';
 import { isDesktopRuntime } from '@/utils';
-import type { DownloadQualityOption } from '@/utils/downloadQuality';
+import { DOWNLOAD_QUALITY_OPTIONS } from '@/utils/downloadQuality';
 
 const props = withDefaults(
   defineProps<{
@@ -66,36 +66,12 @@ const loadDownloadModule = async () => {
 };
 
 const qualityOptions = computed(() =>
-  DOWNLOAD_QUALITY_OPTIONS_FALLBACK.map((item) => ({
+  DOWNLOAD_QUALITY_OPTIONS.map((item) => ({
     label: `${item.label} · ${item.description}`,
     key: item.key,
     icon: () => h('i', { class: item.extension === 'flac' ? 'ri-disc-line' : 'ri-music-2-line' })
   }))
 );
-
-const DOWNLOAD_QUALITY_OPTIONS_FALLBACK: DownloadQualityOption[] = [
-  {
-    key: 'standard',
-    label: '标准 MP3',
-    description: '128kbps',
-    apiType: '128kmp3',
-    extension: 'mp3'
-  },
-  {
-    key: 'high',
-    label: '高品质 MP3',
-    description: '320kbps',
-    apiType: '320kmp3',
-    extension: 'mp3'
-  },
-  {
-    key: 'lossless',
-    label: '无损 FLAC',
-    description: '无损',
-    apiType: '2000kflac',
-    extension: 'flac'
-  }
-];
 
 const handleQualitySelect = async (quality: string | number) => {
   if (!props.item) return;

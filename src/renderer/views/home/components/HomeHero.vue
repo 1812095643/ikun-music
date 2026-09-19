@@ -310,6 +310,7 @@ import { useRouter } from 'vue-router';
 import { getPersonalFM, getPersonalizedPlaylist } from '@/api/home';
 import { fmTrash } from '@/api/music';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
+import { markHomeReady } from '@/services/startupReadiness';
 import {
   useIntelligenceModeStore,
   usePlayerCoreStore,
@@ -663,7 +664,7 @@ const toggleIntelligenceMode = () => {
 // ==================== Lifecycle ====================
 
 onMounted(() => {
-  fetchHeroData();
+  void fetchHeroData().finally(() => markHomeReady('hero'));
 });
 
 onActivated(() => {

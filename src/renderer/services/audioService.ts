@@ -1,85 +1,35 @@
 import { Howl, Howler } from 'howler';
-import Tuna from 'tunajs';
+
+import {
+  type AudioEffectPreset,
+  type AudioEffectSettings,
+  AudioEffectsRack,
+  getEffectPreset
+} from './audioEffects';
+export {
+  AUDIO_EFFECT_PRESET_OPTIONS,
+  type AudioEffectPreset,
+  type AudioEffectSettings
+} from './audioEffects';
 
 import type { AudioOutputDevice } from '@/types/audio';
 import type { SongResult } from '@/types/music';
 import { isDesktopRuntime } from '@/utils';
 import { resolveAudioUrl } from '@/utils/audioUrl';
 
-export type AudioEffectPreset = 'off' | 'ktv' | 'studio' | 'spatial3d' | 'concert';
-
-export type AudioEffectPresetOption = {
-  value: AudioEffectPreset;
-  label: string;
-  description: string;
-  icon: string;
-};
-
-export const AUDIO_EFFECT_PRESET_OPTIONS: AudioEffectPresetOption[] = [
-  {
-    value: 'off',
-    label: '原声',
-    description: '不添加空间音效',
-    icon: 'ri-volume-up-line'
-  },
-  {
-    value: 'ktv',
-    label: 'KTV',
-    description: '增强回声和人声空间感',
-    icon: 'ri-mic-line'
-  },
-  {
-    value: 'studio',
-    label: '录音棚',
-    description: '轻压缩和短混响，声音更稳',
-    icon: 'ri-record-circle-line'
-  },
-  {
-    value: 'spatial3d',
-    label: '3D环绕',
-    description: '左右声场轻微游移，提升包围感',
-    icon: 'ri-surround-sound-line'
-  },
-  {
-    value: 'concert',
-    label: '演唱会',
-    description: '大空间混响和延迟',
-    icon: 'ri-live-line'
-  }
-];
-
-type TunaEffectNode = {
-  input: AudioNode;
-  output: AudioNode;
-  disconnect?: () => void;
-};
-
-type EffectNode = AudioNode | TunaEffectNode;
-
-type ReverbEffectNode = TunaEffectNode & {
-  convolver: ConvolverNode;
-  dry: GainNode;
-  wet: GainNode;
-};
-
 const DEFAULT_PLAYBACK_FADE_DURATION_MS = 650;
-
-const isTunaEffectNode = (node: EffectNode): node is TunaEffectNode => {
-  return Boolean((node as TunaEffectNode).input && (node as TunaEffectNode).output);
-};
 
 function normalizeAudioUrl(url: string): string {
   return resolveAudioUrl(url);
 }
 
-function shouldBypassAudioGraph(url: string, track?: SongResult | null): boolean {
-  if (track?.source === 'kuwo') return true;
+function shouldBypassAudioGraph(url: string): boolean {
   const normalizedUrl = normalizeAudioUrl(url);
   if (!/^https?:\/\//i.test(normalizedUrl)) return false;
 
   try {
     const hostname = new URL(normalizedUrl).hostname.toLowerCase();
-    if (hostname === '127.0.0.1' || hostname === 'localhost') return false;
+    if (hostname === 'musicstream.localhost' || hostname === 'asset.localhost') return false;
     // 根因：酷我、米咕、酷狗等在线直链通常没有 Access-Control-Allow-Origin。
     // HTMLAudioElement 可以直接播放这种跨域媒体，但一旦接入 createMediaElementSource
     // 做 EQ/WebAudio 处理，浏览器会把输出静音，表现就是“按钮变暂停但没有声音”。
@@ -104,12 +54,9 @@ class AudioService {
 
   private gainNode: GainNode | null = null;
 
-  private tuna: any = null;
-
-  private effectNodes: EffectNode[] = [];
-
-  private pannerAutomationTimer: NodeJS.Timeout | null = null;
-
+  private effectRack: AudioEffectsRack | null = null;
+  private effectSettings: AudioEffectSettings = { mix: 42, space: 26 };
+  private effectComparing = false;
   private fadeTimer: NodeJS.Timeout | null = null;
 
   private bypass = false;
@@ -198,6 +145,9 @@ class AudioService {
   }
 
   constructor() {
+    // Howler 的自动休眠只跟踪它自己的 WebAudio 声音，不识别本服务接入的 HTML5 媒体源。
+    // 由实际播放/暂停事件管理上下文，避免在线音效播到 30 秒后被错误挂起。
+    Howler.autoSuspend = false;
     if ('mediaSession' in navigator) {
       this.initMediaSession();
     }
@@ -205,6 +155,16 @@ class AudioService {
     const bypassState = localStorage.getItem('eqBypass');
     this.bypass = bypassState ? JSON.parse(bypassState) : false;
     this.effectPreset = this.loadEffectPreset();
+    try {
+      const saved = JSON.parse(localStorage.getItem('audioEffectSettings') || '{}');
+      const defaults = getEffectPreset(this.effectPreset);
+      this.effectSettings = {
+        mix: this.effectValue(saved.mix, defaults?.mix ?? 42),
+        space: this.effectValue(saved.space, defaults?.space ?? 26)
+      };
+    } catch {
+      /* 旧配置损坏时使用默认值 */
+    }
 
     // 页面加载时立即强制重置操作锁
     this.forceResetOperationLock();
@@ -350,15 +310,64 @@ class AudioService {
     return this.effectPreset;
   }
 
-  public setEffectPreset(preset: AudioEffectPreset) {
-    this.effectPreset = AUDIO_EFFECT_PRESET_OPTIONS.some((option) => option.value === preset)
-      ? preset
-      : 'off';
-    localStorage.setItem('audioEffectPreset', this.effectPreset);
+  private effectValue(value: unknown, fallback: number) {
+    return typeof value === 'number' && Number.isFinite(value)
+      ? Math.max(0, Math.min(100, value))
+      : fallback;
+  }
 
-    if (this.source && this.gainNode && this.context) {
-      this.applyBypassState();
+  public getEffectsState() {
+    return {
+      preset: this.effectPreset,
+      settings: { ...this.effectSettings },
+      comparing: this.effectComparing,
+      available: this.isAudioEffectAvailable(),
+      hasTrack: !!this.currentTrack
+    };
+  }
+
+  private notifyEffects() {
+    this.emit('effects-change', this.getEffectsState());
+  }
+
+  public setEffectPreset(preset: AudioEffectPreset) {
+    this.effectPreset = getEffectPreset(preset) ? preset : 'off';
+    this.effectComparing = false;
+    const defaults = getEffectPreset(this.effectPreset);
+    if (defaults) {
+      this.effectSettings = { mix: defaults.mix, space: defaults.space };
+      localStorage.setItem('lastAudioEffectPreset', this.effectPreset);
     }
+    localStorage.setItem('audioEffectPreset', this.effectPreset);
+    this.setEffectSettings(this.effectSettings);
+  }
+
+  public setEffectEnabled(enabled: boolean) {
+    if (!enabled && this.effectPreset !== 'off') {
+      localStorage.setItem('lastAudioEffectPreset', this.effectPreset);
+    }
+    const previous = localStorage.getItem('lastAudioEffectPreset') as AudioEffectPreset;
+    this.effectPreset = enabled ? (getEffectPreset(previous) ? previous : 'studio') : 'off';
+    this.effectComparing = false;
+    localStorage.setItem('audioEffectPreset', this.effectPreset);
+    this.effectRack?.configure(this.effectPreset, this.effectSettings);
+    this.notifyEffects();
+  }
+
+  public setEffectSettings(settings: Partial<AudioEffectSettings>) {
+    this.effectSettings = {
+      mix: this.effectValue(settings.mix, this.effectSettings.mix),
+      space: this.effectValue(settings.space, this.effectSettings.space)
+    };
+    localStorage.setItem('audioEffectSettings', JSON.stringify(this.effectSettings));
+    this.effectRack?.configure(this.effectPreset, this.effectSettings, this.effectComparing);
+    this.notifyEffects();
+  }
+
+  public compareOriginal(compare: boolean) {
+    this.effectComparing = compare;
+    this.effectRack?.configure(this.effectPreset, this.effectSettings, compare);
+    this.notifyEffects();
   }
 
   public isAudioEffectAvailable(): boolean {
@@ -366,18 +375,16 @@ class AudioService {
   }
 
   private loadEffectPreset(): AudioEffectPreset {
-    const savedPreset = localStorage.getItem('audioEffectPreset') as AudioEffectPreset | null;
-    return AUDIO_EFFECT_PRESET_OPTIONS.some((option) => option.value === savedPreset)
-      ? (savedPreset as AudioEffectPreset)
-      : 'off';
+    const saved = localStorage.getItem('audioEffectPreset') as AudioEffectPreset;
+    return getEffectPreset(saved) ? saved : 'off';
   }
 
   public setEQFrequencyGain(frequency: string, gain: number) {
     const filterIndex = this.frequencies.findIndex((f) => f.toString() === frequency);
     if (filterIndex !== -1 && this.filters[filterIndex]) {
       this.filters[filterIndex].gain.setValueAtTime(gain, this.context?.currentTime || 0);
-      this.saveEQSettings(frequency, gain);
     }
+    this.saveEQSettings(frequency, gain);
   }
 
   public resetEQ() {
@@ -445,200 +452,16 @@ class AudioService {
   }
 
   private disposeAudioEffects() {
-    if (this.pannerAutomationTimer) {
-      clearInterval(this.pannerAutomationTimer);
-      this.pannerAutomationTimer = null;
-    }
-
-    this.effectNodes.forEach((node) => {
-      try {
-        if (isTunaEffectNode(node)) {
-          node.disconnect?.();
-        } else {
-          node.disconnect();
-        }
-      } catch (error) {
-        console.warn('清理音效节点时出错:', error);
-      }
-    });
-
-    this.effectNodes = [];
-    this.tuna = null;
-  }
-
-  private connectEffectNode(input: AudioNode, effect: EffectNode): AudioNode {
-    if (isTunaEffectNode(effect)) {
-      input.connect(effect.input);
-      return effect.output;
-    }
-
-    input.connect(effect);
-    return effect;
-  }
-
-  private createConvolverReverb({
-    duration,
-    decay,
-    wetGain
-  }: {
-    duration: number;
-    decay: number;
-    wetGain: number;
-  }): ReverbEffectNode {
-    const input = this.context!.createGain();
-    const output = this.context!.createGain();
-    const convolver = this.context!.createConvolver();
-    const dry = this.context!.createGain();
-    const wet = this.context!.createGain();
-    const sampleRate = this.context!.sampleRate;
-    const length = Math.max(1, Math.floor(sampleRate * duration));
-    const impulse = this.context!.createBuffer(2, length, sampleRate);
-
-    for (let channel = 0; channel < impulse.numberOfChannels; channel++) {
-      const channelData = impulse.getChannelData(channel);
-      for (let index = 0; index < length; index++) {
-        const progress = index / length;
-        channelData[index] = (Math.random() * 2 - 1) * Math.pow(1 - progress, decay);
-      }
-    }
-
-    convolver.buffer = impulse;
-    dry.gain.value = 1 - wetGain * 0.38;
-    wet.gain.value = wetGain;
-
-    // 根因：Tuna 的 Convolver 默认通过 XHR 加载 node_modules 内的 impulse 文件，
-    // 打包到 Tauri 后这个相对路径并不稳定，容易出现开发环境有混响、便携版没有混响。
-    // 解决：这里用原生 AudioBuffer 生成短脉冲响应，节点不依赖外部文件，便携版也能稳定工作。
-    input.connect(dry);
-    input.connect(convolver);
-    convolver.connect(wet);
-    dry.connect(output);
-    wet.connect(output);
-
-    return {
-      input,
-      output,
-      convolver,
-      dry,
-      wet,
-      disconnect: () => {
-        input.disconnect();
-        output.disconnect();
-        convolver.disconnect();
-        dry.disconnect();
-        wet.disconnect();
-      }
-    };
-  }
-
-  private connectGeneratedReverb(
-    input: AudioNode,
-    options: { duration: number; decay: number; wetGain: number }
-  ): AudioNode {
-    const reverb = this.createConvolverReverb(options);
-    this.effectNodes.push(reverb);
-    return this.connectEffectNode(input, reverb);
+    this.effectRack?.dispose();
+    this.effectRack = null;
   }
 
   private connectAudioEffects(input: AudioNode): AudioNode {
-    if (!this.context || this.effectPreset === 'off') return input;
-
-    try {
-      this.tuna = new Tuna(this.context);
-      let chainTail = input;
-
-      switch (this.effectPreset) {
-        case 'ktv': {
-          const delay = new this.tuna.Delay({
-            delayTime: 145,
-            feedback: 0.28,
-            wetLevel: 0.24,
-            dryLevel: 1,
-            cutoff: 4200
-          }) as TunaEffectNode;
-          this.effectNodes.push(delay);
-          chainTail = this.connectEffectNode(chainTail, delay);
-          chainTail = this.connectGeneratedReverb(chainTail, {
-            duration: 1.25,
-            decay: 2.4,
-            wetGain: 0.2
-          });
-          break;
-        }
-        case 'studio': {
-          const compressor = new this.tuna.Compressor({
-            threshold: -18,
-            makeupGain: 1.15,
-            attack: 2,
-            release: 180,
-            ratio: 3.2,
-            knee: 9,
-            automakeup: false
-          }) as TunaEffectNode;
-          this.effectNodes.push(compressor);
-          chainTail = this.connectEffectNode(chainTail, compressor);
-          chainTail = this.connectGeneratedReverb(chainTail, {
-            duration: 0.55,
-            decay: 3.2,
-            wetGain: 0.1
-          });
-          break;
-        }
-        case 'spatial3d': {
-          const chorus = new this.tuna.Chorus({
-            rate: 0.55,
-            feedback: 0.08,
-            delay: 0.0032,
-            depth: 0.24,
-            wetLevel: 0.18
-          }) as TunaEffectNode;
-          this.effectNodes.push(chorus);
-          chainTail = this.connectEffectNode(chainTail, chorus);
-
-          const panner = new this.tuna.Panner({ pan: 0 }) as TunaEffectNode;
-          this.effectNodes.push(panner);
-          chainTail = this.connectEffectNode(chainTail, panner);
-          this.startPannerAutomation(panner);
-          break;
-        }
-        case 'concert': {
-          const delay = new this.tuna.Delay({
-            delayTime: 235,
-            feedback: 0.34,
-            wetLevel: 0.2,
-            dryLevel: 1,
-            cutoff: 5200
-          }) as TunaEffectNode;
-          this.effectNodes.push(delay);
-          chainTail = this.connectEffectNode(chainTail, delay);
-          chainTail = this.connectGeneratedReverb(chainTail, {
-            duration: 2.4,
-            decay: 2.05,
-            wetGain: 0.3
-          });
-          break;
-        }
-      }
-
-      return chainTail;
-    } catch (error) {
-      console.warn('音效链路初始化失败，已回退到原声输出:', error);
-      this.disposeAudioEffects();
-      return input;
-    }
-  }
-
-  private startPannerAutomation(panner: TunaEffectNode) {
-    const panParam = (panner as any).pan as AudioParam | undefined;
-    if (!panParam || !this.context) return;
-
-    let phase = 0;
-    this.pannerAutomationTimer = setInterval(() => {
-      if (!this.context || this.context.state === 'closed') return;
-      phase += 0.16;
-      const panValue = Math.sin(phase) * 0.34;
-      panParam.setTargetAtTime(panValue, this.context.currentTime, 0.16);
-    }, 140);
+    if (!this.context) return input;
+    this.effectRack = new AudioEffectsRack(this.context);
+    this.effectRack.configure(this.effectPreset, this.effectSettings, this.effectComparing);
+    input.connect(this.effectRack.input);
+    return this.effectRack.output;
   }
 
   private async setupEQ(sound: Howl) {
@@ -1062,7 +885,6 @@ class AudioService {
             this.currentTrack = track;
           }
 
-          const bypassAudioGraph = shouldBypassAudioGraph(url, track);
           let newSound: Howl;
 
           if (existingSound) {
@@ -1086,6 +908,8 @@ class AudioService {
               format: ['mp3', 'aac']
             });
           }
+
+          const bypassAudioGraph = shouldBypassAudioGraph(String((newSound as any)._src || url));
 
           // 统一设置事件处理
           const setupEvents = () => {
@@ -1223,6 +1047,7 @@ class AudioService {
                     console.log('audioService: 音频加载成功');
                     this.updateMediaSessionMetadata(track);
                     this.updateMediaSessionPositionState();
+                    this.notifyEffects();
                     this.emit('load');
 
                     if (!isHotSwap) {
@@ -1273,6 +1098,7 @@ class AudioService {
 
             soundInstance.on('play', () => {
               if (this.currentSound === soundInstance) {
+                if (this.context?.state === 'suspended') void this.context.resume();
                 this.updateMediaSessionState(true);
                 this.emit('play');
               }
@@ -1280,6 +1106,7 @@ class AudioService {
 
             soundInstance.on('pause', () => {
               if (this.currentSound === soundInstance) {
+                if (this.context?.state === 'running') void this.context.suspend();
                 this.updateMediaSessionState(false);
                 this.emit('pause');
               }
@@ -1342,6 +1169,7 @@ class AudioService {
       }
 
       this.currentTrack = null;
+      this.notifyEffects();
       if ('mediaSession' in navigator) {
         navigator.mediaSession.playbackState = 'none';
       }
@@ -1411,6 +1239,7 @@ class AudioService {
     if (!this.currentSound) return;
 
     try {
+      if (this.context?.state === 'suspended') void this.context.resume();
       if (this.isPlaybackFadeEnabled()) {
         this.setOutputVolume(0);
       }
@@ -1437,6 +1266,9 @@ class AudioService {
             sound.stop();
             sound.unload();
             this.currentSound = null;
+            this.currentTrack = null;
+            void this.disposeEQ(true);
+            this.notifyEffects();
           } else {
             sound.stop();
             sound.unload();
@@ -1674,8 +1506,7 @@ class AudioService {
       // source/gainNode 会暂时为 null，导致误判为未播放
       const isPlaying = this.currentSound.playing();
       const isLoading = this.isLoading();
-      const usesDirectElementOutput =
-        this.currentTrack?.source === 'kuwo' || shouldBypassAudioGraph('', this.currentTrack);
+      const usesDirectElementOutput = !this.source;
       const contextRunning =
         usesDirectElementOutput || !Howler.ctx || Howler.ctx.state === 'running';
 

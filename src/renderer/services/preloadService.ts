@@ -1,7 +1,8 @@
-import { Howl } from 'howler';
+import { Howl, Howler } from 'howler';
 
 import type { SongResult } from '@/types/music';
-import { resolveAudioUrl } from '@/utils/audioUrl';
+
+import { prepareAudioTransport } from './audioTransport';
 
 const getSongArtistText = (song: SongResult) => {
   const artists = song.ar?.length ? song.ar : song.artists || song.song?.artists || [];
@@ -110,7 +111,19 @@ class PreloadService {
     }
 
     // 创建初始音频实例
-    const sound = await this._createSound(song.playMusicUrl, cacheKey);
+    let sound: Howl;
+    try {
+      sound = await this._createSound(song.playMusicUrl, cacheKey);
+    } catch (error) {
+      if (
+        (error as Error)?.name === 'AbortError' ||
+        this.canceledKeys.has(cacheKey) ||
+        !/^https?:\/\//i.test(song.playMusicUrl)
+      )
+        throw error;
+      // 少数音源不接受 Range。原生通道不可用时退回直出，保留播放，音效面板显示实际状态。
+      sound = await this._createSound(song.playMusicUrl, cacheKey, true);
+    }
 
     // 检查时长
     const duration = sound.duration();
@@ -146,7 +159,8 @@ class PreloadService {
     return sound;
   }
 
-  private _createSound(url: string, cacheKey: string): Promise<Howl> {
+  private async _createSound(url: string, cacheKey: string, direct = false): Promise<Howl> {
+    const transport = await prepareAudioTransport(url, direct);
     return new Promise((resolve, reject) => {
       let settled = false;
       const finish = (error?: unknown) => {
@@ -160,18 +174,37 @@ class PreloadService {
         } else resolve(sound);
       };
       const sound = new Howl({
-        src: [resolveAudioUrl(url)],
+        src: [transport.url],
+        format: [url.split('?')[0].match(/\.(mp3|aac|flac|ogg|m4a|wav|opus)$/i)?.[1] || 'mp3'],
         html5: true,
         preload: false,
         autoplay: false,
         onload: () => finish(),
         onloaderror: (_, err) => finish(err || new Error('音频暂时无法加载'))
       });
+      const unload = sound.unload.bind(sound);
+      sound.unload = () => {
+        transport.release();
+        const result = unload();
+        // 接入过 WebAudio 的媒体元素永远不能恢复直出，不能让 Howler 把它复用给原声回退。
+        const pool = (Howler as any)._html5AudioPool as HTMLAudioElement[] | undefined;
+        if (pool) (Howler as any)._html5AudioPool = pool.filter((node) => !(node as any).source);
+        return result;
+      };
       this.cancelLoads.set(cacheKey, () =>
         finish(new DOMException('播放请求已取消', 'AbortError'))
       );
       const timer = setTimeout(() => finish(new Error('音频加载超时，请稍后重试')), 20000);
       sound.load();
+      const node = (sound as any)._sounds?.[0]?._node as HTMLAudioElement | undefined;
+      if (node) {
+        const useCors =
+          transport.url.includes('musicstream.localhost') ||
+          transport.url.startsWith('musicstream:') ||
+          url.startsWith('local:///');
+        node.crossOrigin = useCors ? 'anonymous' : null;
+        node.load();
+      }
     });
   }
 

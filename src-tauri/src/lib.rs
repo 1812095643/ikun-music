@@ -1,4 +1,6 @@
+mod audio_stream;
 mod downloads;
+use audio_stream::{register_audio_stream, release_audio_stream};
 #[cfg(not(mobile))]
 mod music_service;
 use downloads::{download_music_file, read_local_lyrics, DownloadManager};
@@ -1163,7 +1165,7 @@ fn update_tray_state(app: AppHandle, state: TrayState) -> Result<(), String> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let builder = tauri::Builder::default()
+    let builder = audio_stream::install(tauri::Builder::default())
         .manage(MiniWindowRestoreState(Mutex::new(None)))
         .manage(DownloadManager::default())
         .setup(|app| {
@@ -1190,6 +1192,8 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             get_default_settings,
+            register_audio_stream,
+            release_audio_stream,
             get_platform,
             get_arch,
             get_downloads_path,

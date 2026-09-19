@@ -73,6 +73,7 @@ import { useRouter } from 'vue-router';
 import { getHotSinger } from '@/api/home';
 import { getSearch } from '@/api/search';
 import { SEARCH_TYPE } from '@/const/bar-const';
+import { markHomeReady } from '@/services/startupReadiness';
 import { useSearchStore } from '@/store/modules/search';
 import { getImgUrl, isMobile } from '@/utils';
 
@@ -241,7 +242,7 @@ const updateScrollIndicators = () => {
 };
 
 onMounted(() => {
-  fetchArtists();
+  void fetchArtists().finally(() => markHomeReady('artists'));
 
   // Add scroll listener for fade indicators
   if (scrollContainer.value) {

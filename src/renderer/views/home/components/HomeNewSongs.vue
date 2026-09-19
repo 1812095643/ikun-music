@@ -42,6 +42,7 @@ import { useI18n } from 'vue-i18n';
 
 import { getRecommendMusic } from '@/api/home';
 import SongItem from '@/components/common/SongItem.vue';
+import { markHomeReady } from '@/services/startupReadiness';
 import { usePlayerStore } from '@/store';
 import { SongResult } from '@/types/music';
 import { isMobile } from '@/utils';
@@ -97,7 +98,7 @@ const playAll = () => {
 };
 
 onMounted(() => {
-  fetchSongs();
+  void fetchSongs().finally(() => markHomeReady('songs'));
 });
 </script>
 

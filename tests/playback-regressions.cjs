@@ -270,3 +270,58 @@ for (const cancel of [false, true]) {
     core.$dispose();
   });
 }
+
+test('media transport failure falls back to direct audio and releases its lease', async () => {
+  const attempts = [];
+  const released = [];
+  class TestHowl {
+    constructor(options) { this.options = options; this._state = 'loading'; }
+    load() {
+      setTimeout(() => {
+        if (this.options.src[0].includes('musicstream')) this.options.onloaderror(0, 4);
+        else { this._state = 'loaded'; this.options.onload(); }
+      }, 0);
+      return this;
+    }
+    state() { return this._state; }
+    duration() { return 320; }
+    unload() { this._state = 'unloaded'; return this; }
+  }
+  const { preloadService } = load('services/preloadService.ts', {
+    howler: { Howl: TestHowl, Howler: { _html5AudioPool: [] } },
+    './audioTransport': { prepareAudioTransport: async (url, direct) => {
+      attempts.push(direct);
+      return { url: direct ? url : 'http://musicstream.localhost/test', release: () => released.push(direct) };
+    } }
+  });
+  const sound = await preloadService.load({ ...song(1), dt: 320000, playMusicUrl: 'https://audio.test/full.mp3' });
+  assert.deepEqual(attempts, [false, true]);
+  assert.deepEqual(released, [false]);
+  assert.equal(sound.state(), 'loaded');
+  preloadService.consume({ ...song(1), dt: 320000, playMusicUrl: 'https://audio.test/full.mp3' });
+  sound.unload();
+  assert.deepEqual(released, [false, true]);
+});
+
+test('cancelling an audio load releases native media without trying direct playback', async () => {
+  const began = deferred();
+  let released = 0, prepared = 0;
+  class TestHowl {
+    constructor(options) { this.options = options; }
+    load() { began.resolve(); return this; }
+    unload() { return this; }
+  }
+  const { preloadService } = load('services/preloadService.ts', {
+    howler: { Howl: TestHowl, Howler: { _html5AudioPool: [] } },
+    './audioTransport': { prepareAudioTransport: async () => {
+      prepared++;
+      return { url: 'http://musicstream.localhost/test', release: () => released++ };
+    } }
+  });
+  const task = preloadService.load({ ...song(1), playMusicUrl: 'https://audio.test/full.mp3' });
+  await began.promise;
+  preloadService.cancel(1);
+  await assert.rejects(task, { name: 'AbortError' });
+  assert.equal(prepared, 1);
+  assert.equal(released, 1);
+});

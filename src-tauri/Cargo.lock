@@ -1905,6 +1905,7 @@ name = "ikun-music-tauri"
 version = "5.3.3"
 dependencies = [
  "dunce",
+ "http-range",
  "serde",
  "serde_json",
  "sha2",

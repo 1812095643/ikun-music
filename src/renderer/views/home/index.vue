@@ -45,6 +45,7 @@ import { defineAsyncComponent } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 
+import { beginHomeStartup } from '@/services/startupReadiness';
 import { isAndroidRuntime } from '@/utils';
 
 import HomeHero from './components/HomeHero.vue';
@@ -60,6 +61,7 @@ defineOptions({
   name: 'Home'
 });
 
+beginHomeStartup(isAndroidRuntime);
 const { t } = useI18n();
 const router = useRouter();
 </script>

@@ -10,7 +10,7 @@
   >
     <n-tooltip trigger="hover" :z-index="9999999">
       <template #trigger>
-        <div class="advanced-controls-btn">
+        <button type="button" class="advanced-controls-btn" aria-label="播放设置">
           <i class="iconfont ri-settings-3-line"></i>
 
           <!-- 激活状态的小标记 -->
@@ -19,7 +19,7 @@
               <i class="ri-time-line"></i>
             </span>
           </div>
-        </div>
+        </button>
       </template>
       {{ t('player.playBar.advancedControls') }}
     </n-tooltip>
@@ -47,12 +47,7 @@
     :unstable-show-mask="false"
     :z-index="9999999"
   >
-    <div class="effects-modal-content">
-      <div class="modal-close" @click="showAudioEffectsModal = false">
-        <i class="ri-close-line"></i>
-      </div>
-      <audio-effects-panel />
-    </div>
+    <audio-effects-panel @close="showAudioEffectsModal = false" />
   </n-modal>
 
   <!-- 定时关闭弹窗 -->
@@ -116,7 +111,7 @@ import { useI18n } from 'vue-i18n';
 import EqControl from '@/components/EQControl.vue';
 import AudioEffectsPanel from '@/components/player/AudioEffectsPanel.vue';
 import SleepTimer from '@/components/player/SleepTimer.vue';
-import { audioService } from '@/services/audioService';
+import { useAudioEffects } from '@/hooks/useAudioEffects';
 import { usePlayerStore } from '@/store/modules/player';
 
 const { t } = useI18n();
@@ -128,7 +123,8 @@ const showEQModal = ref(false);
 const showAudioEffectsModal = ref(false);
 const showSpeedModal = ref(false);
 const isEQVisible = ref(false);
-const currentEffectPreset = ref(audioService.getEffectPreset());
+const effectsState = useAudioEffects();
+const currentEffectPreset = computed(() => effectsState.value.preset);
 
 // 监听弹窗状态，确保互斥
 watch(showEQModal, (newValue) => {
@@ -145,8 +141,6 @@ watch(showAudioEffectsModal, (newValue) => {
     showEQModal.value = false;
     playerStore.showSleepTimer = false;
     showSpeedModal.value = false;
-  } else {
-    currentEffectPreset.value = audioService.getEffectPreset();
   }
 });
 

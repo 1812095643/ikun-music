@@ -61,6 +61,7 @@ import { useRouter } from 'vue-router';
 import { getTopAlbum } from '@/api/home';
 import { getAlbum } from '@/api/list';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
+import { markHomeReady } from '@/services/startupReadiness';
 import { usePlayerCoreStore } from '@/store/modules/playerCore';
 import { usePlaylistStore } from '@/store/modules/playlist';
 import { isDesktopRuntime, isMobile } from '@/utils';
@@ -190,6 +191,6 @@ const playAlbum = async (album: any) => {
 };
 
 onMounted(() => {
-  fetchAlbums();
+  void fetchAlbums().finally(() => markHomeReady('albums'));
 });
 </script>
