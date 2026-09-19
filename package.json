@@ -1,6 +1,6 @@
 {
   "name": "ikun-music",
-  "version": "5.3.3",
+  "version": "5.3.4",
   "description": "ikun音乐",
   "scripts": {
     "prepare": "husky",
