@@ -1,19 +1,19 @@
 {
-  "version": "5.3.3",
-  "notes": "ikun音乐 5.3.3\n\n- 修复快速连续上一首、下一首时的卡顿和错播，取消过期加载及延迟重试，只播放最后选择的歌曲。\n- 修复循环播放错误恢复到歌曲结尾、反复触发切歌的问题。\n- 补齐搜索封面，保留 Live 等歌曲版本信息，避免不同版本的音频与歌词混用。\n- 下载目录可自定义；已下载和本地音乐按实际目录自动扫描，新增、移动和删除文件后可刷新同步。\n- 音频改为原生流式下载，最多同时处理三个任务，显示实际下载进度和未完成原因。\n- 默认随歌曲保存同名 LRC 歌词；本地音乐可联网搜索、替换歌词，并写回文件供离线使用。\n- 修复酷狗歌词编码和酷我歌词响应解析，拦截与歌曲时长明显不符的异常音频。\n\n安装版可在应用内检查更新；便携版请完整解压并保留 runtime 目录。\n",
-  "pub_date": "2026-09-16T04:44:51.387Z",
+  "version": "5.3.4",
+  "notes": "ikun音乐 5.3.4\n\n- 修复默认音源无法播放、播放全部连续报错的问题，对齐安卓端取流方式，并校验歌曲身份与音频时长。\n- 播放和下载共用取流接口，支持标准音质、高品质、无损音质；保留音源实际返回的音频格式。\n- 遇到失效音频链接时自动尝试备用音源，取消过期请求，减少切歌后错播和残留播放。\n- 开屏品牌动画结束后多停留至少 1 秒，并等待首页数据；慢网时可手动进入首页。\n- 新增录音棚、KTV、3D 环绕、演唱会、音乐厅、清澈人声、深夜聆听、低音律动共 8 种实时音效预设。\n- 音效支持强度与空间感调节、原声对比、恢复预设和自动保存，适配浅色与深色界面。\n- 完善桌面端在线音频分段传输和进度拖动，修复音效开启后长时间播放可能静音的问题。\n\n音效入口：播放设置 → 音效。实际音质取决于音源返回；不支持音效处理的音源会显示直出状态。\n\n安装版可在应用内检查更新；便携版请完整解压并保留 runtime 目录。\n",
+  "pub_date": "2026-09-19T12:52:07.898Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSdTZodm1TRFFtc1JieUN4dk8zYTJOby9pbDZwNGNaTXFEMzUzMDVQb3dTU1lQOTN1R2s3bjZNd0QvVkpyMENlQTdVQ05Ua0tHMjVWZnprcXUrSGs5VjlBYnFGVXhxc3dRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg5NTMzODAwCWZpbGU6aWt1bumfs+S5kF81LjMuM194NjQtc2V0dXAuZXhlCkM3aEtXeUdWemlGcFhFWEw5bnl5ZnczcURGNTIwZlNFazM2bm5LVTFlWmlZN1lVT25uQnpoOWJ6SEYvNlU3a0R2aEp5c3Nsano3VG5ia1hLaUZ6YkJBPT0K",
-      "url": "https://gitee.com/caixukun66666666/ikun-music/releases/download/v5.3.3/ikun-music-5.3.3-setup.exe",
-      "sha256": "3e6cec007e266812c402566cbff1bfa4713d92fbfdaa359d6bd0fb15e35a033b",
-      "size": 40859885
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSdTZodm1TRFFtc1FQendNZzZZczlxa09WVzFYRjN3eHFzWWpYV2lSeW1pUjluTHd2Umw2N2p0cW1wMzlsa1hTWmkwOGVSMlBtcDlUdHc0VXYvTkkrcWdFOEd2dDNweEFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg5ODIyMzAwCWZpbGU6aWt1bumfs+S5kF81LjMuNF94NjQtc2V0dXAuZXhlCjdEeHFGd2FpcTg2UlYrR2ZQNUN2UTRpbGZJZ3NpUjZ4TnRCOUQydFNNajdYdXExcHFGUmUrN0ZrZ2RuWkUwbUFVZzQ3eHB6OXVKeHU1bWl0Q0V3YUJRPT0K",
+      "url": "https://gitee.com/caixukun66666666/ikun-music/releases/download/v5.3.4/ikun-music-5.3.4-setup.exe",
+      "sha256": "899f0a065dd35436ac30f2a1383a2e46c5cfe2a5d95c94bb7da7564576bf2f31",
+      "size": 40871055
     },
     "windows-x86_64-portable": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSdTZodm1TRFFtc1VqQ3ZXY0M4OTlOclZXMmRKUEtmWEw5dG5qV1JXNmNRU3laY0VJaTlBV0tqd3dWY25VUUd6MW9xdlBpVFVid09laWV6bFZCYmV5VDhpM3hYdEpWTUEwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg5NTMzODkwCWZpbGU6aWt1bi1tdXNpYy01LjMuMy1wb3J0YWJsZS56aXAKa2lWdzM0YU1vZUlXQ0xNWWd0UXhsWUpOZWFidDYvb213SENHdDNHV3JxcGNwQ2N2M1lQbHRtOUFLWExVZDFOV3RrY3J6Wm9rWlhjMk9LYVFuOS9OQ1E9PQo=",
-      "url": "https://gitee.com/caixukun66666666/ikun-music/releases/download/v5.3.3/ikun-music-5.3.3-portable.zip",
-      "sha256": "983315e8e94876159ea7c2e7e6999bd4b4c4c7523358207e035f841e58a9b941",
-      "size": 58851974
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSdTZodm1TRFFtc1RhdFpTTFBwbE02ZGEvZEh1OXlVRnhlSHlzeWd3R2hBR2syNVVuUlNMOExSRFBjMEFmb0VtQTljZEFLdkRCcnc4ekwwdnpISmx2cmZpMGpzRitCT2dJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg5ODIyMzI3CWZpbGU6aWt1bi1tdXNpYy01LjMuNC1wb3J0YWJsZS56aXAKK3hyUGN0TmMzRFJMSlZ5S0JjNUhid1dVc3NNZjZNY1BkTWtOaHF4OGZEMVdtVDdwaERESGFETzkrc1ZMc3k3cEpCNXE5R3lrZWJQMC8vRW14RFZDQ0E9PQo=",
+      "url": "https://gitee.com/caixukun66666666/ikun-music/releases/download/v5.3.4/ikun-music-5.3.4-portable.zip",
+      "sha256": "ebcc0f6dd99dd04b6c8650c89b944e2d6e0c27608e0a1d0d8d858e604baff538",
+      "size": 58879236
     }
   }
 }
