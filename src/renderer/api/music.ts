@@ -4,7 +4,7 @@ import type { ILyric } from '@/types/lyric';
 import type { SongResult } from '@/types/music';
 import request from '@/utils/request';
 
-import { MusicParser, type MusicParseResult } from './musicParser';
+import { type MusicParseOptions, MusicParser, type MusicParseResult } from './musicParser';
 
 const { addData, getData, deleteData } = musicDB;
 
@@ -96,9 +96,10 @@ export const getMusicLrc = async (id: number, signal?: AbortSignal) => {
  */
 export const getParsingMusicUrl = async (
   id: number,
-  data: SongResult
+  data: SongResult,
+  options?: MusicParseOptions
 ): Promise<MusicParseResult> => {
-  return await MusicParser.parseMusic(id, data);
+  return await MusicParser.parseMusic(id, data, options);
 };
 
 // 收藏歌曲

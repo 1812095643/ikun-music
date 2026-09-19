@@ -272,6 +272,44 @@ const extractKuwoPlaybackUrl = (response: any) => {
   return normalizePlaybackUrl(payload?.data?.url || payload?.url);
 };
 
+const getNativeKuwoMusicUrl = async (rid: string, quality: string, signal?: AbortSignal) => {
+  const { requestMusicService } = await import('@/services/musicService');
+  signal?.throwIfAborted();
+  // 安卓包 libmod_gushi.so 使用 nmobi 加密取流。网页 playUrl/anti.s 会返回提示音，
+  // 不能当成同一接口；加密复用随包依赖，网络仍走可取消的原生 HTTP 通道。
+  const request = await requestMusicService('/desktop/kuwo-playback-request', {
+    id: rid,
+    quality
+  });
+  signal?.throwIfAborted();
+  if (request.status !== 200 || !request.body?.url) {
+    throw new Error('酷我取流请求暂未就绪');
+  }
+  // 相同加密参数配上浏览器 UA 会被返回 type=1 的替代音频；此路必须使用原生客户端标识。
+  const response = assertExternalOk(
+    await requestExternalMusic<string>(request.body.url, {
+      timeout: 7000,
+      signal,
+      requestPrefix: 'kuwo-native',
+      headers: { 'User-Agent': 'okhttp/3.10.0' }
+    }),
+    '酷我原生取流'
+  );
+  // 原接口是逐行 key=value，URL 内还有等号和 $，只能拆每行第一个等号。
+  const fields = Object.fromEntries(
+    String(response)
+      .split(/\r?\n/)
+      .flatMap((line) => {
+        const index = line.indexOf('=');
+        return index > 0 ? [[line.slice(0, index).trim(), line.slice(index + 1).trim()]] : [];
+      })
+  );
+  if (fields.rid && fields.rid !== rid) throw new Error('酷我返回的歌曲与请求不一致');
+  const url = normalizePlaybackUrl(fields.url);
+  if (!/^https?:\/\//i.test(url)) throw new Error('酷我暂未返回播放地址');
+  return { url, type: fields.format, bitrate: Number(fields.bitrate) * 1000 || undefined };
+};
+
 const assertPlayableKuwoUrl = async (url: string) => {
   try {
     const response = await requestKuwoHead(url, 8000);
@@ -397,6 +435,27 @@ export const getKuwoMusicUrl = async (
 ) => {
   const rid = String(id).replace(/^MUSIC_/i, '');
   const qualityOption = getKuwoDownloadQuality(quality);
+  if (isDesktopRuntime) {
+    try {
+      const result = await getNativeKuwoMusicUrl(rid, qualityOption.apiType, signal);
+      return {
+        data: {
+          code: 200,
+          message: 'success',
+          data: {
+            ...result,
+            type: result.type || qualityOption.extension,
+            source: 'kuwo',
+            quality: qualityOption.key,
+            qualityLabel: qualityOption.label
+          }
+        }
+      };
+    } catch (error) {
+      signal?.throwIfAborted();
+      console.warn('酷我原生取流暂不可用，尝试兼容接口。', error);
+    }
+  }
   const documentedUrl = `https://api.kuwo.cn/api/v1/www/music/playUrl?mid=${rid}&type=${qualityOption.apiType}&httpsStatus=1&plat=pc`;
   const fallbackFormat = qualityOption.extension === 'flac' ? 'flac' : 'mp3';
   const fallbackUrl = `https://antiserver.kuwo.cn/anti.s?type=convert_url3&rid=MUSIC_${rid}&format=${fallbackFormat}&response=json`;

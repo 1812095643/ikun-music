@@ -17,10 +17,13 @@ export const requestExternalMusic = async <T = any>(
     body?: string;
     timeout?: number;
     requestPrefix?: string;
+    signal?: AbortSignal;
   } = {}
 ): Promise<ExternalMusicHttpResponse<T>> => {
   const method = options.method || 'GET';
   const timeout = options.timeout || 15000;
+  const signal = options.signal;
+  signal?.throwIfAborted();
   const headers = {
     Accept: 'application/json,text/plain,*/*',
     'User-Agent':
@@ -30,23 +33,29 @@ export const requestExternalMusic = async <T = any>(
 
   if (isDesktopRuntime && window.desktop?.lxMusicHttpRequest) {
     // 外站请求由桌面 HTTP 插件直接执行，无需等待本地 Node 服务。
-    return (await window.desktop.lxMusicHttpRequest({
-      url,
-      requestId: buildRequestId(options.requestPrefix),
-      options: {
-        method,
-        timeout,
-        headers,
-        body: options.body
-      }
-    })) as ExternalMusicHttpResponse<T>;
+    const requestId = buildRequestId(options.requestPrefix);
+    const abort = () => window.desktop.lxMusicHttpCancel(requestId);
+    signal?.addEventListener('abort', abort, { once: true });
+    try {
+      const response = await window.desktop.lxMusicHttpRequest({
+        url,
+        requestId,
+        options: { method, timeout, headers, body: options.body }
+      });
+      signal?.throwIfAborted();
+      return response as ExternalMusicHttpResponse<T>;
+    } finally {
+      signal?.removeEventListener('abort', abort);
+    }
   }
 
   const response = await fetch(url, {
     method,
     headers,
     body: options.body,
-    signal: AbortSignal.timeout(timeout)
+    signal: signal
+      ? AbortSignal.any([signal, AbortSignal.timeout(timeout)])
+      : AbortSignal.timeout(timeout)
   });
   const rawBody = method === 'HEAD' ? '' : await response.text();
   let body: any = rawBody;

@@ -245,6 +245,22 @@ async function dispatch(message) {
   switch (message.path) {
     case '/desktop/health':
       return { status: 200, body: { running: true, transport: 'stdio', pid: process.pid } };
+    case '/desktop/kuwo-playback-request': {
+      const rid = String(query.id || '').replace(/^MUSIC_/i, '');
+      const quality = query.quality || '320kmp3';
+      if (!/^\d+$/.test(rid) || !['128kmp3', '320kmp3', '2000kflac'].includes(quality)) {
+        throw new Error('Invalid Kuwo track or quality');
+      }
+      const format = quality === '2000kflac' ? 'flac' : 'mp3';
+      const params = 'user=0&android_id=0&prod=kwplayerhd_ar_4.3.0.8&corp=kuwo&vipver=4.3.0.8' +
+        '&source=kwplayerhd_ar_4.3.0.8_tianbao_T1A_qirui.apk&notrace=0&type=convert_url2&br=' +
+        quality + '&format=' + format + '&sig=0&rid=' + rid +
+        '&priority=bitrate&loginUid=0&network=WIFI&loginSid=0&mode=down';
+      const { encryptQuery } = require('@unblockneteasemusic/server/src/kwDES');
+      return { status: 200, body: {
+        url: 'https://nmobi.kuwo.cn/mobi.s?f=kuwo&q=' + encodeURIComponent(encryptQuery(params))
+      } };
+    }
     case '/desktop/scan-local-music': {
       const files = await scanMusicFiles(query.folderPath);
       return { status: 200, body: { files, count: files.length } };

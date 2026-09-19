@@ -148,7 +148,10 @@ class PreloadService {
 
   private _createSound(url: string, cacheKey: string): Promise<Howl> {
     return new Promise((resolve, reject) => {
+      let settled = false;
       const finish = (error?: unknown) => {
+        if (settled) return;
+        settled = true;
         clearTimeout(timer);
         this.cancelLoads.delete(cacheKey);
         if (error) {
@@ -159,7 +162,7 @@ class PreloadService {
       const sound = new Howl({
         src: [resolveAudioUrl(url)],
         html5: true,
-        preload: true,
+        preload: false,
         autoplay: false,
         onload: () => finish(),
         onloaderror: (_, err) => finish(err || new Error('音频暂时无法加载'))
@@ -168,6 +171,7 @@ class PreloadService {
         finish(new DOMException('播放请求已取消', 'AbortError'))
       );
       const timer = setTimeout(() => finish(new Error('音频加载超时，请稍后重试')), 20000);
+      sound.load();
     });
   }
 

@@ -100,7 +100,10 @@ const mapNeteaseSongResult = (song: any): SongResult => {
   };
 };
 
-const resolveNeteaseFallbackSong = async (songData: SongResult): Promise<SongResult | null> => {
+const resolveNeteaseFallbackSong = async (
+  songData: SongResult,
+  signal?: AbortSignal
+): Promise<SongResult | null> => {
   if (songData.source !== 'kuwo') return null;
 
   const artistText = getSongArtistText(songData);
@@ -114,7 +117,8 @@ const resolveNeteaseFallbackSong = async (songData: SongResult): Promise<SongRes
         type: 1,
         limit: 10,
         offset: 0
-      }
+      },
+      signal
     });
     const songs = response.data?.result?.songs || [];
     if (!Array.isArray(songs) || songs.length === 0) return null;
@@ -141,6 +145,7 @@ const resolveNeteaseFallbackSong = async (songData: SongResult): Promise<SongRes
     // 必然拿不到可播地址。这里用歌名 + 歌手回查本地后端，拿到网易云等价歌曲后再兜底解析。
     return mapNeteaseSongResult(matched);
   } catch (error) {
+    signal?.throwIfAborted();
     console.warn('酷我歌曲回查网易云等价歌曲失败，继续使用原始歌曲信息兜底。', error);
     return null;
   }
@@ -203,15 +208,23 @@ export const getSongUrl = async (
   id: string | number,
   songData: SongResult,
   isDownloaded: boolean = false,
-  requestId?: string
+  requestId?: string,
+  options: { skipPrimarySource?: boolean } = {}
 ) => {
   const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
 
   // 动态导入 settingsStore
   const { useSettingsStore } = await import('@/store/modules/settings');
   const settingsStore = useSettingsStore();
-  let skipKuwoForFallback = false;
+  const signal = requestId ? playbackRequestManager.getAbortSignal(requestId) : undefined;
+  let skipKuwoForFallback = Boolean(options.skipPrimarySource && songData.source === 'kuwo');
+  let fallbackTask: ReturnType<typeof getParsingMusicUrl> | undefined;
   const runFallbackParsing = async () => {
+    if (fallbackTask) return fallbackTask;
+    fallbackTask = resolveFallback();
+    return fallbackTask;
+  };
+  const resolveFallback = async () => {
     const previousConfig = SongSourceConfigManager.getConfig(id);
     const configuredFallbackSources = (
       previousConfig?.sources ||
@@ -228,7 +241,7 @@ export const getSongUrl = async (
     ];
     const neteaseFallbackSong =
       skipKuwoForFallback && songData.source === 'kuwo'
-        ? await resolveNeteaseFallbackSong(songData)
+        ? await resolveNeteaseFallbackSong(songData, signal)
         : null;
     if (skipKuwoForFallback && songData.source === 'kuwo' && !neteaseFallbackSong) {
       throw new Error('当前歌曲暂时没有匹配的备用音源，请稍后重试');
@@ -247,25 +260,14 @@ export const getSongUrl = async (
     const fallbackId = skipKuwoForFallback && neteaseFallbackSong ? neteaseFallbackSong.id : id;
     const fallbackNumericId =
       typeof fallbackId === 'string' ? parseInt(fallbackId, 10) : fallbackId;
-    const previousFallbackConfig = SongSourceConfigManager.getConfig(fallbackId);
     // 根因：酷我搜索结果的 id 不是网易云 id，且网易官方接口也可能只返回 30 秒试听。
     // 如果备用解析仍按用户全局配置从酷我或单一 unblock 源开始，就会反复拿到坏 URL。
-    // 这里临时把本次歌曲的备用解析顺序固定为 GD 音乐台优先，再试其它解析源；
-    // 解析完成后恢复用户原来的单曲配置，避免污染手动音源设置。
-    SongSourceConfigManager.setConfig(fallbackId, fallbackSources as any, 'auto');
-    try {
-      return await getParsingMusicUrl(fallbackNumericId, cloneDeep(fallbackSongData));
-    } finally {
-      if (previousFallbackConfig) {
-        SongSourceConfigManager.setConfig(
-          fallbackId,
-          previousFallbackConfig.sources,
-          previousFallbackConfig.type
-        );
-      } else {
-        SongSourceConfigManager.clearConfig(fallbackId);
-      }
-    }
+    // 备用配置只属于本次请求，不能临时写 localStorage；并发预加载会互相覆盖单曲配置。
+    return await getParsingMusicUrl(fallbackNumericId, cloneDeep(fallbackSongData), {
+      sources: fallbackSources,
+      signal,
+      skipCache: options.skipPrimarySource
+    });
   };
 
   try {
@@ -273,6 +275,12 @@ export const getSongUrl = async (
     if (requestId && !playbackRequestManager.isRequestValid(requestId)) {
       console.log(`[getSongUrl] 请求已失效: ${requestId}`);
       throw new Error('Request cancelled');
+    }
+
+    if (options.skipPrimarySource) {
+      const fallback = await runFallbackParsing();
+      if (isDownloaded) return fallback?.data?.data as any;
+      return (await resolvePlayableUrl(fallback?.data?.data, songData)) || null;
     }
 
     if (shouldReuseExistingPlaybackUrl(songData)) {

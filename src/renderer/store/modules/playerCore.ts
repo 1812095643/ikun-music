@@ -5,7 +5,7 @@ import { computed, ref } from 'vue';
 
 import i18n from '@/../i18n/renderer';
 import { getParsingMusicUrl } from '@/api/music';
-import { useSongDetail } from '@/hooks/usePlayerHooks';
+import { getSongUrl, useSongDetail } from '@/hooks/usePlayerHooks';
 import { audioService } from '@/services/audioService';
 import { loadLyricCandidates } from '@/services/lyricCandidateService';
 import { playbackRequestManager } from '@/services/playbackRequestManager';
@@ -534,7 +534,7 @@ export const usePlayerCoreStore = defineStore(
       }
       // 所有 await 前固定本次歌曲、URL，不能在旧请求恢复时读取已经变化的全局歌曲。
       const song = { ...playMusic.value };
-      const url = playMusicUrl.value;
+      let url = playMusicUrl.value;
       const signal = requestId ? playbackRequestManager.getAbortSignal(requestId) : undefined;
       const isCurrent = () => !requestId || playbackRequestManager.isRequestValid(requestId);
 
@@ -578,10 +578,29 @@ export const usePlayerCoreStore = defineStore(
             preloadService.consume(song);
           }
         } catch (error) {
-          console.error('PreloadService 加载失败:', error);
-          // 如果 PreloadService 失败，尝试直接播放作为回退
-          // 但通常 PreloadService 失败意味着 URL 问题
-          throw error;
+          if (!isCurrent() || song.localFilePath || url.startsWith('local://')) throw error;
+          // 解析成功不代表音频可用：提示音/坏链在加载阶段才能识别。
+          // 在同一个播放请求内换源一次，保留歌曲身份；被切歌或暂停取消后不得重新出声。
+          console.warn('当前音频不可用，尝试同一首歌的备用地址:', error);
+          preloadService.cancel(song.id);
+          const fallbackUrl = await withPlaybackSignal(
+            getSongUrl(song.id, { ...song, playMusicUrl: undefined }, false, requestId, {
+              skipPrimarySource: true
+            }),
+            signal
+          );
+          if (!isCurrent()) return null;
+          if (!fallbackUrl || fallbackUrl === url) throw error;
+          url = fallbackUrl;
+          song.playMusicUrl = url;
+          sound = await withPlaybackSignal(preloadService.load(song), signal);
+          preloadService.consume(song);
+          if (!isCurrent()) {
+            sound.unload();
+            return null;
+          }
+          playMusic.value = { ...playMusic.value, playMusicUrl: url };
+          playMusicUrl.value = url;
         }
 
         // 播放新音频，传入已加载的 sound 实例

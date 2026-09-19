@@ -1,10 +1,7 @@
-import type { MusicSourceType } from '@/types/music';
+import type { MusicSourceType, SongResult } from '@/types/music';
 
 import { assertExternalOk, requestExternalMusic } from './externalMusicRequest';
 
-/**
- * GD音乐台解析服务
- */
 export interface GDMusicResponse {
   url: string;
   br: number;
@@ -17,180 +14,112 @@ export interface GDMusicResponse {
 export interface ParsedMusicResult {
   data: {
     data: GDMusicResponse;
-    params: {
-      id: number;
-      type: string;
-    };
+    params: { id: number; type: string };
   };
 }
 
-/**
- * 从GD音乐台解析音乐URL
- * @param id 音乐ID
- * @param data 音乐数据，包含名称和艺术家信息
- * @param quality 音质设置
- * @param timeout 超时时间(毫秒)，默认15000ms
- * @returns 解析后的音乐URL及相关信息
- */
-export const parseFromGDMusic = async (
-  id: number,
-  data: any,
-  quality: string = '999',
-  timeout: number = 15000
-): Promise<ParsedMusicResult | null> => {
-  // 创建一个超时Promise
-  const timeoutPromise = new Promise<null>((_, reject) => {
-    setTimeout(() => {
-      reject(new Error('GD音乐台解析超时'));
-    }, timeout);
-  });
-
-  try {
-    // 使用Promise.race竞争主解析流程和超时
-    return await Promise.race([
-      (async () => {
-        // 处理不同数据结构
-        if (!data) {
-          console.error('GD音乐台解析：歌曲数据为空');
-          throw new Error('歌曲数据为空');
-        }
-
-        const songName = data.name || '';
-        let artistNames = '';
-
-        // 处理不同的艺术家字段结构
-        if (data.artists && Array.isArray(data.artists)) {
-          artistNames = data.artists.map((artist) => artist.name).join(' ');
-        } else if (data.ar && Array.isArray(data.ar)) {
-          artistNames = data.ar.map((artist) => artist.name).join(' ');
-        } else if (data.artist) {
-          artistNames = typeof data.artist === 'string' ? data.artist : '';
-        }
-
-        const searchQuery = `${songName} ${artistNames}`.trim();
-
-        if (!searchQuery || searchQuery.length < 2) {
-          console.error('GD音乐台解析：搜索查询过短', { name: songName, artists: artistNames });
-          throw new Error('搜索查询过短');
-        }
-
-        // 所有可用的音乐源 netease、joox、tidal
-        const allSources = ['joox', 'tidal', 'netease'] as MusicSourceType[];
-
-        console.log('GD音乐台开始搜索:', searchQuery);
-
-        // 依次尝试所有音源
-        for (const source of allSources) {
-          try {
-            const result = await searchAndGetUrl(source, searchQuery, quality);
-            if (result) {
-              console.log(`GD音乐台成功通过 ${result.source} 解析音乐!`);
-              // 返回符合原API格式的数据
-              return {
-                data: {
-                  data: {
-                    url: result.url.replace(/\\/g, ''),
-                    br: parseInt(result.br, 10) * 1000 || 320000,
-                    size: result.size || 0,
-                    md5: '',
-                    platform: 'gdmusic',
-                    gain: 0
-                  },
-                  params: {
-                    id: parseInt(String(id), 10),
-                    type: 'song'
-                  }
-                }
-              };
-            }
-          } catch (error) {
-            console.error(`GD音乐台 ${source} 音源解析失败:`, error);
-            // 该音源失败，继续尝试下一个音源
-            continue;
-          }
-        }
-
-        console.log('GD音乐台所有音源均解析失败');
-        return null;
-      })(),
-      timeoutPromise
-    ]);
-  } catch (error: any) {
-    if (error.message === 'GD音乐台解析超时') {
-      console.error('GD音乐台解析超时(15秒):', error);
-    } else {
-      console.error('GD音乐台解析完全失败:', error);
-    }
-    return null;
-  }
-};
-
-interface GDMusicUrlResult {
-  url: string;
-  br: string;
-  size: number;
-  source: string;
-}
-
 const baseUrl = 'https://music-api.gdstudio.xyz/api.php';
+const normalizeText = (value: string) => value.toLowerCase().replace(/[\s()（）\-_.·]/g, '');
 
-/**
- * 在指定音源搜索歌曲并获取URL
- * @param source 音源
- * @param searchQuery 搜索关键词
- * @param quality 音质
- * @returns 音乐URL结果
- */
-async function searchAndGetUrl(
-  source: MusicSourceType,
-  searchQuery: string,
-  quality: string
-): Promise<GDMusicUrlResult | null> {
-  // 1. 搜索歌曲
-  const searchUrl = `${baseUrl}?types=search&source=${source}&name=${encodeURIComponent(searchQuery)}&count=1&pages=1`;
-  console.log(`GD音乐台尝试音源 ${source} 搜索:`, searchUrl);
-
-  const searchResponse = await requestExternalMusic<any>(searchUrl, {
+const requestGD = async (params: Record<string, string>, signal: AbortSignal) => {
+  const response = await requestExternalMusic<any>(`${baseUrl}?${new URLSearchParams(params)}`, {
     timeout: 5000,
-    requestPrefix: 'gdmusic-search',
+    signal,
+    requestPrefix: 'gdmusic',
     headers: { Referer: 'https://music-api.gdstudio.xyz/' }
   });
-  const searchData = assertExternalOk(searchResponse, 'GD音乐台搜索');
+  return assertExternalOk(response, 'GD音乐台');
+};
 
-  if (Array.isArray(searchData) && searchData.length > 0) {
-    const firstResult = searchData[0];
-    if (!firstResult || !firstResult.id) {
-      console.log(`GD音乐台 ${source} 搜索结果无效`);
-      return null;
+/** 按歌曲身份解析备用地址；取消和超时必须中止后续搜索，不能只结束外层等待。 */
+export const parseFromGDMusic = async (
+  id: number,
+  song: SongResult,
+  quality = '320',
+  timeout = 12000,
+  playbackSignal?: AbortSignal
+): Promise<ParsedMusicResult | null> => {
+  const signal = playbackSignal
+    ? AbortSignal.any([playbackSignal, AbortSignal.timeout(timeout)])
+    : AbortSignal.timeout(timeout);
+  const artists = song.ar?.length ? song.ar : song.artists || song.song?.artists || [];
+  const artistNames = artists.map((artist: { name: string }) => artist.name).filter(Boolean);
+  const sourceName = normalizeText(song.name || '');
+  const wrapResult = (result: any): ParsedMusicResult | null => {
+    if (!result?.url || !/^https?:\/\//i.test(result.url)) return null;
+    return {
+      data: {
+        data: {
+          url: result.url,
+          br: Number(result.br) * 1000 || 320000,
+          size: Number(result.size) || 0,
+          md5: '',
+          platform: 'gdmusic',
+          gain: 0
+        },
+        params: { id, type: 'song' }
+      }
+    };
+  };
+
+  try {
+    signal.throwIfAborted();
+    // 已确定为网易云的 ID 可直接取流，避免重新搜索和先等待无关平台超时。
+    const hasNeteaseId = !song.source || song.source === 'netease';
+    if (hasNeteaseId) {
+      try {
+        const direct = wrapResult(
+          await requestGD({ types: 'url', source: 'netease', id: String(id), br: quality }, signal)
+        );
+        if (direct) return direct;
+      } catch (error) {
+        signal.throwIfAborted();
+        console.warn('GD 同 ID 取流暂不可用，尝试匹配备用平台:', error);
+      }
     }
-
-    const trackId = firstResult.id;
-    const trackSource = firstResult.source || source;
-
-    // 2. 获取歌曲URL
-    const songUrl = `${baseUrl}?types=url&source=${trackSource}&id=${trackId}&br=${quality}`;
-    console.log(`GD音乐台尝试获取 ${trackSource} 歌曲URL:`, songUrl);
-
-    const songResponse = await requestExternalMusic<any>(songUrl, {
-      timeout: 5000,
-      requestPrefix: 'gdmusic-url',
-      headers: { Referer: 'https://music-api.gdstudio.xyz/' }
-    });
-    const songData = assertExternalOk(songResponse, 'GD音乐台播放地址');
-
-    if (songData && songData.url) {
-      return {
-        url: songData.url,
-        br: songData.br,
-        size: songData.size || 0,
-        source: trackSource
-      };
-    } else {
-      console.log(`GD音乐台 ${trackSource} 未返回有效URL`);
-      return null;
+    if (!sourceName || !artistNames.length) return null;
+    const sources: MusicSourceType[] = hasNeteaseId ? ['joox'] : ['netease', 'joox'];
+    for (const source of sources) {
+      signal.throwIfAborted();
+      try {
+        const results = await requestGD(
+          {
+            types: 'search',
+            source,
+            name: [song.name, ...artistNames].join(' '),
+            count: '5',
+            pages: '1'
+          },
+          signal
+        );
+        // 不能取搜索第一项：同名翻唱、现场版可能有不同的歌手和时长。
+        const matched = Array.isArray(results)
+          ? results.find((item: any) => {
+              const targetArtists = (
+                Array.isArray(item.artist) ? item.artist : [item.artist || '']
+              ).map(normalizeText);
+              return (
+                normalizeText(item.name || '') === sourceName &&
+                artistNames.every((artist: string) =>
+                  targetArtists.includes(normalizeText(artist))
+                ) &&
+                (!item.source || item.source === source)
+              );
+            })
+          : undefined;
+        if (!matched?.id) continue;
+        const result = wrapResult(
+          await requestGD({ types: 'url', source, id: String(matched.id), br: quality }, signal)
+        );
+        if (result) return result;
+      } catch (error) {
+        signal.throwIfAborted();
+        console.warn(`GD ${source} 音源暂不可用:`, error);
+      }
     }
-  } else {
-    console.log(`GD音乐台 ${source} 搜索结果为空`);
-    return null;
+  } catch (error) {
+    playbackSignal?.throwIfAborted();
+    console.warn('GD 音乐台暂未取得匹配的完整音频:', error);
   }
-}
+  return null;
+};

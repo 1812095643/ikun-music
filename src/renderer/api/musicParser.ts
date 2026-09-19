@@ -5,6 +5,7 @@ import { SongSourceConfigManager } from '@/services/SongSourceConfigManager';
 import { useSettingsStore } from '@/store';
 import type { SongResult } from '@/types/music';
 import { isDesktopRuntime } from '@/utils';
+import { withPlaybackSignal } from '@/utils/playbackCancellation';
 import requestMusic from '@/utils/request_music';
 
 import type { ParsedMusicResult } from './gdmusic';
@@ -28,6 +29,12 @@ export interface MusicParseResult {
       [key: string]: any;
     };
   };
+}
+
+export interface MusicParseOptions {
+  sources?: string[];
+  signal?: AbortSignal;
+  skipCache?: boolean;
 }
 
 /**
@@ -285,13 +292,18 @@ class RetryHelper {
  * @param data 歌曲数据
  * @returns 解析结果，失败时返回null
  */
-const getGDMusicAudio = async (id: number, data: SongResult): Promise<ParsedMusicResult | null> => {
+const getGDMusicAudio = async (
+  id: number,
+  data: SongResult,
+  signal?: AbortSignal
+): Promise<ParsedMusicResult | null> => {
   try {
-    const gdResult = await parseFromGDMusic(id, data, '999');
+    const gdResult = await parseFromGDMusic(id, data, '320', 12000, signal);
     if (gdResult) {
       return gdResult;
     }
   } catch (error) {
+    signal?.throwIfAborted();
     console.error('GD音乐台解析失败:', error);
   }
   return null;
@@ -366,7 +378,8 @@ interface MusicSourceStrategy {
     id: number,
     data: SongResult,
     quality?: string,
-    sources?: string[]
+    sources?: string[],
+    signal?: AbortSignal
   ) => Promise<MusicParseResult | null>;
 }
 
@@ -425,7 +438,13 @@ class GDMusicStrategy implements MusicSourceStrategy {
     return sources.includes('gdmusic');
   }
 
-  async parse(id: number, data: SongResult): Promise<MusicParseResult | null> {
+  async parse(
+    id: number,
+    data: SongResult,
+    _quality?: string,
+    _sources?: string[],
+    signal?: AbortSignal
+  ): Promise<MusicParseResult | null> {
     // 检查失败缓存
     if (CacheManager.isInFailedCache(id, this.name)) {
       return null;
@@ -433,9 +452,7 @@ class GDMusicStrategy implements MusicSourceStrategy {
 
     try {
       console.log('尝试使用GD音乐台解析...');
-      const result = await RetryHelper.withRetry(async () => {
-        return await getGDMusicAudio(id, data);
-      });
+      const result = await getGDMusicAudio(id, data, signal);
 
       const adaptedResult = adaptParseResult(result);
       if (adaptedResult?.data?.data?.url) {
@@ -447,6 +464,7 @@ class GDMusicStrategy implements MusicSourceStrategy {
       CacheManager.addFailedCache(id, this.name);
       return null;
     } catch (error) {
+      signal?.throwIfAborted();
       console.error('GD音乐台解析失败:', error);
       CacheManager.addFailedCache(id, this.name);
       return null;
@@ -671,8 +689,14 @@ export class MusicParser {
    * @param data 歌曲数据
    * @returns 解析结果
    */
-  static async parseMusic(id: number, data: SongResult): Promise<MusicParseResult> {
+  static async parseMusic(
+    id: number,
+    data: SongResult,
+    options: MusicParseOptions = {}
+  ): Promise<MusicParseResult> {
     const startTime = performance.now();
+    const signal = options.signal;
+    signal?.throwIfAborted();
 
     try {
       // 非桌面环境直接使用API请求
@@ -691,11 +715,16 @@ export class MusicParser {
       }
 
       // 获取音源配置
-      const { musicSources, quality } = getMusicConfig(id, settingsStore);
+      const config = getMusicConfig(id, settingsStore);
+      const musicSources = options.sources || config.musicSources;
+      const quality = config.quality;
 
       // 检查缓存（传入音源配置用于验证缓存有效性）
       console.log(`检查歌曲 ${id} 的缓存...`);
-      const cachedResult = await CacheManager.getCachedMusicUrl(id, data, musicSources);
+      const cachedResult = options.skipCache
+        ? null
+        : await CacheManager.getCachedMusicUrl(id, data, musicSources);
+      signal?.throwIfAborted();
       if (cachedResult) {
         const endTime = performance.now();
         console.log(`✅ 命中缓存，歌曲 ${id}，耗时: ${(endTime - startTime).toFixed(2)}ms`);
@@ -738,8 +767,12 @@ export class MusicParser {
 
       // 按优先级依次尝试解析策略
       for (const strategy of availableStrategies) {
+        signal?.throwIfAborted();
         try {
-          const result = await strategy.parse(id, data, quality, musicSources);
+          const result = await withPlaybackSignal(
+            strategy.parse(id, data, quality, musicSources, signal),
+            signal
+          );
           if (result?.data?.data?.url) {
             const endTime = performance.now();
             console.log(
@@ -753,6 +786,7 @@ export class MusicParser {
           }
           console.log(`策略 ${strategy.name} 解析失败，继续尝试下一个策略`);
         } catch (error) {
+          signal?.throwIfAborted();
           console.error(`策略 ${strategy.name} 解析异常:`, error);
           // 继续尝试下一个策略
         }
@@ -760,6 +794,7 @@ export class MusicParser {
 
       console.warn('所有解析策略都失败了，使用后备方案');
     } catch (error) {
+      signal?.throwIfAborted();
       console.error('MusicParser.parseMusic 执行异常，使用后备方案:', error);
     }
 
