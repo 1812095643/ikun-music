@@ -18,6 +18,8 @@ concurrency:
 jobs:
   android:
     runs-on: windows-latest
+    permissions:
+      contents: write
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
