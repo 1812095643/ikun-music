@@ -34,6 +34,9 @@ jobs:
         with:
           gradle-version: '8.13'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
+          log-accepted-android-sdk-licenses: false
       - name: 准备 Android 编译工具
         run: |
           sdkmanager 'platforms;android-36.1' 'build-tools;36.1.0'
@@ -121,5 +124,5 @@ jobs:
           set -euo pipefail
           version="$(node -p 'require("./mobile/package.json").version')"
           tag="mobile-v$version"
-          gh release create "$tag" release-stage/android/* --target "$GITHUB_SHA" --draft --prerelease --latest=false --title "ikun Music Android $version" --notes-file mobile/README.md
+          gh release create "$tag" release-stage/android/* --target "$GITHUB_SHA" --draft --prerelease --latest=false --title "ikun音乐 Android $version" --notes-file mobile/README.md
           gh release edit "$tag" --draft=false --prerelease --latest=false
