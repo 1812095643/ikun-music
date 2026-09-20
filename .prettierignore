@@ -4,3 +4,6 @@ pnpm-lock.yaml
 LICENSE.md
 tsconfig.json
 tsconfig.*.json
+
+mobile/src/styles/brand.css
+mobile/src/styles/icons.css
