@@ -14,6 +14,11 @@ import {
   openBackgroundPlaybackSettings
 } from '@/services/backgroundPlayback';
 import { qualities } from '@/services/musicApi';
+import {
+  type PlaybackNotificationStatus,
+  playbackNotificationStatus,
+  requestPlaybackNotifications
+} from '@/services/playbackNotifications';
 import { openReleaseDownloads } from '@/services/releases';
 import {
   detectedMode,
@@ -32,6 +37,14 @@ const modeSettings = shallowRef(false);
 const lyricSettings = shallowRef(false);
 const displaySettings = shallowRef(false);
 const backgroundSettings = shallowRef(false);
+const notificationSettings = shallowRef(false);
+const notificationStatus = shallowRef<PlaybackNotificationStatus | null>(
+  playbackNotificationStatus()
+);
+function showNotificationSettings() {
+  notificationStatus.value = playbackNotificationStatus();
+  notificationSettings.value = true;
+}
 const backgroundGuide = getBackgroundPlaybackGuide();
 const appUpdateSupported = supportsAppUpdate();
 const qualityLabel = computed(
@@ -53,6 +66,14 @@ const fontLabel = computed(() =>
         ><text class="settings-value">{{
           { sequence: '顺序播放', repeat: '单曲循环', shuffle: '随机播放' }[mode]
         }}</text
+        ><text class="ri-arrow-right-s-line" /></button
+      ><button
+        v-if="notificationStatus"
+        role="button"
+        class="settings-row"
+        @click="showNotificationSettings"
+      >
+        <text>通知栏与锁屏播放</text><text class="settings-value">系统播放卡片</text
         ><text class="ri-arrow-right-s-line" /></button
       ><button
         v-if="backgroundGuide"
@@ -115,6 +136,37 @@ const fontLabel = computed(() =>
       ><text class="about-version">{{ version }}</text
       ><text class="about-motto">让生活充满音乐</text></view
     ></scroll-view
+  ><sheet-frame
+    v-if="notificationSettings && notificationStatus"
+    title="通知栏与锁屏播放"
+    @close="notificationSettings = false"
+  >
+    <view class="settings-note"
+      >播放音乐时，系统播放卡片会同步歌名、歌手、封面和播放进度，可暂停及切换歌曲。</view
+    >
+    <view class="settings-note">{{
+      notificationStatus.published
+        ? '当前播放信息已提交给系统。'
+        : notificationStatus.sessionActive
+          ? '播放服务已连接，开始播放后同步系统卡片。'
+          : '播放一首歌曲后，自动连接系统播放卡片。'
+    }}</view>
+    <view
+      v-if="
+        notificationStatus.notificationsEnabled === false ||
+        notificationStatus.channelEnabled === false
+      "
+      class="settings-note"
+      >系统通知或“音乐播放”类别被关闭。若下拉栏没有显示，请打开通知和锁屏显示。</view
+    >
+    <view class="settings-note"
+      >澎湃和 OriginOS
+      的控制中心、锁屏可能还有独立的媒体卡片开关；可在系统通知设置中调整。这里的设置不影响 App
+      内听歌。</view
+    >
+    <button role="button" class="sheet-row" @click="requestPlaybackNotifications(true)">
+      <text>打开播放通知设置</text><text class="sheet-row-end ri-arrow-right-s-line" />
+    </button> </sheet-frame
   ><sheet-frame
     v-if="backgroundSettings && backgroundGuide"
     title="后台播放设置"

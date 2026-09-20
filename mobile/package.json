@@ -1,6 +1,6 @@
 {
   "name": "ikun-music-mobile",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "workspaces": [
     "backend"
@@ -15,7 +15,8 @@
     "build:app": "npm run prepare:assets && uni build -p app && node scripts/finalize-app.mjs",
     "build:apk": "node scripts/build-apk.mjs",
     "check:apk": "node scripts/build-apk.mjs --check",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "vue-tsc --noEmit",
+    "test:mobile": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-5020620260917001",

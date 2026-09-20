@@ -1,16 +1,13 @@
 let kit: any;
-let checked = false;
 export function nativeDevice(): any | null {
   // #ifdef APP-PLUS
   if (plus.os.name === 'Android') {
-    if (checked && !kit) return null;
     try {
       if (!kit) {
-        checked = true;
         const registration = uni.requireNativePlugin('Ikun-DeviceKit');
-        if (registration?.version() !== '1') return null;
+        if (String(registration?.version()) !== '1') return null;
         const candidate: any = plus.android.importClass('cn.ikun.music.device.DeviceKit');
-        if (candidate.version() !== '1') return null;
+        if (String(candidate.version()) !== '1') return null;
         candidate.initialize(plus.android.runtimeMainActivity());
         kit = candidate;
       }
@@ -25,7 +22,7 @@ export function nativeDevice(): any | null {
   return null;
 }
 export function nativeProblem() {
-  return new Error('当前安装包尚未包含车机扩展，请使用包含本地扩展的新安装包。');
+  return new Error('设备扩展尚未就绪，请重试；如仍未恢复，请更新安装包。');
 }
 let fileOperationBusy = false;
 export async function runNativeOperation<T>(start: (kit: any) => void): Promise<T> {

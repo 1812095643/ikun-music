@@ -55,8 +55,15 @@ export const seekable = shallowRef(false);
 const urlCache = new Map<string, { url: string; type: string; at: number }>();
 
 export function initializeAudio() {
-  if (audio) return;
-  audio = createMusicAudio();
+  if (audio) return true;
+  try {
+    audio = createMusicAudio();
+  } catch (error) {
+    playerError.value = (error as Error).message;
+    loading.value = false;
+    toast(playerError.value);
+    return false;
+  }
   audio.onPlay(() => {
     if (!expectedSrc || audio?.src !== expectedSrc) return;
     playing.value = true;
@@ -125,6 +132,7 @@ export function initializeAudio() {
     requestedPlay = value;
     if (!value) loading.value = false;
   });
+  return true;
 }
 
 export function synchronizeAudio() {
@@ -146,7 +154,7 @@ export function playTracks(tracks: Track[], index = 0) {
 }
 export function requestTrack(index: number, resumeAt = 0) {
   if (!queue.value.length) return;
-  initializeAudio();
+  if (!initializeAudio()) return;
   clearTimeout(debounce);
   controller?.abort();
   // 连点以最新目标索引累计，不能从仍在播放的旧索引反复起算；旧请求必须取消并校验版本。
@@ -241,7 +249,7 @@ async function commitTrack(index: number, version: number, resumeAt: number) {
   }
 }
 export function togglePlay() {
-  initializeAudio();
+  if (!initializeAudio()) return;
   synchronizeAudio();
   if (!current.value) {
     toast('先选一首喜欢的歌吧');

@@ -54,6 +54,8 @@ iOS 同样可以由 GitHub 调用官方打包工具，或使用 macOS runner 与
 
 实体小米、vivo、OPPO 与车机仍需真机验收，模拟器验证不代表厂商省电策略兼容性已确认。耳机切换、FLAC、长时间锁屏及整个应用进程被回收后的恢复仍需进一步验证；iOS 未生成 IPA。
 
+0.1.3 根据澎湃、OriginOS 6 的实机反馈继续完善系统媒体接入：音频命令通过注册的 UniModule 直接调用 Media3，移除 Android 原生初始化异常后静默降级为另一套播放器的分支，允许初始化重试；声明兼容的 `android.media.browse.MediaBrowserService` 入口。媒体会话与通知共用 `CacheBitmapLoader`，图片请求支持音源站请求头、重定向、512 像素解码上限和品牌兜底。设置里的“通知栏与锁屏播放”查询系统实际发布的媒体通知，并提供通知授权和设置入口。标准 Android 媒体通知有权限豁免，不能仅凭通知授权状态认定厂商卡片必然显示。 本版在 Android 16 实际安装验证系统卡片的封面、歌名、歌手、进度和暂停／继续／下一首；拒绝普通通知权限时仍能在标准媒体卡片控制播放。Android 12 验证了锁屏切歌。澎湃、OriginOS 6 没有连接到本机真机，不宣称已完成厂商实机验收。
+
 下载在 App 内保存到应用私有音乐目录，成功后同时尝试保存同名 LRC。暂停后的任务可重新下载；暂不宣称已实现跨进程断点续传。浏览器下载的临时文件仅在当前会话可用，不视作原生离线库。
 
 从 0.1.2 起，安卓启动后自动查询 GitHub 移动发行版，成功检查间隔为六小时；设置中可随时手动检查。检测会排除桌面版本、草稿和不完整附件。点击“下载并安装”后显示进度，可取消或重试；完整安装包通过大小、SHA-256、包名、版本及原签名校验后交给系统安装。首次可能需要允许本应用安装更新；用户仍须确认系统安装提示，应用不会静默安装。0.1.1 及以前版本需要先手动覆盖安装一次。GitHub 网络不可用时会说明原因并提供发行页面入口。
@@ -76,6 +78,10 @@ iOS 同样可以由 GitHub 调用官方打包工具，或使用 macOS runner 与
 
 安卓「本地音乐」支持系统媒体库扫描、系统文件选择器、列表勾选及全选后添加。互传收到的音频也纳入扫描；文件传输本身不限制类型。播放本地音乐直接使用文件 URI，不调用在线取流接口。网页只能选择用户授权的文件，浏览器文件仅在本次会话内有效。
 
+0.1.3 的扫描结果支持至少 30 秒、1 分钟、2 分钟的时长条件，以及至少 100 KB、1 MB 的大小条件，可组合歌曲、歌手、专辑关键词。默认不限，筛选偏好保存在本机。设置具体条件时，未知的时长或大小不满足该条件；切换筛选会取消被隐藏项目的勾选，全选和导入始终只处理当前结果。系统媒体库与私有目录文件均读取真实文件大小。
+
+手机、平板的互传页面增加扫码连接，车机模式隐藏扫码；Android 复用 `zxing-android-embedded 4.3.0` 的相机与解码线程，仅扫描二维码，不上传相机画面。识别后校验私有 IPv4 地址、端口和六位连接码，再用系统浏览器打开现有互传客户端，页面自动配对。拒绝相机权限、取消扫码或识别到无关二维码时会退出或提示，不改变现有连接。iOS 源码预留 uni-app 扫码模块及相机用途说明，尚未进行 iOS 真机验收。
+
 「歌单 → 文字导入」可粘贴收到的歌单列表，三路并发查询真实音源并支持停止。只有歌名与歌手都匹配才自动勾选，其他候选须手动核对，再一次性写入本机歌单。
 
 ## 构建安卓本地扩展
@@ -93,4 +99,4 @@ npm run build:app
 
 原生内核已做实际 HTTP 二进制往返、长文本、授权隔离、中断清理、未知文件大小与左右声道/静音测试；浏览器页面已做双端发送、完整文本复制、本地文件勾选与真实播放验证。这些结果不替代车机和平板 APK 的真机验收。iOS App 当前没有本地服务、系统音乐扫描和原生频谱扩展，iPhone/iPad 可通过浏览器参与安卓设备开启的互传。
 
-复用：[Media3 音频分流](https://developer.android.com/reference/androidx/media3/exoplayer/audio/TeeAudioProcessor.AudioBufferSink)、[NanoHTTPD](https://github.com/NanoHttpd/nanohttpd)、[JTransforms](https://github.com/wendykierp/JTransforms)、[二维码生成器](https://github.com/kazuhikoarase/qrcode-generator)。依赖许可保存在 `src/static/licenses`。
+复用：[Media3 音频分流](https://developer.android.com/reference/androidx/media3/exoplayer/audio/TeeAudioProcessor.AudioBufferSink)、[NanoHTTPD](https://github.com/NanoHttpd/nanohttpd)、[JTransforms](https://github.com/wendykierp/JTransforms)、[二维码生成器](https://github.com/kazuhikoarase/qrcode-generator)、[ZXing Android Embedded](https://github.com/journeyapps/zxing-android-embedded)。媒体接入参考 [Android 官方媒体服务](https://developer.android.com/media/media3/session/background-playback) 和 [Gramophone](https://github.com/FoedusProgramme/Gramophone) 的会话图片加载方式，没有复制其应用实现。依赖许可保存在 `src/static/licenses`。

@@ -17,8 +17,21 @@ import {
   transferItems,
   transferProgress
 } from '@/services/transfer';
+import { canScanTransfer, scanTransferCode } from '@/services/transferScan';
 import { secondaryPage } from '@/stores/browse';
+import { deviceMode } from '@/stores/device';
 import { toast } from '@/stores/library';
+const scanning = shallowRef(false);
+const scanAvailable = canScanTransfer();
+async function scan() {
+  if (scanning.value) return;
+  scanning.value = true;
+  try {
+    await act(scanTransferCode);
+  } finally {
+    scanning.value = false;
+  }
+}
 const addressIndex = shallowRef(0);
 const text = shallowRef('');
 const sending = shallowRef(false);
@@ -89,6 +102,18 @@ function copyAddress() {
         ><text class="transfer-subtitle">任意文件与长文本，直接传到另一台设备。</text></view
       ><text class="transfer-symbol ri-share-forward-box-line"
     /></view>
+    <button
+      v-if="scanAvailable && deviceMode !== 'car'"
+      role="button"
+      class="scan-connection"
+      :disabled="scanning"
+      @click="scan"
+    >
+      <text class="ri-qr-scan-2-line" /><view
+        ><text>{{ scanning ? '正在打开扫码' : '扫码连接另一台设备' }}</text
+        ><text>手机 / 平板扫码，自动配对并打开互传</text></view
+      ><text class="ri-arrow-right-s-line" />
+    </button>
     <view class="transfer-grid">
       <view class="transfer-connection">
         <template v-if="transferInfo.running"
@@ -234,6 +259,32 @@ function copyAddress() {
   </scroll-view>
 </template>
 <style scoped>
+.scan-connection {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 var(--page-gutter) 18px !important;
+  padding: 16px 20px !important;
+  border-radius: 16px !important;
+  background: var(--qqm-primary-soft) !important;
+  text-align: left;
+}
+.scan-connection > text:first-child {
+  font-size: 25px;
+  color: var(--qqm-accent-text);
+}
+.scan-connection > view {
+  flex: 1;
+}
+.scan-connection > view > text {
+  display: block;
+  font-size: 14px;
+}
+.scan-connection > view > text:last-child {
+  margin-top: 5px;
+  font-size: 11px;
+  color: var(--qqm-muted);
+}
 .transfer-intro {
   display: flex;
   align-items: center;

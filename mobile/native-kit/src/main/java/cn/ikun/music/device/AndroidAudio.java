@@ -100,9 +100,12 @@ public final class AndroidAudio {
                 case "load":
                     source = input.getString("src"); failure = ""; analyzer.reset();
                     MediaMetadata.Builder metadata = new MediaMetadata.Builder().setTitle(input.optString("title"))
-                        .setArtist(input.optString("artist")).setAlbumTitle(input.optString("album"));
+                        .setArtist(input.optString("artist"))
+                        .setAlbumTitle(input.optString("album")).setIsPlayable(true).setIsBrowsable(false)
+                        .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC);
                     String artwork = input.optString("artwork");
                     if (!artwork.isEmpty()) metadata.setArtworkUri(Uri.parse(artwork));
+                    else if (source.startsWith("http")) metadata.setArtworkUri(PlaybackArtwork.FALLBACK);
                     player.setMediaItem(new MediaItem.Builder().setUri(source)
                         .setMediaId(input.optString("id", source)).setMediaMetadata(metadata.build()).build(),
                         Math.max(0, (long)(input.optDouble("position", 0) * 1000)));

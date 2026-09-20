@@ -43,7 +43,7 @@ function disconnect() {
 }
 $('join-form').addEventListener('submit', async (event) => {
   event.preventDefault();
-  const button = event.submitter;
+  const button = event.submitter || $('join-form').querySelector('button[type="submit"]');
   button.disabled = true;
   try {
     const value = await request('/api/join', {
@@ -207,8 +207,10 @@ const code = new URLSearchParams(location.hash.slice(1)).get('code');
 if (code && /^\d{6}$/.test(code)) {
   $('code').value = code;
   history.replaceState(null, '', location.pathname);
-}
-if (token) {
+  token = '';
+  sessionStorage.removeItem('ikun-transfer');
+  $('join-form').requestSubmit();
+} else if (token) {
   request('/api/state')
     .then(() => {
       connected();

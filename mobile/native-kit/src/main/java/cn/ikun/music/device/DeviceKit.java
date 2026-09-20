@@ -61,17 +61,31 @@ public final class DeviceKit {
     }
     public static String transferInfo() { return transferState; }
     public static String operationState() { return operation; }
+    public static void scanCode() {
+        operation = "{\"status\":\"working\",\"kind\":\"scanCode\"}";
+        try { activity.startActivity(new Intent(activity, TransferScanActivity.class)); }
+        catch (Exception error) { operation = problem(error); }
+    }
+    static void scanned(String content, String error) {
+        try {
+            operation = error != null ? problem(new IOException(error)) : content == null
+                ? "{\"status\":\"cancelled\"}"
+                : new JSONObject().put("status", "completed").put("content", content).toString();
+        } catch (Exception failure) { operation = problem(failure); }
+    }
     public static void scanMusic() {
         operation = "{\"status\":\"working\",\"kind\":\"scan\"}";
         worker.execute(() -> {
             try {
                 JSONArray tracks = new JSONArray();
                 Uri collection = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-                String[] columns = {"_id", "title", "artist", "album", "duration", "_size", "_display_name"};
-                try (Cursor cursor = activity.getContentResolver().query(collection, columns, "duration > 0", null, "title ASC")) {
+                String[] columns = {"_id", "title", "artist", "album", "duration", "_size", "_display_name", "album_id"};
+                try (Cursor cursor = activity.getContentResolver().query(collection, columns, null, null, "title ASC")) {
                     if (cursor != null) while (cursor.moveToNext()) {
                         Uri uri = ContentUris.withAppendedId(collection, cursor.getLong(0));
-                        tracks.put(track(uri.toString(), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getLong(4), cursor.getLong(5)));
+                        JSONObject item = track(uri.toString(), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getLong(4), cursor.getLong(5));
+                        if (cursor.getLong(7) > 0) item.put("cover", ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), cursor.getLong(7)).toString());
+                        tracks.put(item);
                     }
                 } catch (SecurityException ignored) { }
                 // 互传文件位于应用私有目录，不会被媒体库扫描到，合并真实收到的音频对象。
@@ -130,6 +144,10 @@ public final class DeviceKit {
     }
     static JSONObject readTrack(Uri uri, String name) throws Exception {
         String title = name.replaceFirst("\\.[^.]+$", ""), artist = "本地音乐", album = ""; long duration = 0, size = 0;
+        if ("file".equals(uri.getScheme())) size = new File(uri.getPath()).length();
+        else try (Cursor cursor = activity.getContentResolver().query(uri, new String[]{OpenableColumns.SIZE}, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst() && !cursor.isNull(0)) size = cursor.getLong(0);
+        } catch (Exception ignored) { }
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
             retriever.setDataSource(activity, uri);

@@ -11,6 +11,19 @@ public final class DeviceKitModule extends UniModule {
         return DeviceKit.version();
     }
 
+    @UniJSMethod(uiThread = false)
+    public String audioState() { return AndroidAudio.snapshot(); }
+
+    @UniJSMethod(uiThread = false)
+    public void audioCommand(String payload) {
+        MusicPlaybackService.dispatch(mUniSDKInstance.getContext().getApplicationContext(), payload);
+    }
+
+    @UniJSMethod(uiThread = false)
+    public String playbackStatus() {
+        return MusicPlaybackService.status(mUniSDKInstance.getContext());
+    }
+
     @UniJSMethod(uiThread = true)
     public void observeAudio(UniJSCallback callback) {
         AndroidAudio.observe(callback::invokeAndKeepAlive);

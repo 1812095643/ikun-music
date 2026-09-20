@@ -1,5 +1,5 @@
 import type { MusicAudio } from './audioEngine';
-import { nativeDevice } from './nativeDevice';
+import { requestPlaybackNotifications } from './playbackNotifications';
 
 interface NativeAudioState {
   src?: string;
@@ -13,7 +13,6 @@ interface NativeAudioState {
 }
 
 export class NativeAudio implements MusicAudio {
-  private value = nativeDevice();
   private registration = uni.requireNativePlugin('Ikun-DeviceKit');
   private source = '';
   private nativeSource = '';
@@ -36,7 +35,10 @@ export class NativeAudio implements MusicAudio {
   duration = 0;
   paused = true;
   constructor() {
-    const state: NativeAudioState = JSON.parse(this.value.audioState());
+    if (String(this.registration?.version()) !== '1' || !this.registration.audioState) {
+      throw new Error('原生播放器尚未就绪，请重试；如仍未恢复，请更新安装包。');
+    }
+    const state: NativeAudioState = JSON.parse(this.registration.audioState());
     this.eventId = state.events?.[state.events.length - 1]?.id || 0;
     this.registration.observeAudio((snapshot: string) => this.accept(JSON.parse(snapshot)));
     this.timer = setInterval(() => this.synchronize(), 250);
@@ -71,7 +73,7 @@ export class NativeAudio implements MusicAudio {
     this.setNavigation(this.previous, this.next);
   }
   private send(value: Record<string, unknown>) {
-    this.value.audioCommand(JSON.stringify(value));
+    this.registration.audioCommand(JSON.stringify(value));
   }
   private emit(event: string, data?: unknown) {
     this.listeners.get(event)?.forEach((listener) => listener(data));
@@ -81,7 +83,7 @@ export class NativeAudio implements MusicAudio {
   }
   synchronize() {
     try {
-      this.accept(JSON.parse(this.value.audioState()));
+      this.accept(JSON.parse(this.registration.audioState()));
     } catch (error) {
       this.emit('error', error);
     }
@@ -134,7 +136,8 @@ export class NativeAudio implements MusicAudio {
   }
   play() {
     if (!this.source) return;
-    const state: NativeAudioState = JSON.parse(this.value.audioState());
+    void requestPlaybackNotifications();
+    const state: NativeAudioState = JSON.parse(this.registration.audioState());
     if (!this.awaitingLoad && state.src !== this.nativeSource) this.load(this.currentTime);
     this.send({ type: 'play' });
   }

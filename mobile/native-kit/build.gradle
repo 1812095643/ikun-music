@@ -13,6 +13,7 @@ dependencies {
     compileOnly files('build/unimodule-sdk/classes.jar')
     androidLibraries 'androidx.media3:media3-exoplayer:1.8.0'
     androidLibraries 'androidx.media3:media3-session:1.8.0'
+    androidLibraries 'com.journeyapps:zxing-android-embedded:4.3.0'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.json:json:20240303'
 }
@@ -50,6 +51,7 @@ tasks.register('packagePlugin', Zip) {
     destinationDirectory = file('../src/nativeplugins/Ikun-DeviceKit/android')
     from(tasks.jar.archiveFile) { rename { 'classes.jar' } }
     from('src/main/AndroidManifest.xml')
+    from('src/main/res') { into 'res' }
     from('proguard-rules.pro') { rename { 'proguard.txt' } }
     from('../src/static/transfer') { exclude 'brand.png'; into 'assets/ikun-transfer' }
     from('../src/static/brand.png') { into 'assets/ikun-transfer' }

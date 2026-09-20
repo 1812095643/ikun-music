@@ -63,7 +63,7 @@ jobs:
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           npm --prefix mobile run typecheck
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
-          npm --prefix mobile run test:update
+          npm --prefix mobile run test:mobile
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           npm --prefix mobile run build:app
           if ($LASTEXITCODE) { exit $LASTEXITCODE }

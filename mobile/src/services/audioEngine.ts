@@ -1,5 +1,4 @@
 import { NativeAudio } from './nativeAudio';
-import { nativeDevice } from './nativeDevice';
 // #ifdef H5
 import { WebAudio } from './webAudio';
 // #endif
@@ -36,7 +35,8 @@ export interface MusicAudio {
 
 export function createMusicAudio(): MusicAudio {
   // #ifdef APP-PLUS
-  if (nativeDevice()) return new NativeAudio();
+  // Android 必须由原生媒体服务播放，初始化暂未就绪时允许重试，不能静默降级丢失系统控制。
+  if (plus.os.name === 'Android') return new NativeAudio();
   return uni.getBackgroundAudioManager() as MusicAudio;
   // #endif
   // #ifndef APP-PLUS
