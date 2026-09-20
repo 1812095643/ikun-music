@@ -8,14 +8,21 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const project = join(root, 'src');
 const output = resolve(root, '../release-stage/android');
 const cli = process.env.HBUILDERX_CLI;
+const statusOnly = process.argv.includes('--status-only');
 const username = process.env.DCLOUD_USERNAME;
 const password = process.env.DCLOUD_PASSWORD;
 if (!cli || !username || !password)
   throw new Error('HBUILDERX_CLI and DCloud credentials must be configured');
-const manifest = JSON.parse(await readFile(join(root, 'dist/build/app/manifest.json'), 'utf8'));
-if (manifest.id !== '__UNI__GC2DB750') throw new Error('Unexpected DCloud AppID');
+const manifest = JSON.parse(
+  await readFile(
+    join(root, statusOnly ? 'src/manifest.json' : 'dist/build/app/manifest.json'),
+    'utf8'
+  )
+);
+if ((manifest.id || manifest.appid) !== '__UNI__GC2DB750')
+  throw new Error('Unexpected DCloud AppID');
 const { version } = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
-if (manifest.version?.name !== version)
+if ((manifest.version?.name || manifest.versionName) !== version)
   throw new Error('Mobile package and manifest versions must match');
 
 function run(args, timeout = 120000, quiet = false) {
@@ -95,6 +102,10 @@ await run(
 );
 await run(['project', 'open', '--path', project]);
 await run(['project', 'list']);
+if (statusOnly) {
+  await run(['pack', 'status', '--project', project]);
+  process.exit(0);
+}
 console.log('Submitting Android package with the application cloud certificate.');
 const report = await run(
   [

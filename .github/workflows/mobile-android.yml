@@ -3,6 +3,10 @@ name: 构建安卓手机平板车机预览版
 on:
   workflow_dispatch:
     inputs:
+      status_only:
+        description: 仅查询 DCloud 已有打包任务
+        type: boolean
+        default: false
       publish:
         description: 发布到 GitHub 预览发行版
         type: boolean
@@ -12,7 +16,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: mobile-android
+  group: mobile-android-${{ inputs.status_only }}
   cancel-in-progress: false
 
 jobs:
@@ -33,14 +37,18 @@ jobs:
           cache: npm
           cache-dependency-path: mobile/package-lock.json
       - uses: actions/setup-java@v4
+        if: ${{ !inputs.status_only }}
         with:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
+        if: ${{ !inputs.status_only }}
         with:
           gradle-version: '8.10.2'
       - run: npm ci --prefix mobile
+        if: ${{ !inputs.status_only }}
       - name: 编译并验证车机扩展与 App 资源
+        if: ${{ !inputs.status_only }}
         run: |
           npm --prefix mobile run test:device-kit
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
@@ -62,13 +70,15 @@ jobs:
           if (!(Test-Path -LiteralPath $cli)) { throw 'HBuilderX CLI was not found' }
           "HBUILDERX_CLI=$cli" >> $env:GITHUB_ENV
       - name: 安装版本匹配的官方 App 打包插件
+        if: ${{ !inputs.status_only }}
         run: node mobile/scripts/prepare-hbuilder-plugins.mjs
       - name: 使用应用云端证书生成 APK
         env:
           DCLOUD_USERNAME: ${{ secrets.DCLOUD_USERNAME }}
           DCLOUD_PASSWORD: ${{ secrets.DCLOUD_PASSWORD }}
-        run: node mobile/scripts/cloud-package.mjs
+        run: node mobile/scripts/cloud-package.mjs ${{ inputs.status_only && '--status-only' || '' }}
       - name: 验证安卓签名和原生扩展
+        if: ${{ !inputs.status_only }}
         shell: bash
         run: |
           python - <<'PY'
@@ -85,13 +95,14 @@ jobs:
           print('APK signature, app resources and native device kit verified.')
           PY
       - uses: actions/upload-artifact@v4
+        if: ${{ !inputs.status_only }}
         with:
           name: android-apk
           path: release-stage/android/
           if-no-files-found: error
           retention-days: 14
   publish:
-    if: ${{ inputs.publish }}
+    if: ${{ inputs.publish && !inputs.status_only }}
     needs: android
     runs-on: ubuntu-latest
     permissions:
