@@ -1902,7 +1902,7 @@ dependencies = [
 
 [[package]]
 name = "ikun-music-tauri"
-version = "5.3.6"
+version = "5.3.7"
 dependencies = [
  "dunce",
  "http-range",

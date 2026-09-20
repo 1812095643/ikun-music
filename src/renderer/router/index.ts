@@ -23,24 +23,15 @@ const getSettingsStore = () => {
   return _settingsStore;
 };
 
-const loginRouter = {
-  path: '/login',
-  name: 'login',
-  meta: {
-    keepAlive: true,
-    title: '登录',
-    icon: 'icon-Home',
-    back: true
-  },
-  component: () => import('@/views/login/index.vue')
-};
-
 const routes = [
   {
     path: '/',
     component: AppLayout,
-    children: [...homeRouter, loginRouter, ...otherRouter]
+    children: [...homeRouter, ...otherRouter]
   },
+  // 兼容旧版本保存的账号页地址，入口移除后回到首页。
+  { path: '/login', redirect: '/' },
+  { path: '/user', redirect: '/' },
   {
     path: '/lyric',
     component: () => import('@/views/lyric/index.vue')

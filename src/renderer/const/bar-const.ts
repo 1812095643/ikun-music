@@ -1,26 +1,3 @@
-export const USER_SET_OPTIONS = [
-  // {
-  //   label: '打卡',
-  //   key: 'card',
-  // },
-  // {
-  //   label: '听歌升级',
-  //   key: 'card_music',
-  // },
-  // {
-  //   label: '歌曲次数',
-  //   key: 'listen',
-  // },
-  {
-    label: '退出登录',
-    key: 'logout'
-  },
-  {
-    label: '设置',
-    key: 'set'
-  }
-];
-
 export const SEARCH_TYPES = [
   {
     label: 'search.search.single', // 单曲

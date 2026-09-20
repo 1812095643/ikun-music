@@ -137,30 +137,6 @@
       }}
     </n-tooltip>
 
-    <!-- 用户 -->
-    <div v-if="!userStore.user" class="user-btn" @click="toLogin">
-      <span class="login-label">{{ t('comp.searchBar.login') }}</span>
-    </div>
-    <n-popover v-else trigger="hover" placement="bottom-end" :show-arrow="false" raw>
-      <template #trigger>
-        <div class="user-btn cursor-pointer" @click="selectItem('user')">
-          <n-avatar circle :size="26" :src="getImgUrl(userStore.user.avatarUrl)" />
-        </div>
-      </template>
-      <div class="user-menu">
-        <div class="user-menu-top" @click="selectItem('user')">
-          <n-avatar circle :size="30" :src="getImgUrl(userStore.user?.avatarUrl)" />
-          <span class="user-name">{{ userStore.user?.nickname }}</span>
-        </div>
-        <div class="menu-sep" />
-        <div class="menu-list">
-          <div class="menu-row" @click="selectItem('logout')">
-            <i class="ri-logout-box-r-line" /><span>{{ t('comp.searchBar.logout') }}</span>
-          </div>
-        </div>
-      </div>
-    </n-popover>
-
     <!-- 更多设置 -->
     <n-popover trigger="hover" placement="bottom-end" :show-arrow="false" raw>
       <template #trigger>
@@ -229,14 +205,13 @@
 <script lang="ts" setup>
 import { useDebounceFn } from '@vueuse/core';
 import { useMessage } from 'naive-ui';
-import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
 import { getSearchKeyword } from '@/api/home';
-import { getUserDetail } from '@/api/login';
 import { getSearchSuggestions } from '@/api/search';
-import { SEARCH_TYPES, USER_SET_OPTIONS } from '@/const/bar-const';
+import { SEARCH_TYPES } from '@/const/bar-const';
 import { useAppUpdateState } from '@/hooks/useAppUpdateState';
 import { useDownloadStatus } from '@/hooks/useDownloadStatus';
 import { useZoom } from '@/hooks/useZoom';
@@ -245,7 +220,7 @@ import { useNavTitleStore } from '@/store/modules/navTitle';
 import { useSearchStore } from '@/store/modules/search';
 import { useSettingsStore } from '@/store/modules/settings';
 import { useUserStore } from '@/store/modules/user';
-import { getImgUrl, isDesktopRuntime } from '@/utils';
+import { isDesktopRuntime } from '@/utils';
 
 import { APP_UPDATE_RELEASE_URL, APP_UPDATE_STATUS } from '../../../shared/appUpdate';
 
@@ -255,7 +230,6 @@ const navTitleStore = useNavTitleStore();
 const searchStore = useSearchStore();
 const settingsStore = useSettingsStore();
 const userStore = useUserStore();
-const userSetOptions = ref(USER_SET_OPTIONS);
 const { t, locale } = useI18n();
 const message = useMessage();
 
@@ -484,21 +458,7 @@ const loadHotSearch = async () => {
   );
   hotSearchValue.value = data.data.realkeyword;
 };
-const loadPage = async () => {
-  if (!localStorage.getItem('token')) return;
-  const { data } = await getUserDetail();
-  userStore.user =
-    data.profile || userStore.user || JSON.parse(localStorage.getItem('user') || '{}');
-  localStorage.setItem('user', JSON.stringify(userStore.user));
-};
-watchEffect(() => {
-  userSetOptions.value = userStore.user
-    ? USER_SET_OPTIONS
-    : USER_SET_OPTIONS.filter((i) => i.key !== 'logout');
-});
-
 const restartApp = () => window.desktop.send('restart');
-const toLogin = () => router.push('/user');
 
 const isDark = computed({
   get: () => settingsStore.theme === 'dark',
@@ -507,14 +467,8 @@ const isDark = computed({
 
 const selectItem = (key: string) => {
   switch (key) {
-    case 'logout':
-      userStore.handleLogout();
-      break;
     case 'set':
       router.push('/set');
-      break;
-    case 'user':
-      router.push('/user');
       break;
     case 'refresh':
       window.location.reload();
@@ -562,7 +516,6 @@ onMounted(() => {
   void loadHotSearch().catch(() => {
     hotSearchKeyword.value = t('comp.searchBar.searchPlaceholder');
   });
-  void loadPage().catch((error) => console.warn('用户信息暂未刷新：', error));
   isDesktopRuntime && initZoomFactor();
 });
 </script>
@@ -801,40 +754,6 @@ onMounted(() => {
   background: rgba(236, 72, 153, 0.1);
 }
 
-/* ── User button ─────────────────────────────────────── */
-.user-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 32px;
-  height: 32px;
-  padding: 2px;
-  border-radius: 9999px;
-  border: 1px solid #e5e7eb;
-  background: transparent;
-  cursor: pointer;
-  transition:
-    border-color 0.15s,
-    border-color 0.15s;
-}
-.dark .user-btn {
-  border-color: #374151;
-}
-.user-btn:hover {
-  border-color: #22c55e;
-  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.18);
-}
-
-.login-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b7280;
-  padding: 0 8px;
-}
-.dark .login-label {
-  color: #9ca3af;
-}
-
 /* ── User menu ───────────────────────────────────────── */
 .user-menu {
   min-width: 220px;
@@ -847,42 +766,6 @@ onMounted(() => {
 .dark .user-menu {
   background: #111827;
   border-color: #1f2937;
-}
-
-.user-menu-top {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 12px 14px 10px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.user-menu-top:hover {
-  background: #f9fafb;
-}
-.dark .user-menu-top:hover {
-  background: #1f2937;
-}
-
-.user-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: #111827;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.dark .user-name {
-  color: #f3f4f6;
-}
-
-.menu-sep {
-  height: 1px;
-  background: #f3f4f6;
-  margin: 2px 0;
-}
-.dark .menu-sep {
-  background: #1f2937;
 }
 
 .menu-list {
