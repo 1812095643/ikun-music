@@ -28,12 +28,31 @@ function run(args, timeout = 120000, quiet = false) {
       stdio: ['ignore', 'pipe', 'pipe']
     });
     let text = '';
+    let pendingLine = '';
+    const emit = (line) => {
+      if (quiet || !line.trim()) return;
+      process.stdout.write(
+        line
+          .replace(/\x1b\[[0-9;]*[A-Za-z]/g, '')
+          .split(password)
+          .join('[redacted]')
+          .split(username)
+          .join('[account]')
+          .replace(/(token|password|authorization|cookie)[^\r\n]*/gi, '$1 [redacted]') + '\n'
+      );
+    };
     const timer = setTimeout(() => {
+      emit(pendingLine);
+      pendingLine = '';
       child.kill();
       reject(new Error(`HBuilderX ${operation} timed out`));
     }, timeout);
     const collect = (chunk) => {
       text += chunk.toString();
+      pendingLine += chunk.toString();
+      const lines = pendingLine.split(/\r?\n/);
+      pendingLine = lines.pop() || '';
+      for (const line of lines) emit(line);
     };
     child.stdout.on('data', collect);
     child.stderr.on('data', collect);
@@ -48,16 +67,7 @@ function run(args, timeout = 120000, quiet = false) {
         /:\s*FAILED\b|Cloud server returns error|compiling failed|compilation failed|depends on the plug-in|operation depends on|please try again after installation/i.test(
           output
         );
-      if (!quiet && output.trim()) {
-        process.stdout.write(
-          output
-            .split(password)
-            .join('[redacted]')
-            .split(username)
-            .join('[account]')
-            .replace(/(token|password|authorization|cookie)[^\r\n]*/gi, '$1 [redacted]')
-        );
-      }
+      emit(pendingLine);
       if (code !== 0 || reportedFailure) {
         reject(
           new Error(
