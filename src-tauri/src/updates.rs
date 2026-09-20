@@ -60,11 +60,11 @@ fn release_asset(update: &Update) -> Result<&Value, String> {
         .ok_or("发布信息中没有对应的安装文件，请稍后重新检查。")?;
     // 固定由本项目 Release 提供程序；散列用于下载完整性，真正的发行身份由官方插件验证签名。
     if update.download_url.scheme() != "https"
-        || update.download_url.host_str() != Some("gitee.com")
+        || update.download_url.host_str() != Some("github.com")
         || !update
             .download_url
             .path()
-            .starts_with("/caixukun66666666/ikun-music/releases/download/")
+            .starts_with("/1812095643/ikun-music/releases/download/")
     {
         return Err("更新地址不属于 ikun音乐 的正式发布仓库。".into());
     }
@@ -88,7 +88,8 @@ pub async fn check_app_update(
         .map_err(|_| "正在处理更新，请稍候。")?;
     let mut builder = app.updater_builder().timeout(Duration::from_secs(25));
     if portable()? {
-        builder = builder.target("windows-x86_64-portable");
+        // 便携包必须沿用当前编译架构，避免 ARM64 更新时被替换成 x64 程序。
+        builder = builder.target(format!("windows-{}-portable", std::env::consts::ARCH));
     }
     let mut update = builder
         .build()

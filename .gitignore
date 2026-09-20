@@ -59,6 +59,7 @@ src-tauri/gen
 !src-tauri/runtime/package-lock.json
 
 src-tauri/runtime-stage/
+release-stage/
 
 mobile/dist/
 mobile/unpackage/

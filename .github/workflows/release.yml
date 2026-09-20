@@ -1,0 +1,93 @@
+name: 发布 Windows 和 macOS 安装包
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            platform: windows-x86_64
+          - runner: windows-11-arm
+            target: aarch64-pc-windows-msvc
+            platform: windows-aarch64
+          - runner: macos-15
+            target: aarch64-apple-darwin
+            platform: darwin-aarch64
+          - runner: macos-15-intel
+            target: x86_64-apple-darwin
+            platform: darwin-x86_64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '25.8.1'
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+          key: ${{ matrix.target }}
+      - name: 核对发布版本
+        shell: bash
+        run: node -e 'const v=require("./package.json").version;const ref=process.env.GITHUB_REF;if(ref!=="refs/heads/main"&&ref!=="refs/tags/v"+v)throw Error("Release requires main or the matching version tag")'
+      - run: npm ci
+      - name: 构建并检查本架构音乐后端
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
+          APPLE_SIGNING_IDENTITY: '-'
+        run: node scripts/package-desktop.mjs --target=${{ matrix.target }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}
+          path: release-stage/${{ matrix.platform }}/
+          if-no-files-found: error
+          retention-days: 7
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '25.8.1'
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-stage
+          merge-multiple: true
+      - name: 验证四个平台的安装包与更新清单
+        run: node scripts/merge-release.mjs release-stage
+      - name: 上传完整附件后公开发布
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="v$(node -p 'require("./package.json").version')"
+          title="$(node -p 'require("./package.json").description')"
+          if gh release view "$tag" --json isDraft > /tmp/ikun-release.json 2>/dev/null; then
+            node -e 'if(!require("/tmp/ikun-release.json").isDraft)throw Error("Release already published; use a new version")'
+          else
+            gh release create "$tag" --target "$GITHUB_SHA" --draft --title "$title $tag" --notes-file release-notes.md
+          fi
+          gh release upload "$tag" release-stage/* --clobber
+          gh release edit "$tag" --draft=false --latest

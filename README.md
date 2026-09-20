@@ -28,10 +28,14 @@ Node 服务从独立清单 `npm ci` 安装全部必要依赖。Tauri EXE 只嵌�
 ## 更新发布
 
 1. 同步提升根项目、Rust、Tauri 配置与 runtime 清单版本，更新 `release-notes.md`。
-2. 使用本项目独立签名私钥构建。默认私钥位于用户目录 `.tauri/ikun-music-updater.key`，也可设置 `TAURI_SIGNING_PRIVATE_KEY`；私钥不能提交或上传。
-3. 提交代码并推送对应 `v版本号` 标签，把产物中的安装 EXE、便携 ZIP 和各自 `.sig` 上传 Gitee 同名发行版。
-4. 验证附件完整后，把构建产物 `latest.json` 更新到仓库 `updates/latest.json` 并推送。清单记录版本、签名、SHA-256、大小和附件 URL。
+2. 使用本项目独立签名私钥构建。默认私钥位于用户目录 `.tauri/ikun-music-updater.key`；云端通过 GitHub 仓库的 `TAURI_SIGNING_PRIVATE_KEY` 加密 Secret 注入。私钥不能提交到代码库、日志或发行附件。
+3. 推送到 [GitHub 仓库](https://github.com/1812095643/ikun-music)，推送对应 `v版本号` 标签或在 main 上手动运行发布工作流。
+4. GitHub Actions 分别在 Windows x64、Windows ARM64、Mac Intel、Mac Apple Silicon 构建并检查随包服务。四项全部成功后，合并签名、SHA-256、大小及平台更新地址，上传完整附件，最后公开 [Release](https://github.com/1812095643/ikun-music/releases)。
+
+Windows 提供安装 EXE 和便携 ZIP；Mac 提供 DMG 和用于自动更新的 `.app.tar.gz`。Mac 当前使用临时签名，尚未完成苹果公证；正式公证还需配置开发者证书。安卓使用 mobile 工程，APK 仍需 DCloud 应用配置，不包含在此桌面构建流程中。
+
+本地打包使用 `npm run package:desktop -- --target=x86_64-pc-windows-msvc`。交叉编译 Windows ARM64 时指定 `--target=aarch64-pc-windows-msvc`，并通过 `IKUN_NODE_BINARY` 指向经过官方哈希核验的 ARM64 Node；构建脚本会拒绝混入错误架构的后端。macOS 构建须在对应架构的 Mac 执行，同一脚本生成 DMG。
 
 应用启动三秒后检查更新，此后每四小时以及恢复网络时检查。发现新版本显示可关闭提示；用户点击后下载，官方插件验证签名、再核对 SHA-256，最后允许安装。便携更新只替换 `ikun-music-tauri.exe`、`runtime`、`portable.json`，用户配置保留在应用数据目录。
 
-旧 5.1.x / 5.2.x 使用完整新安装包或完整 ZIP 升级一次，此后进入本版本签名更新链路。
+5.3.5 及以前版本的更新地址和下载校验固定为 Gitee。迁移后请从 GitHub 手动下载安装包或完整 ZIP 升级一次，用户配置仍保留；从 5.3.6 开始自动更新统一使用 GitHub。Gitee 保留历史版本，不再继续发布。

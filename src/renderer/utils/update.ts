@@ -124,7 +124,7 @@ export const getProxyNodes = async (): Promise<string[]> => {
 };
 
 /**
- * 获取 Gitee 最新桌面正式版本，移动版使用独立版本号。
+ * 获取 GitHub 最新桌面正式版本，移动版使用独立版本号。
  */
 export const getLatestReleaseInfo = async (): Promise<ReleaseInfo | null> => {
   try {
@@ -132,7 +132,7 @@ export const getLatestReleaseInfo = async (): Promise<ReleaseInfo | null> => {
       Array<ReleaseInfo & { prerelease?: boolean; created_at?: string }>
     >(APP_UPDATE_RELEASE_API_URL, { timeout: 10000 });
     if (!Array.isArray(data)) return null;
-    // Gitee 列表不保证按版本倒序，过滤独立的移动版本后再比较数字版本。
+    // 排除独立版本号的移动版本，按数字版本选择桌面正式版。
     const release = data
       .filter((item) => !item.prerelease && /^v\d+\.\d+\.\d+$/.test(item.tag_name))
       .sort((a, b) => compareVersions(b.tag_name.slice(1), a.tag_name.slice(1)))[0];
@@ -144,7 +144,7 @@ export const getLatestReleaseInfo = async (): Promise<ReleaseInfo | null> => {
       assets: Array.isArray(release.assets) ? release.assets : []
     };
   } catch (error) {
-    console.error('获取 Gitee 发行信息失败:', error);
+    console.error('获取 GitHub 发行信息失败:', error);
     return null;
   }
 };

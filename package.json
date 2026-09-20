@@ -1,6 +1,6 @@
 {
   "name": "ikun-music",
-  "version": "5.3.5",
+  "version": "5.3.6",
   "description": "ikun音乐",
   "scripts": {
     "prepare": "husky",
@@ -12,7 +12,7 @@
     "dev:mobile": "npm --prefix mobile run dev:h5",
     "build:mobile": "npm --prefix mobile run build:app",
     "dev": "tauri dev",
-    "prepare:music-api-runtime": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-music-api-runtime.ps1",
+    "prepare:music-api-runtime": "node scripts/prepare-music-api-runtime.mjs",
     "build:desktop": "npm run prepare:music-api-runtime && npm run build:web -- --mode desktop",
     "build:web": "vue-tsc --noEmit -p tsconfig.web.json --composite false && vite build",
     "check:android-env": "node scripts/check-android-env.mjs",
@@ -27,7 +27,7 @@
     "android:run": "tauri android run",
     "lint:i18n": "jiti scripts/check_i18n.ts",
     "check:music-service": "node scripts/check-music-service.mjs",
-    "package:desktop": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/package-desktop.ps1 -Target all"
+    "package:desktop": "node scripts/package-desktop.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx,vue,js}": [

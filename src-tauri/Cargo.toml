@@ -1,6 +1,6 @@
 [package]
 name = "ikun-music-tauri"
-version = "5.3.5"
+version = "5.3.6"
 description = "ikun音乐 Tauri"
 edition = "2021"
 
@@ -12,7 +12,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "2.5.1", features = [] }
 
 [dependencies]
-tauri = { version = "2.9.3", features = ["tray-icon", "image-ico", "image-png", "protocol-asset"] }
+tauri = { version = "2.9.3", features = ["tray-icon", "image-ico", "image-png", "protocol-asset", "macos-private-api"] }
 tauri-plugin-opener = "2.5.0"
 tauri-plugin-dialog = "2.4.0"
 tauri-plugin-fs = "2.4.2"

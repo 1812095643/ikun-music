@@ -66,7 +66,7 @@ const fontLabel = computed(() =>
         <text class="ri-arrow-right-s-line" />
       </button>
       <button role="button" class="settings-row" @click="openReleaseDownloads">
-        <text>所有版本下载</text><text class="settings-value">Gitee 发行版</text>
+        <text>所有版本下载</text><text class="settings-value">GitHub 发行版</text>
         <text class="ri-arrow-right-s-line" />
       </button>
     </view>
