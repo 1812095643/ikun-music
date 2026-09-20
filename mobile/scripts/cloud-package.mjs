@@ -100,9 +100,13 @@ await run(
   120000,
   true
 );
+const accountInfo = await run(['user', 'info'], 30000, true);
+if (!accountInfo.includes(username)) throw new Error('HBuilderX did not confirm the configured DCloud account');
+console.log('DCloud account identity confirmed.');
 await run(['project', 'open', '--path', project]);
 if (statusOnly) {
-  await run(['pack', 'status', '--project', project]);
+  const status = await run(['pack', 'status', '--project', project]);
+  if (/Unknown error/i.test(status)) throw new Error('DCloud status service returned Unknown error for the authenticated account');
   process.exit(0);
 }
 console.log('Submitting Android package with the application cloud certificate.');
