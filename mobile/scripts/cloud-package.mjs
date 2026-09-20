@@ -1,11 +1,11 @@
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { copyFile, cp, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const project = root;
+const project = join(root, 'src');
 const output = resolve(root, '../release-stage/android');
 const cli = process.env.HBUILDERX_CLI;
 const username = process.env.DCLOUD_USERNAME;
@@ -83,10 +83,6 @@ await run(
   120000,
   true
 );
-await cp(join(root, 'src/nativeplugins'), join(root, 'nativeplugins'), { recursive: true });
-for (const file of ['AndroidManifest.xml', 'Info.plist']) {
-  await copyFile(join(root, 'src', file), join(root, file));
-}
 await run(['project', 'open', '--path', project]);
 await run(['project', 'list']);
 console.log('Submitting Android package with the application cloud certificate.');

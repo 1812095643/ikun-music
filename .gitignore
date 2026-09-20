@@ -63,9 +63,8 @@ release-stage/
 
 mobile/dist/
 mobile/unpackage/
-mobile/nativeplugins/
-mobile/AndroidManifest.xml
-mobile/Info.plist
+mobile/src/unpackage/
+mobile/src/.hbuilderx/
 mobile/backend/dist/
 mobile/backend/node_modules/
 mobile/.playwright-cli/
