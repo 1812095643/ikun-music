@@ -89,5 +89,5 @@ jobs:
           else
             gh release create "$tag" --target "$GITHUB_SHA" --draft --title "$title $tag" --notes-file release-notes.md
           fi
-          gh release upload "$tag" release-stage/* --clobber
+          gh release upload "$tag" release-stage/*.exe release-stage/*.zip release-stage/*.sig release-stage/*.dmg release-stage/*.tar.gz release-stage/latest.json release-stage/SHA256SUMS.txt --clobber
           gh release edit "$tag" --draft=false --latest

@@ -235,7 +235,12 @@ pub async fn install_app_update(
     prepared
         .update
         .install(prepared.bytes.as_ref().ok_or("请重新下载更新。")?)
-        .map_err(describe)
+        .map_err(describe)?;
+    // macOS 替换应用包后仍运行旧进程，需要重启才能载入新资源。
+    #[cfg(target_os = "macos")]
+    app.restart();
+    #[cfg(not(target_os = "macos"))]
+    Ok(())
 }
 
 /// 只接受便携包内三个程序条目；拒绝路径穿越、链接、重复条目和异常解压体积。
