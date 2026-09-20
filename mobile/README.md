@@ -21,6 +21,10 @@ npm run build:app
 
 `build:app` 生成 `dist/build/app` 原生应用资源。这不是 APK 或 IPA。`src/manifest.json` 已使用 DCloud 国际区正式分配的 AppID `__UNI__GC2DB750`，应用后台登记名为 `ikun Music`。安卓包名为 `cn.ikun.music`，正式 APK 还需对应签名和打包配置；离线构建需申请与 AppID、包名、签名 SHA-1 一致的 AppKey。iOS 已配置音频后台模式、HTTP 音源域名例外和安全区，真机安装包还需苹果证书及描述文件。
 
+GitHub 的「构建安卓手机平板车机预览版」工作流会编译并验证本地扩展与 App 资源，调用固定版本的官方 HBuilderX，使用国际区账号和本应用云端证书生成 APK。需要在仓库 Actions Secrets 配置 `DCLOUD_USERNAME`、`DCLOUD_PASSWORD`；账号密码不写入源码。流程校验 APK 签名、正式 AppID 对应资源与 DeviceKit 类均存在，成功后可选择发布 `mobile-v版本号` 预览版，不改变桌面 `latest.json`。当前已完成流程配置，首次 APK 构建仍待登录密钥配置和云端实际验收。
+
+iOS 同样可以由 GitHub 调用官方打包工具，或使用 macOS runner 与官方离线 SDK；IPA 仍需要匹配的 Apple 证书、描述文件和 Bundle ID。目前未配置这些材料，也未创建声称能够产出 IPA 的工作流。车机互传、系统音乐扫描和原生频谱的 iOS 扩展也尚未实现。
+
 ## 源码复用与设计
 
 - `backend/build.mjs` 直接编译桌面的 `src/renderer/api/kuwo.ts`、音质配置和歌词解析器，不复制后另行维护。
