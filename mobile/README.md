@@ -19,7 +19,7 @@ npm run build:h5
 npm run build:app
 ```
 
-`build:app` 生成 `dist/build/app` 原生应用资源。这不是 APK 或 IPA。正式安卓打包需要在 HBuilderX 中配置真实 DCloud AppID、包名和签名；`src/manifest.json` 的 AppID 当前留空，不能自行编造。iOS 已配置音频后台模式、HTTP 音源域名例外和安全区，本轮不构建或打包。
+`build:app` 生成 `dist/build/app` 原生应用资源。这不是 APK 或 IPA。`src/manifest.json` 已使用 DCloud 国际区正式分配的 AppID `__UNI__GC2DB750`，应用后台登记名为 `ikun Music`。安卓包名为 `cn.ikun.music`，正式 APK 还需对应签名和打包配置；离线构建需申请与 AppID、包名、签名 SHA-1 一致的 AppKey。iOS 已配置音频后台模式、HTTP 音源域名例外和安全区，真机安装包还需苹果证书及描述文件。
 
 ## 源码复用与设计
 
