@@ -1,18 +1,18 @@
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { copyFile, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
+import { copyFile, cp, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const project = join(root, 'dist/build/app');
+const project = root;
 const output = resolve(root, '../release-stage/android');
 const cli = process.env.HBUILDERX_CLI;
 const username = process.env.DCLOUD_USERNAME;
 const password = process.env.DCLOUD_PASSWORD;
 if (!cli || !username || !password)
   throw new Error('HBUILDERX_CLI and DCloud credentials must be configured');
-const manifest = JSON.parse(await readFile(join(project, 'manifest.json'), 'utf8'));
+const manifest = JSON.parse(await readFile(join(root, 'dist/build/app/manifest.json'), 'utf8'));
 if (manifest.id !== '__UNI__GC2DB750') throw new Error('Unexpected DCloud AppID');
 const { version } = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 if (manifest.version?.name !== version)
@@ -83,7 +83,9 @@ await run(
   120000,
   true
 );
+await cp(join(root, 'src/nativeplugins'), join(root, 'nativeplugins'), { recursive: true });
 await run(['project', 'open', '--path', project]);
+await run(['project', 'list']);
 console.log('Submitting Android package with the application cloud certificate.');
 const report = await run(
   [
@@ -124,10 +126,7 @@ async function apks(folder) {
 }
 await mkdir(output, { recursive: true });
 const destination = join(output, `ikun-music-mobile-${version}-android.apk`);
-const files = [
-  ...(await apks(join(project, 'unpackage/release'))),
-  ...(await apks(join(root, 'unpackage/release')))
-];
+const files = await apks(join(project, 'unpackage/release'));
 if (files.length === 1) {
   await copyFile(files[0], destination);
 } else if (files.length === 0) {

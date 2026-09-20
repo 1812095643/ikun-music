@@ -63,6 +63,7 @@ release-stage/
 
 mobile/dist/
 mobile/unpackage/
+mobile/nativeplugins/
 mobile/backend/dist/
 mobile/backend/node_modules/
 mobile/.playwright-cli/

@@ -14,7 +14,13 @@ const plugins = [
   ['amazon-corretto', '21.2.0', '089a14d65d630851fc1cb981f69ec6bd'],
   ['launcher-tools', '1.0.3.2026052917', 'b13b17de5c8d8dd264d12868a20e0c50'],
   ['launcher', '5.26.2026091620.2526', 'c8b9d7d01699cc2cba2fa446e6e0aa2c'],
-  ['app-safe-pack', '2.0.0.2026030912', '19a63b16c1c6cf32d6eea2ae10e31a42']
+  ['app-safe-pack', '2.0.0.2026030912', '19a63b16c1c6cf32d6eea2ae10e31a42'],
+  ['node18', '1.0.0.2026070820', '9c65e9750dedc5c9c4c61de24a357cd1'],
+  ['uni_modules', '1.0.7-2026063000', '6d7520d7601efad07dd9a6878d1a2808'],
+  ['uni_helpers', '3.0.1-2026081817', 'a6937e64e5effa333c46e893acf276c4'],
+  ['unicloud', '2.0.70-2026091812', 'd13fe8b7af33385e7477e4b976074bde'],
+  ['uniapp-uts-v1', '5.26.2026091619.3958', 'e59978445d5034962b913409ac7d005a'],
+  ['uniapp-cli-vite', '5.26.2026091411.1611', '4eb09d0ad068afd754ee04a97509face']
 ];
 const downloads = await Promise.allSettled(
   plugins.map(async ([name, version, expected]) => {
