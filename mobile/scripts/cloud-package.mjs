@@ -20,6 +20,8 @@ if (manifest.version?.name !== version)
 
 function run(args, timeout = 120000, quiet = false) {
   return new Promise((resolve, reject) => {
+    const operation = args.slice(0, args[0] === 'user' ? 2 : 1).join(' ');
+    console.log(`HBuilderX: ${operation}`);
     const child = spawn(cli, args, {
       cwd: root,
       windowsHide: true,
@@ -28,7 +30,7 @@ function run(args, timeout = 120000, quiet = false) {
     let text = '';
     const timer = setTimeout(() => {
       child.kill();
-      reject(new Error('HBuilderX operation timed out'));
+      reject(new Error(`HBuilderX ${operation} timed out`));
     }, timeout);
     const collect = (chunk) => {
       text += chunk.toString();
@@ -41,13 +43,25 @@ function run(args, timeout = 120000, quiet = false) {
     });
     child.on('exit', (code) => {
       clearTimeout(timer);
-      if (code !== 0) {
-        if (!quiet)
-          process.stderr.write(
-            text.split(password).join('[redacted]').split(username).join('[account]')
-          );
-        reject(new Error(`HBuilderX operation exited with ${code}`));
-      } else resolve(text);
+      const output = text.replace(/\x1b\[[0-9;]*[A-Za-z]/g, '');
+      const reportedFailure = /:\s*FAILED\b/i.test(output);
+      if (!quiet && output.trim()) {
+        process.stdout.write(
+          output
+            .split(password)
+            .join('[redacted]')
+            .split(username)
+            .join('[account]')
+            .replace(/(token|password|authorization|cookie)[^\r\n]*/gi, '$1 [redacted]')
+        );
+      }
+      if (code !== 0 || reportedFailure) {
+        reject(
+          new Error(
+            `HBuilderX ${operation} failed (exit ${code}, reported failure ${reportedFailure})`
+          )
+        );
+      } else resolve(output);
     });
   });
 }
