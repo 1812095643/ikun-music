@@ -28,7 +28,8 @@
           "name": "ikun 车机与本地互传",
           "description": "本地音频分析、文件选择与局域网互传",
           "platforms": "Android",
-          "isCloud": false
+          "isCloud": false,
+          "parameters": {}
         }
       }
     },

@@ -10,6 +10,7 @@ dependencies {
     implementation 'org.nanohttpd:nanohttpd:2.3.1'
     implementation 'com.github.wendykierp:JTransforms:3.1'
     compileOnly files(providers.gradleProperty('androidJar').getOrElse(System.getenv('ANDROID_HOME') + '/platforms/android-36.1/android.jar'))
+    compileOnly files('build/unimodule-sdk/classes.jar')
     androidLibraries 'androidx.media3:media3-exoplayer:1.8.0'
     androidLibraries 'androidx.media3:media3-session:1.8.0'
     testImplementation 'junit:junit:4.13.2'

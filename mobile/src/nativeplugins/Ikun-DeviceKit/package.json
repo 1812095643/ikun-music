@@ -6,7 +6,13 @@
   "_dp_type": "nativeplugin",
   "_dp_nativeplugin": {
     "android": {
-      "plugins": [],
+      "plugins": [
+        {
+          "type": "module",
+          "name": "Ikun-DeviceKit",
+          "class": "cn.ikun.music.device.DeviceKitModule"
+        }
+      ],
       "integrateType": "aar",
       "minSdkVersion": 26,
       "dependencies": [

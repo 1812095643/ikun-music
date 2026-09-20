@@ -81,6 +81,7 @@ jobs:
               assert 'assets/apps/__UNI__GC2DB750/www/manifest.json' in names, 'Missing app resources'
               dex = [archive.read(name) for name in names if name.startswith('classes') and name.endswith('.dex')]
               assert any(b'Lcn/ikun/music/device/DeviceKit;' in data for data in dex), 'Missing native device kit'
+              assert any(b'Lcn/ikun/music/device/DeviceKitModule;' in data for data in dex), 'Missing registered native module'
           print('APK signature, app resources and native device kit verified.')
           PY
       - uses: actions/upload-artifact@v4

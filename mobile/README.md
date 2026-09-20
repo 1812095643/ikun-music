@@ -69,7 +69,7 @@ npm run build:device-kit
 npm run build:app
 ```
 
-脚本优先读取 `ANDROID_HOME`/`ANDROID_SDK_ROOT`，否则寻找 Windows 默认 Android SDK 目录。构建生成 `src/nativeplugins/Ikun-DeviceKit/android/ikun-device-kit.aar`，插件配置和依赖声明已放在 `src/nativeplugins`，App 资源构建会一起复制到输出目录。HBuilderX 打包时须包含该本地插件，并配置真实 AppID 与签名；普通基座不包含这些扩展。
+脚本优先读取 `ANDROID_HOME`/`ANDROID_SDK_ROOT`，否则寻找 Windows 默认 Android SDK 目录。构建生成 `src/nativeplugins/Ikun-DeviceKit/android/ikun-device-kit.aar`，插件配置和依赖声明已放在 `src/nativeplugins`，App 资源构建会一起复制到输出目录。`DeviceKitModule` 按 DCloud 规范注册模块，前端通过版本握手确认扩展已装载；编译接口来自 DCloud 官方 RichAlert 仓库的固定 SDK，校验 SHA-256 后仅作为 compileOnly 引用，不重复打入 APK。HBuilderX 打包时须包含该本地插件，并配置真实 AppID 与签名；普通基座不包含这些扩展。
 
 `npm run build:device-kit` 同时准备浏览器联调用的 Java 类路径。开发预览开启互传时会运行同一份 Java 服务内核，实际接收文件到 `.native-preview`，不是模拟接口。关闭互传或退出开发服务会停止该进程。
 

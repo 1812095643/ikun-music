@@ -1,3 +1,4 @@
 -keep class cn.ikun.music.device.DeviceKit { public *; }
+-keep class cn.ikun.music.device.DeviceKitModule { *; }
 -keep class cn.ikun.music.device.FilePickerActivity { *; }
 -keep class cn.ikun.music.device.MusicPlaybackService { *; }

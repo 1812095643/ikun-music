@@ -7,6 +7,8 @@ export function nativeDevice(): any | null {
     try {
       if (!kit) {
         checked = true;
+        const registration = uni.requireNativePlugin('Ikun-DeviceKit');
+        if (registration?.version() !== '1') return null;
         const candidate: any = plus.android.importClass('cn.ikun.music.device.DeviceKit');
         if (candidate.version() !== '1') return null;
         candidate.initialize(plus.android.runtimeMainActivity());

@@ -2,6 +2,7 @@ import { readdirSync, existsSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import './prepare-unimodule-sdk.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sdk =
