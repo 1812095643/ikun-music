@@ -84,6 +84,9 @@ await run(
   true
 );
 await cp(join(root, 'src/nativeplugins'), join(root, 'nativeplugins'), { recursive: true });
+for (const file of ['AndroidManifest.xml', 'Info.plist']) {
+  await copyFile(join(root, 'src', file), join(root, file));
+}
 await run(['project', 'open', '--path', project]);
 await run(['project', 'list']);
 console.log('Submitting Android package with the application cloud certificate.');
