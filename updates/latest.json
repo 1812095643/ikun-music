@@ -1,19 +1,19 @@
 {
-  "version": "5.3.4",
-  "notes": "ikun音乐 5.3.4\n\n- 修复默认音源无法播放、播放全部连续报错的问题，对齐安卓端取流方式，并校验歌曲身份与音频时长。\n- 播放和下载共用取流接口，支持标准音质、高品质、无损音质；保留音源实际返回的音频格式。\n- 遇到失效音频链接时自动尝试备用音源，取消过期请求，减少切歌后错播和残留播放。\n- 开屏品牌动画结束后多停留至少 1 秒，并等待首页数据；慢网时可手动进入首页。\n- 新增录音棚、KTV、3D 环绕、演唱会、音乐厅、清澈人声、深夜聆听、低音律动共 8 种实时音效预设。\n- 音效支持强度与空间感调节、原声对比、恢复预设和自动保存，适配浅色与深色界面。\n- 完善桌面端在线音频分段传输和进度拖动，修复音效开启后长时间播放可能静音的问题。\n\n音效入口：播放设置 → 音效。实际音质取决于音源返回；不支持音效处理的音源会显示直出状态。\n\n安装版可在应用内检查更新；便携版请完整解压并保留 runtime 目录。\n",
-  "pub_date": "2026-09-19T12:52:07.898Z",
+  "version": "5.3.5",
+  "notes": "ikun音乐 5.3.5\r\n\r\n- 桌面顶部菜单新增“检查更新”和“下载移动版”，各端下载入口统一打开本仓库 Gitee 发行版页面。\r\n- 修复旧网页和移动更新入口的无效下载链接，不再按桌面版本号拼接不存在的 APK。\r\n- 完善酷我排行榜列表、歌曲封面和完整时长识别；桌面与移动端复用取流和音质逻辑。\r\n- 同步 uni-app 移动端源码，包含手机、平板和安卓车机自适应界面、歌词、下载、本地音乐及歌单导入。\r\n- 移动端设置新增“下载桌面版”和“所有版本下载”，平板及车机首页沿用纵向内容结构，宽屏增加每行内容。\r\n- 安卓原生扩展源码包含本地音乐扫描、Media3 播放与真实频谱、局域网任意文件和长文本互传。\r\n\r\nWindows 安装版和便携版均支持检查更新。便携版请完整解压并保留 runtime 目录。\r\n\r\n移动端独立版本为 0.1.0；正式 APK、IPA 是否可下载以发行页实际附件为准。App 资源和源码不属于手机安装包，安卓原生功能仍需正式 APK 真机验收。\r\n",
+  "pub_date": "2026-09-20T05:06:14.076Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSdTZodm1TRFFtc1FQendNZzZZczlxa09WVzFYRjN3eHFzWWpYV2lSeW1pUjluTHd2Umw2N2p0cW1wMzlsa1hTWmkwOGVSMlBtcDlUdHc0VXYvTkkrcWdFOEd2dDNweEFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg5ODIyMzAwCWZpbGU6aWt1bumfs+S5kF81LjMuNF94NjQtc2V0dXAuZXhlCjdEeHFGd2FpcTg2UlYrR2ZQNUN2UTRpbGZJZ3NpUjZ4TnRCOUQydFNNajdYdXExcHFGUmUrN0ZrZ2RuWkUwbUFVZzQ3eHB6OXVKeHU1bWl0Q0V3YUJRPT0K",
-      "url": "https://gitee.com/caixukun66666666/ikun-music/releases/download/v5.3.4/ikun-music-5.3.4-setup.exe",
-      "sha256": "899f0a065dd35436ac30f2a1383a2e46c5cfe2a5d95c94bb7da7564576bf2f31",
-      "size": 40871055
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSdTZodm1TRFFtc1gxUnc3aGdnSVRsNlBRWUk5a29SRm5aUDluZE1GOVB1TjZXaG9EQzVxSGdIWlRXWG5zelE4aEEvQ1NJNmRQSXJhdmFJUENralZkWmxaS01zZStJRFFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg5ODgwNzQ2CWZpbGU6aWt1bumfs+S5kF81LjMuNV94NjQtc2V0dXAuZXhlCjdndkw3dWZYZzZ6Ly9taFF2VVhBMFRWNzV1ZGZ6TXlzVi9MVEpqN1JlTmZkL3E3TEVITkdDV1VSNmRJTnNYRGxCS3E5SGd3ak9wNFQzSllZeG9hSUFnPT0K",
+      "url": "https://gitee.com/caixukun66666666/ikun-music/releases/download/v5.3.5/ikun-music-5.3.5-setup.exe",
+      "sha256": "498dc27702da72e288937844b3c7d4bf77eae47f23896ef7b77c72b155a93ccc",
+      "size": 40879080
     },
     "windows-x86_64-portable": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSdTZodm1TRFFtc1RhdFpTTFBwbE02ZGEvZEh1OXlVRnhlSHlzeWd3R2hBR2syNVVuUlNMOExSRFBjMEFmb0VtQTljZEFLdkRCcnc4ekwwdnpISmx2cmZpMGpzRitCT2dJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg5ODIyMzI3CWZpbGU6aWt1bi1tdXNpYy01LjMuNC1wb3J0YWJsZS56aXAKK3hyUGN0TmMzRFJMSlZ5S0JjNUhid1dVc3NNZjZNY1BkTWtOaHF4OGZEMVdtVDdwaERESGFETzkrc1ZMc3k3cEpCNXE5R3lrZWJQMC8vRW14RFZDQ0E9PQo=",
-      "url": "https://gitee.com/caixukun66666666/ikun-music/releases/download/v5.3.4/ikun-music-5.3.4-portable.zip",
-      "sha256": "ebcc0f6dd99dd04b6c8650c89b944e2d6e0c27608e0a1d0d8d858e604baff538",
-      "size": 58879236
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVSdTZodm1TRFFtc1luRWcvTDhmS3VieWtJWG5oWHhJK2dGUG5wNTJFYkF1Mlo0NWh1WEQ0VkdqbllSdXR0N1FtcitpRXB0VThDVEZBUjYwRDVjaFNJb1doWWNkekdZdndvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg5ODgwNzczCWZpbGU6aWt1bi1tdXNpYy01LjMuNS1wb3J0YWJsZS56aXAKMEh2UlVsWlc5UXNsYnVtYVNUalhQMUtzZWRmdjZoYkhSaXFJSlBjM1diMitKYkFuK205RkQwK2VKcDRuaStxQnJnbTZNdkRsU3piQ3Nmc21WVEhsRGc9PQo=",
+      "url": "https://gitee.com/caixukun66666666/ikun-music/releases/download/v5.3.5/ikun-music-5.3.5-portable.zip",
+      "sha256": "0f691cf15001701f98d467377b3af9038ca2a1904cd961f6ad491d7c1a96b472",
+      "size": 58878686
     }
   }
 }
