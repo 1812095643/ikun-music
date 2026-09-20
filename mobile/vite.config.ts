@@ -59,6 +59,10 @@ export default defineConfig({
   plugins: [uni(), musicPreviewTransport(), transferPreview()],
   resolve: {
     alias: {
+      // 原生服务层没有 window/self；锁定兼容实现，避免依赖的 browser 入口在启动时抛错。
+      'abort-controller': fileURLToPath(
+        new URL('./node_modules/abort-controller/dist/abort-controller.mjs', import.meta.url)
+      ),
       '@ikun/music-backend': fileURLToPath(new URL('./backend/dist/index.js', import.meta.url))
     }
   },

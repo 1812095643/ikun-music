@@ -72,6 +72,10 @@ mobile/output/playwright/
 mobile/.native-preview/
 mobile/native-kit/.gradle/
 mobile/native-kit/build/
+mobile/android/.gradle/
+mobile/android/app/build/
+mobile/android/build/
+mobile/android/local.properties
 mobile/src/static/transfer/brand.png
 !mobile/package-lock.json
 

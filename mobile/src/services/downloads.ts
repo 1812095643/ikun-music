@@ -3,9 +3,10 @@ import {
   downloadRecords,
   toast,
   updateDownload,
-  writeStorage} from '@/stores/library';
+  writeStorage
+} from '@/stores/library';
 
-import { loadLyrics, previewMediaUrl, type Quality,resolveTrack, type Track } from './musicApi';
+import { loadLyrics, previewMediaUrl, type Quality, resolveTrack, type Track } from './musicApi';
 
 interface DownloadJob {
   task?: any;
@@ -173,26 +174,26 @@ async function saveSidecar(path: string, track: Track) {
         return `[${minutes}:${seconds}]${line.text}`;
       })
       .join('\n');
+    const separator = path.lastIndexOf('/');
+    if (separator < 0) throw new Error('无法定位音乐保存目录');
+    // 直接解析下载路径的目录，避免部分 Android 基座的 getParent 返回上一级目录。
+    const directory = path.slice(0, separator + 1);
+    const filename = path.slice(separator + 1).replace(/\.[^.]+$/, '.lrc');
     await new Promise<void>((resolve, reject) =>
       plus.io.resolveLocalFileSystemURL(
-        path,
-        (entry: any) => {
-          entry.getParent(
-            (parent: any) =>
-              parent.getFile(
-                entry.name.replace(/\.[^.]+$/, '.lrc'),
-                { create: true },
-                (lyric: any) =>
-                  lyric.createWriter((writer: any) => {
-                    writer.onwriteend = () => resolve();
-                    writer.onerror = reject;
-                    writer.write(content);
-                  }, reject),
-                reject
-              ),
+        directory,
+        (parent: any) =>
+          parent.getFile(
+            filename,
+            { create: true },
+            (lyric: any) =>
+              lyric.createWriter((writer: any) => {
+                writer.onwriteend = () => resolve();
+                writer.onerror = reject;
+                writer.write(content);
+              }, reject),
             reject
-          );
-        },
+          ),
         reject
       )
     );

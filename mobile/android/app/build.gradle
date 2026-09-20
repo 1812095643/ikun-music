@@ -1,0 +1,121 @@
+import groovy.json.JsonSlurper
+
+plugins { id 'com.android.application' }
+
+def mobileRoot = rootProject.projectDir.parentFile
+def sourceManifest = new JsonSlurper().parse(new File(mobileRoot, 'src/manifest.json'))
+def nativePlugin = new JsonSlurper().parse(new File(mobileRoot, 'src/nativeplugins/Ikun-DeviceKit/package.json'))
+def packageName = 'cn.ikun.music'
+def appKey = providers.environmentVariable('DCLOUD_APPKEY').getOrElse('')
+def keyStore = providers.environmentVariable('ANDROID_KEYSTORE_FILE').getOrElse('')
+def keyStorePassword = providers.environmentVariable('ANDROID_KEYSTORE_PASSWORD').getOrElse('')
+def signingAlias = providers.environmentVariable('ANDROID_KEY_ALIAS').getOrElse('')
+def signingPassword = providers.environmentVariable('ANDROID_KEY_PASSWORD').getOrElse(keyStorePassword)
+def signedBuild = keyStore && keyStorePassword && signingAlias && signingPassword
+def emulatorBuild = providers.gradleProperty('ikunEmulator').getOrElse('false') == 'true'
+
+android {
+    namespace packageName
+    compileSdk {
+        version = release(36) { minorApiLevel = 1 }
+    }
+    buildToolsVersion '36.1.0'
+
+    defaultConfig {
+        applicationId packageName
+        minSdk sourceManifest.'app-plus'.distribute.android.minSdkVersion as int
+        targetSdk sourceManifest.'app-plus'.distribute.android.targetSdkVersion as int
+        versionCode sourceManifest.versionCode as int
+        versionName sourceManifest.versionName
+        resValue 'string', 'app_name', sourceManifest.name
+        manifestPlaceholders = ['apk.applicationId': packageName]
+        ndk { abiFilters.addAll(emulatorBuild ? ['x86_64'] : sourceManifest.'app-plus'.distribute.android.abiFilters) }
+    }
+
+    signingConfigs {
+        release {
+            if (signedBuild) {
+                storeFile file(keyStore)
+                storePassword keyStorePassword
+                keyAlias signingAlias
+                keyPassword signingPassword
+                enableV1Signing true
+                enableV2Signing true
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            if (signedBuild) signingConfig signingConfigs.release
+        }
+        release {
+            if (signedBuild) signingConfig signingConfigs.release
+            minifyEnabled false
+        }
+    }
+
+    sourceSets {
+        main {
+            assets.srcDir layout.buildDirectory.dir('generated/offline/assets')
+            res.srcDir layout.buildDirectory.dir('generated/offline/res')
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    androidResources {
+        additionalParameters '--auto-add-overlay'
+        ignoreAssetsPattern '!.svn:!.git:.*:!CVS:!thumbs.db:!picasa.ini:!*.scc:*~'
+    }
+    packaging {
+        jniLibs { useLegacyPackaging true }
+        resources { excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE*', 'META-INF/NOTICE*'] }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: layout.buildDirectory.dir('generated/offline/libs'), include: ['*.aar'])
+    implementation files(new File(mobileRoot, 'src/nativeplugins/Ikun-DeviceKit/android/ikun-device-kit.aar'))
+    nativePlugin._dp_nativeplugin.android.dependencies.each { implementation it }
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    implementation 'androidx.core:core:1.6.0'
+    implementation 'androidx.fragment:fragment:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.webkit:webkit:1.5.0'
+    implementation 'com.facebook.fresco:fresco:3.4.0'
+    implementation 'com.facebook.fresco:middleware:3.4.0'
+    implementation 'com.facebook.fresco:animated-gif:3.4.0'
+    implementation 'com.facebook.fresco:webpsupport:3.4.0'
+    implementation 'com.facebook.fresco:animated-webp:3.4.0'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    implementation 'com.alibaba:fastjson:1.2.83'
+    implementation 'net.lingala.zip4j:zip4j:2.11.5'
+}
+
+def verifyOfflineConfig = tasks.register('verifyOfflineConfig') {
+    doLast {
+        if (!appKey) throw new GradleException('DCLOUD_APPKEY is required for an installable offline APK.')
+        if (!signedBuild || !file(keyStore).isFile()) {
+            throw new GradleException('Configure the Android keystore, alias and passwords before packaging.')
+        }
+        def staged = new File(buildDir, 'generated/offline/assets/apps/' + sourceManifest.appid + '/www/manifest.json')
+        if (!staged.isFile()) throw new GradleException('Run npm run build:apk from the mobile directory first.')
+        def compiled = new JsonSlurper().parse(staged)
+        if (compiled.id != sourceManifest.appid || compiled.version.name != sourceManifest.versionName) {
+            throw new GradleException('Staged app identity or version does not match the source manifest.')
+        }
+        def metadata = new File(buildDir, 'generated/offline/res/values/offline.xml')
+        if (!metadata.isFile() || !metadata.text.contains(appKey)) {
+            throw new GradleException('The staged AppKey does not match the configured AppKey. Restage the app.')
+        }
+    }
+}
+
+tasks.configureEach {
+    if (name in ['packageRelease', 'assembleRelease', 'bundleRelease', 'packageDebug', 'assembleDebug']) {
+        dependsOn verifyOfflineConfig
+    }
+}

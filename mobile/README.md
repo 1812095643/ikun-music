@@ -19,9 +19,19 @@ npm run build:h5
 npm run build:app
 ```
 
-`build:app` 生成 `dist/build/app` 原生应用资源。这不是 APK 或 IPA。`src/manifest.json` 已使用 DCloud 国际区正式分配的 AppID `__UNI__GC2DB750`，应用后台登记名为 `ikun Music`。安卓包名为 `cn.ikun.music`，正式 APK 还需对应签名和打包配置；离线构建需申请与 AppID、包名、签名 SHA-1 一致的 AppKey。iOS 已配置音频后台模式、HTTP 音源域名例外和安全区，真机安装包还需苹果证书及描述文件。
+`build:app` 生成 `dist/build/app` 原生应用资源。这不是 APK 或 IPA。`src/manifest.json` 使用 DCloud 中国大陆区分配的 AppID `__UNI__199846B`，安卓包名为 `cn.ikun.music`。安卓使用官方 SDK 在本机 Gradle 编译并签名为可直接安装的 APK，无需上架商店，也无需请求 DCloud 云打包。iOS 真机安装包仍需苹果证书及描述文件。
 
-GitHub 的「构建安卓手机平板车机预览版」工作流会编译并验证本地扩展与 App 资源，调用固定版本的官方 HBuilderX，使用国际区账号和本应用云端证书生成 APK。需要在仓库 Actions Secrets 配置 `DCLOUD_USERNAME`、`DCLOUD_PASSWORD`；账号密码不写入源码。流程校验 APK 签名、正式 AppID 对应资源与 DeviceKit 类均存在，成功后可选择发布 `mobile-v版本号` 预览版，不改变桌面 `latest.json`。当前已完成流程配置，首次 APK 构建仍待登录密钥配置和云端实际验收。
+GitHub 的「构建安卓手机平板车机预览版」工作流复用本机离线构建流程。官方 `Android-SDK@5.26.82680_20260914.zip` 保存在本仓库 `build-tools-android-5.26` 草稿发行版中，保持原始文件与许可证完整；构建前校验 SHA-256。签名与 AppKey 使用仓库 Secrets `ANDROID_KEYSTORE_BASE64`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`、`DCLOUD_APPKEY`，不需要 DCloud 登录密码。校验成功后可发布独立 `mobile-v版本号` 预览版，不改变桌面 `latest.json`。
+
+本机需要 Java 17、Gradle 8.13、Android 平台 36.1 与 Build Tools 36.1.0。配置 `DCLOUD_ANDROID_SDK` 为官方 SDK 解压目录，`ANDROID_HOME` 为 Android SDK 路径，`DCLOUD_APPKEY` 为应用离线 Key，并配置 `ANDROID_KEYSTORE_FILE`、`ANDROID_KEYSTORE_PASSWORD`、`ANDROID_KEY_ALIAS`；独立密钥密码可用 `ANDROID_KEY_PASSWORD` 指定。签名必须与 DCloud 后台登记的 SHA-1 一致。然后在 `mobile` 目录运行：
+
+```powershell
+npm run build:device-kit
+npm run build:app
+npm run build:apk
+```
+
+APK 与 SHA-256 清单输出到仓库的 `release-stage/android`，包含 ARM64 与 ARM32，适用于 Android 8.0 及以上手机、平板和可安装 APK 的车机。`npm run check:apk` 只检查原生编译，不生成安装包；`npm run build:apk -- --emulator` 生成单独的 x86_64 模拟器验收包，不进入发布目录。`GRADLE_BIN` 可指定 Gradle 可执行文件路径。
 
 iOS 同样可以由 GitHub 调用官方打包工具，或使用 macOS runner 与官方离线 SDK；IPA 仍需要匹配的 Apple 证书、描述文件和 Bundle ID。目前未配置这些材料，也未创建声称能够产出 IPA 的工作流。车机互传、系统音乐扫描和原生频谱的 iOS 扩展也尚未实现。
 

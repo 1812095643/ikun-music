@@ -4,6 +4,7 @@ import { nativeDevice } from './nativeDevice';
 export class NativeAudio implements MusicAudio {
   private value = nativeDevice();
   private source = '';
+  private nativeSource = '';
   private timer: ReturnType<typeof setInterval>;
   private listeners = new Map<string, ((data?: unknown) => void)[]>();
   private lastState = 0;
@@ -24,13 +25,17 @@ export class NativeAudio implements MusicAudio {
   }
   set src(value: string) {
     this.source = value;
+    // Media3 不认识 5+ 的私有目录别名；保留业务源地址，只给原生引擎传真实路径。
+    this.nativeSource = /^_(doc|documents|downloads|www)\//.test(value)
+      ? plus.io.convertLocalFileSystemURL(value)
+      : value;
     this.lastState = 0;
     this.error = '';
     this.currentTime = 0;
     this.duration = 0;
     this.send({
       type: 'load',
-      src: value,
+      src: this.nativeSource,
       title: this.title,
       artist: this.singer,
       album: this.epname
@@ -48,7 +53,7 @@ export class NativeAudio implements MusicAudio {
   private poll() {
     try {
       const state = JSON.parse(this.value.audioState());
-      if (state.src !== this.source || !this.source) return;
+      if (state.src !== this.nativeSource || !this.source) return;
       this.currentTime = state.position || 0;
       this.duration = state.duration || 0;
       if (state.error && state.error !== this.error) {

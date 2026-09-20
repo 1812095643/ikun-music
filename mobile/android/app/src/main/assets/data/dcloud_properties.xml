@@ -1,0 +1,25 @@
+<properties>
+    <features>
+        <feature name="Console" value="io.dcloud.feature.pdr.LoggerFeatureImpl" />
+        <feature name="Device" value="io.dcloud.feature.device.DeviceFeatureImpl" />
+        <feature name="File" value="io.dcloud.js.file.FileFeatureImpl" />
+        <feature name="Storage" value="io.dcloud.feature.pdr.NStorageFeatureImpl" />
+        <feature name="Cache" value="io.dcloud.feature.pdr.CoreCacheFeatureImpl" />
+        <feature name="Invocation" value="io.dcloud.invocation.Invocation" />
+        <feature name="Navigator" value="io.dcloud.feature.ui.navigator.NavigatorUIFeatureImpl" />
+        <feature name="NativeUI" value="io.dcloud.feature.ui.nativeui.NativeUIFeatureImpl" />
+        <feature name="UI" value="io.dcloud.feature.ui.UIFeatureImpl">
+            <module name="Navigator" value="io.dcloud.feature.ui.NavView" />
+        </feature>
+        <feature name="Downloader" value="io.dcloud.net.DownloaderFeatureImpl" />
+        <feature name="Audio" value="io.dcloud.feature.audio.AudioFeatureImpl" />
+        <feature name="Runtime" value="io.dcloud.feature.pdr.RuntimeFeatureImpl" />
+        <feature name="XMLHttpRequest" value="io.dcloud.net.XMLHttpRequestFeature" />
+        <feature name="Orientation" value="io.dcloud.feature.sensor.OrientationFeatureImpl" />
+        <feature name="NativeObj" value="io.dcloud.feature.nativeObj.FeatureImpl" />
+        <feature name="Zip" value="io.dcloud.feature.pdr.ZipFeature" />
+    </features>
+    <services>
+        <service name="Downloader" value="io.dcloud.net.DownloaderBootImpl" />
+    </services>
+</properties>

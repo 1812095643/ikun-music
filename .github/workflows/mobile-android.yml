@@ -3,10 +3,6 @@ name: 构建安卓手机平板车机预览版
 on:
   workflow_dispatch:
     inputs:
-      status_only:
-        description: 仅查询 DCloud 已有打包任务
-        type: boolean
-        default: false
       publish:
         description: 发布到 GitHub 预览发行版
         type: boolean
@@ -16,39 +12,47 @@ permissions:
   contents: read
 
 concurrency:
-  group: mobile-android-${{ inputs.status_only }}
+  group: mobile-android
   cancel-in-progress: false
 
 jobs:
   android:
     runs-on: windows-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      - name: 检查 DCloud 构建账号配置
-        env:
-          DCLOUD_USERNAME: ${{ secrets.DCLOUD_USERNAME }}
-          DCLOUD_PASSWORD: ${{ secrets.DCLOUD_PASSWORD }}
-        run: |
-          if (!$env:DCLOUD_USERNAME -or !$env:DCLOUD_PASSWORD) { throw 'Configure DCLOUD_USERNAME and DCLOUD_PASSWORD repository secrets first.' }
       - uses: actions/setup-node@v4
         with:
           node-version: '25.8.1'
           cache: npm
           cache-dependency-path: mobile/package-lock.json
       - uses: actions/setup-java@v4
-        if: ${{ !inputs.status_only }}
         with:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
-        if: ${{ !inputs.status_only }}
         with:
-          gradle-version: '8.10.2'
+          gradle-version: '8.13'
+      - uses: android-actions/setup-android@v3
+      - name: 准备 Android 编译工具
+        run: |
+          sdkmanager 'platforms;android-36.1' 'build-tools;36.1.0'
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: 获取并校验官方离线 SDK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $directory = Join-Path $env:RUNNER_TEMP 'dcloud-android'
+          New-Item -ItemType Directory -Path $directory -Force | Out-Null
+          gh release download build-tools-android-5.26 --repo $env:GITHUB_REPOSITORY --pattern 'Android-SDK@5.26.82680_20260914.zip' --dir $directory
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          $archive = Join-Path $directory 'Android-SDK@5.26.82680_20260914.zip'
+          if ((Get-FileHash $archive -Algorithm SHA256).Hash -ne '09E6FE341373AA780FE9A1D4F5B093B8FB7B1B039C4837A176F447FF38F3650A') { throw 'DCloud SDK checksum mismatch.' }
+          tar.exe -xf $archive -C $directory 'Android-SDK@5.26.82680_20260914'
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          "DCLOUD_ANDROID_SDK=$(Join-Path $directory 'Android-SDK@5.26.82680_20260914')" >> $env:GITHUB_ENV
       - run: npm ci --prefix mobile
-        if: ${{ !inputs.status_only }}
       - name: 编译并验证车机扩展与 App 资源
-        if: ${{ !inputs.status_only }}
         run: |
           npm --prefix mobile run test:device-kit
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
@@ -56,55 +60,50 @@ jobs:
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           npm --prefix mobile run build:app
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
-      - name: 准备官方 HBuilderX
-        run: |
-          $archive = Join-Path $env:RUNNER_TEMP 'hbuilderx.zip'
-          Invoke-WebRequest 'https://download1.dcloud.net.cn/download/HBuilderX.5.26.2026091802.zip' -OutFile $archive
-          $expected = '29AFE8E7A432B94059BF7E01B1A596C9315CA0D4C6402A27A248547EA641577A'
-          if ((Get-FileHash $archive -Algorithm SHA256).Hash -ne $expected) { throw 'HBuilderX checksum mismatch' }
-          $destination = Join-Path $env:RUNNER_TEMP 'hbuilderx'
-          New-Item -ItemType Directory -Path $destination -Force | Out-Null
-          tar.exe -xf $archive -C $destination
-          if ($LASTEXITCODE) { exit $LASTEXITCODE }
-          $cli = Join-Path $destination 'HBuilderX/cli.exe'
-          if (!(Test-Path -LiteralPath $cli)) { throw 'HBuilderX CLI was not found' }
-          "HBUILDERX_CLI=$cli" >> $env:GITHUB_ENV
-      - name: 安装版本匹配的官方 App 打包插件
-        run: node mobile/scripts/prepare-hbuilder-plugins.mjs
-      - name: 使用应用云端证书生成 APK
+      - name: 使用本应用签名离线生成 APK
         env:
-          DCLOUD_USERNAME: ${{ secrets.DCLOUD_USERNAME }}
-          DCLOUD_PASSWORD: ${{ secrets.DCLOUD_PASSWORD }}
-          DCLOUD_REGION: ${{ vars.DCLOUD_REGION || 'china' }}
-        run: node mobile/scripts/cloud-package.mjs ${{ inputs.status_only && '--status-only' || '' }}
-      - name: 验证安卓签名和原生扩展
-        if: ${{ !inputs.status_only }}
+          DCLOUD_APPKEY: ${{ secrets.DCLOUD_APPKEY }}
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if (!$env:DCLOUD_APPKEY -or !$env:ANDROID_KEYSTORE_BASE64 -or !$env:ANDROID_KEYSTORE_PASSWORD -or !$env:ANDROID_KEY_ALIAS) { throw 'Offline AppKey and Android signing secrets must be configured.' }
+          $env:ANDROID_KEYSTORE_FILE = Join-Path $env:RUNNER_TEMP 'ikun-release.keystore'
+          try {
+            [System.IO.File]::WriteAllBytes($env:ANDROID_KEYSTORE_FILE, [Convert]::FromBase64String($env:ANDROID_KEYSTORE_BASE64.Trim()))
+            npm --prefix mobile run build:apk
+            if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          } finally {
+            Remove-Item -LiteralPath $env:ANDROID_KEYSTORE_FILE -Force -ErrorAction SilentlyContinue
+          }
+      - name: 核对应用资源与原生播放器
         shell: bash
         run: |
           python - <<'PY'
-          import glob, zipfile, subprocess, os, json
+          import glob, zipfile, json
           apk = glob.glob('release-stage/android/*.apk')[0]
-          tools = sorted(glob.glob(os.path.join(os.environ['ANDROID_HOME'], 'build-tools', '*')), reverse=True)[0]
-          subprocess.run([os.path.join(tools, 'apksigner.bat'), 'verify', '--verbose', apk], check=True)
+          with open('mobile/src/manifest.json', encoding='utf-8') as source:
+              appid = json.load(source)['appid']
           with zipfile.ZipFile(apk) as archive:
               names = archive.namelist()
-              with open('mobile/src/manifest.json', encoding='utf-8') as source:
-                  appid = json.load(source)['appid']
-              assert f'assets/apps/{appid}/www/manifest.json' in names, 'Missing app resources'
-              dex = [archive.read(name) for name in names if name.startswith('classes') and name.endswith('.dex')]
-              assert any(b'Lcn/ikun/music/device/DeviceKit;' in data for data in dex), 'Missing native device kit'
-              assert any(b'Lcn/ikun/music/device/DeviceKitModule;' in data for data in dex), 'Missing registered native module'
-          print('APK signature, app resources and native device kit verified.')
+              assert f'assets/apps/{appid}/www/manifest.json' in names, 'Missing application resources'
+              registration = json.loads(archive.read('assets/dcloud_uniplugins.json'))
+              assert any(item['name'] == 'Ikun-DeviceKit' for entry in registration['nativePlugins'] for item in entry['plugins']), 'Missing native module registration'
+              dex = b''.join(archive.read(name) for name in names if name.startswith('classes') and name.endswith('.dex'))
+              for symbol in [b'Lcn/ikun/music/device/DeviceKit;', b'Lcn/ikun/music/device/DeviceKitModule;', b'Landroidx/media3/exoplayer/ExoPlayer;']:
+                  assert symbol in dex, 'Missing native playback classes'
+              architectures = {name.split('/')[1] for name in names if name.startswith('lib/') and name.endswith('.so')}
+              assert architectures == {'arm64-v8a', 'armeabi-v7a'}, 'Unexpected APK architectures'
+          print('Application identity, native module, Media3 and ARM architectures verified.')
           PY
       - uses: actions/upload-artifact@v4
-        if: ${{ !inputs.status_only }}
         with:
           name: android-apk
           path: release-stage/android/
           if-no-files-found: error
           retention-days: 14
   publish:
-    if: ${{ inputs.publish && !inputs.status_only }}
+    if: ${{ inputs.publish }}
     needs: android
     runs-on: ubuntu-latest
     permissions:
@@ -122,4 +121,5 @@ jobs:
           set -euo pipefail
           version="$(node -p 'require("./mobile/package.json").version')"
           tag="mobile-v$version"
-          gh release create "$tag" release-stage/android/* --target "$GITHUB_SHA" --prerelease --latest=false --title "ikun Music Android $version" --notes-file mobile/README.md
+          gh release create "$tag" release-stage/android/* --target "$GITHUB_SHA" --draft --prerelease --latest=false --title "ikun Music Android $version" --notes-file mobile/README.md
+          gh release edit "$tag" --draft=false --prerelease --latest=false

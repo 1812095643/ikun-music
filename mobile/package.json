@@ -12,6 +12,8 @@
     "dev:h5": "npm run prepare:assets && uni --host 127.0.0.1 --port 5178",
     "build:h5": "npm run prepare:assets && uni build",
     "build:app": "npm run prepare:assets && uni build -p app && node scripts/finalize-app.mjs",
+    "build:apk": "node scripts/build-apk.mjs",
+    "check:apk": "node scripts/build-apk.mjs --check",
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
