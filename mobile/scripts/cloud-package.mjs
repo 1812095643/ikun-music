@@ -101,7 +101,6 @@ await run(
   true
 );
 await run(['project', 'open', '--path', project]);
-await run(['project', 'list']);
 if (statusOnly) {
   await run(['pack', 'status', '--project', project]);
   process.exit(0);
