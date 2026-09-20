@@ -1,7 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { copyFile, cp, mkdir, readFile, realpath, rm, stat, writeFile } from 'node:fs/promises';
-import { basename, dirname, join, relative, resolve, sep } from 'node:path';
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -102,7 +102,13 @@ await writeFile(
   `<resources><string name="dcloud_appkey" translatable="false">${appKey}</string></resources>\n`
 );
 
-const gradle = process.env.GRADLE_BIN || (process.platform === 'win32' ? 'gradle.bat' : 'gradle');
+let gradle = process.env.GRADLE_BIN || (process.platform === 'win32' ? 'gradle.bat' : 'gradle');
+if (process.platform === 'win32' && !isAbsolute(gradle)) {
+  const located = spawnSync('where.exe', [gradle], { encoding: 'utf8', windowsHide: true });
+  if (located.error || located.status !== 0)
+    throw located.error || new Error('Gradle executable was not found on PATH');
+  gradle = located.stdout.trim().split(/\r?\n/)[0];
+}
 const tasks = checkOnly
   ? [':app:compileReleaseSources', ':app:mergeExtDexRelease', ':app:mergeReleaseNativeLibs']
   : [':app:assembleRelease'];
