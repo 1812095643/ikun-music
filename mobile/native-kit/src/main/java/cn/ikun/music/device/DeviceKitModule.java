@@ -20,4 +20,9 @@ public final class DeviceKitModule extends UniModule {
     public void unobserveAudio() {
         AndroidAudio.observe(null);
     }
+
+    @UniJSMethod(uiThread = false)
+    public void verifyUpdate(String payload, UniJSCallback callback) {
+        callback.invoke(ApkUpdates.verify(mUniSDKInstance.getContext(), payload));
+    }
 }

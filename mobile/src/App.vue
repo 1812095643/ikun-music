@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import { onLaunch, onShow } from '@dcloudio/uni-app';
+import { onHide, onLaunch, onShow } from '@dcloudio/uni-app';
 
+import { pauseAppUpdateCheck, scheduleAppUpdateCheck } from '@/services/appUpdate';
 import { restoreDownloads } from '@/services/downloads';
 import { synchronizeAudio } from '@/stores/player';
 
 onLaunch(() => {
   restoreDownloads();
 });
-onShow(synchronizeAudio);
+onShow(() => {
+  synchronizeAudio();
+  scheduleAppUpdateCheck();
+});
+onHide(pauseAppUpdateCheck);
 </script>
 
 <style>

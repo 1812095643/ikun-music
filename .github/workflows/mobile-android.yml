@@ -63,6 +63,8 @@ jobs:
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           npm --prefix mobile run typecheck
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          npm --prefix mobile run test:update
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
           npm --prefix mobile run build:app
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
       - name: 使用本应用签名离线生成 APK
@@ -126,5 +128,5 @@ jobs:
           set -euo pipefail
           version="$(node -p 'require("./mobile/package.json").version')"
           tag="mobile-v$version"
-          gh release create "$tag" release-stage/android/* --target "$GITHUB_SHA" --draft --prerelease --latest=false --title "ikun音乐 Android $version" --notes-file mobile/README.md
+          gh release create "$tag" release-stage/android/* --target "$GITHUB_SHA" --draft --prerelease --latest=false --title "ikun音乐 Android $version" --notes-file mobile/release-notes.md
           gh release edit "$tag" --draft=false --prerelease --latest=false

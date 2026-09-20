@@ -3,6 +3,7 @@ import { onBackPress, onHide, onShow } from '@dcloudio/uni-app';
 import { computed, onBeforeUnmount, onMounted, shallowRef, watch } from 'vue';
 
 import AppHeader from '@/components/AppHeader.vue';
+import AppUpdateSheet from '@/components/AppUpdateSheet.vue';
 import BottomNavigation from '@/components/BottomNavigation.vue';
 import MiniPlayer from '@/components/MiniPlayer.vue';
 import NavigationRail from '@/components/NavigationRail.vue';
@@ -14,6 +15,7 @@ import QueueSheet from '@/components/QueueSheet.vue';
 import SpectrumBars from '@/components/SpectrumBars.vue';
 import StartupSplash from '@/components/StartupSplash.vue';
 import TrackActions from '@/components/TrackActions.vue';
+import { updateVisible } from '@/services/appUpdate';
 import type { Track } from '@/services/musicApi';
 import { setSpectrumEnabled } from '@/services/spectrum';
 import {
@@ -234,7 +236,7 @@ onHide(() => setSpectrumEnabled(false));
       @close="qualityOpen = false" /><view v-if="toastMessage" class="toast" role="status">{{
       toastMessage
     }}</view
-    ><startup-splash
+    ><app-update-sheet v-if="updateVisible && !splash" /><startup-splash
       v-if="splash"
       :ready="homeCache.length > 0 || !homeLoading"
       @complete="splash = false"

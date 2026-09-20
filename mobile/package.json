@@ -1,6 +1,6 @@
 {
   "name": "ikun-music-mobile",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "workspaces": [
     "backend"
@@ -8,6 +8,7 @@
   "scripts": {
     "build:device-kit": "node scripts/build-device-kit.mjs",
     "test:device-kit": "node scripts/build-device-kit.mjs --test",
+    "test:update": "node --test tests/mobileRelease.test.mjs",
     "prepare:assets": "npm run build --workspace @ikun/music-backend",
     "dev:h5": "npm run prepare:assets && uni --host 127.0.0.1 --port 5178",
     "build:h5": "npm run prepare:assets && uni build",

@@ -3,6 +3,13 @@ import { computed, shallowRef } from 'vue';
 
 import SheetFrame from '@/components/SheetFrame.vue';
 import {
+  checkForAppUpdate,
+  supportsAppUpdate,
+  updateInfo,
+  updateProgress,
+  updateStatus
+} from '@/services/appUpdate';
+import {
   getBackgroundPlaybackGuide,
   openBackgroundPlaybackSettings
 } from '@/services/backgroundPlayback';
@@ -26,6 +33,7 @@ const lyricSettings = shallowRef(false);
 const displaySettings = shallowRef(false);
 const backgroundSettings = shallowRef(false);
 const backgroundGuide = getBackgroundPlaybackGuide();
+const appUpdateSupported = supportsAppUpdate();
 const qualityLabel = computed(
   () => qualities.find((item) => item.key === quality.value)?.label || '高品质'
 );
@@ -75,6 +83,24 @@ const fontLabel = computed(() =>
       }}。横竖屏会自动重排；未正确识别的车机可手动选择。设置会保存在本机。</view
     ><view class="settings-group-label">版本与下载</view>
     <view class="settings-group">
+      <button
+        v-if="appUpdateSupported"
+        role="button"
+        class="settings-row"
+        @click="checkForAppUpdate(true)"
+      >
+        <text>检查更新</text
+        ><text class="settings-value">{{
+          updateStatus === 'downloading'
+            ? `下载中 ${updateProgress}%`
+            : updateStatus === 'checking'
+              ? '正在检查…'
+              : updateInfo
+                ? `发现 ${updateInfo.version}`
+                : `当前 ${version}`
+        }}</text>
+        <text class="ri-arrow-right-s-line" />
+      </button>
       <button role="button" class="settings-row" @click="openReleaseDownloads">
         <text>下载桌面版</text><text class="settings-value">Windows</text>
         <text class="ri-arrow-right-s-line" />

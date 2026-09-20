@@ -56,6 +56,10 @@ iOS 同样可以由 GitHub 调用官方打包工具，或使用 macOS runner 与
 
 下载在 App 内保存到应用私有音乐目录，成功后同时尝试保存同名 LRC。暂停后的任务可重新下载；暂不宣称已实现跨进程断点续传。浏览器下载的临时文件仅在当前会话可用，不视作原生离线库。
 
+从 0.1.2 起，安卓启动后自动查询 GitHub 移动发行版，成功检查间隔为六小时；设置中可随时手动检查。检测会排除桌面版本、草稿和不完整附件。点击“下载并安装”后显示进度，可取消或重试；完整安装包通过大小、SHA-256、包名、版本及原签名校验后交给系统安装。首次可能需要允许本应用安装更新；用户仍须确认系统安装提示，应用不会静默安装。0.1.1 及以前版本需要先手动覆盖安装一次。GitHub 网络不可用时会说明原因并提供发行页面入口。
+
+更新流程已在 Android 12 模拟器使用临时低版本包验证真实 GitHub 新版本检测、下载取消与重试、完整包复用、原生校验、安装授权返回和系统更新确认框。模拟器为 x86_64，公开 APK 为 ARM，因此未以该测试宣称 ARM 真机已完成覆盖安装。临时验证包不发布。
+
 参考：[uni-app 背景音频](https://uniapp.dcloud.net.cn/api/media/background-audio-manager.html)、[APlayer](https://github.com/rRemix/APlayer)、[Gramophone](https://github.com/FoedusProgramme/Gramophone)。
 
 ## 手机、平板与车机
