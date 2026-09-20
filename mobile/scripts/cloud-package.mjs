@@ -44,7 +44,10 @@ function run(args, timeout = 120000, quiet = false) {
     child.on('exit', (code) => {
       clearTimeout(timer);
       const output = text.replace(/\x1b\[[0-9;]*[A-Za-z]/g, '');
-      const reportedFailure = /:\s*FAILED\b/i.test(output);
+      const reportedFailure =
+        /:\s*FAILED\b|depends on the plug-in|operation depends on|please try again after installation/i.test(
+          output
+        );
       if (!quiet && output.trim()) {
         process.stdout.write(
           output

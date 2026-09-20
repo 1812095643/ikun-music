@@ -61,6 +61,8 @@ jobs:
           $cli = Join-Path $destination 'HBuilderX/cli.exe'
           if (!(Test-Path -LiteralPath $cli)) { throw 'HBuilderX CLI was not found' }
           "HBUILDERX_CLI=$cli" >> $env:GITHUB_ENV
+      - name: 安装版本匹配的官方 App 打包插件
+        run: node mobile/scripts/prepare-hbuilder-plugins.mjs
       - name: 使用应用云端证书生成 APK
         env:
           DCLOUD_USERNAME: ${{ secrets.DCLOUD_USERNAME }}
