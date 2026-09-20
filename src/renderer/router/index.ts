@@ -29,9 +29,8 @@ const routes = [
     component: AppLayout,
     children: [...homeRouter, ...otherRouter]
   },
-  // 兼容旧版本保存的账号页地址，入口移除后回到首页。
-  { path: '/login', redirect: '/' },
-  { path: '/user', redirect: '/' },
+  // 登录页面已移除，旧地址进入无需登录的个人音乐库。
+  { path: '/login', redirect: '/user' },
   {
     path: '/lyric',
     component: () => import('@/views/lyric/index.vue')

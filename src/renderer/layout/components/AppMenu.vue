@@ -105,6 +105,8 @@ const menuIcons: Record<string, string> = {
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v6l4 2M4.8 8.2A8 8 0 1 1 4 12"/></svg>',
   '/local-music':
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7.5h6l1.7 2H19.5v8a1.5 1.5 0 0 1-1.5 1.5H6a1.5 1.5 0 0 1-1.5-1.5v-10Z"/></svg>',
+  '/user':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 7a7 7 0 0 1 14 0"/></svg>',
   '/set':
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Zm7.2-3.2a7 7 0 0 0-.1-1.1l2-1.5-2-3.4-2.4 1a7.6 7.6 0 0 0-1.9-1.1L14.5 3h-5l-.4 2.9A7.6 7.6 0 0 0 7.2 7l-2.4-1-2 3.4 2 1.5a7 7 0 0 0 0 2.2l-2 1.5 2 3.4 2.4-1a7.6 7.6 0 0 0 1.9 1.1l.4 2.9h5l.4-2.9a7.6 7.6 0 0 0 1.9-1.1l2.4 1 2-3.4-2-1.5c.1-.4.1-.7.1-1.1Z"/></svg>'
 };

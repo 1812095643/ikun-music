@@ -137,6 +137,15 @@
       }}
     </n-tooltip>
 
+    <n-tooltip trigger="hover">
+      <template #trigger>
+        <button class="action-btn" aria-label="我的音乐" @click="router.push('/user')">
+          <i class="ri-user-heart-line" />
+        </button>
+      </template>
+      我的音乐
+    </n-tooltip>
+
     <!-- 更多设置 -->
     <n-popover trigger="hover" placement="bottom-end" :show-arrow="false" raw>
       <template #trigger>
