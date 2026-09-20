@@ -22,6 +22,7 @@
 
 <script lang="ts" setup>
 import { useMessage } from 'naive-ui';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { loginByUid } from '@/api/login';

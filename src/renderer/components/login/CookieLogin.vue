@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useMessage } from 'naive-ui';
-import { onBeforeUnmount, onMounted } from 'vue';
+import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getUserDetail } from '@/api/login';

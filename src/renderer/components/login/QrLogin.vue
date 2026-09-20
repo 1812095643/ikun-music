@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useMessage } from 'naive-ui';
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { checkQr, createQr, getQrKey, getUserDetail } from '@/api/login';
