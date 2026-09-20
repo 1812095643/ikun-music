@@ -59,5 +59,19 @@ for (let index = 0; index < plugins.length; index++) {
   if (unpack.error || unpack.status !== 0)
     throw unpack.error || new Error(`Unable to extract ${name}`);
   const manifest = JSON.parse(await readFile(join(destination, 'package.json'), 'utf8'));
+  if (name === 'compile-typescript') {
+    const install = spawnSync(
+      process.env.ComSpec || 'cmd.exe',
+      ['/d', '/s', '/c', 'npm install --ignore-scripts --no-audit --no-fund'],
+      {
+        cwd: destination,
+        stdio: 'inherit',
+        windowsHide: true
+      }
+    );
+    if (install.error || install.status !== 0)
+      throw install.error || new Error('TypeScript compiler installation failed');
+    await readFile(join(destination, 'node_modules/typescript/lib/typescript.js'));
+  }
   console.log(`Installed HBuilderX plugin: ${name} ${manifest.version}`);
 }
