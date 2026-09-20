@@ -31,8 +31,7 @@ public final class DeviceKit {
     public static void setSpectrumEnabled(boolean enabled) { AndroidAudio.analyzer.setEnabled(enabled); }
     public static void audioCommand(String payload) {
         if (activity == null) return;
-        activity.startService(new Intent(activity, MusicPlaybackService.class));
-        AndroidAudio.command(activity.getApplicationContext(), payload);
+        MusicPlaybackService.dispatch(activity.getApplicationContext(), payload);
     }
     public static void startTransfer(String root, String site) {
         activity.getSharedPreferences("ikun-device", Context.MODE_PRIVATE).edit().putString("inbox", root).apply();

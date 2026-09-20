@@ -2,6 +2,10 @@
 import { computed, shallowRef } from 'vue';
 
 import SheetFrame from '@/components/SheetFrame.vue';
+import {
+  getBackgroundPlaybackGuide,
+  openBackgroundPlaybackSettings
+} from '@/services/backgroundPlayback';
 import { qualities } from '@/services/musicApi';
 import { openReleaseDownloads } from '@/services/releases';
 import {
@@ -20,6 +24,8 @@ const appearance = shallowRef(false);
 const modeSettings = shallowRef(false);
 const lyricSettings = shallowRef(false);
 const displaySettings = shallowRef(false);
+const backgroundSettings = shallowRef(false);
+const backgroundGuide = getBackgroundPlaybackGuide();
 const qualityLabel = computed(
   () => qualities.find((item) => item.key === quality.value)?.label || '高品质'
 );
@@ -39,6 +45,14 @@ const fontLabel = computed(() =>
         ><text class="settings-value">{{
           { sequence: '顺序播放', repeat: '单曲循环', shuffle: '随机播放' }[mode]
         }}</text
+        ><text class="ri-arrow-right-s-line" /></button
+      ><button
+        v-if="backgroundGuide"
+        role="button"
+        class="settings-row"
+        @click="backgroundSettings = true"
+      >
+        <text>后台播放设置</text><text class="settings-value">{{ backgroundGuide.brand }}</text
         ><text class="ri-arrow-right-s-line" /></button></view
     ><view class="settings-group-label">外观与歌词</view
     ><view class="settings-group"
@@ -75,6 +89,22 @@ const fontLabel = computed(() =>
       ><text class="about-version">{{ version }}</text
       ><text class="about-motto">让生活充满音乐</text></view
     ></scroll-view
+  ><sheet-frame
+    v-if="backgroundSettings && backgroundGuide"
+    title="后台播放设置"
+    @close="backgroundSettings = false"
+  >
+    <view class="settings-note">如果锁屏或切到其他应用后仍然停播，可以调整系统的后台限制。</view>
+    <view class="settings-note"
+      >{{ backgroundGuide.detail }}不同系统版本的选项名称可能略有不同。</view
+    >
+    <view class="settings-note">也可在最近任务中锁定 ikun音乐，减少一键清理造成的中断。</view>
+    <button role="button" class="sheet-row" @click="openBackgroundPlaybackSettings()">
+      <text>打开应用设置</text><text class="sheet-row-end ri-arrow-right-s-line" />
+    </button>
+    <button role="button" class="sheet-row" @click="openBackgroundPlaybackSettings(true)">
+      <text>打开电池优化设置</text><text class="sheet-row-end ri-arrow-right-s-line" />
+    </button> </sheet-frame
   ><sheet-frame v-if="displaySettings" title="显示模式" @close="displaySettings = false">
     <button
       v-for="(label, key) in modeNames"

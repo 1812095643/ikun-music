@@ -6,6 +6,7 @@ import { WebAudio } from './webAudio';
 export interface MusicAudio {
   destroy?(): void;
   src: string;
+  trackId?: string;
   title?: string;
   singer?: string;
   epname?: string;
@@ -28,6 +29,9 @@ export interface MusicAudio {
   onTimeUpdate(callback: () => void): void;
   onNext?(callback: () => void): void;
   onPrev?(callback: () => void): void;
+  onPlaybackIntent?(callback: (playing: boolean) => void): void;
+  setNavigation?(previous: boolean, next: boolean): void;
+  synchronize?(): void;
 }
 
 export function createMusicAudio(): MusicAudio {

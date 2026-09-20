@@ -9,9 +9,10 @@ import {
   previewMediaUrl,
   type Quality,
   resolveTrack,
-  type Track} from '@/services/musicApi';
+  type Track
+} from '@/services/musicApi';
 
-import { downloadRecords, readStorage, recordPlayed, toast,writeStorage } from './library';
+import { downloadRecords, readStorage, recordPlayed, toast, writeStorage } from './library';
 
 export const queue = shallowRef<Track[]>(readStorage('queue', []));
 export const queueIndex = shallowRef<number>(
@@ -63,7 +64,7 @@ export function initializeAudio() {
     playerError.value = '';
   });
   audio.onPause(() => {
-    if (seekable.value) playing.value = false;
+    playing.value = false;
   });
   audio.onStop(() => {
     if (seekable.value) playing.value = false;
@@ -119,8 +120,23 @@ export function initializeAudio() {
   });
   audio.onNext?.(() => nextTrack());
   audio.onPrev?.(() => previousTrack());
+  audio.onPlaybackIntent?.((value) => {
+    if (pendingTrack.value) return;
+    requestedPlay = value;
+    if (!value) loading.value = false;
+  });
 }
 
+export function synchronizeAudio() {
+  audio?.synchronize?.();
+}
+function updateNavigation() {
+  const index = pendingIndex ?? queueIndex.value;
+  audio?.setNavigation?.(
+    Boolean(current.value),
+    index < queue.value.length - 1 || (mode.value === 'shuffle' && queue.value.length > 1)
+  );
+}
 export function playTracks(tracks: Track[], index = 0) {
   if (!tracks.length) return;
   queue.value = tracks;
@@ -128,7 +144,7 @@ export function playTracks(tracks: Track[], index = 0) {
   requestTrack(index);
   playerOpen.value = true;
 }
-export function requestTrack(index: number) {
+export function requestTrack(index: number, resumeAt = 0) {
   if (!queue.value.length) return;
   initializeAudio();
   clearTimeout(debounce);
@@ -140,11 +156,12 @@ export function requestTrack(index: number) {
   playerError.value = '';
   requestedPlay = true;
   const version = ++navigationVersion;
+  updateNavigation();
   debounce = setTimeout(() => {
-    void commitTrack(pendingIndex!, version);
+    void commitTrack(pendingIndex!, version, resumeAt);
   }, 90);
 }
-async function commitTrack(index: number, version: number) {
+async function commitTrack(index: number, version: number, resumeAt: number) {
   const song = queue.value[index];
   const cancellation = createCancellation();
   controller = cancellation;
@@ -172,10 +189,11 @@ async function commitTrack(index: number, version: number) {
     }
     seekable.value = false;
     expectedSrc = '';
-    audio!.stop();
+    // 换歌保留原生媒体项和前台通知，清空队列会让后台的新音源失去启动播放服务的资格。
+    audio!.pause();
     current.value = song;
     queueIndex.value = index;
-    position.value = 0;
+    position.value = Math.max(0, resumeAt);
     duration.value = song.duration;
     pendingIndex = null;
     pendingTrack.value = null;
@@ -183,12 +201,14 @@ async function commitTrack(index: number, version: number) {
     lyricsLoading.value = !song.localUri;
     resolvedFormat.value = stream.type.toUpperCase();
     audio!.title = song.title;
+    audio!.trackId = song.id;
     audio!.singer = song.artist;
     audio!.epname = song.album;
     audio!.coverImgUrl = song.cover;
-    audio!.startTime = 0;
+    audio!.startTime = position.value;
     expectedSrc = previewMediaUrl(stream.url);
     audio!.src = expectedSrc;
+    updateNavigation();
     audio!.play();
     writeStorage('queueIndex', index);
     recordPlayed(song);
@@ -209,7 +229,7 @@ async function commitTrack(index: number, version: number) {
     playing.value = false;
     current.value = song;
     queueIndex.value = index;
-    position.value = 0;
+    position.value = Math.max(0, resumeAt);
     duration.value = song.duration;
     lyrics.value = [];
     lyricsLoading.value = false;
@@ -222,6 +242,7 @@ async function commitTrack(index: number, version: number) {
 }
 export function togglePlay() {
   initializeAudio();
+  synchronizeAudio();
   if (!current.value) {
     toast('先选一首喜欢的歌吧');
     return;
@@ -243,7 +264,7 @@ export function togglePlay() {
     playing.value = false;
   } else if (!expectedSrc || playerError.value) {
     urlCache.delete(`${current.value.id}:${quality.value}`);
-    requestTrack(queueIndex.value);
+    requestTrack(queueIndex.value, position.value);
   } else {
     requestedPlay = true;
     audio?.play();
@@ -293,6 +314,7 @@ export function playNext(song: Track) {
   );
   if (targetId) requestTrack(list.findIndex((item) => item.id === targetId));
   writeStorage('queueIndex', queueIndex.value);
+  updateNavigation();
   toast('已添加到下一首播放');
 }
 export function seek(seconds: number) {
@@ -307,11 +329,13 @@ export function changeQuality(value: Quality) {
 export function setMode(value: typeof mode.value) {
   mode.value = value;
   writeStorage('mode', value);
+  updateNavigation();
 }
 export function cycleMode() {
   mode.value =
     mode.value === 'sequence' ? 'shuffle' : mode.value === 'shuffle' ? 'repeat' : 'sequence';
   writeStorage('mode', mode.value);
+  updateNavigation();
   toast({ sequence: '顺序播放', shuffle: '随机播放', repeat: '单曲循环' }[mode.value]);
 }
 export function formatTime(seconds: number) {
