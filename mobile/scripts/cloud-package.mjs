@@ -9,6 +9,7 @@ const project = join(root, 'src');
 const output = resolve(root, '../release-stage/android');
 const cli = process.env.HBUILDERX_CLI;
 const statusOnly = process.argv.includes('--status-only');
+const globalAccount = process.env.DCLOUD_REGION === 'global';
 const username = process.env.DCLOUD_USERNAME;
 const password = process.env.DCLOUD_PASSWORD;
 if (!cli || !username || !password)
@@ -19,8 +20,13 @@ const manifest = JSON.parse(
     'utf8'
   )
 );
-if ((manifest.id || manifest.appid) !== '__UNI__GC2DB750')
-  throw new Error('Unexpected DCloud AppID');
+const sourceManifest = JSON.parse(await readFile(join(root, 'src/manifest.json'), 'utf8'));
+if (
+  !/^__UNI__[A-Z0-9]+$/.test(sourceManifest.appid || '') ||
+  (manifest.id || manifest.appid) !== sourceManifest.appid
+) {
+  throw new Error('The compiled AppID must match the registered source AppID');
+}
 const { version } = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
 if ((manifest.version?.name || manifest.versionName) !== version)
   throw new Error('Mobile package and manifest versions must match');
@@ -96,17 +102,28 @@ for (let attempt = 0; attempt < 15; attempt++) {
 }
 if (!ready) throw new Error('HBuilderX 5.26 did not become ready');
 await run(
-  ['user', 'login', '--username', username, '--password', password, '--global', 'true'],
+  [
+    'user',
+    'login',
+    '--username',
+    username,
+    '--password',
+    password,
+    '--global',
+    String(globalAccount)
+  ],
   120000,
   true
 );
 const accountInfo = await run(['user', 'info'], 30000, true);
-if (!accountInfo.includes(username)) throw new Error('HBuilderX did not confirm the configured DCloud account');
+if (!accountInfo.includes(username))
+  throw new Error('HBuilderX did not confirm the configured DCloud account');
 console.log('DCloud account identity confirmed.');
 await run(['project', 'open', '--path', project]);
 if (statusOnly) {
   const status = await run(['pack', 'status', '--project', project]);
-  if (/Unknown error/i.test(status)) throw new Error('DCloud status service returned Unknown error for the authenticated account');
+  if (/Unknown error/i.test(status))
+    throw new Error('DCloud status service returned Unknown error for the authenticated account');
   process.exit(0);
 }
 console.log('Submitting Android package with the application cloud certificate.');

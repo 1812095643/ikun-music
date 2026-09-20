@@ -75,19 +75,22 @@ jobs:
         env:
           DCLOUD_USERNAME: ${{ secrets.DCLOUD_USERNAME }}
           DCLOUD_PASSWORD: ${{ secrets.DCLOUD_PASSWORD }}
+          DCLOUD_REGION: ${{ vars.DCLOUD_REGION || 'china' }}
         run: node mobile/scripts/cloud-package.mjs ${{ inputs.status_only && '--status-only' || '' }}
       - name: 验证安卓签名和原生扩展
         if: ${{ !inputs.status_only }}
         shell: bash
         run: |
           python - <<'PY'
-          import glob, zipfile, subprocess, os
+          import glob, zipfile, subprocess, os, json
           apk = glob.glob('release-stage/android/*.apk')[0]
           tools = sorted(glob.glob(os.path.join(os.environ['ANDROID_HOME'], 'build-tools', '*')), reverse=True)[0]
           subprocess.run([os.path.join(tools, 'apksigner.bat'), 'verify', '--verbose', apk], check=True)
           with zipfile.ZipFile(apk) as archive:
               names = archive.namelist()
-              assert 'assets/apps/__UNI__GC2DB750/www/manifest.json' in names, 'Missing app resources'
+              with open('mobile/src/manifest.json', encoding='utf-8') as source:
+                  appid = json.load(source)['appid']
+              assert f'assets/apps/{appid}/www/manifest.json' in names, 'Missing app resources'
               dex = [archive.read(name) for name in names if name.startswith('classes') and name.endswith('.dex')]
               assert any(b'Lcn/ikun/music/device/DeviceKit;' in data for data in dex), 'Missing native device kit'
               assert any(b'Lcn/ikun/music/device/DeviceKitModule;' in data for data in dex), 'Missing registered native module'
