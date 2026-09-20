@@ -1,0 +1,373 @@
+.mobile-app.layout-wide {
+  --page-gutter: 28px;
+  --bar-height: 78px;
+}
+.mobile-app.layout-wide .discover-view,
+.mobile-app.layout-wide .transfer-view {
+  container-type: inline-size;
+  container-name: music-content;
+}
+.mobile-app.layout-wide .app-header {
+  height: 76px;
+}
+.mobile-app.layout-wide .header-search {
+  max-width: 620px;
+}
+.mobile-app.layout-wide .mini-player {
+  border-radius: 0;
+  padding-left: 28px;
+  padding-right: 28px;
+  gap: 12px;
+}
+.mobile-app.layout-wide .mini-cover {
+  transform: none;
+  width: 54px;
+  height: 54px;
+}
+.mobile-app.layout-wide .mini-main {
+  max-width: 560px;
+}
+.mobile-app.layout-wide .mini-timeline {
+  left: 0;
+  right: 0;
+  bottom: auto;
+  top: 0;
+  height: 2px;
+}
+.mobile-app.layout-wide .mini-previous {
+  margin-left: auto;
+}
+.mobile-app.layout-wide .mini-previous,
+.mobile-app.layout-wide .mini-next {
+  font-size: 29px;
+}
+.mobile-app.device-tablet {
+  --font-size-adjustment: -1px;
+}
+.mobile-app.device-tablet .music-shortcuts {
+  max-width: 620px;
+  margin-top: 12px;
+}
+.mobile-app.device-tablet .music-shortcuts button {
+  flex-direction: row;
+  gap: 9px;
+  min-height: 44px;
+}
+.mobile-app.device-tablet .discovery-suggestions .compact .track-row {
+  min-height: 66px;
+}
+.mobile-app.layout-wide .collection-grid {
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 26px 18px;
+}
+.mobile-app.layout-wide .artists-grid {
+  grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+}
+.mobile-app.layout-wide .rank-card {
+  max-width: 860px;
+}
+.mobile-app.layout-wide .playlist-grid {
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+}
+.mobile-app.layout-wide .sheet-backdrop {
+  left: 0;
+  right: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.mobile-app.layout-wide .bottom-sheet {
+  max-width: 580px;
+  border-radius: 24px;
+  padding-bottom: 22px;
+}
+.mobile-app.layout-wide .toast {
+  left: 50%;
+  right: auto;
+  width: min(500px, 75vw);
+  transform: translateX(-50%);
+  bottom: 110px;
+}
+.mobile-app.layout-wide .settings-group,
+.mobile-app.layout-wide .settings-note,
+.mobile-app.layout-wide .settings-group-label,
+.mobile-app.layout-wide .settings-about {
+  max-width: 900px;
+}
+.mobile-app.layout-wide .player-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 1fr);
+  grid-template-rows: 76px minmax(0, 1fr);
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: var(--safe-top) 28px var(--safe-bottom);
+}
+.mobile-app.layout-wide .player-heading {
+  grid-column: 1 / -1;
+  height: 76px;
+}
+.mobile-app.layout-wide .player-pages {
+  height: 100%;
+  min-height: 0;
+}
+.mobile-app.layout-wide .player-cover,
+.mobile-app.layout-wide .has-error .player-cover {
+  width: min(100%, 410px, calc(100dvh - 190px));
+}
+.mobile-app.layout-wide .player-lower {
+  align-self: center;
+  padding: 22px 40px;
+}
+.mobile-app.layout-wide .playback-controls {
+  gap: 18px;
+  margin-top: 28px;
+}
+.mobile-app.layout-wide .lyrics-scroll {
+  min-height: 200px;
+}
+.mobile-app.device-car {
+  --font-size-adjustment: -1px;
+  --page-gutter: 20px;
+  --bar-height: 72px;
+  --rail-width: 84px;
+  --nav-height: 62px;
+}
+.mobile-app.device-car .button-icon {
+  min-width: 48px !important;
+  min-height: 48px !important;
+}
+.mobile-app.device-car .rail-tab {
+  min-height: 48px;
+}
+.mobile-app.device-car .rail-tab > text:first-child {
+  font-size: 23px;
+}
+.mobile-app.device-car .track-row,
+.mobile-app.device-car .compact .track-row {
+  min-height: 60px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+.mobile-app.device-car .track-cover,
+.mobile-app.device-car .compact .track-cover {
+  width: 42px;
+  height: 42px;
+}
+.mobile-app.device-car .primary-button {
+  min-height: 44px;
+}
+.mobile-app.device-car .main-play-button {
+  width: 70px;
+  height: 70px;
+}
+.mobile-app.device-car .mini-control {
+  font-size: 34px !important;
+}
+.mobile-app.device-car .player-footer button {
+  min-height: 44px;
+}
+.mobile-app.device-car .discover-tabs button {
+  min-height: 36px;
+  height: 36px;
+}
+.mobile-app.device-car .discover-tabs button.selected::before {
+  inset: 4px 0;
+}
+.mobile-app.device-car .app-header {
+  height: 56px;
+}
+.mobile-app.device-car .discover-tabs {
+  padding-top: 0;
+  padding-bottom: 10px;
+}
+.mobile-app.device-car .spectrum-strip {
+  height: 28px;
+  min-height: 28px;
+  padding-top: 3px;
+}
+.mobile-app.device-car .spectrum-bars {
+  height: 22px;
+}
+.mobile-app.device-car .section-heading {
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+.mobile-app.device-car .section-link {
+  min-height: 32px;
+}
+.mobile-app.device-car .music-shortcuts {
+  margin-top: 6px;
+}
+.mobile-app.device-car .music-shortcuts button {
+  flex-direction: row;
+  gap: 6px;
+  min-height: 44px;
+}
+.mobile-app.device-car .music-shortcuts button > text:first-child {
+  font-size: 23px;
+}
+.mobile-app.device-car .recent-item {
+  width: 92px;
+}
+.mobile-app.device-car .recent-cover {
+  height: 92px;
+}
+.mobile-app.device-car .featured-swiper {
+  height: 146px;
+}
+.mobile-app.device-car .featured-title {
+  font-size: 17px;
+  -webkit-line-clamp: 2;
+  margin-top: 8px;
+}
+.mobile-app.device-car .featured-card {
+  padding-top: 14px !important;
+  padding-bottom: 14px !important;
+}
+.mobile-app.device-car .featured-artwork {
+  width: 96px;
+  height: 86px;
+}
+.mobile-app.device-car .featured-cover {
+  width: 86px;
+  height: 86px;
+}
+.mobile-app.device-car .featured-record {
+  width: 76px;
+  height: 76px;
+}
+@media (max-height: 680px) {
+  .mobile-app.device-car .rail-tab {
+    min-height: 48px;
+    padding: 3px 0 !important;
+    gap: 3px;
+  }
+}
+.mobile-app.device-car .sheet-row {
+  min-height: 60px;
+}
+.mobile-app.device-car .nav-item {
+  min-height: 56px;
+}
+.mobile-app.layout-wide .featured-pagination {
+  display: none;
+}
+.mobile-app.layout-wide .discovery-suggestions .track-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0 var(--page-gutter);
+  gap: 0 22px;
+}
+.mobile-app.layout-wide .discovery-suggestions .track-row {
+  padding-left: 0;
+  padding-right: 0;
+}
+@media (min-width: 1000px) {
+  .mobile-app.layout-wide .discovery-suggestions .track-main {
+    gap: 9px;
+  }
+}
+@media (min-width: 1480px) {
+  .mobile-app.layout-wide .discovery-suggestions .track-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .mobile-app.device-car {
+    --font-size-adjustment: 0px;
+    --page-gutter: 28px;
+  }
+}
+@media (min-width: 720px) and (max-height: 560px) {
+  .mobile-app.layout-wide {
+    --bar-height: 64px;
+  }
+  .mobile-app.device-car {
+    --bar-height: 64px;
+  }
+  .mobile-app.layout-wide .app-header {
+    height: 58px;
+  }
+  .mobile-app.layout-wide .player-content {
+    grid-template-rows: 56px minmax(0, 1fr);
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .mobile-app.layout-wide .player-heading {
+    height: 56px;
+  }
+  .mobile-app.layout-wide .player-lower {
+    padding: 8px 24px;
+  }
+  .mobile-app.layout-wide .player-cover {
+    width: min(100%, 280px, calc(100dvh - 140px));
+  }
+  .mobile-app.layout-wide .playback-controls {
+    margin: 12px 0;
+    gap: 8px;
+  }
+  .mobile-app.device-car .rail-tab {
+    min-height: 44px;
+    padding: 0 !important;
+    gap: 2px;
+  }
+  .mobile-app.device-car .rail-tab > text:first-child {
+    font-size: 24px;
+  }
+  .mobile-app.device-car .rail-name {
+    display: none;
+  }
+  .mobile-app.device-car .rail-identity {
+    margin-bottom: 12px;
+  }
+  .mobile-app.device-car .main-play-button {
+    width: 64px;
+    height: 64px;
+  }
+  .mobile-app.device-car .app-header {
+    height: 52px;
+  }
+  .mobile-app.device-car .featured-swiper {
+    height: 124px;
+  }
+  .mobile-app.device-car .featured-label {
+    display: none;
+  }
+  .mobile-app.device-car .featured-card {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  .mobile-app.device-car .featured-title {
+    margin-top: 0;
+  }
+  .mobile-app.device-car .featured-title {
+    font-size: 16px;
+  }
+  .mobile-app.device-car .featured-action {
+    font-size: 10px;
+  }
+  .mobile-app.device-car .discovery-suggestions .track-row {
+    min-height: 52px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  .mobile-app.device-car .section-play {
+    height: 36px;
+    width: 36px;
+  }
+  .mobile-app.device-car .recent-item {
+    width: 155px;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    grid-template-rows: 24px 24px;
+    column-gap: 9px;
+  }
+  .mobile-app.device-car .recent-cover {
+    grid-row: 1 / -1;
+    width: 48px;
+    height: 48px;
+  }
+  .mobile-app.device-car .recent-name,
+  .mobile-app.device-car .recent-artist {
+    margin: 0;
+    align-self: center;
+  }
+}

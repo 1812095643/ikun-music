@@ -207,6 +207,15 @@ export default [
     }
   },
 
+  {
+    files: ['mobile/src/**/*.vue', 'mobile/src/**/*.ts'],
+    languageOptions: { globals: { uni: 'readonly', plus: 'readonly' } }
+  },
+  {
+    files: ['mobile/src/App.vue'],
+    rules: { 'vue-scoped-css/enforce-style-type': 'off' }
+  },
+
   // 通用规则
   {
     files: ['**/*.js', '**/*.ts', '**/*.vue'],

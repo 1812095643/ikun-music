@@ -1,6 +1,6 @@
 {
   "name": "ikun-music",
-  "version": "5.3.4",
+  "version": "5.3.5",
   "description": "ikun音乐",
   "scripts": {
     "prepare": "husky",
@@ -9,6 +9,8 @@
     "typecheck:web": "vue-tsc --noEmit -p tsconfig.web.json --composite false",
     "typecheck": "npm run typecheck:web",
     "dev:web": "vite dev",
+    "dev:mobile": "npm --prefix mobile run dev:h5",
+    "build:mobile": "npm --prefix mobile run build:app",
     "dev": "tauri dev",
     "prepare:music-api-runtime": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-music-api-runtime.ps1",
     "build:desktop": "npm run prepare:music-api-runtime && npm run build:web -- --mode desktop",

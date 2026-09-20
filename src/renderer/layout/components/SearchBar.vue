@@ -164,7 +164,7 @@
     <!-- 更多设置 -->
     <n-popover trigger="hover" placement="bottom-end" :show-arrow="false" raw>
       <template #trigger>
-        <button class="action-btn">
+        <button class="action-btn" aria-label="更多设置">
           <i class="ri-menu-line" />
         </button>
       </template>
@@ -173,6 +173,18 @@
           <div class="menu-row" @click="selectItem('set')">
             <i class="ri-settings-3-line" /><span>{{ t('comp.searchBar.set') }}</span>
           </div>
+          <button
+            v-if="isDesktopRuntime"
+            class="menu-row menu-action"
+            :disabled="updateChecking"
+            @click="handleAppUpdateClick"
+          >
+            <i class="ri-refresh-line" />
+            <span>{{ updateChecking ? '正在检查更新…' : t('settings.about.checkUpdate') }}</span>
+          </button>
+          <button class="menu-row menu-action" @click="openMobileDownload">
+            <i class="ri-smartphone-line" /><span>下载移动版</span>
+          </button>
           <div v-if="isDesktopRuntime" class="menu-row">
             <i class="ri-zoom-in-line" /><span>{{ t('comp.searchBar.zoom') }}</span>
             <div class="zoom-ctrl ml-auto">
@@ -234,7 +246,7 @@ import { useSettingsStore } from '@/store/modules/settings';
 import { useUserStore } from '@/store/modules/user';
 import { getImgUrl, isDesktopRuntime } from '@/utils';
 
-import { APP_UPDATE_STATUS } from '../../../shared/appUpdate';
+import { APP_UPDATE_RELEASE_URL, APP_UPDATE_STATUS } from '../../../shared/appUpdate';
 
 const router = useRouter();
 const route = useRoute();
@@ -509,7 +521,21 @@ const selectItem = (key: string) => {
   }
 };
 
+const openMobileDownload = async () => {
+  try {
+    if (isDesktopRuntime) {
+      await window.desktop.openAppUpdatePage();
+    } else {
+      window.open(APP_UPDATE_RELEASE_URL, '_blank', 'noopener,noreferrer');
+    }
+  } catch (error) {
+    console.error('打开发行页面失败：', error);
+    message.error('暂时无法打开下载页面，请稍后重试');
+  }
+};
+
 const handleAppUpdateClick = async () => {
+  if (updateChecking.value) return;
   if (hasAppUpdate.value) {
     settingsStore.setShowUpdateModal(true);
     return;
@@ -874,6 +900,17 @@ onMounted(() => {
 }
 .dark .menu-row {
   color: #d1d5db;
+}
+.menu-action {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  font-family: inherit;
+}
+.menu-action:disabled {
+  cursor: wait;
+  opacity: 0.6;
 }
 .menu-row:hover {
   background: #f9fafb;

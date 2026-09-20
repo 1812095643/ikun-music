@@ -1,0 +1,11 @@
+{
+  "pages": [
+    { "path": "pages/index/index", "style": { "navigationStyle": "custom", "disableScroll": true } }
+  ],
+  "globalStyle": {
+    "pageOrientation": "auto",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "ikun音乐",
+    "backgroundColor": "#f7f8fa"
+  }
+}

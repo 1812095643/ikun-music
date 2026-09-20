@@ -13,7 +13,7 @@ export const APP_UPDATE_RELEASE_API_URL =
   'https://gitee.com/api/v5/repos/caixukun66666666/ikun-music/releases?per_page=20&page=1';
 // 当前构建版本的比较基线，不代表已发布到 Gitee。根因：仅比较数字版本时，
 // 相同数字版本的日期更新包可能被误判；基线与当前产物版本同步。
-export const APP_UPDATE_CURRENT_RELEASE_TAG = 'v5.3.4';
+export const APP_UPDATE_CURRENT_RELEASE_TAG = 'v5.3.5';
 
 export type AppUpdateStatus = (typeof APP_UPDATE_STATUS)[keyof typeof APP_UPDATE_STATUS];
 

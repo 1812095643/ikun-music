@@ -65,6 +65,7 @@ interface KuwoSongItem {
   web_albumpic_short?: string;
   duration?: string;
   DURATION?: string;
+  song_duration?: string;
   hasmv?: string;
   MVFLAG?: string;
   mvpayinfo?: { vid?: string | number };
@@ -399,7 +400,9 @@ export const mapKuwoSong = (song: KuwoSongItem): SongResult => {
   // 搜索接口当前稳定返回 web_albumpic_short（相对路径），旧字段 albumpic/pic 只在部分接口存在。
   // 未拼接相对路径时，前端会拿到空 picUrl，搜索列表因此完全不渲染封面。
   const picUrl = normalizeKuwoAlbumImage(song);
-  const duration = parseNumber(song.duration || song.DURATION) * 1000;
+  // PC 榜单的 duration 可能是试听片段，song_duration 才是完整歌曲时长。
+  const duration =
+    (parseNumber(song.song_duration) || parseNumber(song.duration || song.DURATION)) * 1000;
   const mvId = parseNumber(song.mvpayinfo?.vid || 0);
   const mvFlag = parseNumber(song.hasmv || song.MVFLAG || mvId);
   const isVip = song.payInfo?.feeType?.song === '1' || song.payInfo?.feeType?.vip === '1';
@@ -557,6 +560,23 @@ const mapKuwoRank = (item: KuwoRankItem, index = 0) => {
 };
 
 const normalizeKuwoRankList = (payload: any) => {
+  if (Array.isArray(payload?.child)) {
+    const flatten = (items: any[]): any[] =>
+      items.flatMap((item) => {
+        if (Array.isArray(item.child) && item.child.length) return flatten(item.child);
+        return item.source === '2' && /^\d+$/.test(String(item.sourceid))
+          ? [
+              {
+                ...item,
+                bangId: item.sourceid,
+                pic: item.pic2 || item.pic || item.pic5,
+                updateFrequency: item.pubTime ? `更新于 ${item.pubTime}` : undefined
+              }
+            ]
+          : [];
+      });
+    return flatten(payload.child);
+  }
   const candidates = [
     payload?.data,
     payload?.data?.data,
@@ -579,6 +599,8 @@ const normalizeKuwoRankList = (payload: any) => {
 
 const normalizeKuwoRankSongs = (payload: any) => {
   const candidates = [
+    payload?.musiclist,
+    payload?.data?.musiclist,
     payload?.data?.musicList,
     payload?.data?.songList,
     payload?.data?.songs,
@@ -645,6 +667,7 @@ export const getKuwoPlaylistDetail = async (id: number | string, page = 0, limit
 
 export const getKuwoRankList = async () => {
   const urls = [
+    'http://wapi.kuwo.cn/api/pc/bang/list',
     // 根因：接口文档里的 /api/v1/www/bang/home/bangList 现场返回 502，
     // 但这是用户要求补齐的文档接口，仍然保留为第一优先级；失败后再试
     // 酷我官网榜单菜单接口，最后由调用方回退本地后端榜单，避免排行榜空白。
@@ -683,6 +706,7 @@ export const getKuwoRankDetail = async (
   limit = 100
 ) => {
   const urls = [
+    `http://kbangserver.kuwo.cn/ksong.s?from=pc&fmt=json&type=bang&data=content&pn=${Math.max(0, page - 1)}&rn=${limit}&id=${encodeURIComponent(id)}`,
     `https://api.kuwo.cn/api/v1/www/bang/home/playlist?bangId=${id}&pn=${page}&rn=${limit}`,
     `https://www.kuwo.cn/api/www/bang/bang/musicList?bangId=${id}&pn=${page}&rn=${limit}&httpsStatus=1&reqId=${Date.now()}`
   ];
@@ -696,7 +720,12 @@ export const getKuwoRankDetail = async (
       if (songs.length === 0) throw new Error('酷我榜单歌曲返回为空');
       const tracks = songs.map(mapKuwoSong);
       const cover = normalizeImageUrl(
-        response?.data?.pic || response?.data?.img || rankInfo?.coverImgUrl || rankInfo?.picUrl
+        response?.data?.pic ||
+          response?.data?.img ||
+          rankInfo?.coverImgUrl ||
+          rankInfo?.picUrl ||
+          response?.v9_pic2 ||
+          response?.pic
       );
 
       return {
@@ -704,11 +733,20 @@ export const getKuwoRankDetail = async (
           code: 200,
           playlist: {
             id: parseNumber(id),
-            name: response?.data?.name || response?.data?.bangName || rankInfo?.name || '酷我榜单',
+            name:
+              response?.data?.name ||
+              response?.data?.bangName ||
+              rankInfo?.name ||
+              response?.name ||
+              '酷我榜单',
             coverImgUrl: cover,
             picUrl: cover,
             description:
-              response?.data?.intro || response?.data?.desc || rankInfo?.description || '酷我榜单',
+              response?.data?.intro ||
+              response?.data?.desc ||
+              rankInfo?.description ||
+              response?.info ||
+              '酷我榜单',
             playCount: parseNumber(response?.data?.playCount || rankInfo?.playCount),
             trackCount: parseNumber(response?.data?.num || tracks.length, tracks.length),
             creator: {

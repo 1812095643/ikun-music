@@ -60,4 +60,16 @@ src-tauri/gen
 
 src-tauri/runtime-stage/
 
+mobile/dist/
+mobile/unpackage/
+mobile/backend/dist/
+mobile/backend/node_modules/
+mobile/.playwright-cli/
+mobile/output/playwright/
+mobile/.native-preview/
+mobile/native-kit/.gradle/
+mobile/native-kit/build/
+mobile/src/static/transfer/brand.png
+!mobile/package-lock.json
+
 !package-lock.json

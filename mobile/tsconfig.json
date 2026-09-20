@@ -1,0 +1,12 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "compilerOptions": {
+    "strict": true,
+    "types": ["@dcloudio/types", "vite/client"],
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] },
+    "ignoreDeprecations": "5.0",
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"]
+}

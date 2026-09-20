@@ -2,8 +2,9 @@ import { useDateFormat } from '@vueuse/core';
 import axios from 'axios';
 
 import config from '../../../package.json';
+import { APP_UPDATE_RELEASE_API_URL, APP_UPDATE_RELEASE_URL } from '../../shared/appUpdate';
 
-interface GithubReleaseInfo {
+interface ReleaseInfo {
   tag_name: string;
   body: string;
   published_at: string;
@@ -123,55 +124,27 @@ export const getProxyNodes = async (): Promise<string[]> => {
 };
 
 /**
- * 获取 GitHub 最新发布版本信息
+ * 获取 Gitee 最新桌面正式版本，移动版使用独立版本号。
  */
-export const getLatestReleaseInfo = async (): Promise<GithubReleaseInfo | null> => {
+export const getLatestReleaseInfo = async (): Promise<ReleaseInfo | null> => {
   try {
-    const token = import.meta.env.VITE_GITHUB_TOKEN;
-    const headers = {};
-    // 构建 API URL 列表
-    const apiUrls = [
-      // 原始地址
-      'https://example.invalid/ikun-music/releases/latest',
-
-      // 使用代理节点
-      'http://music.alger.fun/package.json'
-    ];
-
-    if (token) {
-      headers['Authorization'] = `token ${token}`;
-    }
-
-    for (const url of apiUrls) {
-      try {
-        const response = await axios.get(url, {
-          headers,
-          timeout: REQUEST_TIMEOUT
-        });
-
-        if (url.includes('package.json')) {
-          // 如果是 package.json，获取对应的 CHANGELOG
-          const changelogUrl = url.replace('package.json', 'CHANGELOG.md');
-          const changelogResponse = await axios.get(changelogUrl, {
-            timeout: REQUEST_TIMEOUT
-          });
-
-          return {
-            tag_name: response.data.version,
-            body: changelogResponse.data,
-            html_url: 'https://example.invalid/ikun-music/releases/latest',
-            assets: []
-          } as unknown as GithubReleaseInfo;
-        }
-        return response.data;
-      } catch (err) {
-        console.warn(`尝试访问 ${url} 失败:`, err);
-        continue;
-      }
-    }
-    throw new Error('所有 API 地址均无法访问');
+    const { data } = await axios.get<
+      Array<ReleaseInfo & { prerelease?: boolean; created_at?: string }>
+    >(APP_UPDATE_RELEASE_API_URL, { timeout: 10000 });
+    if (!Array.isArray(data)) return null;
+    // Gitee 列表不保证按版本倒序，过滤独立的移动版本后再比较数字版本。
+    const release = data
+      .filter((item) => !item.prerelease && /^v\d+\.\d+\.\d+$/.test(item.tag_name))
+      .sort((a, b) => compareVersions(b.tag_name.slice(1), a.tag_name.slice(1)))[0];
+    if (!release) return null;
+    return {
+      ...release,
+      html_url: `${APP_UPDATE_RELEASE_URL}/tag/${encodeURIComponent(release.tag_name)}`,
+      published_at: release.published_at || release.created_at || '',
+      assets: Array.isArray(release.assets) ? release.assets : []
+    };
   } catch (error) {
-    console.error('获取 GitHub Release 信息失败:', error);
+    console.error('获取 Gitee 发行信息失败:', error);
     return null;
   }
 };

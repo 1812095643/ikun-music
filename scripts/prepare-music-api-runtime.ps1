@@ -16,13 +16,11 @@ $runtimeDir = $runtimeRoot
 $signaturePath = Join-Path $runtimeRoot '.runtime-signature'
 $manifestDir = Join-Path $ProjectRoot 'src-tauri\runtime'
 $scriptSource = Join-Path $manifestDir 'music-service.cjs'
+$playbackSource = Join-Path $manifestDir 'kuwo-playback.cjs'
 $manifestPath = Join-Path $manifestDir 'package.json'
 $lockPath = Join-Path $manifestDir 'package-lock.json'
 
-# 根因：根项目的生产依赖也包含前端 Vue/Pinia 及其 TypeScript 对等依赖，
-# 直接复制根 package.json 会把与 Node 服务无关的工具链打进 EXE。
-# 独立清单只声明服务使用的依赖，由 npm ci 安装完整且锁定的传递依赖，不裁剪依赖实现。
-$inputPaths = @($NodeExe, $scriptSource, $manifestPath, $lockPath, $PSCommandPath)
+$inputPaths = @($NodeExe, $scriptSource, $playbackSource, $manifestPath, $lockPath, $PSCommandPath)
 $signature = ($inputPaths | ForEach-Object {
   $stream = [IO.File]::OpenRead($_)
   $sha = [Security.Cryptography.SHA256]::Create()
@@ -31,15 +29,14 @@ $signature = ($inputPaths | ForEach-Object {
 }) -join ':'
 if ((Test-Path -LiteralPath (Join-Path $runtimeDir 'node.exe')) -and (Test-Path -LiteralPath $signaturePath)) {
   if ((Get-Content -LiteralPath $signaturePath -Raw).Trim() -eq $signature) {
-    Write-Host '内置音乐服务没有变化，复用已验证的运行时资源。'
+    Write-Host 'Reusing the verified music service runtime.'
     exit 0
   }
 }
 
-# 删除前校验绝对路径，清理范围严格限定在当前工程生成的运行时目录。
 $expectedRoot = Join-Path $ProjectRoot 'src-tauri\runtime-stage'
 if ($runtimeRoot -ne $expectedRoot -or !$runtimeRoot.StartsWith($ProjectRoot + '\', [StringComparison]::OrdinalIgnoreCase)) {
-  throw '运行时目录不在当前工程内，已停止清理。'
+  throw 'Runtime directory is outside the project.'
 }
 if (Test-Path -LiteralPath $runtimeRoot) {
   Remove-Item -LiteralPath $runtimeRoot -Recurse -Force
@@ -47,19 +44,21 @@ if (Test-Path -LiteralPath $runtimeRoot) {
 New-Item -ItemType Directory -Path $runtimeDir -Force | Out-Null
 Copy-Item -LiteralPath $NodeExe -Destination (Join-Path $runtimeDir 'node.exe')
 Copy-Item -LiteralPath $scriptSource -Destination (Join-Path $runtimeDir 'music-service.cjs')
+Copy-Item -LiteralPath $playbackSource -Destination (Join-Path $runtimeDir 'kuwo-playback.cjs')
 Copy-Item -LiteralPath $manifestPath -Destination (Join-Path $runtimeDir 'package.json')
 Copy-Item -LiteralPath $lockPath -Destination (Join-Path $runtimeDir 'package-lock.json')
 
 Push-Location $runtimeDir
 try {
   & npm.cmd ci --omit=dev --ignore-scripts --no-audit --no-fund
-  # Windows PowerShell 5 不会因外部命令非零退出而自动 throw，必须显式阻止打包半成品。
-  if ($LASTEXITCODE -ne 0) { throw "内置音乐服务依赖安装未完成，退出码：$LASTEXITCODE" }
+  if ($LASTEXITCODE -ne 0) { throw "Runtime dependency installation failed: $LASTEXITCODE" }
   & $NodeExe --check (Join-Path $runtimeDir 'music-service.cjs')
-  if ($LASTEXITCODE -ne 0) { throw '内置音乐服务脚本语法检查未通过。' }
+  if ($LASTEXITCODE -ne 0) { throw 'Music service syntax check failed.' }
+  & $NodeExe --check (Join-Path $runtimeDir 'kuwo-playback.cjs')
+  if ($LASTEXITCODE -ne 0) { throw 'Playback module syntax check failed.' }
 } finally {
   Pop-Location
 }
 
 [IO.File]::WriteAllText($signaturePath, $signature, (New-Object System.Text.UTF8Encoding($false)))
-Write-Host '音乐私有服务资源已准备完成，将随 Tauri 安装包或便携目录分发。'
+Write-Host 'Music service runtime is ready for packaging.'

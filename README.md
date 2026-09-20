@@ -4,6 +4,8 @@
 
 ## 架构与端口
 
+移动端入口为 [mobile](mobile/README.md)，使用 uni-app + Vue 3 共用安卓与 iOS 页面，复用桌面音源源码、Logo 与配色；运行 `npm run dev:mobile` 可预览。`npm run build:mobile` 生成 App 资源，正式安装包另外配置 DCloud AppID 和签名。
+
 - `src/renderer`：Vue 页面、播放器和状态；`utils/desktopBridge.ts` 统一调度 Tauri 窗口、文件、事件与配置。
 - `src-tauri/src/music_service.rs`：管理私有 Node 子进程，按请求 ID 分发标准输入输出消息，支持并发、超时和断开恢复。
 - `src-tauri/runtime`：音乐服务入口和独立锁文件；直接调用现有音乐协议库，按需加载模块。

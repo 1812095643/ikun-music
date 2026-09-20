@@ -1,0 +1,56 @@
+{
+  "name": "ikun音乐",
+  "appid": "",
+  "description": "让生活充满音乐",
+  "versionName": "0.1.0",
+  "versionCode": 1,
+  "transformPx": false,
+  "vueVersion": "3",
+  "uniStatistics": { "enable": false },
+  "app-plus": {
+    "screenOrientation": [
+      "portrait-primary",
+      "portrait-secondary",
+      "landscape-primary",
+      "landscape-secondary"
+    ],
+    "usingComponents": true,
+    "splashscreen": {
+      "alwaysShowBeforeRender": true,
+      "waiting": true,
+      "autoclose": true,
+      "delay": 0
+    },
+    "modules": { "Audio": {}, "File": {}, "Downloader": {} },
+    "nativePlugins": {
+      "Ikun-DeviceKit": {
+        "__plugin_info__": {
+          "name": "ikun 车机与本地互传",
+          "description": "本地音频分析、文件选择与局域网互传",
+          "platforms": "Android",
+          "isCloud": false
+        }
+      }
+    },
+    "distribute": {
+      "android": {
+        "minSdkVersion": 26,
+        "targetSdkVersion": 35,
+        "abiFilters": ["arm64-v8a", "armeabi-v7a"],
+        "permissions": [
+          "<uses-permission android:name=\"android.permission.INTERNET\"/>",
+          "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>",
+          "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
+          "<uses-permission android:name=\"android.permission.FOREGROUND_SERVICE\"/>",
+          "<uses-permission android:name=\"android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK\"/>"
+        ]
+      },
+      "ios": { "UIBackgroundModes": ["audio"], "deploymentTarget": "15.0", "dSYMs": false },
+      "icons": {
+        "android": { "xxxhdpi": "static/brand.png" },
+        "ios": { "appstore": "static/brand.png" }
+      }
+    }
+  },
+  "h5": { "title": "ikun音乐", "router": { "mode": "hash" } }
+}

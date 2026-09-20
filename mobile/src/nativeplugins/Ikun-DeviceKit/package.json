@@ -1,0 +1,24 @@
+{
+  "name": "ikun 车机与本地互传",
+  "id": "Ikun-DeviceKit",
+  "version": "0.1.0",
+  "description": "通过 Native.js 复用 Android Media3、文件选择器及 NanoHTTPD",
+  "_dp_type": "nativeplugin",
+  "_dp_nativeplugin": {
+    "android": {
+      "plugins": [],
+      "integrateType": "aar",
+      "minSdkVersion": 26,
+      "dependencies": [
+        "org.nanohttpd:nanohttpd:2.3.1",
+        "com.github.wendykierp:JTransforms:3.1",
+        "androidx.media3:media3-exoplayer:1.8.0",
+        "androidx.media3:media3-session:1.8.0"
+      ],
+      "compileOptions": {
+        "sourceCompatibility": "1.8",
+        "targetCompatibility": "1.8"
+      }
+    }
+  }
+}

@@ -1,0 +1,67 @@
+plugins { id 'java-library' }
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+configurations { androidLibraries }
+dependencies {
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+    implementation 'com.github.wendykierp:JTransforms:3.1'
+    compileOnly files(providers.gradleProperty('androidJar').getOrElse(System.getenv('ANDROID_HOME') + '/platforms/android-36.1/android.jar'))
+    androidLibraries 'androidx.media3:media3-exoplayer:1.8.0'
+    androidLibraries 'androidx.media3:media3-session:1.8.0'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.json:json:20240303'
+}
+
+tasks.register('extractAndroidLibraries') {
+    inputs.files(configurations.androidLibraries)
+    outputs.dir(layout.buildDirectory.dir('android-libraries'))
+    doLast {
+        configurations.androidLibraries.files.each { artifact ->
+            if (artifact.name.endsWith('.aar')) {
+                copy {
+                    from zipTree(artifact)
+                    include 'classes.jar'
+                    into layout.buildDirectory.dir('android-libraries/' + artifact.name)
+                }
+            }
+        }
+    }
+}
+dependencies {
+    compileOnly fileTree(layout.buildDirectory.dir('android-libraries')) { include '**/*.jar' }
+    compileOnly configurations.androidLibraries.filter { it.name.endsWith('.jar') }
+    testImplementation fileTree(layout.buildDirectory.dir('android-libraries')) { include '**/*.jar' }
+}
+tasks.withType(JavaCompile).configureEach {
+    dependsOn 'extractAndroidLibraries'
+    options.encoding = 'UTF-8'
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+tasks.named('jar') { exclude 'cn/ikun/music/transfer/PreviewHost.class' }
+tasks.register('packagePlugin', Zip) {
+    dependsOn 'jar'
+    archiveFileName = 'ikun-device-kit.aar'
+    destinationDirectory = file('../src/nativeplugins/Ikun-DeviceKit/android')
+    from(tasks.jar.archiveFile) { rename { 'classes.jar' } }
+    from('src/main/AndroidManifest.xml')
+    from('proguard-rules.pro') { rename { 'proguard.txt' } }
+    from('../src/static/transfer') { exclude 'brand.png'; into 'assets/ikun-transfer' }
+    from('../src/static/brand.png') { into 'assets/ikun-transfer' }
+}
+tasks.register('writePreviewClasspath') {
+    dependsOn 'classes'
+    doLast {
+        file('build/preview-classpath.txt').setText((sourceSets.main.runtimeClasspath + configurations.testRuntimeClasspath).asPath, 'UTF-8')
+    }
+}
+tasks.register('preview', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath + configurations.testRuntimeClasspath
+    mainClass = 'cn.ikun.music.transfer.PreviewHost'
+    if (project.hasProperty('previewRoot')) args project.property('previewRoot')
+    if (project.hasProperty('previewSite')) args project.property('previewSite')
+}

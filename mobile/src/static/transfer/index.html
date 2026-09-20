@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="icon" href="brand.png"><meta name="theme-color" content="#f4f7f5"><title>ikun 局域网互传</title><link rel="stylesheet" href="portal.css"><script src="portal.js" defer></script></head>
+<body><main><header><img src="brand.png" alt="ikun 音乐"><div><strong>ikun 互传</strong><span>手机 · 平板 · 车机</span></div><span class="network-label">局域网直传</span></header>
+<section id="connect"><span class="eyebrow">让设备，靠近一点</span><h1>文件与文字<br>轻松送到另一块屏幕</h1><p>连接相同 Wi-Fi，或让两台设备连接同一个手机热点。输入接收设备显示的六位连接码。</p><form id="join-form"><label for="code">连接码</label><div class="code-row"><input id="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" required placeholder="输入六位数字"><button type="submit">连接设备</button></div></form></section>
+<section id="workspace" hidden><div class="section-heading"><div><span class="eyebrow">连接已就绪</span><h1>想传什么，就传什么</h1></div><button id="disconnect" class="secondary">断开</button></div><p>文件直接保存在接收设备，文字可以在那边手动复制。</p>
+<div class="send-grid"><section class="send-card"><div class="card-icon">↑</div><h2>发送文件</h2><p>照片、文档、安装包、音乐……支持任意文件类型。</p><label class="file-pick" for="files">选择文件<input id="files" type="file" multiple></label><div id="uploads" aria-live="polite"></div></section>
+<section class="send-card"><div class="card-icon">Aa</div><h2>发送文字</h2><label class="sr-only" for="text">要发送的文字</label><textarea id="text" rows="7" placeholder="粘贴文字、链接或整段歌单列表"></textarea><div class="text-tools"><span id="text-count">0 字</span><button id="send-text">发送文字</button></div></section></div>
+<div class="section-heading received-heading"><h2>对方分享的内容</h2><button id="refresh" class="secondary">刷新</button></div><div id="shared"><p class="empty">对方分享的文件和文字会出现在这里。</p></div></section>
+<p id="notice" role="status"></p><footer>ikun 音乐 · 让分享更轻松</footer></main>
+<div id="messages" hidden data-connected="连接成功，可以开始传输了" data-sent="已发送，对方可以查看并复制" data-received="已送达" data-sending="正在发送" data-cancel="取消" data-retry="重新选择文件可重试" data-network="连接暂时中断，请检查两台设备的网络" data-copy="复制文字" data-copied="已复制到剪贴板" data-manual="请长按上面的文字，全选后复制" data-empty="对方分享的文件和文字会出现在这里。" data-select="先输入要发送的文字" data-count="字" data-download="保存文件"></div>
+</body></html>

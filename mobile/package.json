@@ -1,0 +1,38 @@
+{
+  "name": "ikun-music-mobile",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "backend"
+  ],
+  "scripts": {
+    "build:device-kit": "node scripts/build-device-kit.mjs",
+    "test:device-kit": "node scripts/build-device-kit.mjs --test",
+    "prepare:assets": "npm run build --workspace @ikun/music-backend",
+    "dev:h5": "npm run prepare:assets && uni --host 127.0.0.1 --port 5178",
+    "build:h5": "npm run prepare:assets && uni build",
+    "build:app": "npm run prepare:assets && uni build -p app && node scripts/finalize-app.mjs",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@dcloudio/uni-app": "3.0.0-5020620260917001",
+    "@dcloudio/uni-app-plus": "3.0.0-5020620260917001",
+    "@dcloudio/uni-components": "3.0.0-5020620260917001",
+    "@dcloudio/uni-h5": "3.0.0-5020620260917001",
+    "@ikun/music-backend": "file:backend",
+    "abort-controller": "3.0.0",
+    "qrcode-generator": "2.0.4",
+    "vue": "3.4.21",
+    "vue-i18n": "9.14.5"
+  },
+  "devDependencies": {
+    "@dcloudio/types": "3.4.31",
+    "@dcloudio/uni-cli-shared": "3.0.0-5020620260917001",
+    "@dcloudio/vite-plugin-uni": "3.0.0-5020620260917001",
+    "@types/node": "20.19.26",
+    "@vue/tsconfig": "0.5.1",
+    "typescript": "5.9.3",
+    "vite": "5.2.8",
+    "vue-tsc": "2.2.12"
+  }
+}
