@@ -20,7 +20,8 @@ const plugins = [
   ['uni_helpers', '3.0.1-2026081817', 'a6937e64e5effa333c46e893acf276c4'],
   ['unicloud', '2.0.70-2026091812', 'd13fe8b7af33385e7477e4b976074bde'],
   ['uniapp-uts-v1', '5.26.2026091619.3958', 'e59978445d5034962b913409ac7d005a'],
-  ['uniapp-cli-vite', '5.26.2026091411.1611', '4eb09d0ad068afd754ee04a97509face']
+  ['uniapp-cli-vite', '5.26.2026091411.1611', '4eb09d0ad068afd754ee04a97509face'],
+  ['compile-typescript', '1.0.6', 'bb4627cc18c8ca6e066b9f3aa7059cc8']
 ];
 const downloads = await Promise.allSettled(
   plugins.map(async ([name, version, expected]) => {

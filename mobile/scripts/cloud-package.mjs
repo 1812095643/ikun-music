@@ -45,7 +45,7 @@ function run(args, timeout = 120000, quiet = false) {
       clearTimeout(timer);
       const output = text.replace(/\x1b\[[0-9;]*[A-Za-z]/g, '');
       const reportedFailure =
-        /:\s*FAILED\b|Cloud server returns error|depends on the plug-in|operation depends on|please try again after installation/i.test(
+        /:\s*FAILED\b|Cloud server returns error|compiling failed|compilation failed|depends on the plug-in|operation depends on|please try again after installation/i.test(
           output
         );
       if (!quiet && output.trim()) {
