@@ -582,10 +582,15 @@ onUnmounted(() => {
 }
 
 .splash-fade-leave-active {
-  transition: opacity 260ms ease;
+  transition:
+    opacity 600ms cubic-bezier(0.25, 1, 0.5, 1),
+    transform 600ms cubic-bezier(0.25, 1, 0.5, 1),
+    filter 600ms cubic-bezier(0.25, 1, 0.5, 1);
 }
 .splash-fade-leave-to {
   opacity: 0;
+  transform: scale(1.04);
+  filter: blur(8px);
 }
 @media (prefers-reduced-motion: reduce) {
   .splash-fade-leave-active {

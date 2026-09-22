@@ -283,7 +283,7 @@ export default {
     }
   },
   settings: '設定',
-  user: '使用者',
+  user: '我的音樂',
   toplist: '排行榜',
   history: '收藏歷史',
   list: '播放清單',

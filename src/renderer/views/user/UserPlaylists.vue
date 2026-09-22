@@ -3,87 +3,51 @@ import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
-import PlaylistItem from '@/components/common/PlaylistItem.vue';
-import { type PlaylistHistoryItem, usePlayHistoryStore } from '@/store/modules/playHistory';
 import { useUserStore } from '@/store/modules/user';
 
+import LibraryCollections from './LibraryCollections.vue';
+
 const router = useRouter();
-const userStore = useUserStore();
-const historyStore = usePlayHistoryStore();
-const savedPlaylists = computed<PlaylistHistoryItem[]>(() => userStore.playList);
-const recentPlaylists = computed(() => historyStore.playlistHistory);
-function openPlaylist(item: PlaylistHistoryItem) {
-  navigateToMusicList(router, { id: item.id, type: 'playlist', name: item.name, listInfo: item });
+const user = useUserStore();
+const items = computed(() =>
+  user.playList.map((item) => ({
+    id: item.id,
+    name: item.name,
+    cover: item.coverImgUrl || item.picUrl,
+    description: [
+      typeof item.trackCount === 'number' ? `${item.trackCount} 首歌曲` : '',
+      item.creator?.nickname
+    ]
+      .filter(Boolean)
+      .join(' · ')
+  }))
+);
+function open(id: string | number) {
+  const item = user.playList.find((value) => value.id === id);
+  if (item) navigateToMusicList(router, { id, type: 'playlist', name: item.name, listInfo: item });
 }
 </script>
-
 <template>
-  <n-scrollbar class="h-full">
-    <div class="personal-playlists">
-      <section v-if="savedPlaylists.length">
-        <h2>已保存的歌单</h2>
-        <playlist-item
-          v-for="item in savedPlaylists"
-          :key="item.id"
-          :item="item"
-          @click="openPlaylist"
-        />
-      </section>
-      <section>
-        <h2>最近听过的歌单</h2>
-        <playlist-item
-          v-for="item in recentPlaylists"
-          :key="item.id"
-          :item="item"
-          @click="openPlaylist"
-        />
-        <div v-if="!recentPlaylists.length" class="playlist-empty">
-          <i class="ri-play-list-line" aria-hidden="true" />
-          <p>还没有听过的歌单</p>
-          <span>打开喜欢的歌单并播放，这里会自动记录。</span>
-          <button @click="router.push('/list')">去发现歌单</button>
-        </div>
-      </section>
-    </div>
-  </n-scrollbar>
+  <library-collections
+    :items="items"
+    empty-title="让歌单装下你的每一种心情"
+    empty-description="已保存的歌单会留在这里。听过的歌单，可以在「最近播放」中找回。"
+    @open="open"
+  >
+    <template #empty-action
+      ><button
+        class="playlist-discover"
+        @click="router.push({ path: '/user', query: { tab: 'history', category: 'playlists' } })"
+      >
+        查看听过的歌单 <i class="ri-arrow-right-line" /></button
+    ></template>
+  </library-collections>
 </template>
-
 <style scoped>
-.personal-playlists {
-  padding: 24px;
-}
-.personal-playlists section + section {
-  margin-top: 24px;
-}
-h2 {
-  margin: 0 0 16px;
-  font-size: 18px;
-  font-weight: 600;
-}
-.playlist-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 44px 16px;
-  gap: 10px;
-  text-align: center;
-  color: var(--qqm-muted);
-  font-size: 13px;
-}
-.playlist-empty > i {
-  font-size: 36px;
-  margin-bottom: 4px;
-}
-.playlist-empty p {
-  font-size: 15px;
-  color: var(--qqm-text);
-  margin: 0;
-}
-.playlist-empty button {
-  margin-top: 12px;
-  padding: 8px 18px;
-  border-radius: 8px;
-  color: var(--qqm-text);
-  background: color-mix(in srgb, var(--qqm-primary) 14%, transparent);
+.playlist-discover {
+  margin-top: 10px;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--qqm-primary-strong);
 }
 </style>

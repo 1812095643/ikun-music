@@ -291,7 +291,7 @@ export default {
     }
   },
   settings: '設定',
-  user: 'ユーザー',
+  user: 'マイミュージック',
   toplist: 'ランキング',
   history: 'お気に入り履歴',
   list: 'プレイリスト',

@@ -290,7 +290,7 @@ export default {
     }
   },
   settings: '설정',
-  user: '사용자',
+  user: '내 음악',
   toplist: '순위',
   history: '수집 기록',
   list: '플레이리스트',

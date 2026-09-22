@@ -137,15 +137,6 @@
       }}
     </n-tooltip>
 
-    <n-tooltip trigger="hover">
-      <template #trigger>
-        <button class="action-btn" aria-label="我的音乐" @click="router.push('/user')">
-          <i class="ri-user-heart-line" />
-        </button>
-      </template>
-      我的音乐
-    </n-tooltip>
-
     <!-- 更多设置 -->
     <n-popover trigger="hover" placement="bottom-end" :show-arrow="false" raw>
       <template #trigger>
@@ -285,7 +276,7 @@ const tabs = computed(() => {
     },
     { key: 'mv', label: t('comp.mv'), path: '/mv' },
     { key: 'podcast', label: t('podcast.podcast'), path: '/podcast' },
-    { key: 'history', label: t('comp.history'), path: '/history' },
+    { key: 'user', label: t('comp.user'), path: '/user' },
     {
       key: 'localMusic',
       label: t('comp.localMusic'),
@@ -309,8 +300,8 @@ const tabIcons: Record<string, string> = {
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h10.5A2.5 2.5 0 0 1 18 10.5v3A2.5 2.5 0 0 1 15.5 16H5V8Zm13 3 3-1.8v5.6L18 13"/></svg>',
   '/podcast':
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 14.5a3 3 0 0 0 3-3V8a3 3 0 0 0-6 0v3.5a3 3 0 0 0 3 3Zm-6-3a6 6 0 0 0 12 0M12 17.5V21"/></svg>',
-  '/history':
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6v6l4 2M4.8 8.2A8 8 0 1 1 4 12"/></svg>',
+  '/user':
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l10-2v13M9 8l10-2M9 18a3 2.5 0 1 1-6 0 3 2.5 0 0 1 6 0Zm10-2a3 2.5 0 1 1-6 0 3 2.5 0 0 1 6 0Z"/></svg>',
   '/local-music':
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 8h6l1.5 2h7.5v7.5A1.5 1.5 0 0 1 18 19H6a1.5 1.5 0 0 1-1.5-1.5V8Z"/></svg>'
 };

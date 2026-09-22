@@ -136,13 +136,12 @@ const otherRouter = [
   {
     path: '/favorite',
     name: 'favorite',
-    meta: {
-      title: 'comp.homeHero.quickNav.myFavorite',
-      icon: 'ri-heart-fill',
-      keepAlive: true,
-      back: true
-    },
-    component: () => import('@/views/favorite/index.vue')
+    redirect: { path: '/user', query: { tab: 'favorites' } }
+  },
+  {
+    path: '/history',
+    name: 'history',
+    redirect: { path: '/user', query: { tab: 'history' } }
   },
   {
     path: '/search-result',

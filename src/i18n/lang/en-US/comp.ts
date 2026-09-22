@@ -291,7 +291,7 @@ export default {
     }
   },
   settings: 'Settings',
-  user: 'User',
+  user: 'My Music',
   toplist: 'Toplist',
   history: 'History',
   list: 'Playlist',

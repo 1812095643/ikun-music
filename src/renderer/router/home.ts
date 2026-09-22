@@ -77,17 +77,6 @@ const layoutRouter = [
     component: () => import('@/views/podcast/index.vue')
   },
   {
-    path: '/history',
-    name: 'history',
-    component: () => import('@/views/historyAndFavorite/index.vue'),
-    meta: {
-      title: 'comp.history',
-      icon: 'icon-a-TicketStar',
-      keepAlive: true,
-      isMobile: true
-    }
-  },
-  {
     path: '/local-music',
     name: 'localMusic',
     meta: {
