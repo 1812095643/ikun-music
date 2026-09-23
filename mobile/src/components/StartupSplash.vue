@@ -16,7 +16,8 @@ function finishAnimation() {
   }, 1000);
 }
 onMounted(() => {
-  fallbackTimer = setTimeout(finishAnimation, 850);
+  // 原生层和页面层共用稳定构图，加载环转过一圈后仍保留一秒品牌停留。
+  fallbackTimer = setTimeout(finishAnimation, 1200);
   slowTimer = setTimeout(() => {
     slow.value = true;
   }, 6000);
@@ -36,10 +37,11 @@ watch(
 <template>
   <view class="startup" role="status" aria-label="ikun 音乐正在准备"
     ><view class="brand-scene"
-      ><view class="brand-aura" /><view class="brand-ring" /><view class="brand-dots"
+      ><view class="brand-aura" /><view class="brand-ring" /><view
+        class="brand-progress"
+        aria-hidden="true" /><view class="brand-dots"
         ><view /><view /><view /><view /><view /><view /></view
-      ><view class="startup-symbol" @animationend.self="finishAnimation"
-        ><image src="/static/brand.png" mode="aspectFill" /></view></view
+      ><view class="startup-symbol"><image src="/static/brand.png" mode="aspectFill" /></view></view
     ><view class="startup-signature"
       ><text class="startup-title">IKUN <text>音乐</text></text
       ><text class="startup-tagline">让生活充满音乐</text
@@ -52,7 +54,7 @@ watch(
   position: absolute;
   inset: 0;
   z-index: 260;
-  background: var(--qqm-surface);
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -75,7 +77,6 @@ watch(
     rgba(49, 218, 120, 0.065) 47%,
     transparent 69%
   );
-  animation: aura-in 1.1s ease both;
 }
 .brand-ring {
   position: absolute;
@@ -83,11 +84,19 @@ watch(
   border: 1px solid rgba(41, 201, 111, 0.11);
   border-radius: 50%;
 }
+.brand-progress {
+  position: absolute;
+  inset: 29px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  border-top-color: #58a27a;
+  border-right-color: rgba(88, 162, 122, 0.22);
+  animation: brand-progress 1.2s linear infinite;
+}
 .startup-symbol {
   position: relative;
   width: 105px;
   height: 105px;
-  animation: brand-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .startup-symbol image {
   height: 100%;
@@ -165,7 +174,7 @@ watch(
 .startup-tagline {
   font-size: calc(12px + var(--font-size-adjustment));
   letter-spacing: 3px;
-  color: var(--qqm-muted);
+  color: #7c8493;
 }
 .startup-signature .text-button {
   font-size: calc(12px + var(--font-size-adjustment)) !important;
@@ -174,24 +183,23 @@ watch(
   gap: 8px;
   margin-top: 9px !important;
 }
-@keyframes brand-in {
-  from {
-    opacity: 0;
-    transform: translateY(9px) scale(0.92);
-  }
+@keyframes brand-progress {
   to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: rotate(360deg);
   }
 }
-@keyframes aura-in {
-  from {
-    opacity: 0;
-    transform: scale(0.82);
+@media (max-height: 539px) {
+  .brand-scene {
+    transform: scale(0.7451);
+    margin-top: -80px;
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+  .startup-signature {
+    bottom: calc(6vh + var(--safe-bottom));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-progress {
+    animation: none;
   }
 }
 </style>

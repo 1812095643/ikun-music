@@ -12,19 +12,32 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true">
         <activity
-            android:name="io.dcloud.PandoraEntry"
+            android:name="cn.ikun.music.BrandEntry"
             android:configChanges="orientation|keyboardHidden|keyboard|navigation"
             android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleTask"
             android:screenOrientation="user"
             android:theme="@style/TranslucentTheme"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize" />
+        <activity-alias
+            android:name="io.dcloud.PandoraEntry"
+            android:targetActivity="cn.ikun.music.BrandEntry"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+        <activity
+            android:name="cn.ikun.music.MusicActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|mcc|mnc|fontScale|keyboard|smallestScreenSize|screenLayout|uiMode"
+            android:exported="false"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTask"
+            android:screenOrientation="user"
+            android:theme="@style/DCloudTheme"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="io.dcloud.PandoraEntryActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|mcc|mnc|fontScale|keyboard|smallestScreenSize|screenLayout|uiMode"
