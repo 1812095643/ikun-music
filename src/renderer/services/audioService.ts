@@ -1,5 +1,6 @@
 import { Howl, Howler } from 'howler';
 
+import { EMPTY_SPECTRUM, type SpectrumFrame,StereoSpectrum } from '../../shared/audioSpectrum';
 import {
   type AudioEffectPreset,
   type AudioEffectSettings,
@@ -53,6 +54,8 @@ class AudioService {
   private source: MediaElementAudioSourceNode | null = null;
 
   private gainNode: GainNode | null = null;
+
+  private spectrum: StereoSpectrum | null = null;
 
   private effectRack: AudioEffectsRack | null = null;
   private effectSettings: AudioEffectSettings = { mix: 42, space: 26 };
@@ -413,6 +416,9 @@ class AudioService {
     try {
       this.cancelFadeTimer();
       this.disposeAudioEffects();
+      this.spectrum?.dispose();
+      this.spectrum = null;
+      this.emit('spectrum-reset');
 
       // 清理音频节点连接
       if (this.source) {
@@ -634,6 +640,8 @@ class AudioService {
 
     try {
       this.audioGraphBypassed = false;
+      this.spectrum?.dispose();
+      this.spectrum = null;
 
       // 断开所有现有连接（捕获已断开的错误）
       try {
@@ -673,6 +681,12 @@ class AudioService {
       chainTail = this.connectAudioEffects(chainTail);
       chainTail.connect(this.gainNode);
       this.gainNode.connect(this.context.destination);
+      try {
+        this.spectrum = new StereoSpectrum(this.gainNode);
+      } catch {
+        // 分析能力不可用时保持原播放通路，绝不为了动画让跨域音源静音。
+        this.spectrum = null;
+      }
     } catch (error) {
       console.error('Error applying EQ state, attempting fallback:', error);
       this.audioGraphBypassed = true;
@@ -1460,6 +1474,10 @@ class AudioService {
 
   public getPlaybackRate(): number {
     return this.playbackRate;
+  }
+
+  public getSpectrumFrame(): SpectrumFrame {
+    return this.isActuallyPlaying() ? this.spectrum?.read() || EMPTY_SPECTRUM : EMPTY_SPECTRUM;
   }
 
   // 新的音量调节方法

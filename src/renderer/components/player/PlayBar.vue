@@ -2,6 +2,7 @@
   <div
     class="music-play-bar"
     :class="[
+      { 'has-spectrum': hasSong },
       musicFullVisible ? 'play-bar-opcity' : '',
       musicFullVisible && MusicFullRef?.musicFullRef?.config?.hidePlayBar
         ? 'animate__animated animate__slideOutDown'
@@ -186,6 +187,7 @@
         {{ t('player.playBar.playList') }}
       </n-tooltip>
     </div>
+    <spectrum-bars v-if="hasSong && !musicFullVisible" class="playbar-spectrum" />
     <!-- 全屏播放器 -->
     <music-full-wrapper
       v-if="hasOpenedMusicFull"
@@ -209,6 +211,7 @@ const MusicFullWrapper = defineAsyncComponent(
 );
 import AdvancedControlsPopover from '@/components/player/AdvancedControlsPopover.vue';
 import ReparsePopover from '@/components/player/ReparsePopover.vue';
+import SpectrumBars from '@/components/player/SpectrumBars.vue';
 import {
   allTime,
   artistList,
@@ -531,6 +534,19 @@ const openPlayListDrawer = () => {
       transform: scale(0.95);
     }
   }
+}
+
+.music-play-bar.has-spectrum {
+  height: 102px !important;
+  min-height: 102px;
+  padding-bottom: 32px;
+}
+.playbar-spectrum {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  bottom: 6px;
+  height: 20px;
 }
 
 .audio-volume {

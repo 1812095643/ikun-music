@@ -121,7 +121,7 @@ const LYRIC_WINDOW_POSITION_MARGIN: i32 = 50;
 #[cfg(not(mobile))]
 const TRAY_PANEL_WIDTH: f64 = 336.0;
 #[cfg(not(mobile))]
-const TRAY_PANEL_HEIGHT: f64 = 492.0;
+const TRAY_PANEL_HEIGHT: f64 = 468.0;
 #[cfg(not(mobile))]
 const TRAY_PANEL_MARGIN: f64 = 12.0;
 
@@ -627,6 +627,7 @@ fn hide_tray_panel(app: &AppHandle) {
     if let Some(window) = app.get_webview_window(TRAY_PANEL_WINDOW_LABEL) {
         let _ = window.hide();
     }
+    let _ = emit_to_window(app, MAIN_WINDOW_LABEL, "tray-panel-closed", json!(null));
 }
 
 #[cfg(not(mobile))]
@@ -1130,10 +1131,11 @@ fn emit_to_main(app: AppHandle, event: String, payload: Value) -> Result<(), Str
     #[cfg(not(mobile))]
     {
         let target_label = match event.as_str() {
-            "tray-panel-state" => TRAY_PANEL_WINDOW_LABEL,
+            "tray-panel-state" | "tray-panel-spectrum" => TRAY_PANEL_WINDOW_LABEL,
             "receive-lyric" => LYRIC_WINDOW_LABEL,
             "tray-panel-command"
             | "tray-panel-opened"
+            | "tray-panel-closed"
             | "lyric-window-ready"
             | "lyric-window-closed"
             | "lyric-control-back" => MAIN_WINDOW_LABEL,
@@ -1239,11 +1241,11 @@ pub fn run() {
                 if window.label() == TRAY_PANEL_WINDOW_LABEL {
                     match event {
                         WindowEvent::Focused(false) => {
-                            let _ = window.hide();
+                            hide_tray_panel(window.app_handle());
                         }
                         WindowEvent::CloseRequested { api, .. } => {
                             api.prevent_close();
-                            let _ = window.hide();
+                            hide_tray_panel(window.app_handle());
                         }
                         _ => {}
                     }

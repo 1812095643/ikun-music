@@ -95,6 +95,7 @@
                 <i class="ri-skip-forward-fill" aria-hidden="true" />
               </button>
             </div>
+            <spectrum-bars class="mini-spectrum" compact />
             <button
               class="tool-button favorite-button"
               type="button"
@@ -217,6 +218,7 @@ import { computed, onUnmounted, provide, ref, shallowRef, useTemplateRef, watch 
 
 import SongDownloadButton from '@/components/common/SongDownloadButton.vue';
 import SongItem from '@/components/common/SongItem.vue';
+import SpectrumBars from '@/components/player/SpectrumBars.vue';
 import { allTime, artistList, nowTime, openLyric, playMusic } from '@/hooks/MusicHook';
 import { useArtist } from '@/hooks/useArtist';
 import { audioService } from '@/services/audioService';
@@ -576,6 +578,11 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   height: 34px;
+}
+.mini-spectrum {
+  flex: 1;
+  min-width: 52px;
+  margin: 0 4px;
 }
 .control-buttons {
   display: flex;

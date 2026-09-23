@@ -1,6 +1,7 @@
 <template>
   <div class="simple-play-bar" :class="{ 'dark-theme': isDarkMode }" ref="playBarRef">
     <div class="container">
+      <spectrum-bars class="full-player-spectrum" />
       <!-- 进度条区域 -->
       <div class="progress-wrapper">
         <span class="time current-time">{{ formatTime(displayTime) }}</span>
@@ -71,6 +72,7 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, defineComponent, onMounted, ref, watch } from 'vue';
 
+import SpectrumBars from '@/components/player/SpectrumBars.vue';
 import { allTime, nowTime, playMusic } from '@/hooks/MusicHook';
 import { usePlayMode } from '@/hooks/usePlayMode';
 import { audioService } from '@/services/audioService';
@@ -366,6 +368,9 @@ onMounted(() => {
 
 .container {
   @apply flex flex-col w-full max-w-[1000px] mx-auto;
+}
+.full-player-spectrum {
+  margin-bottom: 8px;
 }
 
 /* 进度条区域 */

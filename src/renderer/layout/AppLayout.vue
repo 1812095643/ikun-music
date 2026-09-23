@@ -3,7 +3,11 @@
   <mobile-layout v-if="isPhone && !settingsStore.setData?.tabletMode" :is-phone="isPhone" />
 
   <!-- PC 端 / 浏览器移动端 / 平板模式 保持原有布局 -->
-  <div v-else class="layout-page" :class="{ mobile: settingsStore.isMobile }">
+  <div
+    v-else
+    class="layout-page"
+    :class="{ mobile: settingsStore.isMobile, 'has-spectrum': isPlay }"
+  >
     <div id="layout-main" class="layout-main">
       <title-bar />
       <div class="layout-main-page">
@@ -178,6 +182,9 @@ watch(
 // 内容区直接扣除其高度，使列表最后一行不会被绝对定位的播放栏遮挡。
 .layout-page:not(.mobile) .layout-main-page {
   height: calc(100% - 40px - 104px);
+}
+.layout-page.has-spectrum:not(.mobile) .layout-main-page {
+  height: calc(100% - 40px - 128px);
 }
 
 .menu {

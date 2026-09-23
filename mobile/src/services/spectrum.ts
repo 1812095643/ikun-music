@@ -1,5 +1,6 @@
 import { shallowRef } from 'vue';
 
+import { readSpectrumBands } from '../../../src/shared/audioSpectrum';
 import { nativeDevice } from './nativeDevice';
 
 export interface SpectrumFrame {
@@ -46,29 +47,7 @@ export function prepareSpectrum() {
   // #endif
 }
 function channelBars(analyser: AnalyserNode): number[] {
-  analyser.getByteFrequencyData(samples);
-  const ceiling = Math.min(16000, analyser.context.sampleRate / 2);
-  return Array.from({ length: 28 }, (_, index) => {
-    const from = Math.max(
-      1,
-      Math.floor(
-        (60 * Math.pow(ceiling / 60, index / 28) * analyser.fftSize) / analyser.context.sampleRate
-      )
-    );
-    const to = Math.min(
-      samples.length - 1,
-      Math.max(
-        from,
-        Math.ceil(
-          (60 * Math.pow(ceiling / 60, (index + 1) / 28) * analyser.fftSize) /
-            analyser.context.sampleRate
-        )
-      )
-    );
-    let value = 0;
-    for (let bin = from; bin <= to; bin++) value = Math.max(value, samples[bin]);
-    return value / 255;
-  });
+  return readSpectrumBands(analyser, samples);
 }
 export function setSpectrumEnabled(value: boolean) {
   enabled = value;

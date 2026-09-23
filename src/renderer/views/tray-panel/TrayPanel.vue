@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref, shallowRef, watch } from 'vue';
 
+import SpectrumBars from '@/components/player/SpectrumBars.vue';
 import type { SongResult } from '@/types/music';
 import { getImgUrl, secondToMinute } from '@/utils';
+
+import { EMPTY_SPECTRUM, type SpectrumFrame } from '../../../shared/audioSpectrum';
 
 type TrayPanelState = {
   song?: SongResult;
@@ -24,6 +27,8 @@ const allTime = ref(0);
 const isDraggingProgress = ref(false);
 const dragProgress = ref(0);
 const pendingCommand = ref<string | null>(null);
+const spectrumFrame = shallowRef<SpectrumFrame>(EMPTY_SPECTRUM);
+let removeSpectrumListener: (() => void) | undefined;
 const previousVolume = ref(Number(localStorage.getItem('trayPreviousVolume') || '0.7'));
 const removeTrayPanelStateListener = ref<(() => void) | null>(null);
 const removeTrayPanelOpenedListener = ref<(() => void) | null>(null);
@@ -268,6 +273,9 @@ const getPanelStatePayload = (eventOrPayload: unknown, payload?: TrayPanelState)
 const handlePanelState = (eventOrPayload: unknown, payload?: TrayPanelState) => {
   const state = getPanelStatePayload(eventOrPayload, payload);
   if (!state) return;
+  if (!state.isPlaying || String(state.song?.id) !== String(externalState.song?.id)) {
+    spectrumFrame.value = EMPTY_SPECTRUM;
+  }
   externalState.song = state.song;
   externalState.isPlaying = Boolean(state.isPlaying);
   externalState.volume = Number(state.volume || 0);
@@ -306,6 +314,11 @@ onMounted(() => {
   progressTimer = window.setInterval(syncProgressFromState, 500);
 
   if (window.desktop) {
+    removeSpectrumListener = window.desktop.on('tray-panel-spectrum', (_, payload) => {
+      if (String(payload?.songId) !== String(currentSong.value?.id)) return;
+      if (!Array.isArray(payload?.frame?.left) || !Array.isArray(payload?.frame?.right)) return;
+      spectrumFrame.value = isPlaying.value ? payload.frame : EMPTY_SPECTRUM;
+    });
     removeTrayPanelStateListener.value = window.desktop.on('tray-panel-state', handlePanelState);
     removeTrayPanelOpenedListener.value = window.desktop.on('tray-panel-opened', handlePanelOpened);
   }
@@ -324,6 +337,7 @@ onUnmounted(() => {
     window.clearInterval(progressTimer);
     progressTimer = null;
   }
+  removeSpectrumListener?.();
   if (listenerReadyTimer.value) {
     window.clearTimeout(listenerReadyTimer.value);
     listenerReadyTimer.value = null;
@@ -385,6 +399,7 @@ onUnmounted(() => {
           <span>{{ secondToMinute(allTime) }}</span>
         </div>
       </div>
+      <spectrum-bars class="tray-spectrum" compact :frame="spectrumFrame" :playing="isPlaying" />
 
       <div class="main-controls">
         <button
@@ -545,6 +560,7 @@ onUnmounted(() => {
 }
 
 .tray-panel-card {
+  box-sizing: border-box;
   width: 100%;
   height: 100%;
   padding: 14px;
@@ -730,6 +746,10 @@ onUnmounted(() => {
   justify-content: center;
   gap: 18px;
   margin-top: 8px;
+}
+.tray-spectrum {
+  margin-top: 2px;
+  color: var(--tray-primary);
 }
 
 .icon-button,

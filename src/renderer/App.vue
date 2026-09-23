@@ -46,6 +46,7 @@ import {
 
 import { allTime, initAudioListeners, initMusicHook, nowTime, openLyric } from './hooks/MusicHook';
 import { audioService } from './services/audioService';
+import { subscribeAudioSpectrum } from './services/spectrumService';
 import { isMobile } from './utils';
 
 type TrayPanelStatePayload = {
@@ -77,6 +78,8 @@ const shouldUseDesktopShell = isDesktopRuntime;
 let removeTrayControlListener: (() => void) | null = null;
 let removeTrayPanelOpenedListener: (() => void) | null = null;
 let removeTrayPanelCommandListener: (() => void) | null = null;
+let removeTrayPanelClosedListener: (() => void) | null = null;
+let stopTraySpectrum: (() => void) | undefined;
 let trayPanelStateTimer: number | null = null;
 let cleanupAppShortcuts: (() => void) | null = null;
 
@@ -326,10 +329,18 @@ const broadcastTrayPanelState = () => {
 const handleTrayPanelCommand = async (payload: any) => {
   const action = typeof payload === 'string' ? payload : payload?.action;
   if (!action) return;
+  if (action === 'requestState') startTraySpectrum();
 
   await executeTrayPlaybackCommand(payload);
   broadcastTrayPanelState();
 };
+
+function startTraySpectrum() {
+  if (stopTraySpectrum) return;
+  stopTraySpectrum = subscribeAudioSpectrum((frame) => {
+    window.desktop?.send('tray-panel-spectrum', { songId: playerStore.playMusic?.id, frame });
+  });
+}
 
 // 监听语言变化
 watch(
@@ -446,6 +457,11 @@ if (
 if (shouldUseDesktopShell && !isLyricWindow.value && !isTrayPanelWindow.value && window.desktop) {
   removeTrayPanelOpenedListener = window.desktop.on('tray-panel-opened', () => {
     broadcastTrayPanelState();
+    startTraySpectrum();
+  });
+  removeTrayPanelClosedListener = window.desktop.on('tray-panel-closed', () => {
+    stopTraySpectrum?.();
+    stopTraySpectrum = undefined;
   });
   removeTrayPanelCommandListener = window.desktop.on('tray-panel-command', (_, payload) => {
     void handleTrayPanelCommand(payload);
@@ -554,6 +570,10 @@ onUnmounted(() => {
   removeTrayPanelOpenedListener = null;
   removeTrayPanelCommandListener?.();
   removeTrayPanelCommandListener = null;
+  removeTrayPanelClosedListener?.();
+  removeTrayPanelClosedListener = null;
+  stopTraySpectrum?.();
+  stopTraySpectrum = undefined;
   if (trayPanelStateTimer) {
     window.clearInterval(trayPanelStateTimer);
     trayPanelStateTimer = null;

@@ -538,6 +538,8 @@ const registerTauriListener = async (channel: string) => {
   if (unlisteners.has(channel)) return;
   const windowScopedEvents = new Set([
     'tray-panel-state',
+    'tray-panel-spectrum',
+    'tray-panel-closed',
     'tray-panel-command',
     'tray-panel-opened',
     'mini-mode',
@@ -784,8 +786,9 @@ const send = (channel: string, ...args: any[]) => {
       break;
     default:
       if (isTauriRuntime) {
-        const targetLabel =
-          channel === 'tray-panel-state' ? TRAY_PANEL_WINDOW_LABEL : MAIN_WINDOW_LABEL;
+        const targetLabel = ['tray-panel-state', 'tray-panel-spectrum'].includes(channel)
+          ? TRAY_PANEL_WINDOW_LABEL
+          : MAIN_WINDOW_LABEL;
         void emitTo(targetLabel, channel, args[0] ?? null).catch(() => {
           void invoke('emit_to_main', { event: channel, payload: args[0] ?? null }).catch(
             () => undefined
