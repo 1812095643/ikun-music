@@ -1,6 +1,10 @@
 import { run, setTransport } from '@ikun/music-backend';
 import AbortController from 'abort-controller';
 
+import type { PlaylistPreview as SharedPlaylistPreview } from '../../../src/shared/playlistImport';
+
+export type { PlaylistPreview as SharedPlaylistPreview } from '../../../src/shared/playlistImport';
+
 export interface Track {
   id: string;
   title: string;
@@ -18,20 +22,6 @@ export interface Collection {
   description?: string;
   kind?: 'playlist' | 'rank' | 'favorites' | 'history' | 'local';
   updateFrequency?: string;
-}
-export interface SharedPlaylistSong {
-  name: string;
-  artist: string;
-  album: string;
-  duration: number;
-}
-export interface SharedPlaylistPreview {
-  platform: 'qq' | 'netease' | 'kuwo';
-  id: string;
-  title: string;
-  total: number;
-  filteredCount: number;
-  songs: SharedPlaylistSong[];
 }
 export interface Artist {
   id: string;

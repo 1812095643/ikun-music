@@ -16,4 +16,4 @@ ikun音乐 5.3.9
 
 Windows 便携版须完整解压并保留 runtime 目录。Mac 要求 macOS 13.5 或更高版本，目前使用临时签名、未完成苹果公证，尚未进行 Mac 真机完整播放与桌面歌词验收。
 
-5.3.6 及以上版本可通过应用内检查更新升级；5.3.5 及以前版本需从 GitHub 手动安装一次。安卓手机、平板和车机安装包见独立的 [Android 0.1.4 发布页](https://github.com/1812095643/ikun-music/releases/tag/mobile-v0.1.4)。
+5.3.6 及以上版本可通过应用内检查更新升级；5.3.5 及以前版本需从 GitHub 手动安装一次。安卓手机、平板和车机安装包见独立的 [Android 0.1.5 发布页](https://github.com/1812095643/ikun-music/releases/tag/mobile-v0.1.5)。

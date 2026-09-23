@@ -126,8 +126,8 @@ const {
           ></view
         >
         <text v-if="song.duration" class="share-song-duration"
-          >{{ Math.floor(song.duration / 60) }}:{{
-            String(Math.floor(song.duration % 60)).padStart(2, '0')
+          >{{ Math.floor(song.duration / 60000) }}:{{
+            String(Math.floor(song.duration / 1000) % 60).padStart(2, '0')
           }}</text
         >
       </button>
@@ -151,7 +151,7 @@ const {
         >
           导入 {{ selected.length }} 首
         </button></view
-      ><text class="import-note">核对匹配候选后再导入，不确定的歌曲可以取消勾选。</text
+      ><text class="import-note">已自动勾选匹配的歌曲；其他候选请核对歌手与版本后手动勾选。</text
       ><button
         v-for="(item, index) in visibleResults"
         :key="index"

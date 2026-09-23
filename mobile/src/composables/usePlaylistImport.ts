@@ -11,6 +11,12 @@ import {
 import { openCollection } from '@/stores/browse';
 import { createPlaylist, toast } from '@/stores/library';
 
+import {
+  detectPlaylistLink,
+  extractPlaylistUrls,
+  matchPlaylistSongs
+} from '../../../src/shared/playlistImport';
+
 export function usePlaylistImport() {
   const text = shallowRef('');
   const name = shallowRef('导入的歌单');
@@ -27,7 +33,10 @@ export function usePlaylistImport() {
   let shareTimer: ReturnType<typeof setTimeout> | undefined;
   let shareVersion = 0;
   const selected = computed(() => results.value.filter((item) => item.track && item.selected));
-  const detectedShareUrl = computed(() => findSharedPlaylistUrl(text.value));
+  // 原生服务层没有浏览器 URL 对象，直接复用两端通用的分享链接识别器。
+  const detectedShareUrl = computed(
+    () => extractPlaylistUrls(text.value).map(detectPlaylistLink).find(Boolean)?.url || ''
+  );
   const selectedShareCount = computed(() => selectedShareIndexes.value.size);
   const allShareSelected = computed(
     () =>
@@ -48,17 +57,22 @@ export function usePlaylistImport() {
   );
   const shareFilteredCount = computed(() => sharePlaylist.value?.filteredCount || 0);
 
-  watch(detectedShareUrl, (url) => {
+  watch(text, () => {
     if (shareTimer) clearTimeout(shareTimer);
     cancellation?.abort();
     shareVersion++;
     shareCancellation?.abort();
     sharePlaylist.value = null;
     selectedShareIndexes.value = new Set();
+    shareLoading.value = false;
     shareError.value = '';
     shareShown.value = 120;
+    working.value = false;
+    completed.value = 0;
     results.value = [];
+    const url = detectedShareUrl.value;
     if (!url) return;
+    shareLoading.value = true;
     const version = shareVersion;
     shareTimer = setTimeout(() => void previewSharedPlaylist(url, version), 350);
   });
@@ -80,31 +94,6 @@ export function usePlaylistImport() {
     } finally {
       if (version === shareVersion) shareLoading.value = false;
     }
-  }
-
-  function findSharedPlaylistUrl(value: string) {
-    const match = value.match(/https?:\/\/[^\s]+/i);
-    const candidate = (match?.[0] || '').replace(/[),，。；;]+$/g, '');
-    try {
-      const url = new URL(candidate);
-      const host = url.hostname.toLowerCase();
-      const path = `${url.pathname}${url.hash}`;
-      if ((host === 'y.qq.com' || host.endsWith('.qq.com')) && /\/playlist\/\d+/i.test(path))
-        return candidate;
-      if (
-        (host === 'music.163.com' || host === '163cn.tv') &&
-        (url.searchParams.get('id') || /[?&]id=\d+/.test(url.hash))
-      )
-        return candidate;
-      if (
-        (host === 'kuwo.cn' || host.endsWith('.kuwo.cn')) &&
-        (/\/playlist(?:_detail)?\/\d+/i.test(path) || url.searchParams.has('pid'))
-      )
-        return candidate;
-    } catch {
-      return '';
-    }
-    return '';
   }
 
   function toggleShare(index: number) {
@@ -141,6 +130,7 @@ export function usePlaylistImport() {
   async function identify() {
     if (working.value) return;
     if (sharePlaylist.value) return identifySharedPlaylist();
+    if (detectedShareUrl.value) return;
     const lines = [
       ...new Set(
         text.value
@@ -150,19 +140,20 @@ export function usePlaylistImport() {
       )
     ];
     if (!lines.length) return;
-    cancellation = createCancellation();
+    const controller = createCancellation();
+    cancellation = controller;
     working.value = true;
     completed.value = 0;
     results.value = lines.map((source) => ({ source, selected: false }));
     let next = 0;
     await Promise.all(
       Array.from({ length: Math.min(3, lines.length) }, async () => {
-        while (next < lines.length && !cancellation?.signal.aborted) {
+        while (next < lines.length && !controller.signal.aborted) {
           const index = next++;
           try {
             const query = lines[index].replace(/[《》]/g, '').replace(/\s+[-—–|]\s+/g, ' ');
-            const found = await searchTracks(query, 0, cancellation!.signal);
-            if (cancellation!.signal.aborted) break;
+            const found = await searchTracks(query, 0, controller.signal);
+            if (controller.signal.aborted) break;
             const exact = found.songs.find((track) =>
               [
                 normalize(track.title + track.artist),
@@ -174,18 +165,19 @@ export function usePlaylistImport() {
               at === index ? { ...item, track: candidate, selected: Boolean(exact) } : item
             );
           } catch (error) {
-            if (isCanceled(error)) break;
+            if (controller.signal.aborted || isCanceled(error)) break;
           }
           completed.value++;
         }
       })
     );
-    working.value = false;
+    if (cancellation === controller) working.value = false;
   }
 
   async function identifySharedPlaylist() {
     if (working.value || !sharePlaylist.value || !selectedShareIndexes.value.size) return;
-    cancellation = createCancellation();
+    const controller = createCancellation();
+    cancellation = controller;
     working.value = true;
     const sourceSongs = [...selectedShareIndexes.value]
       .sort((a, b) => a - b)
@@ -193,41 +185,31 @@ export function usePlaylistImport() {
     completed.value = 0;
     results.value = sourceSongs.map((song) => ({
       source: `${song.name} - ${song.artist}`,
-      selected: true
+      selected: false
     }));
-    let next = 0;
-    await Promise.all(
-      Array.from({ length: Math.min(3, sourceSongs.length) }, async () => {
-        while (next < sourceSongs.length && !cancellation?.signal.aborted) {
-          const index = next++;
-          const source = sourceSongs[index];
-          try {
-            const found = await searchTracks(
-              `${source.name} ${source.artist}`,
-              0,
-              cancellation!.signal
-            );
-            if (cancellation!.signal.aborted) break;
-            const title = normalize(source.name);
-            const artist = normalize(source.artist);
-            const exact = found.songs.find(
-              (track) =>
-                normalize(track.title) === title &&
-                (normalize(track.artist).includes(artist) ||
-                  artist.includes(normalize(track.artist)))
-            );
-            const candidate = exact || found.songs[0];
-            results.value = results.value.map((item, at) =>
-              at === index ? { ...item, track: candidate, selected: Boolean(candidate) } : item
-            );
-          } catch (error) {
-            if (isCanceled(error)) break;
-          }
+    try {
+      await matchPlaylistSongs<Track>({
+        songs: sourceSongs,
+        signal: controller.signal,
+        search: async (query, signal) => (await searchTracks(query, 0, signal)).songs,
+        describe: (track) => ({
+          name: track.title,
+          artist: track.artist,
+          duration: track.duration * 1000
+        }),
+        onResult(index, result) {
+          if (controller.signal.aborted) return;
+          results.value = results.value.map((item, at) =>
+            at === index ? { ...item, track: result.track, selected: result.exact } : item
+          );
           completed.value++;
         }
-      })
-    );
-    working.value = false;
+      });
+    } catch (error) {
+      if (!isCanceled(error)) toast('匹配暂未完成，请重试或先导入已识别的歌曲');
+    } finally {
+      if (cancellation === controller) working.value = false;
+    }
   }
   function normalize(value: string) {
     return value.toLowerCase().replace(/[\s\-_—–|《》.,，。!！?？()（）:：;；“”、·&]/g, '');
@@ -262,6 +244,9 @@ export function usePlaylistImport() {
   const stop = () => {
     cancellation?.abort();
     shareCancellation?.abort();
+    shareVersion++;
+    working.value = false;
+    shareLoading.value = false;
     if (shareTimer) clearTimeout(shareTimer);
   };
   onUnmounted(stop);
