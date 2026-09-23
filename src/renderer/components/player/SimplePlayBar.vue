@@ -1,7 +1,6 @@
 <template>
   <div class="simple-play-bar" :class="{ 'dark-theme': isDarkMode }" ref="playBarRef">
     <div class="container">
-      <spectrum-bars class="full-player-spectrum" :show-labels="false" />
       <!-- 进度条区域 -->
       <div class="progress-wrapper">
         <span class="time current-time">{{ formatTime(displayTime) }}</span>
@@ -11,6 +10,7 @@
           @mousedown="handleProgressMouseDown"
           @click.stop="handleProgressClick"
         >
+          <spectrum-bars class="full-player-spectrum" :show-labels="false" />
           <div class="progress-track"></div>
           <div class="progress-fill" :style="{ width: `${progressPercentage}%` }">
             <div class="progress-handle"></div>
@@ -376,7 +376,7 @@ onMounted(() => {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 44px;
+  bottom: calc(100% + 2px);
   z-index: 0;
   height: 44px;
   opacity: 0.3;
@@ -453,23 +453,26 @@ onMounted(() => {
 }
 
 :deep(.simple-download-button) {
-  width: 36px;
-  height: 36px;
-  border: 1px solid color-mix(in srgb, var(--fill-color, #22c55e) 26%, var(--track-color));
-  border-radius: 11px;
-  background: color-mix(in srgb, var(--fill-color, #22c55e) 8%, var(--button-bg));
+  width: 32px !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 50%;
+  background: transparent !important;
   color: var(--text-color);
-  box-shadow: 0 5px 14px color-mix(in srgb, var(--fill-color, #22c55e) 12%, transparent);
+  box-shadow: none !important;
+  font-size: 24px;
 
   &:hover {
-    border-color: var(--fill-color);
-    background: color-mix(in srgb, var(--fill-color, #22c55e) 15%, var(--button-bg));
+    border-color: transparent !important;
+    background: var(--button-bg) !important;
     color: var(--fill-color-alt);
-    transform: translateY(-1px);
+    transform: scale(1.05);
   }
 
   &:active {
-    transform: translateY(0) scale(0.94);
+    transform: scale(0.94);
   }
 }
 

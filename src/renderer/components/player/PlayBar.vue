@@ -563,23 +563,26 @@ const openPlayListDrawer = () => {
 }
 
 :deep(.playbar-download-button) {
-  width: 34px;
-  height: 34px;
-  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface));
+  width: 32px !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 50%;
+  background: transparent !important;
   color: var(--qqm-muted, #6b7280);
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
+  box-shadow: none !important;
+  font-size: 23px;
 
   &:hover {
-    border-color: var(--qqm-primary, #22c55e);
-    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, var(--qqm-surface));
+    border-color: transparent !important;
+    background: var(--qqm-primary-soft, rgba(34, 197, 94, 0.1)) !important;
     color: var(--qqm-primary-strong, #0dbd62);
-    transform: translateY(-1px);
+    transform: scale(1.05);
   }
 
   &:active {
-    transform: translateY(0) scale(0.94);
+    transform: scale(0.94);
   }
 }
 
