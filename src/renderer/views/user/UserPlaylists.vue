@@ -50,9 +50,6 @@ function open(id: string | number) {
 }
 </script>
 <template>
-  <button class="music-list-button playlist-import" @click="router.push('/playlist/import')">
-    <i class="ri-import-line" aria-hidden="true" />导入歌单
-  </button>
   <library-collections
     :items="items"
     empty-title="让歌单装下你的每一种心情"
@@ -69,10 +66,6 @@ function open(id: string | number) {
   </library-collections>
 </template>
 <style scoped>
-.playlist-import {
-  align-self: flex-start;
-  margin-top: 18px;
-}
 .playlist-discover {
   margin-top: 10px;
   padding: 8px 16px;

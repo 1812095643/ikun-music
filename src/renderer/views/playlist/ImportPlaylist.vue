@@ -45,152 +45,159 @@ function openSaved() {
 }
 </script>
 <template>
-  <n-scrollbar class="playlist-import-page">
-    <div class="import-content">
-      <header class="import-heading">
-        <p>把喜欢的音乐带过来</p>
-        <h1>导入歌单</h1>
-        <span>粘贴分享链接，核对歌曲后保存到本机歌单。</span>
-      </header>
-      <div class="import-tabs" role="tablist" aria-label="导入方式">
-        <button
-          v-for="tab in tabs"
-          :key="tab.id"
-          role="tab"
-          :aria-selected="mode === tab.id"
-          :class="{ active: mode === tab.id }"
-          @click="mode = tab.id"
-        >
-          {{ tab.title }}
-        </button>
-      </div>
-      <section class="import-input-section">
-        <template v-if="mode !== 'manual'">
-          <label class="field-label" for="playlist-import-input">{{
-            mode === 'link' ? '歌单分享链接' : '歌曲列表'
-          }}</label>
-          <textarea
-            id="playlist-import-input"
-            v-model="input"
-            :rows="mode === 'link' ? 3 : 6"
-            :placeholder="
-              mode === 'link'
-                ? '粘贴 QQ 音乐、网易云或酷我的公开歌单链接，也可以粘贴完整分享文案'
-                : '每行一首，例如：歌名 - 歌手 - 专辑（专辑可省略）'
-            "
-          />
-        </template>
-        <div v-else class="manual-songs">
-          <div v-for="(item, index) in manual" :key="index">
-            <input
-              v-model="item.name"
-              :aria-label="`第 ${index + 1} 首歌名`"
-              placeholder="歌曲名称"
-            /><input
-              v-model="item.artist"
-              :aria-label="`第 ${index + 1} 首歌手`"
-              placeholder="歌手名称"
-            /><input
-              v-model="item.album"
-              :aria-label="`第 ${index + 1} 首专辑`"
-              placeholder="专辑（可省略）"
-            /><button
-              v-if="manual.length > 1"
-              class="music-list-icon"
-              :aria-label="`移除第 ${index + 1} 行`"
-              @click="manual.splice(index, 1)"
+  <!-- 路由退出动画需要真实元素根节点；直接挂载滚动组件会让过渡无法结束，切页后白屏。 -->
+  <div class="playlist-import-shell">
+    <n-scrollbar class="playlist-import-page">
+      <div class="import-content">
+        <header class="import-heading">
+          <p>把喜欢的音乐带过来</p>
+          <h1>导入歌单</h1>
+          <span>粘贴分享链接，核对歌曲后保存到本机歌单。</span>
+        </header>
+        <div class="import-tabs" role="tablist" aria-label="导入方式">
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            role="tab"
+            :aria-selected="mode === tab.id"
+            :class="{ active: mode === tab.id }"
+            @click="mode = tab.id"
+          >
+            {{ tab.title }}
+          </button>
+        </div>
+        <section class="import-input-section">
+          <template v-if="mode !== 'manual'">
+            <label class="field-label" for="playlist-import-input">{{
+              mode === 'link' ? '歌单分享链接' : '歌曲列表'
+            }}</label>
+            <textarea
+              id="playlist-import-input"
+              v-model="input"
+              :rows="mode === 'link' ? 3 : 6"
+              :placeholder="
+                mode === 'link'
+                  ? '粘贴 QQ 音乐、网易云或酷我的公开歌单链接，也可以粘贴完整分享文案'
+                  : '每行一首，例如：歌名 - 歌手 - 专辑（专辑可省略）'
+              "
+            />
+          </template>
+          <div v-else class="manual-songs">
+            <div v-for="(item, index) in manual" :key="index">
+              <input
+                v-model="item.name"
+                :aria-label="`第 ${index + 1} 首歌名`"
+                placeholder="歌曲名称"
+              /><input
+                v-model="item.artist"
+                :aria-label="`第 ${index + 1} 首歌手`"
+                placeholder="歌手名称"
+              /><input
+                v-model="item.album"
+                :aria-label="`第 ${index + 1} 首专辑`"
+                placeholder="专辑（可省略）"
+              /><button
+                v-if="manual.length > 1"
+                class="music-list-icon"
+                :aria-label="`移除第 ${index + 1} 行`"
+                @click="manual.splice(index, 1)"
+              >
+                <i class="ri-close-line" />
+              </button>
+            </div>
+            <button
+              class="music-list-button"
+              @click="manual.push({ name: '', artist: '', album: '' })"
             >
-              <i class="ri-close-line" />
+              <i class="ri-add-line" />再加一首
             </button>
           </div>
-          <button
-            class="music-list-button"
-            @click="manual.push({ name: '', artist: '', album: '' })"
-          >
-            <i class="ri-add-line" />再加一首
-          </button>
-        </div>
-        <div class="input-hint">
-          <span>{{
-            platforms && mode === 'link'
-              ? `已识别 ${platforms}，自动读取歌单`
-              : mode === 'link'
-                ? '支持公开歌单完整链接；单曲、主页和需要登录的私密歌单暂不支持。'
-                : '保留歌曲原顺序，匹配后可以再次核对。'
-          }}</span
-          ><button v-if="!busy" @click="preview">
-            {{ mode === 'link' ? '重新读取' : '预览歌曲' }}</button
-          ><button v-else @click="stop">停止</button>
-        </div>
-      </section>
-      <p v-if="error" class="import-error" role="alert">
-        {{ error }}<button @click="preview">重试</button>
-      </p>
-      <section v-if="songs.length || busy" class="import-preview-section">
-        <div class="preview-heading">
-          <h2>{{ sourceTitle || '核对歌曲' }}</h2>
-          <span v-if="phase === 'matching'" role="status"
-            >匹配中 {{ completed }} / {{ songs.length }}</span
-          ><span v-else-if="phase === 'reading'" role="status">正在读取…</span>
-        </div>
-        <p class="import-note" role="status">{{ note }}</p>
-        <import-song-preview
-          v-if="songs.length && phase !== 'saved'"
-          :songs="songs"
-          :matches="matches"
-          :selected="selected"
-          :all-selected="allSelected"
-          :reviewing="reviewing"
-          :busy="busy"
-          :matching="phase === 'matching'"
-          @toggle="toggle"
-          @all="toggleAll"
-        />
-        <div v-if="phase !== 'saved'" class="import-save-bar">
-          <label
-            >保存到<select v-model="destination" :disabled="busy" aria-label="保存位置">
-              <option value="playlist">我的歌单</option>
-              <option value="favorites">我喜欢</option>
-            </select></label
-          >
-          <input
-            v-if="destination === 'playlist'"
-            v-model="name"
-            aria-label="歌单名称"
-            placeholder="歌单名称"
-            maxlength="80"
-            :disabled="busy"
+          <div class="input-hint">
+            <span>{{
+              platforms && mode === 'link'
+                ? `已识别 ${platforms}，自动读取歌单`
+                : mode === 'link'
+                  ? '支持公开歌单完整链接；单曲、主页和需要登录的私密歌单暂不支持。'
+                  : '保留歌曲原顺序，匹配后可以再次核对。'
+            }}</span
+            ><button v-if="!busy" @click="preview">
+              {{ mode === 'link' ? '重新读取' : '预览歌曲' }}</button
+            ><button v-else @click="stop">停止</button>
+          </div>
+        </section>
+        <p v-if="error" class="import-error" role="alert">
+          {{ error }}<button @click="preview">重试</button>
+        </p>
+        <section v-if="songs.length || busy" class="import-preview-section">
+          <div class="preview-heading">
+            <h2>{{ sourceTitle || '核对歌曲' }}</h2>
+            <span v-if="phase === 'matching'" role="status"
+              >匹配中 {{ completed }} / {{ songs.length }}</span
+            ><span v-else-if="phase === 'reading'" role="status">正在读取…</span>
+          </div>
+          <p class="import-note" role="status">{{ note }}</p>
+          <import-song-preview
+            v-if="songs.length && phase !== 'saved'"
+            :songs="songs"
+            :matches="matches"
+            :selected="selected"
+            :all-selected="allSelected"
+            :reviewing="reviewing"
+            :busy="busy"
+            :matching="phase === 'matching'"
+            @toggle="toggle"
+            @all="toggleAll"
           />
-          <button
-            v-if="reviewing"
-            class="music-list-button music-list-button--primary"
-            :disabled="!selected.size || (destination === 'playlist' && !name.trim())"
-            @click="save"
-          >
-            导入 {{ selected.size }} 首
-          </button>
-          <button
-            v-else
-            class="music-list-button music-list-button--primary"
-            :disabled="busy || !selected.size"
-            @click="matchSelected"
-          >
-            {{ phase === 'matching' ? '正在匹配…' : `匹配所选 ${selected.size} 首` }}
-          </button>
-        </div>
-        <div v-else class="import-success">
-          <i class="ri-checkbox-circle-line" aria-hidden="true" />
-          <h2>已经放进你的音乐库</h2>
-          <p>{{ note }}</p>
-          <button class="music-list-button music-list-button--primary" @click="openSaved">
-            打开歌单<i class="ri-arrow-right-line" />
-          </button>
-        </div>
-      </section>
-    </div>
-  </n-scrollbar>
+          <div v-if="phase !== 'saved'" class="import-save-bar">
+            <label
+              >保存到<select v-model="destination" :disabled="busy" aria-label="保存位置">
+                <option value="playlist">我的歌单</option>
+                <option value="favorites">我喜欢</option>
+              </select></label
+            >
+            <input
+              v-if="destination === 'playlist'"
+              v-model="name"
+              aria-label="歌单名称"
+              placeholder="歌单名称"
+              maxlength="80"
+              :disabled="busy"
+            />
+            <button
+              v-if="reviewing"
+              class="music-list-button music-list-button--primary"
+              :disabled="!selected.size || (destination === 'playlist' && !name.trim())"
+              @click="save"
+            >
+              导入 {{ selected.size }} 首
+            </button>
+            <button
+              v-else
+              class="music-list-button music-list-button--primary"
+              :disabled="busy || !selected.size"
+              @click="matchSelected"
+            >
+              {{ phase === 'matching' ? '正在匹配…' : `匹配所选 ${selected.size} 首` }}
+            </button>
+          </div>
+          <div v-else class="import-success">
+            <i class="ri-checkbox-circle-line" aria-hidden="true" />
+            <h2>已经放进你的音乐库</h2>
+            <p>{{ note }}</p>
+            <button class="music-list-button music-list-button--primary" @click="openSaved">
+              打开歌单<i class="ri-arrow-right-line" />
+            </button>
+          </div>
+        </section>
+      </div>
+    </n-scrollbar>
+  </div>
 </template>
 <style scoped>
+.playlist-import-shell {
+  height: 100%;
+  min-height: 0;
+}
 .playlist-import-page {
   height: 100%;
   color: var(--qqm-text);

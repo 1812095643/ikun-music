@@ -161,6 +161,9 @@
           <button class="menu-row menu-action" @click="openMobileDownload">
             <i class="ri-smartphone-line" /><span>下载移动版</span>
           </button>
+          <button class="menu-row menu-action" @click="openPlaylistImport">
+            <i class="ri-import-line" /><span>导入歌单</span>
+          </button>
           <div v-if="isDesktopRuntime" class="menu-row">
             <i class="ri-zoom-in-line" /><span>{{ t('comp.searchBar.zoom') }}</span>
             <div class="zoom-ctrl ml-auto">
@@ -261,7 +264,17 @@ const showBackButton = computed(() => {
   if (!settingsStore.isMobile && meta.isMobile === false) return false;
   return meta.back === true;
 });
-const goBack = () => router.back();
+const goBack = () => {
+  if (window.history.state?.back) {
+    router.back();
+    return;
+  }
+  void router.replace('/');
+};
+
+const openPlaylistImport = () => {
+  void router.push('/playlist/import');
+};
 
 // ── Tabs ──────────────────────────────────────────────
 const tabs = computed(() => {

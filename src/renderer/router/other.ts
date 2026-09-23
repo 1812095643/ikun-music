@@ -73,7 +73,9 @@ const otherRouter = [
     meta: {
       title: '歌单导入',
       keepAlive: true,
-      back: true
+      showInMenu: false,
+      isMobile: false,
+      back: false
     },
     component: () => import('@/views/playlist/ImportPlaylist.vue')
   },
