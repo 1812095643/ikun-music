@@ -1,7 +1,7 @@
 <template>
   <div class="simple-play-bar" :class="{ 'dark-theme': isDarkMode }" ref="playBarRef">
     <div class="container">
-      <spectrum-bars class="full-player-spectrum" />
+      <spectrum-bars class="full-player-spectrum" :show-labels="false" />
       <!-- 进度条区域 -->
       <div class="progress-wrapper">
         <span class="time current-time">{{ formatTime(displayTime) }}</span>
@@ -58,6 +58,7 @@
             v-if="isDesktopRuntime && playMusic?.id"
             :item="playMusic"
             size="small"
+            button-class="simple-download-button"
             title="下载歌曲"
           />
           <button class="control-btn small-btn" @click="openPlayListDrawer" title="播放列表">
@@ -326,6 +327,7 @@ onMounted(() => {
 <style lang="scss" scoped>
 .simple-play-bar {
   @apply w-full;
+  position: relative;
   border: none !important;
   background: transparent !important;
   box-shadow: none !important;
@@ -368,9 +370,25 @@ onMounted(() => {
 
 .container {
   @apply flex flex-col w-full max-w-[1000px] mx-auto;
+  position: relative;
 }
 .full-player-spectrum {
-  margin-bottom: 8px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 44px;
+  z-index: 0;
+  height: 44px;
+  opacity: 0.3;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 48%, black 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 48%, black 100%);
+}
+
+.progress-wrapper,
+.controls-wrapper {
+  position: relative;
+  z-index: 1;
 }
 
 /* 进度条区域 */
@@ -432,6 +450,27 @@ onMounted(() => {
 
 .right-controls {
   @apply justify-end;
+}
+
+:deep(.simple-download-button) {
+  width: 36px;
+  height: 36px;
+  border: 1px solid color-mix(in srgb, var(--fill-color, #22c55e) 26%, var(--track-color));
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--fill-color, #22c55e) 8%, var(--button-bg));
+  color: var(--text-color);
+  box-shadow: 0 5px 14px color-mix(in srgb, var(--fill-color, #22c55e) 12%, transparent);
+
+  &:hover {
+    border-color: var(--fill-color);
+    background: color-mix(in srgb, var(--fill-color, #22c55e) 15%, var(--button-bg));
+    color: var(--fill-color-alt);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.94);
+  }
 }
 
 .center-controls {

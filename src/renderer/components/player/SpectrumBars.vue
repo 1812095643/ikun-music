@@ -7,7 +7,18 @@ import { usePlayerStore } from '@/store/modules/player';
 
 import { EMPTY_SPECTRUM, SPECTRUM_BANDS, type SpectrumFrame } from '../../../shared/audioSpectrum';
 
-const props = defineProps<{ compact?: boolean; frame?: SpectrumFrame; playing?: boolean }>();
+const props = withDefaults(
+  defineProps<{
+    compact?: boolean;
+    frame?: SpectrumFrame;
+    playing?: boolean;
+    showLabels?: boolean;
+  }>(),
+  {
+    compact: false,
+    showLabels: false
+  }
+);
 const playerStore = usePlayerStore();
 const root = shallowRef<HTMLElement>();
 const visible = useElementVisibility(root);
@@ -18,9 +29,13 @@ const frame = computed(() => props.frame || sampled.value);
 const isPlaying = computed(() => props.playing ?? playerStore.isPlay);
 const channels = computed(() =>
   [frame.value.left, frame.value.right].map((values) =>
-    Array.from({ length: SPECTRUM_BANDS }, (_, index) =>
-      frame.value.ready ? Math.min(1, Math.max(0, values[index] || 0)) : 0
-    )
+    Array.from({ length: SPECTRUM_BANDS }, (_, index) => {
+      if (!frame.value.ready) return 0;
+
+      // 两侧从中心向外渐弱，左右声道仍使用各自的频谱数据，视觉上连成一条完整的律动带。
+      const centerWeight = 0.82 + 0.18 * (1 - index / Math.max(1, SPECTRUM_BANDS - 1));
+      return Math.min(1, Math.max(0, (values[index] || 0) * centerWeight));
+    })
   )
 );
 let unsubscribe: (() => void) | undefined;
@@ -56,7 +71,7 @@ onScopeDispose(() => unsubscribe?.());
     :data-ready="frame.ready"
   >
     <div v-for="(bars, channel) in channels" :key="channel" class="spectrum-channel">
-      <span class="spectrum-side">{{ channel === 0 ? 'L' : 'R' }}</span>
+      <span v-if="showLabels" class="spectrum-side">{{ channel === 0 ? 'L' : 'R' }}</span>
       <div class="spectrum-bars">
         <i
           v-for="(value, index) in bars"
@@ -72,8 +87,8 @@ onScopeDispose(() => unsubscribe?.());
 <style scoped>
 .spectrum-strip {
   display: flex;
-  gap: 18px;
-  height: 26px;
+  gap: 0;
+  height: 44px;
   min-width: 0;
   pointer-events: none;
   color: var(--qqm-primary, #1ecf73);
@@ -82,7 +97,6 @@ onScopeDispose(() => unsubscribe?.());
   display: flex;
   flex: 1;
   min-width: 0;
-  gap: 7px;
   align-items: flex-end;
 }
 .spectrum-side {
@@ -96,29 +110,32 @@ onScopeDispose(() => unsubscribe?.());
   align-items: flex-end;
   flex: 1;
   min-width: 0;
-  gap: 3px;
+  gap: 4px;
   height: 100%;
+}
+.spectrum-channel:first-child .spectrum-bars {
+  flex-direction: row-reverse;
 }
 .spectrum-bar {
   flex: 1;
   min-width: 1px;
   height: 100%;
-  border-radius: 2px 2px 0 0;
+  border-radius: 3px 3px 1px 1px;
   background: currentColor;
-  opacity: 0.62;
+  opacity: 0.58;
   transform-origin: bottom;
   transition: transform 80ms linear;
+  will-change: transform;
 }
 .fallback .spectrum-bar {
   animation: spectrum-pulse 720ms ease-in-out infinite alternate;
   animation-delay: calc(var(--spectrum-index, 0) * -42ms);
 }
 .compact {
-  height: 18px;
-  gap: 12px;
+  height: 24px;
 }
 .compact .spectrum-bars {
-  gap: 2px;
+  gap: 3px;
 }
 @media (prefers-reduced-motion: reduce) {
   .spectrum-bar {

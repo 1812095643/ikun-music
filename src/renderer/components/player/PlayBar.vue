@@ -187,7 +187,11 @@
         {{ t('player.playBar.playList') }}
       </n-tooltip>
     </div>
-    <spectrum-bars v-if="hasSong && !musicFullVisible" class="playbar-spectrum" />
+    <spectrum-bars
+      v-if="hasSong && !musicFullVisible"
+      class="playbar-spectrum"
+      :show-labels="false"
+    />
     <!-- 全屏播放器 -->
     <music-full-wrapper
       v-if="hasOpenedMusicFull"
@@ -446,6 +450,15 @@ const openPlayListDrawer = () => {
   z-index: 9999;
   animation-duration: 0.24s !important;
 
+  > .music-time,
+  > .play-bar-img-wrapper,
+  > .music-content,
+  > .music-buttons,
+  > .audio-button {
+    position: relative;
+    z-index: 1;
+  }
+
   &.play-bar-opcity {
     @apply bg-transparent !important;
     backdrop-filter: none;
@@ -536,17 +549,38 @@ const openPlayListDrawer = () => {
   }
 }
 
-.music-play-bar.has-spectrum {
-  height: 102px !important;
-  min-height: 102px;
-  padding-bottom: 32px;
-}
 .playbar-spectrum {
   position: absolute;
   left: 20px;
   right: 20px;
-  bottom: 6px;
-  height: 20px;
+  bottom: 2px;
+  z-index: 0;
+  height: 38px;
+  opacity: 0.22;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 42%, black 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 42%, black 100%);
+}
+
+:deep(.playbar-download-button) {
+  width: 34px;
+  height: 34px;
+  border: 1px solid color-mix(in srgb, var(--qqm-primary, #22c55e) 22%, var(--qqm-border));
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 7%, var(--qqm-surface));
+  color: var(--qqm-muted, #6b7280);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--qqm-primary, #22c55e) 10%, transparent);
+
+  &:hover {
+    border-color: var(--qqm-primary, #22c55e);
+    background: color-mix(in srgb, var(--qqm-primary, #22c55e) 14%, var(--qqm-surface));
+    color: var(--qqm-primary-strong, #0dbd62);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.94);
+  }
 }
 
 .audio-volume {
