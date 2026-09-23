@@ -1,5 +1,6 @@
 import '@/utils/desktopBridge';
 import './index.css';
+import '@/components/common/music-list/musicList.css';
 import '@/assets/css/mobile.css';
 import 'remixicon/fonts/remixicon.css';
 import 'animate.css';

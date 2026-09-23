@@ -241,9 +241,7 @@
               </div>
               <!-- Record List -->
               <div v-else class="w-full">
-                <div v-for="(item, index) in recordList" :key="item.id" class="song-item-container">
-                  <song-item :index="index" :item="item" compact @play="handlePlay" />
-                </div>
+                <music-track-list :songs="recordList" default-order="播放排行" />
               </div>
             </div>
           </section>
@@ -271,10 +269,9 @@ import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 
 import { getUserDetail, getUserPlaylist, getUserRecord } from '@/api/user';
+import MusicTrackList from '@/components/common/music-list/MusicTrackList.vue';
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
 import PlayBottom from '@/components/common/PlayBottom.vue';
-import SongItem from '@/components/common/SongItem.vue';
-import { usePlayerStore } from '@/store/modules/player';
 import type { IUserDetail } from '@/types/user';
 import { formatNumber, getImgUrl } from '@/utils';
 
@@ -286,7 +283,6 @@ const { t } = useI18n();
 const router = useRouter();
 const route = useRoute();
 const message = useMessage();
-const playerStore = usePlayerStore();
 
 const userId = ref<number>(Number(route.params.uid));
 const userDetail = ref<IUserDetail>();
@@ -375,11 +371,6 @@ const openPlaylist = (item: any) => {
     listInfo: item,
     canRemove: false
   });
-};
-
-const handlePlay = () => {
-  if (!recordList.value || recordList.value.length === 0) return;
-  playerStore.setPlayList(recordList.value);
 };
 
 const showFollowList = () => {

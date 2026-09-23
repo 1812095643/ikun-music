@@ -1,6 +1,8 @@
 import { computed, shallowRef, watch } from 'vue';
 
 import { getMusicDetail } from '@/api/music';
+import { useFavoriteStore } from '@/store/modules/favorite';
+import { useLocalPlaylistsStore } from '@/store/modules/localPlaylists';
 import { usePlayerStore } from '@/store/modules/player';
 import { usePlayHistoryStore } from '@/store/modules/playHistory';
 import type { SongResult } from '@/types/music';
@@ -9,6 +11,8 @@ import { getLocalStorageItem, setLocalStorageItem } from '@/utils/playerUtils';
 export function useLibrarySongs() {
   const player = usePlayerStore();
   const history = usePlayHistoryStore();
+  const favorite = useFavoriteStore();
+  const local = useLocalPlaylistsStore();
   const saved = getLocalStorageItem<SongResult[]>('favoriteSongSnapshots', []);
   const details = shallowRef(
     new Map<string, SongResult>(
@@ -21,7 +25,12 @@ export function useLibrarySongs() {
   let revision = 0;
   const available = computed(() => {
     const values = new Map(details.value);
-    for (const song of [...player.playList, ...history.musicHistory]) {
+    for (const song of [
+      ...local.playlists.flatMap((list) => list.songs),
+      ...favorite.importedSnapshots,
+      ...player.playList,
+      ...history.musicHistory
+    ]) {
       if (song?.name) values.set(String(song.id), song);
     }
     if (player.playMusic?.name) values.set(String(player.playMusic.id), player.playMusic);

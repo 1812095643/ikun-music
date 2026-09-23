@@ -10,6 +10,7 @@
       class="song-download-button"
       :class="[`song-download-button--${size}`, buttonClass]"
       :title="title"
+      :aria-label="title"
       type="button"
       @click.stop
     >
@@ -22,6 +23,7 @@
     class="song-download-button"
     :class="[`song-download-button--${size}`, buttonClass]"
     :title="title"
+    :aria-label="title"
     type="button"
     @click.stop="handleDefaultDownload"
   >

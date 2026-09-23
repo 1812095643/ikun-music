@@ -625,9 +625,14 @@ export const getKuwoRecommendPlaylists = async (limit = 30) => {
   };
 };
 
-export const getKuwoPlaylistDetail = async (id: number | string, page = 0, limit = 1000) => {
+export const getKuwoPlaylistDetail = async (
+  id: number | string,
+  page = 0,
+  limit = 1000,
+  signal?: AbortSignal
+) => {
   const url = `http://nplserver.kuwo.cn/pl.svc?op=getlistinfo&pid=${id}&pn=${page}&rn=${limit}&encode=utf-8&keyset=pl2012&identity=kuwo&vipver=MUSIC_9.1.1.2_W1&newver=1`;
-  const response = await kuwoRequest<any>(url);
+  const response = await kuwoRequest<any>(url, 15000, KUWO_MAX_ATTEMPTS, signal);
   const musicList = Array.isArray(response?.musiclist) ? response.musiclist : [];
   const tracks = musicList.map(mapKuwoSong);
   const cover = normalizeImageUrl(response?.pic);

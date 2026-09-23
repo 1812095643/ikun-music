@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
 import { getLikedList, likeSong } from '@/api/music';
+import type { SongResult } from '@/types/music';
 import { hasPermission } from '@/utils/auth';
 import { getLocalStorageItem, isBilibiliIdMatch, setLocalStorageItem } from '@/utils/playerUtils';
 
@@ -12,6 +13,19 @@ import { getLocalStorageItem, isBilibiliIdMatch, setLocalStorageItem } from '@/u
 export const useFavoriteStore = defineStore('favorite', () => {
   // ==================== 状态 ====================
   const favoriteList = ref<Array<number | string>>(getLocalStorageItem('favoriteList', []));
+  const importedSnapshots = ref<SongResult[]>([]);
+
+  const importFavorites = (songs: SongResult[]) => {
+    const saved = getLocalStorageItem<SongResult[]>('favoriteSongSnapshots', []);
+    const snapshots = [
+      ...new Map([...saved, ...songs].map((song) => [String(song.id), song])).values()
+    ];
+    const ids = [...new Set([...favoriteList.value, ...songs.map((song) => song.id)])];
+    localStorage.setItem('favoriteSongSnapshots', JSON.stringify(snapshots));
+    localStorage.setItem('favoriteList', JSON.stringify(ids));
+    importedSnapshots.value = snapshots;
+    favoriteList.value = ids;
+  };
   const dislikeList = ref<Array<number | string>>(getLocalStorageItem('dislikeList', []));
 
   // ==================== Actions ====================
@@ -143,6 +157,8 @@ export const useFavoriteStore = defineStore('favorite', () => {
   };
 
   return {
+    importedSnapshots,
+    importFavorites,
     // 状态
     favoriteList,
     dislikeList,

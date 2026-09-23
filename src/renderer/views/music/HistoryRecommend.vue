@@ -1,140 +1,15 @@
-<template>
-  <div class="history-recommend-page">
-    <!-- 头部标题和操作按钮 -->
-    <div class="music-header h-12 flex items-center justify-between">
-      <div class="music-heading min-w-0">
-        <n-ellipsis :line-clamp="1" class="flex-shrink-0 mr-3">
-          <div class="music-title">
-            {{ t('comp.musicList.historyRecommend') }}
-          </div>
-        </n-ellipsis>
-        <div class="music-subtitle">按日期回看每日推荐，保留熟悉的播放路径。</div>
-      </div>
-
-      <!-- 操作按钮组 -->
-      <div class="flex-grow flex-1 flex items-center justify-end gap-2">
-        <n-tooltip placement="bottom" trigger="hover">
-          <template #trigger>
-            <div class="action-button hover-green" @click="handlePlayAll">
-              <i class="icon iconfont ri-play-fill"></i>
-            </div>
-          </template>
-          {{ t('comp.musicList.playAll') }}
-        </n-tooltip>
-
-        <n-tooltip placement="bottom" trigger="hover">
-          <template #trigger>
-            <div class="action-button hover-green" @click="addToPlaylist">
-              <i class="icon iconfont ri-add-line"></i>
-            </div>
-          </template>
-          {{ t('comp.musicList.addToPlaylist') }}
-        </n-tooltip>
-
-        <!-- 布局切换按钮 -->
-        <div class="layout-toggle" v-if="!isMobile">
-          <n-tooltip placement="bottom" trigger="hover">
-            <template #trigger>
-              <div class="toggle-button hover-green" @click="toggleLayout">
-                <i
-                  class="icon iconfont"
-                  :class="isCompactLayout ? 'ri-list-check-2' : 'ri-grid-line'"
-                ></i>
-              </div>
-            </template>
-            {{
-              isCompactLayout
-                ? t('comp.musicList.switchToNormal')
-                : t('comp.musicList.switchToCompact')
-            }}
-          </n-tooltip>
-        </div>
-      </div>
-    </div>
-
-    <!-- 日期选择标签 -->
-    <div v-if="availableDates.length > 0" class="date-tabs-wrapper">
-      <n-tabs
-        v-model:value="selectedDate"
-        type="segment"
-        animated
-        size="large"
-        @update:value="handleDateChange"
-      >
-        <n-tab
-          v-for="date in displayedDates"
-          :key="date"
-          :name="date"
-          :tab="formatDate(date)"
-        ></n-tab>
-      </n-tabs>
-    </div>
-
-    <!-- 歌曲列表内容 -->
-    <div class="music-content">
-      <n-spin :show="loadingDates || loadingSongs">
-        <!-- 歌曲列表 -->
-        <div v-if="songs.length > 0" class="music-list-container">
-          <div class="music-list">
-            <div class="music-list-content">
-              <!-- 使用虚拟列表 -->
-              <n-virtual-list
-                class="song-virtual-list"
-                style="max-height: calc(100vh - 200px)"
-                :items="songs"
-                :item-size="isCompactLayout ? 50 : 70"
-                item-resizable
-                key-field="id"
-              >
-                <template #default="{ item, index }">
-                  <div>
-                    <div class="double-item">
-                      <song-item
-                        :index="index"
-                        :compact="isCompactLayout"
-                        :item="formatSong(item)"
-                        @play="handlePlay"
-                      />
-                    </div>
-                    <div v-if="index === songs.length - 1" class="h-36"></div>
-                  </div>
-                </template>
-              </n-virtual-list>
-            </div>
-          </div>
-        </div>
-
-        <!-- 空状态 -->
-        <div v-else-if="!loadingSongs" class="empty-state">
-          <div class="empty-icon">
-            <i class="icon iconfont ri-disc-line"></i>
-          </div>
-          <p class="empty-title">
-            {{ selectedDate ? t('comp.musicList.noSongs') : '还没有历史日推' }}
-          </p>
-          <p class="empty-desc">听过每日推荐后，这里会按日期为你整理成清爽列表。</p>
-        </div>
-      </n-spin>
-    </div>
-    <play-bottom />
-  </div>
-</template>
-
 <script setup lang="ts">
 import { useMessage } from 'naive-ui';
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getHistoryRecommendDates, getHistoryRecommendSongs } from '@/api/music';
+import MusicTrackList from '@/components/common/music-list/MusicTrackList.vue';
 import PlayBottom from '@/components/common/PlayBottom.vue';
-import SongItem from '@/components/common/SongItem.vue';
-import { usePlayerStore } from '@/store';
 import type { SongResult } from '@/types/music';
-import { isMobile } from '@/utils';
 
 const { t } = useI18n();
 const message = useMessage();
-const playerStore = usePlayerStore();
 
 // 状态
 const availableDates = ref<string[]>([]);
@@ -142,9 +17,8 @@ const selectedDate = ref<string>('');
 const songs = ref<SongResult[]>([]);
 const loadingDates = ref(false);
 const loadingSongs = ref(false);
-const isCompactLayout = ref(
-  isMobile.value ? false : localStorage.getItem('musicListLayout') === 'compact'
-);
+const trackList = ref<InstanceType<typeof MusicTrackList>>();
+const listSongs = computed(() => songs.value.map(formatSong));
 
 // 只显示最近的10个日期
 const displayedDates = computed(() => {
@@ -173,7 +47,6 @@ const formatDate = (dateStr: string) => {
 
 // 格式化歌曲数据
 const formatSong = (item: any) => {
-  if (!item) return null;
   return {
     ...item,
     picUrl: item.al?.picUrl || item.album?.picUrl || item.picUrl,
@@ -231,52 +104,78 @@ const handleDateChange = async (date: string) => {
   await fetchSongsByDate(date);
 };
 
-// 切换布局
-const toggleLayout = () => {
-  isCompactLayout.value = !isCompactLayout.value;
-  localStorage.setItem('musicListLayout', isCompactLayout.value ? 'compact' : 'normal');
-};
-
-// 添加到播放列表末尾
-const addToPlaylist = () => {
-  if (songs.value.length === 0) return;
-
-  // 获取当前播放列表
-  const currentList = playerStore.playList;
-
-  // 添加歌曲到播放列表(避免重复添加)
-  const newSongs = songs.value.filter((song) => !currentList.some((item) => item.id === song.id));
-
-  if (newSongs.length === 0) {
-    message.info(t('comp.musicList.songsAlreadyInPlaylist'));
-    return;
-  }
-
-  // 合并到当前播放列表末尾
-  const newList = [...currentList, ...newSongs.map(formatSong)];
-  playerStore.setPlayList(newList);
-
-  message.success(t('comp.musicList.addToPlaylistSuccess', { count: newSongs.length }));
-};
-
-// 播放单首歌曲
-const handlePlay = () => {
-  if (songs.value.length === 0) return;
-  playerStore.setPlayList(songs.value.map(formatSong));
-};
-
-// 播放全部
-const handlePlayAll = () => {
-  if (songs.value.length === 0) return;
-  playerStore.setPlayList(songs.value.map(formatSong));
-  playerStore.setPlay(formatSong(songs.value[0]));
-};
-
 // 组件挂载时获取数据
 onMounted(() => {
   fetchAvailableDates();
 });
 </script>
+
+<template>
+  <div class="history-recommend-page">
+    <!-- 头部标题和操作按钮 -->
+    <div class="music-header h-12 flex items-center justify-between">
+      <div class="music-heading min-w-0">
+        <n-ellipsis :line-clamp="1" class="flex-shrink-0 mr-3">
+          <div class="music-title">
+            {{ t('comp.musicList.historyRecommend') }}
+          </div>
+        </n-ellipsis>
+        <div class="music-subtitle">按日期回看每日推荐，保留熟悉的播放路径。</div>
+      </div>
+    </div>
+
+    <!-- 日期选择标签 -->
+    <div v-if="availableDates.length > 0" class="date-tabs-wrapper">
+      <n-tabs
+        v-model:value="selectedDate"
+        type="segment"
+        animated
+        size="large"
+        @update:value="handleDateChange"
+      >
+        <n-tab
+          v-for="date in displayedDates"
+          :key="date"
+          :name="date"
+          :tab="formatDate(date)"
+        ></n-tab>
+      </n-tabs>
+    </div>
+
+    <!-- 歌曲列表内容 -->
+    <div class="music-content">
+      <n-spin :show="loadingDates || loadingSongs">
+        <!-- 歌曲列表 -->
+        <music-track-list
+          ref="trackList"
+          v-if="songs.length"
+          :key="selectedDate"
+          :songs="listSongs"
+          scrollable
+          class="history-tracks"
+        >
+          <template #actions
+            ><button class="music-list-button" @click="trackList?.addAllToQueue()">
+              <i class="ri-play-list-add-line" />加入播放队列
+            </button></template
+          >
+        </music-track-list>
+
+        <!-- 空状态 -->
+        <div v-else-if="!loadingSongs" class="empty-state">
+          <div class="empty-icon">
+            <i class="icon iconfont ri-disc-line"></i>
+          </div>
+          <p class="empty-title">
+            {{ selectedDate ? t('comp.musicList.noSongs') : '还没有历史日推' }}
+          </p>
+          <p class="empty-desc">听过每日推荐后，这里会按日期为你整理成清爽列表。</p>
+        </div>
+      </n-spin>
+    </div>
+    <play-bottom />
+  </div>
+</template>
 
 <style scoped lang="scss">
 .history-recommend-page {
@@ -460,5 +359,8 @@ onMounted(() => {
   .n-tabs-tab--active {
     color: #fff !important;
   }
+}
+.history-tracks {
+  height: calc(100vh - 320px);
 }
 </style>

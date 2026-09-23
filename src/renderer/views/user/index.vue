@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { useFavoriteStore } from '@/store/modules/favorite';
+import { useLocalPlaylistsStore } from '@/store/modules/localPlaylists';
 import { usePlayHistoryStore } from '@/store/modules/playHistory';
 import { useUserStore } from '@/store/modules/user';
 import { isDesktopRuntime } from '@/utils';
@@ -18,10 +19,11 @@ const router = useRouter();
 const favorite = useFavoriteStore();
 const history = usePlayHistoryStore();
 const user = useUserStore();
+const local = useLocalPlaylistsStore();
 const { favorites, loading, missingCount, refresh } = useLibrarySongs();
 const sections = computed(() => [
   { key: 'favorites', label: '我喜欢', count: favorite.favoriteList.length },
-  { key: 'playlists', label: '我的歌单', count: user.playList.length },
+  { key: 'playlists', label: '我的歌单', count: user.playList.length + local.playlists.length },
   { key: 'history', label: '最近播放', count: history.musicHistory.length }
 ]);
 const section = computed(() =>
@@ -244,20 +246,6 @@ function onTabKey(event: KeyboardEvent, index: number) {
   outline: 2px solid var(--qqm-primary);
   outline-offset: 3px;
 }
-.user-library :deep(.library-columns) {
-  display: grid;
-  grid-template-columns:
-    32px minmax(160px, 2.6fr) minmax(95px, 1.1fr) minmax(95px, 1.2fr)
-    50px 128px;
-  gap: 16px;
-  align-items: center;
-}
-@media (max-width: 1000px) {
-  .user-library :deep(.library-columns) {
-    grid-template-columns: 28px minmax(150px, 2fr) minmax(85px, 1fr) 45px 128px;
-    gap: 12px;
-  }
-}
 @media (max-width: 720px) {
   .user-library {
     padding: 20px 18px 8px;
@@ -297,10 +285,6 @@ function onTabKey(event: KeyboardEvent, index: number) {
   }
   .library-tabs button {
     font-size: 15px;
-  }
-  .user-library :deep(.library-columns) {
-    grid-template-columns: 24px minmax(130px, 1fr) 40px 28px;
-    gap: 8px;
   }
 }
 </style>

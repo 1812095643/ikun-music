@@ -19,7 +19,9 @@ function musicPreviewTransport(): Plugin {
           upstreamUrl = new URL(incoming.searchParams.get('url') || '');
           if (
             !['http:', 'https:'].includes(upstreamUrl.protocol) ||
-            !/(^|\.)(kuwo\.cn|lyrics\.kugou\.com)$/i.test(upstreamUrl.hostname)
+            !/(^|\.)(kuwo\.cn|lyrics\.kugou\.com|qq\.com|163\.com|163cn\.tv)$/i.test(
+              upstreamUrl.hostname
+            )
           )
             throw new Error();
         } catch {
@@ -29,8 +31,14 @@ function musicPreviewTransport(): Plugin {
         }
         const headers: Record<string, string> = {
           'user-agent': (request.headers['x-music-agent'] as string) || 'okhttp/3.10.0',
-          referer: 'http://www.kuwo.cn/'
+          referer: upstreamUrl.hostname.endsWith('.qq.com')
+            ? 'https://y.qq.com/'
+            : upstreamUrl.hostname === 'music.163.com'
+              ? 'https://music.163.com/'
+              : 'http://www.kuwo.cn/'
         };
+        if (request.headers['content-type'])
+          headers['content-type'] = request.headers['content-type'] as string;
         if (request.headers.range) headers.range = request.headers.range;
         const upstream = (upstreamUrl.protocol === 'https:' ? httpsRequest : httpRequest)(
           upstreamUrl,
@@ -38,18 +46,19 @@ function musicPreviewTransport(): Plugin {
           (result) => {
             response.writeHead(result.statusCode || 502, {
               ...result.headers,
-              'access-control-allow-origin': '*'
+              'access-control-allow-origin': '*',
+              'access-control-expose-headers': 'content-length, content-range, accept-ranges'
             });
             result.pipe(response);
           }
         );
-        upstream.setTimeout(15_000, () => upstream.destroy(new Error('Music request timed out')));
+        upstream.setTimeout(30_000, () => upstream.destroy(new Error('Music request timed out')));
         upstream.on('error', () => {
           if (!response.headersSent) response.statusCode = 502;
           response.end();
         });
         response.on('close', () => upstream.destroy());
-        upstream.end();
+        request.pipe(upstream);
       });
     }
   };

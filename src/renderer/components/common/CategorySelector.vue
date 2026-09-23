@@ -6,7 +6,7 @@
         style="white-space: nowrap"
         @wheel.prevent="handleWheel"
       >
-        <span
+        <button
           v-for="(category, index) in categories"
           :key="getItemKey(category, index)"
           class="category-selector-chip py-1.5 px-4 mr-3 inline-block rounded-[9px] cursor-pointer transition-colors duration-200 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-primary"
@@ -16,10 +16,12 @@
             isActive(category) ? 'bg-primary text-white' : ''
           ]"
           :style="getAnimationDelay(index)"
+          type="button"
+          :aria-pressed="isActive(category)"
           @click="handleClickCategory(category)"
         >
           {{ getItemLabel(category) }}
-        </span>
+        </button>
       </div>
     </n-scrollbar>
   </div>
@@ -111,6 +113,15 @@ defineExpose({
 
 .category-selector-chip {
   border: 1px solid transparent;
+  height: 32px;
+  padding: 0 15px;
+  border-radius: 18px;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.category-selector-chip:focus-visible {
+  outline: 2px solid var(--qqm-primary);
+  outline-offset: 2px;
 }
 
 .category-selector-chip:hover {

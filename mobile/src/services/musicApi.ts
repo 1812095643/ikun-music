@@ -19,6 +19,20 @@ export interface Collection {
   kind?: 'playlist' | 'rank' | 'favorites' | 'history' | 'local';
   updateFrequency?: string;
 }
+export interface SharedPlaylistSong {
+  name: string;
+  artist: string;
+  album: string;
+  duration: number;
+}
+export interface SharedPlaylistPreview {
+  platform: 'qq' | 'netease' | 'kuwo';
+  id: string;
+  title: string;
+  total: number;
+  filteredCount: number;
+  songs: SharedPlaylistSong[];
+}
 export interface Artist {
   id: string;
   name: string;
@@ -77,6 +91,7 @@ setTransport({
       const task = uni.request({
         url,
         method: payload.options.method,
+        data: payload.options.body ?? payload.options.data,
         header: headers,
         timeout: payload.options.timeout || 12000,
         dataType: 'text',
@@ -162,6 +177,12 @@ export async function loadCollection(id: string, kind?: Collection['kind']): Pro
     })
   );
   return [...leaders, ...tracks.slice(3)];
+}
+export async function loadSharedPlaylist(
+  url: string,
+  signal?: unknown
+): Promise<SharedPlaylistPreview> {
+  return run('playlist-link', { url, signal });
 }
 export async function loadRanks(): Promise<Collection[]> {
   const result = await run('ranks');

@@ -1,6 +1,6 @@
 [package]
 name = "ikun-music-tauri"
-version = "5.3.8"
+version = "5.3.9"
 description = "ikun音乐 Tauri"
 edition = "2021"
 

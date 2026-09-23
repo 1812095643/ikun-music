@@ -5,11 +5,20 @@ import {
   getKuwoRankList,
   getKuwoRecommendPlaylists,
   searchKuwoArtists,
-  searchKuwoSongs} from '../../src/renderer/api/kuwo';
+  searchKuwoSongs
+} from '../../src/renderer/api/kuwo';
 
 export { setTransport } from './transport';
+import { resolvePlaylistLink } from '../../src/renderer/api/playlistSources';
 import { parseLyrics } from '../../src/renderer/utils/yrcParser';
+import { detectPlaylistLink, type ImportSignal } from '../../src/shared/playlistImport';
 import { getTransport } from './transport';
+
+export async function resolveSharedPlaylist(url: string, signal?: ImportSignal) {
+  const link = detectPlaylistLink(url);
+  if (!link) throw new Error('请粘贴 QQ 音乐、网易云或酷我的公开歌单链接。');
+  return resolvePlaylistLink(link, signal);
+}
 
 async function requestLyrics(url: string) {
   const response = await getTransport().request({
@@ -30,6 +39,8 @@ const normalize = (value: string) =>
 
 export async function run(operation: string, input: any = {}) {
   switch (operation) {
+    case 'playlist-link':
+      return resolveSharedPlaylist(input.url, input.signal);
     case 'home':
       return (await getKuwoRecommendPlaylists(18)).data.result;
     case 'search':

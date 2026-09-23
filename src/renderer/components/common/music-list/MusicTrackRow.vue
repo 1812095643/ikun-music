@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, shallowRef, watch } from 'vue';
+import { useRouter } from 'vue-router';
 
 import SongDownloadButton from '@/components/common/SongDownloadButton.vue';
 import BaseSongItem from '@/components/common/songItemCom/BaseSongItem.vue';
@@ -8,21 +9,27 @@ import { usePlayerStore } from '@/store/modules/player';
 import type { SongResult } from '@/types/music';
 import { getImgUrl, isDesktopRuntime, secondToMinute } from '@/utils';
 
+import { getTrackKey } from './useMusicList';
+
 const props = defineProps<{
   song: SongResult;
   index: number;
   selecting?: boolean;
   selected?: boolean;
   history?: boolean;
+  canRemove?: boolean;
+  compact?: boolean;
+  local?: boolean;
 }>();
 const emit = defineEmits<{
   play: [song: SongResult];
-  select: [id: string | number];
+  select: [song: SongResult];
   remove: [song: SongResult];
 }>();
 const base = shallowRef<InstanceType<typeof BaseSongItem>>();
 const favorite = useFavoriteStore();
 const player = usePlayerStore();
+const router = useRouter();
 const failed = shallowRef(false);
 const cover = computed(() => getImgUrl(props.song.picUrl || props.song.al?.picUrl, '100y100'));
 const artist = computed(
@@ -30,13 +37,38 @@ const artist = computed(
     (props.song.ar || props.song.artists || []).map((item) => item.name).join(' / ') || '未知歌手'
 );
 const album = computed(() => props.song.al?.name || props.song.album?.name || '—');
-const playing = computed(() => String(player.playMusic?.id) === String(props.song.id));
+const playing = computed(() => getTrackKey(player.playMusic) === getTrackKey(props.song));
+const loading = computed(() => playing.value && player.playMusic.playLoading);
+const playLabel = computed(
+  () =>
+    `${loading.value ? '取消加载' : playing.value && player.isPlay ? '暂停' : '播放'} ${props.song.name}`
+);
+const artists = computed(() => props.song.ar || props.song.artists || []);
 watch(cover, () => {
   failed.value = false;
 });
 function toggleFavorite() {
   if (favorite.isFavorite(props.song.id)) void favorite.removeFromFavorite(props.song.id);
   else void favorite.addToFavorite(props.song.id);
+}
+function openArtist(id: number, name: string) {
+  if (props.local || (props.song.source && props.song.source !== 'netease')) {
+    void router.push({
+      name: 'artistDetail',
+      params: { id: id || 0 },
+      query: {
+        keyword: name,
+        source: props.song.source === 'kuwo' ? 'kuwo-artist-search' : 'artist-search'
+      }
+    });
+  } else if (id) {
+    void router.push({ name: 'artistDetail', params: { id } });
+  }
+}
+function requestPlay(event?: MouseEvent) {
+  if (event instanceof MouseEvent && event.detail > 1) return;
+  if (props.selecting) emit('select', props.song);
+  else emit('play', props.song);
 }
 </script>
 
@@ -45,9 +77,13 @@ function toggleFavorite() {
     ref="base"
     :item="song"
     is-next
-    class="library-song-row library-columns"
-    :class="{ 'is-current': playing, 'is-selected': selected }"
-    @play="emit('play', song)"
+    class="library-song-row music-track-row music-track-columns"
+    :class="{ 'is-current': playing, 'is-selected': selected, 'is-compact': compact }"
+    :data-track-key="getTrackKey(song)"
+    :aria-current="playing ? 'true' : undefined"
+    :can-remove="canRemove"
+    @play="requestPlay()"
+    @remove-song="emit('remove', song)"
   >
     <template #index>
       <div class="song-position">
@@ -56,16 +92,27 @@ function toggleFavorite() {
           type="checkbox"
           :checked="selected"
           :aria-label="`选择 ${song.name}`"
-          @change="emit('select', song.id)"
+          @change="emit('select', song)"
         />
         <template v-else
           ><span class="song-number">{{ String(index + 1).padStart(2, '0') }}</span>
           <button
             class="position-play"
-            :aria-label="`${playing && player.isPlay ? '暂停' : '播放'} ${song.name}`"
-            @click.stop="emit('play', song)"
+            :aria-label="playLabel"
+            :title="playLabel"
+            @click.stop="requestPlay"
+            @dblclick.stop
           >
-            <i :class="playing && player.isPlay ? 'ri-pause-fill' : 'ri-play-fill'" /></button
+            <i
+              aria-hidden="true"
+              :class="
+                loading
+                  ? 'ri-loader-4-line track-spinner'
+                  : playing && player.isPlay
+                    ? 'ri-pause-fill'
+                    : 'ri-play-fill'
+              "
+            /></button
         ></template>
       </div>
     </template>
@@ -73,8 +120,9 @@ function toggleFavorite() {
       <div class="library-song-name">
         <button
           class="song-cover"
-          :aria-label="`播放 ${song.name}`"
-          @click.stop="emit('play', song)"
+          :aria-label="selecting ? `选择 ${song.name}` : playLabel"
+          @click.stop="requestPlay"
+          @dblclick.stop
         >
           <img
             v-if="cover && !failed"
@@ -85,43 +133,68 @@ function toggleFavorite() {
           /><i v-else class="ri-music-2-line" aria-hidden="true" />
         </button>
         <div class="song-label">
-          <button class="song-title" :title="song.name" @click.stop="emit('play', song)">
+          <button class="song-title" :title="song.name" @click.stop="requestPlay" @dblclick.stop>
             {{ song.name }}</button
           ><span class="mobile-artist">{{ artist }}</span>
         </div>
       </div>
-      <span class="song-artist" :title="artist">{{ artist }}</span>
-      <span class="song-album" :title="album">{{ album }}</span>
+      <span class="song-artist music-track-artist" :title="artist">
+        <template v-for="(item, artistIndex) in artists" :key="`${item.id}-${artistIndex}`">
+          <span v-if="artistIndex"> / </span
+          ><button @click.stop="openArtist(item.id, item.name)" @dblclick.stop>
+            {{ item.name }}
+          </button>
+        </template>
+        <template v-if="!artists.length">未知歌手</template>
+      </span>
+      <span class="song-album music-track-album" :title="album">{{ album }}</span>
       <span class="song-duration">{{
         song.dt || song.duration ? secondToMinute((song.dt || song.duration || 0) / 1000) : '—'
       }}</span>
     </template>
     <template #operating>
-      <div class="library-song-actions">
+      <div class="library-song-actions" @dblclick.stop>
         <button
           :class="{ liked: favorite.isFavorite(song.id) }"
+          :aria-pressed="favorite.isFavorite(song.id)"
+          :title="favorite.isFavorite(song.id) ? '取消收藏' : '收藏'"
           :aria-label="`${favorite.isFavorite(song.id) ? '取消收藏' : '收藏'} ${song.name}`"
           @click.stop="toggleFavorite"
         >
-          <i :class="favorite.isFavorite(song.id) ? 'ri-heart-fill' : 'ri-heart-line'" />
+          <i
+            aria-hidden="true"
+            :class="favorite.isFavorite(song.id) ? 'ri-heart-fill' : 'ri-heart-line'"
+          />
         </button>
-        <song-download-button v-if="isDesktopRuntime" :item="song" size="small" />
+        <song-download-button
+          v-if="isDesktopRuntime && !local"
+          :item="song"
+          size="small"
+          :title="`下载 ${song.name}`"
+        />
         <button
           v-if="history"
+          title="移除播放记录"
           :aria-label="`移除播放记录 ${song.name}`"
           @click.stop="emit('remove', song)"
         >
-          <i class="ri-delete-bin-6-line" />
+          <i aria-hidden="true" class="ri-delete-bin-6-line" />
         </button>
-        <button v-else :aria-label="`下一首播放 ${song.name}`" @click.stop="base?.handlePlayNext()">
-          <i class="ri-play-list-add-line" />
+        <button
+          v-else
+          title="下一首播放"
+          :aria-label="`下一首播放 ${song.name}`"
+          @click.stop="base?.handlePlayNext()"
+        >
+          <i aria-hidden="true" class="ri-play-list-add-line" />
         </button>
         <button
           v-if="isDesktopRuntime"
+          title="更多操作"
           :aria-label="`${song.name} 的更多操作`"
           @click.stop="base?.handleMenuClick($event)"
         >
-          <i class="ri-more-line" />
+          <i aria-hidden="true" class="ri-more-line" />
         </button>
       </div>
     </template>
@@ -130,10 +203,43 @@ function toggleFavorite() {
 
 <style scoped>
 .library-song-row {
+  display: grid;
   padding: 9px 12px !important;
   min-height: 64px;
   border-radius: 8px;
   color: var(--qqm-text);
+}
+.library-song-row.is-compact {
+  min-height: 50px;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+.is-compact .song-cover {
+  width: 34px;
+  height: 34px;
+  border-radius: 5px;
+}
+.is-compact .song-title {
+  font-size: 13px;
+}
+.song-artist button:hover {
+  color: var(--qqm-primary-strong);
+}
+.library-song-actions :deep(.song-download-button) {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  transform: none;
+}
+.track-spinner {
+  display: inline-block;
+  animation: track-spin 1s linear infinite;
+}
+@keyframes track-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 .library-song-row::before {
   display: none;
@@ -263,12 +369,12 @@ function toggleFavorite() {
 .mobile-artist {
   display: none;
 }
-@media (max-width: 1000px) {
+@container music-tracks (max-width: 900px) {
   .song-album {
     display: none;
   }
 }
-@media (max-width: 720px) {
+@container music-tracks (max-width: 630px) {
   .song-artist {
     display: none;
   }
@@ -278,13 +384,21 @@ function toggleFavorite() {
     font-size: 11px;
     margin-top: 3px;
   }
-  .library-song-actions > :not(:first-child) {
+  .library-song-actions > :not(:first-child):not(:last-child) {
     display: none;
+  }
+  .library-song-actions > * {
+    opacity: 1;
   }
 }
 @media (hover: none) {
   .library-song-actions > :not(:first-child) {
     opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .track-spinner {
+    animation: none;
   }
 }
 </style>

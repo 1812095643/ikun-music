@@ -37,13 +37,7 @@
           <div ref="songListRef" class="songs-list">
             <n-scrollbar style="max-height: 61vh" :size="5" @scroll="handleSongScroll">
               <div class="song-list-content">
-                <song-item
-                  v-for="song in songs"
-                  :key="song.id"
-                  :item="song"
-                  :list="true"
-                  @play="handlePlay"
-                />
+                <music-track-list :songs="songs" default-order="热门歌曲" />
                 <div v-if="songLoading" class="loading-more">{{ t('common.loading') }}</div>
               </div>
               <play-bottom />
@@ -95,8 +89,8 @@ import { useI18n } from 'vue-i18n';
 
 import { getArtistAlbums, getArtistDetail, getArtistTopSongs } from '@/api/artist';
 import { getMusicDetail } from '@/api/music';
+import MusicTrackList from '@/components/common/music-list/MusicTrackList.vue';
 import SearchItem from '@/components/common/SearchItem.vue';
-import SongItem from '@/components/common/SongItem.vue';
 import { usePlayerStore, useSettingsStore } from '@/store';
 import { IArtist } from '@/types/artist';
 import { getImgUrl } from '@/utils';
@@ -106,7 +100,6 @@ import PlayBottom from './PlayBottom.vue';
 const { t } = useI18n();
 
 const settingsStore = useSettingsStore();
-const playerStore = usePlayerStore();
 
 const currentArtistId = computed({
   get: () => settingsStore.currentArtistId,
@@ -266,15 +259,6 @@ const handleAlbumScroll = (e: { target: any }) => {
 // 格式化发布时间
 const formatPublishTime = (time: number) => {
   return useDateFormat(time, 'YYYY-MM-DD').value;
-};
-
-const handlePlay = () => {
-  playerStore.setPlayList(
-    songs.value.map((item) => ({
-      ...item,
-      picUrl: item.al?.picUrl || item.picUrl || ''
-    }))
-  );
 };
 
 // 暴露方法给父组件

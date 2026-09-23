@@ -1,0 +1,105 @@
+.music-list-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 17px;
+  border: 1px solid var(--qqm-border);
+  border-radius: 22px;
+  background: var(--qqm-surface);
+  color: var(--qqm-text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
+}
+.music-list-button > i {
+  font-size: 17px;
+}
+.music-list-button:hover:not(:disabled),
+.music-list-button.is-active {
+  border-color: var(--qqm-primary);
+  color: var(--qqm-primary-strong);
+}
+.music-list-button--primary {
+  border-color: transparent;
+  background: var(--qqm-primary);
+  color: #093c25;
+  font-weight: 600;
+}
+.music-list-button--primary > i {
+  font-size: 20px;
+}
+.music-list-button--primary:hover:not(:disabled) {
+  border-color: transparent;
+  background: var(--qqm-primary-strong);
+  color: white;
+}
+.music-list-icon {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  color: var(--qqm-muted);
+  font-size: 17px;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease;
+}
+.music-list-icon:hover:not(:disabled),
+.music-list-icon[aria-pressed='true'] {
+  color: var(--qqm-primary-strong);
+  background: var(--qqm-primary-soft);
+}
+.music-list-button:disabled,
+.music-list-icon:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.music-track-list button:focus-visible,
+.music-track-row button:focus-visible,
+.music-track-list select:focus-visible,
+.music-list-button:focus-visible {
+  outline: 2px solid var(--qqm-primary);
+  outline-offset: 3px;
+}
+.music-track-columns {
+  display: grid;
+  grid-template-columns:
+    32px minmax(140px, 2.6fr) minmax(90px, 1.1fr) minmax(90px, 1.2fr)
+    50px 128px;
+  gap: 16px;
+  align-items: center;
+}
+@container music-tracks (max-width: 900px) {
+  .music-track-columns {
+    grid-template-columns: 28px minmax(150px, 2fr) minmax(85px, 1fr) 45px 128px;
+    gap: 12px;
+  }
+  .music-track-album {
+    display: none;
+  }
+}
+@container music-tracks (max-width: 630px) {
+  .music-track-columns {
+    grid-template-columns: 24px minmax(120px, 1fr) 40px 62px;
+    gap: 8px;
+  }
+  .music-track-artist {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .music-list-button,
+  .music-list-icon {
+    transition: none;
+  }
+}

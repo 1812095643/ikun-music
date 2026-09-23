@@ -711,8 +711,6 @@ body {
   margin: 0 auto;
 }
 
-.music-list-page .hero-section,
-.artist-detail-page .hero-section,
 .user-detail-page .hero-section,
 .playlist-detail-hero,
 .detail-hero {
@@ -724,14 +722,10 @@ body {
   backdrop-filter: none;
 }
 
-.music-list-page .hero-bg,
-.artist-detail-page .hero-bg,
 .user-detail-page .hero-bg {
   opacity: 0.76;
 }
 
-.music-list-page .hero-content,
-.artist-detail-page .hero-content,
 .user-detail-page .hero-content {
   padding: 28px 30px 30px !important;
 }
@@ -751,8 +745,6 @@ body {
   opacity: 0 !important;
 }
 
-.music-list-page h1,
-.artist-detail-page h1,
 .user-detail-page h1,
 .music-list-page .title,
 .detail-title {
@@ -769,11 +761,8 @@ body {
   line-height: 1.72 !important;
 }
 
-.music-list-page button,
-.artist-detail-page button,
 .search-page button,
 .album-page button,
-.list-page button,
 .toplist-page button {
   border-radius: 9px !important;
 }
@@ -798,11 +787,11 @@ body {
   backdrop-filter: none;
 }
 
-.song-item,
+.song-item:not(.music-track-row),
 .standard-song-item,
 .list-song-item,
 .compact-song-item,
-.search-item,
+.search-item:not(.music-collection-card),
 .playlist-drawer-item {
   border-radius: 9px !important;
   border: 1px solid transparent !important;
@@ -813,43 +802,43 @@ body {
     box-shadow 180ms var(--qqm-ease) !important;
 }
 
-.song-item:hover,
+.song-item:not(.music-track-row):hover,
 .standard-song-item:hover,
 .list-song-item:hover,
 .compact-song-item:hover,
-.search-item:hover,
+.search-item:not(.music-collection-card):hover,
 .playlist-drawer-item:hover {
   background: color-mix(in srgb, var(--qqm-primary-soft) 22%, var(--qqm-surface)) !important;
   border-color: color-mix(in srgb, var(--qqm-primary) 14%, var(--qqm-border)) !important;
   box-shadow: none !important;
 }
 
-.song-item .cover,
+.song-item:not(.music-track-row) .cover,
 .standard-song-item .cover,
 .list-song-item .cover,
 .compact-song-item .cover,
-.search-item img,
-.search-item .cover {
+.search-item:not(.music-collection-card) img,
+.search-item:not(.music-collection-card) .cover {
   border-radius: 8px !important;
   border: 1px solid var(--qqm-border);
 }
 
-.song-item .name,
+.song-item:not(.music-track-row) .name,
 .standard-song-item .name,
 .list-song-item .name,
 .compact-song-item .name,
-.search-item .name,
+.search-item:not(.music-collection-card) .name,
 .song-name,
 .music-name {
   color: var(--qqm-text) !important;
   font-weight: 600 !important;
 }
 
-.song-item .artist,
+.song-item:not(.music-track-row) .artist,
 .standard-song-item .artist,
 .list-song-item .artist,
 .compact-song-item .artist,
-.search-item .artist,
+.search-item:not(.music-collection-card) .artist,
 .song-artist,
 .music-artist,
 .album-name {
@@ -922,8 +911,6 @@ body {
   background: rgba(30, 207, 115, 0.08) !important;
 }
 
-.dark .music-list-page .hero-section,
-.dark .artist-detail-page .hero-section,
 .dark .user-detail-page .hero-section,
 .dark .playlist-detail-hero,
 .dark .detail-hero,
@@ -936,11 +923,11 @@ body {
   box-shadow: none !important;
 }
 
-.dark .song-item:hover,
+.dark .song-item:not(.music-track-row):hover,
 .dark .standard-song-item:hover,
 .dark .list-song-item:hover,
 .dark .compact-song-item:hover,
-.dark .search-item:hover,
+.dark .search-item:not(.music-collection-card):hover,
 .dark .playlist-drawer-item:hover {
   background: rgba(255, 255, 255, 0.06) !important;
   border-color: rgba(30, 207, 115, 0.18) !important;
@@ -1272,7 +1259,7 @@ body {
 
 .album-page .list-card,
 .list-page .list-card,
-.search-result-page .search-item {
+.search-result-page .search-item:not(.music-collection-card) {
   padding: 8px !important;
   border: 1px solid transparent !important;
   border-radius: 12px !important;
@@ -1281,7 +1268,7 @@ body {
 
 .album-page .list-card:hover,
 .list-page .list-card:hover,
-.search-result-page .search-item:hover {
+.search-result-page .search-item:not(.music-collection-card):hover {
   border-color: rgba(30, 207, 115, 0.16) !important;
   background: color-mix(in srgb, var(--qqm-surface) 66%, transparent) !important;
   box-shadow: none !important;
@@ -1289,8 +1276,8 @@ body {
 
 .album-page .list-card [class*='aspect-square'],
 .list-page .list-card [class*='aspect-square'],
-.search-result-page .search-item [class*='aspect-square'],
-.search-result-page .search-item [class*='aspect-video'] {
+.search-result-page .search-item:not(.music-collection-card) [class*='aspect-square'],
+.search-result-page .search-item:not(.music-collection-card) [class*='aspect-video'] {
   border-radius: 10px !important;
   border: 1px solid rgba(255, 255, 255, 0.58) !important;
   box-shadow: none !important;
@@ -1708,7 +1695,7 @@ body {
 }
 
 .artist-drawer .artist-cover img,
-.artist-drawer .search-item,
+.artist-drawer .search-item:not(.music-collection-card),
 .download-drawer-trigger .n-button,
 .eq-modal-content [class*='rounded-full'],
 .timer-modal-content [class*='rounded-full'],
@@ -1722,8 +1709,8 @@ body {
 }
 
 .playlist-drawer .group:hover,
-.artist-drawer .song-item:hover,
-.artist-drawer .search-item:hover {
+.artist-drawer .song-item:not(.music-track-row):hover,
+.artist-drawer .search-item:not(.music-collection-card):hover {
   background: color-mix(in srgb, var(--qqm-surface) 70%, transparent) !important;
   border-color: rgba(30, 207, 115, 0.14) !important;
 }

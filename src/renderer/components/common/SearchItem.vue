@@ -1,76 +1,5 @@
-<template>
-  <div
-    class="search-item group cursor-pointer transition-colors duration-200"
-    :class="[item.type === 'mv' ? 'flex flex-col' : 'flex flex-col']"
-    @click="handleClick"
-  >
-    <!-- Image Container -->
-    <div
-      class="search-item-cover relative overflow-hidden rounded-lg transition-colors duration-200"
-      :class="[item.type === 'mv' ? 'aspect-video' : 'aspect-square']"
-    >
-      <n-image
-        class="w-full h-full object-cover"
-        :src="getImgUrl(item.picUrl, item.type === 'mv' ? '400y225' : '400y400')"
-        lazy
-        preview-disabled
-      />
-
-      <!-- Play Overlay (for MV) -->
-      <div
-        v-if="item.type === 'mv'"
-        class="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors duration-200 group-hover:bg-black/25"
-      >
-        <div
-          class="play-icon flex h-10 w-10 items-center justify-center rounded-lg opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-        >
-          <i class="ri-play-fill text-2xl text-neutral-900 ml-1" />
-        </div>
-      </div>
-
-      <!-- Item Size Badge (for Album) -->
-      <div
-        v-if="item.type === '专辑' && item.size"
-        class="qqm-cover-badge absolute top-2 right-2 flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-      >
-        <i class="ri-music-2-line" />
-        <span>{{ item.size }}</span>
-      </div>
-
-      <div
-        v-if="item.type === 'artist'"
-        class="qqm-cover-badge absolute bottom-2 left-2 flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-      >
-        <i class="ri-user-voice-line" />
-        <span>{{ t('search.search.artist') }}</span>
-      </div>
-    </div>
-
-    <!-- Info Section -->
-    <div class="mt-3 space-y-1 px-1">
-      <h3
-        class="line-clamp-1 text-sm font-bold text-neutral-800 transition-colors duration-200 group-hover:text-primary dark:text-neutral-200 dark:group-hover:text-white md:text-base"
-      >
-        {{ item.name }}
-      </h3>
-      <p class="line-clamp-1 text-xs font-medium text-neutral-500 dark:text-neutral-400">
-        {{ item.desc }}
-      </p>
-    </div>
-
-    <!-- MV Player Component -->
-    <mv-player
-      v-if="item.type === 'mv'"
-      v-model:show="showPop"
-      :current-mv="getCurrentMv()"
-      no-list
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
-import { defineAsyncComponent, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
+import { computed, defineAsyncComponent, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { navigateToMusicList } from '@/components/common/MusicListNavigator';
@@ -83,7 +12,7 @@ const MvPlayer = defineAsyncComponent(() => import('@/components/MvPlayer.vue'))
 
 const props = defineProps<{
   item: {
-    id: number;
+    id: string | number;
     picUrl: string;
     name: string;
     desc: string;
@@ -93,8 +22,14 @@ const props = defineProps<{
 }>();
 
 const showPop = ref(false);
+const imageFailed = ref(false);
+const cover = computed(() =>
+  getImgUrl(props.item.picUrl, props.item.type === 'mv' ? '400y225' : '400y400')
+);
+watch(cover, () => {
+  imageFailed.value = false;
+});
 
-const { t } = useI18n();
 const playerStore = usePlayerStore();
 const router = useRouter();
 const playHistoryStore = usePlayHistoryStore();
@@ -138,7 +73,7 @@ const handleClick = async () => {
     handleShowMv();
   } else if (props.item.type === 'djRadio') {
     playHistoryStore.addPodcastRadio({
-      id: props.item.id,
+      id: Number(props.item.id),
       name: props.item.name,
       picUrl: props.item.picUrl,
       dj: props.item.dj,
@@ -172,37 +107,148 @@ const handleShowMv = async () => {
 };
 </script>
 
-<style scoped lang="scss">
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
+<template>
+  <article
+    class="search-item music-collection-card"
+    :class="{ 'is-artist': item.type === 'artist' }"
+  >
+    <button class="search-item-open" :aria-label="`打开 ${item.name}`" @click="handleClick">
+      <span class="search-item-cover" :class="{ 'is-video': item.type === 'mv' }">
+        <img
+          v-if="cover && !imageFailed"
+          :src="cover"
+          alt=""
+          loading="lazy"
+          @error="imageFailed = true"
+        />
+        <i
+          v-else
+          :class="item.type === 'artist' ? 'ri-user-voice-line' : 'ri-disc-line'"
+          aria-hidden="true"
+        />
+        <span class="search-item-go"
+          ><i
+            aria-hidden="true"
+            :class="item.type === 'mv' ? 'ri-play-fill' : 'ri-arrow-right-line'"
+        /></span>
+        <span v-if="item.size" class="search-item-size">{{ item.size }} 首</span>
+      </span>
+      <strong :title="item.name">{{ item.name }}</strong>
+      <span class="search-item-description" :title="item.desc">{{ item.desc }}</span>
+    </button>
+    <mv-player
+      v-if="item.type === 'mv'"
+      v-model:show="showPop"
+      :current-mv="getCurrentMv()"
+      no-list
+    />
+  </article>
+</template>
 
+<style scoped>
+.search-item {
+  min-width: 0;
+}
+.search-item-open {
+  width: 100%;
+  text-align: left;
+}
 .search-item-cover {
-  border: 1px solid var(--qqm-border);
-  background: var(--qqm-surface);
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--qqm-surface-muted);
+  color: var(--qqm-muted);
 }
-
-.group:hover .search-item-cover {
-  border-color: color-mix(in srgb, var(--qqm-primary, #22c55e) 24%, var(--qqm-border));
-  background: color-mix(in srgb, var(--qqm-primary, #22c55e) 5%, var(--qqm-surface));
+.search-item-cover.is-video {
+  aspect-ratio: 16 / 9;
 }
-
-.play-icon {
-  border: 1px solid color-mix(in srgb, var(--qqm-border, rgba(15, 23, 42, 0.08)) 82%, transparent);
-  background: color-mix(in srgb, var(--qqm-surface, #fff) 90%, transparent);
-  color: var(--qqm-text, #1f2329);
+.is-artist .search-item-cover {
+  border-radius: 50%;
 }
-
-.play-icon:hover {
-  color: var(--qqm-primary, #22c55e);
+.search-item-cover > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 220ms ease;
 }
-
-.qqm-cover-badge {
-  border: 1px solid color-mix(in srgb, #ffffff 14%, transparent);
-  background: color-mix(in srgb, #0f172a 42%, transparent);
-  backdrop-filter: blur(8px) saturate(1.06);
+.search-item-cover > i {
+  font-size: 42px;
+  opacity: 0.5;
+}
+.search-item-go {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  background: var(--qqm-primary);
+  color: #093c25;
+  border-radius: 50%;
+  font-size: 19px;
+  opacity: 0;
+  transform: translateY(5px);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+.search-item-open:hover .search-item-go,
+.search-item-open:focus-visible .search-item-go {
+  opacity: 1;
+  transform: translateY(0);
+}
+.search-item-open:hover .search-item-cover > img {
+  transform: scale(1.035);
+}
+.search-item-open strong {
+  display: block;
+  margin: 12px 0 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--qqm-text);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+.search-item-open:hover strong {
+  color: var(--qqm-primary-strong);
+}
+.search-item-description {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--qqm-muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.search-item-size {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  padding: 2px 7px;
+  border-radius: 5px;
+  color: white;
+  background: rgb(0 0 0 / 40%);
+  font-size: 10px;
+}
+.search-item-open:focus-visible {
+  outline: 2px solid var(--qqm-primary);
+  outline-offset: 5px;
+  border-radius: 10px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .search-item-go,
+  .search-item-cover > img {
+    transition: none;
+    transform: none;
+  }
 }
 </style>
