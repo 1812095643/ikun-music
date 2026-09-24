@@ -10,6 +10,7 @@ const {
   visibleResults,
   shown,
   detectedShareUrl,
+  unsupportedShareUrl,
   sharePlaylist,
   selectedShareIndexes,
   selectedShareCount,
@@ -34,7 +35,7 @@ const {
 } = usePlaylistImport();
 </script>
 <template>
-  <scroll-view scroll-y class="content-scroll">
+  <scroll-view scroll-y class="content-scroll import-page">
     <view class="import-form">
       <text class="import-title">把文字变成歌单</text>
       <text class="import-description">
@@ -47,6 +48,11 @@ const {
         class="import-input"
         placeholder="粘贴从手机传来的歌单文字或歌单分享链接"
       />
+      <view v-if="detectedShareUrl" class="detected-banner" role="status">
+        <text class="ri-flashlight-line" /><text v-if="shareLoading">正在自动读取完整歌单…</text
+        ><text v-else-if="sharePlaylist">已读取 {{ shareSongs.length }} 首歌曲，可先勾选再匹配</text
+        ><text v-else>检测到歌单链接，正在准备读取</text>
+      </view>
       <view class="import-actions">
         <button role="button" class="text-button" @click="paste">粘贴剪贴板</button>
         <button v-if="working" role="button" class="text-button" @click="stop">停止识别</button>
@@ -56,6 +62,7 @@ const {
           :disabled="
             working ||
             shareLoading ||
+            unsupportedShareUrl ||
             (detectedShareUrl ? !sharePlaylist || !selectedShareCount : !text.trim())
           "
           @click="identify"
@@ -77,7 +84,9 @@ const {
     </view>
     <view v-else-if="shareError" class="share-status share-error" role="alert">
       <text>{{ shareError }}</text
-      ><button role="button" class="text-button" @click="retrySharePreview">重试</button>
+      ><button v-if="detectedShareUrl" role="button" class="text-button" @click="retrySharePreview">
+        重试
+      </button>
     </view>
     <view v-else-if="shareSongs.length" class="share-preview">
       <view class="share-heading">
@@ -103,42 +112,44 @@ const {
       <text class="share-selection-count"
         >已选 {{ selectedShareCount }} / {{ shareSongs.length }} 首</text
       >
-      <button
-        v-for="(song, index) in visibleShareSongs"
-        :key="`${song.name}-${song.artist}-${index}`"
-        role="checkbox"
-        :aria-checked="selectedShareIndexes.has(index)"
-        class="share-song-row"
-        @click="toggleShare(index)"
-      >
-        <text
-          :class="
-            selectedShareIndexes.has(index)
-              ? 'ri-checkbox-circle-fill share-checked'
-              : 'ri-checkbox-blank-circle-line share-unchecked'
-          "
-        />
-        <text class="share-song-index">{{ String(index + 1).padStart(2, '0') }}</text>
-        <view class="share-song-info"
-          ><text class="share-song-name">{{ song.name }}</text
-          ><text class="share-song-meta"
-            >{{ song.artist }}<template v-if="song.album"> · {{ song.album }}</template></text
-          ></view
+      <scroll-view scroll-y class="share-song-list">
+        <button
+          v-for="(song, index) in visibleShareSongs"
+          :key="`${song.name}-${song.artist}-${index}`"
+          role="checkbox"
+          :aria-checked="selectedShareIndexes.has(index)"
+          class="share-song-row"
+          @click="toggleShare(index)"
         >
-        <text v-if="song.duration" class="share-song-duration"
-          >{{ Math.floor(song.duration / 60000) }}:{{
-            String(Math.floor(song.duration / 1000) % 60).padStart(2, '0')
-          }}</text
+          <text
+            :class="
+              selectedShareIndexes.has(index)
+                ? 'ri-checkbox-circle-fill share-checked'
+                : 'ri-checkbox-blank-circle-line share-unchecked'
+            "
+          />
+          <text class="share-song-index">{{ String(index + 1).padStart(2, '0') }}</text>
+          <view class="share-song-info"
+            ><text class="share-song-name">{{ song.name }}</text
+            ><text class="share-song-meta"
+              >{{ song.artist }}<template v-if="song.album"> · {{ song.album }}</template></text
+            ></view
+          >
+          <text v-if="song.duration" class="share-song-duration"
+            >{{ Math.floor(song.duration / 60000) }}:{{
+              String(Math.floor(song.duration / 1000) % 60).padStart(2, '0')
+            }}</text
+          >
+        </button>
+        <button
+          v-if="shareShown < shareSongs.length"
+          role="button"
+          class="text-button share-more"
+          @click="showMoreShareSongs"
         >
-      </button>
-      <button
-        v-if="shareShown < shareSongs.length"
-        role="button"
-        class="text-button share-more"
-        @click="showMoreShareSongs"
-      >
-        继续查看剩余 {{ shareSongs.length - shareShown }} 首
-      </button>
+          继续查看剩余 {{ shareSongs.length - shareShown }} 首
+        </button>
+      </scroll-view>
     </view>
     <view v-if="results.length" class="import-results"
       ><view class="import-result-heading"
@@ -152,44 +163,56 @@ const {
           导入 {{ selected.length }} 首
         </button></view
       ><text class="import-note">已自动勾选匹配的歌曲；其他候选请核对歌手与版本后手动勾选。</text
-      ><button
-        v-for="(item, index) in visibleResults"
-        :key="index"
-        role="checkbox"
-        :aria-checked="item.selected"
-        :disabled="!item.track"
-        class="import-row"
-        @click="toggle(index)"
-      >
-        <text
-          :class="
-            item.selected ? 'ri-checkbox-circle-fill selected' : 'ri-checkbox-blank-circle-line'
-          "
-        /><view
-          ><text>{{ item.track ? `${item.track.title} · ${item.track.artist}` : item.source }}</text
-          ><text class="import-source">{{
-            item.track
-              ? `原文：${item.source}`
-              : working
-                ? '正在识别，请稍候'
-                : '尚无匹配结果，可修改文字后重试'
-          }}</text></view
-        ></button
-      ><button
-        role="button"
-        v-if="shown < results.length"
-        class="text-button"
-        @click="shown += 100"
-      >
-        继续查看识别结果
-      </button></view
+      ><scroll-view scroll-y class="import-result-list"
+        ><button
+          v-for="(item, index) in visibleResults"
+          :key="index"
+          role="checkbox"
+          :aria-checked="item.selected"
+          :disabled="!item.track"
+          class="import-row"
+          @click="toggle(index)"
+        >
+          <text
+            :class="
+              item.selected ? 'ri-checkbox-circle-fill selected' : 'ri-checkbox-blank-circle-line'
+            "
+          /><view
+            ><text>{{
+              item.track ? `${item.track.title} · ${item.track.artist}` : item.source
+            }}</text
+            ><text class="import-source">{{
+              item.track
+                ? `原文：${item.source}`
+                : working
+                  ? '正在识别，请稍候'
+                  : '尚无匹配结果，可修改文字后重试'
+            }}</text></view
+          ></button
+        ><button
+          role="button"
+          v-if="shown < results.length"
+          class="text-button"
+          @click="shown += 60"
+        >
+          继续查看剩余 {{ results.length - shown }} 首
+        </button></scroll-view
+      ></view
     ><view class="content-bottom"
   /></scroll-view>
 </template>
 <style scoped>
 .import-form {
+  box-sizing: border-box;
+  width: 100%;
   padding: 25px var(--page-gutter);
   max-width: 960px;
+  margin: 0 auto;
+}
+.field-input,
+.import-input {
+  box-sizing: border-box;
+  max-width: 100%;
 }
 .import-title {
   display: block;
@@ -213,12 +236,31 @@ const {
   font-size: 15px;
   line-height: 1.8;
 }
+.detected-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 10px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: var(--qqm-primary-soft);
+  color: var(--qqm-accent-text);
+  font-size: 11px;
+  line-height: 1.5;
+}
 .import-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 10px;
   margin-top: 17px;
+}
+.import-actions .primary-button {
+  min-width: 150px;
+  flex: 1 1 150px;
 }
 .share-status {
   margin: 0 var(--page-gutter) 18px;
@@ -241,8 +283,11 @@ const {
   color: #c04453;
 }
 .share-preview {
+  box-sizing: border-box;
+  width: 100%;
   padding: 0 var(--page-gutter);
   max-width: 1000px;
+  margin: 0 auto;
 }
 .share-heading {
   display: flex;
@@ -269,6 +314,17 @@ const {
 }
 .share-selection-count {
   margin: 14px 0 2px;
+}
+.share-song-list,
+.import-result-list {
+  box-sizing: border-box;
+  width: 100%;
+  height: 320px;
+  max-height: 43vh;
+  min-height: 220px;
+  overflow: hidden;
+  border-top: 1px solid var(--qqm-border);
+  border-bottom: 1px solid var(--qqm-border);
 }
 .share-song-row {
   display: flex;
@@ -341,8 +397,11 @@ const {
   }
 }
 .import-results {
+  box-sizing: border-box;
+  width: 100%;
   padding: 0 var(--page-gutter);
   max-width: 1000px;
+  margin: 24px auto 0;
 }
 .import-result-heading {
   display: flex;
@@ -364,7 +423,7 @@ const {
   align-items: center;
   text-align: left;
   gap: 15px;
-  padding: 17px 4px !important;
+  padding: 15px 4px !important;
 }
 .import-row > text {
   font-size: 23px;
@@ -384,5 +443,39 @@ const {
   font-size: 11px;
   line-height: 1.7;
   margin-top: 6px;
+}
+@media (min-width: 768px) {
+  .import-form,
+  .share-preview,
+  .import-results {
+    padding-left: clamp(28px, 5vw, 72px);
+    padding-right: clamp(28px, 5vw, 72px);
+  }
+  .import-input {
+    height: 170px;
+  }
+  .share-song-list,
+  .import-result-list {
+    height: 380px;
+    max-height: 46vh;
+  }
+}
+@media (max-width: 420px) {
+  .import-actions {
+    align-items: stretch;
+  }
+  .import-actions .primary-button {
+    width: 100%;
+    flex-basis: 100%;
+  }
+  .share-heading,
+  .import-result-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .share-select-all {
+    align-self: flex-end;
+  }
 }
 </style>

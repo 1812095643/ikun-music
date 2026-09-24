@@ -27,16 +27,19 @@ export function usePlaylistImport() {
   const selectedShareIndexes = shallowRef(new Set<number>());
   const shareLoading = shallowRef(false);
   const shareError = shallowRef('');
-  const shareShown = shallowRef(120);
+  const shareShown = shallowRef(60);
+  const shown = shallowRef(60);
   let cancellation: ReturnType<typeof createCancellation> | undefined;
   let shareCancellation: ReturnType<typeof createCancellation> | undefined;
   let shareTimer: ReturnType<typeof setTimeout> | undefined;
   let shareVersion = 0;
   const selected = computed(() => results.value.filter((item) => item.track && item.selected));
   // 原生服务层没有浏览器 URL 对象，直接复用两端通用的分享链接识别器。
+  const inputUrls = computed(() => extractPlaylistUrls(text.value));
   const detectedShareUrl = computed(
-    () => extractPlaylistUrls(text.value).map(detectPlaylistLink).find(Boolean)?.url || ''
+    () => inputUrls.value.map(detectPlaylistLink).find(Boolean)?.url || ''
   );
+  const unsupportedShareUrl = computed(() => inputUrls.value.length > 0 && !detectedShareUrl.value);
   const selectedShareCount = computed(() => selectedShareIndexes.value.size);
   const allShareSelected = computed(
     () =>
@@ -66,10 +69,15 @@ export function usePlaylistImport() {
     selectedShareIndexes.value = new Set();
     shareLoading.value = false;
     shareError.value = '';
-    shareShown.value = 120;
+    shareShown.value = 60;
+    shown.value = 60;
     working.value = false;
     completed.value = 0;
     results.value = [];
+    if (unsupportedShareUrl.value) {
+      shareError.value = '暂不支持这个链接格式，请换成 QQ 音乐、网易云或酷我的公开歌单链接。';
+      return;
+    }
     const url = detectedShareUrl.value;
     if (!url) return;
     shareLoading.value = true;
@@ -86,7 +94,7 @@ export function usePlaylistImport() {
       if (version !== shareVersion) return;
       sharePlaylist.value = preview;
       selectedShareIndexes.value = new Set(preview.songs.map((_, index) => index));
-      shareShown.value = Math.min(preview.songs.length, 120);
+      shareShown.value = Math.min(preview.songs.length, 60);
       if (name.value === '导入的歌单') name.value = preview.title;
     } catch (error) {
       if (version !== shareVersion || isCanceled(error)) return;
@@ -110,7 +118,7 @@ export function usePlaylistImport() {
   }
 
   function showMoreShareSongs() {
-    shareShown.value = Math.min(sharePlaylist.value?.songs.length || 0, shareShown.value + 120);
+    shareShown.value = Math.min(sharePlaylist.value?.songs.length || 0, shareShown.value + 60);
   }
 
   function retrySharePreview() {
@@ -129,6 +137,7 @@ export function usePlaylistImport() {
   }
   async function identify() {
     if (working.value) return;
+    if (unsupportedShareUrl.value) return;
     if (sharePlaylist.value) return identifySharedPlaylist();
     if (detectedShareUrl.value) return;
     const lines = [
@@ -239,7 +248,6 @@ export function usePlaylistImport() {
       playlist.tracks
     );
   }
-  const shown = shallowRef(100);
   const visibleResults = computed(() => results.value.slice(0, shown.value));
   const stop = () => {
     cancellation?.abort();
@@ -260,6 +268,7 @@ export function usePlaylistImport() {
     visibleResults,
     shown,
     detectedShareUrl,
+    unsupportedShareUrl,
     sharePlaylist,
     selectedShareIndexes,
     selectedShareCount,
