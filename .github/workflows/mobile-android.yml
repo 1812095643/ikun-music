@@ -1,6 +1,8 @@
 name: 构建安卓手机平板车机预览版
 
 on:
+  push:
+    tags: ['mobile-v*']
   workflow_dispatch:
     inputs:
       publish:
@@ -110,7 +112,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   publish:
-    if: ${{ inputs.publish }}
+    if: ${{ inputs.publish || startsWith(github.ref, 'refs/tags/mobile-v') }}
     needs: android
     runs-on: ubuntu-latest
     permissions:
