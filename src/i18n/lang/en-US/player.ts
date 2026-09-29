@@ -18,9 +18,11 @@ export default {
   consecutiveFailsError:
     'Playback error, possibly due to network issues or invalid source. Please switch playlist or try again later',
   playMode: {
-    sequence: 'Sequence',
-    loop: 'Loop',
-    random: 'Random'
+    single: 'Play once',
+    repeat: 'Repeat one',
+    sequence: 'Play in order',
+    loop: 'Repeat all',
+    shuffle: 'Shuffle'
   },
   fullscreen: {
     enter: 'Enter Fullscreen',
@@ -59,9 +61,11 @@ export default {
     reparse: 'Reparse',
     miniPlayBar: 'Mini Play Bar',
     playMode: {
-      sequence: 'Sequence',
-      loop: 'Loop',
-      random: 'Random'
+      single: 'Play once',
+      repeat: 'Repeat one',
+      sequence: 'Play in order',
+      loop: 'Repeat all',
+      shuffle: 'Shuffle'
     },
     play: 'Play',
     pause: 'Pause',

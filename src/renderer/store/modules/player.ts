@@ -141,6 +141,7 @@ export const usePlayerStore = defineStore('player', () => {
     preloadNextSongs: playlist.preloadNextSongs,
     nextPlay: playlist.nextPlay,
     prevPlay: playlist.prevPlay,
+    handleTrackEnded: playlist.handleTrackEnded,
     setPlayListDrawerVisible: playlist.setPlayListDrawerVisible,
     setPlay: playlist.setPlay,
 

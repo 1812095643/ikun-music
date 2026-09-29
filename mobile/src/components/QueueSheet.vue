@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, nextTick, shallowRef, watch } from 'vue';
+import { nextTick, shallowRef, watch } from 'vue';
 
 import {
   current,
   cycleMode,
-  mode,
+  modeInfo,
   pendingTrack,
   queue,
   queueIndex,
@@ -15,9 +15,6 @@ import CoverArt from './CoverArt.vue';
 import SheetFrame from './SheetFrame.vue';
 const emit = defineEmits<{ close: [] }>();
 const target = shallowRef(`queued-${Math.max(0, queueIndex.value - 2)}`);
-const modeName = computed(
-  () => ({ sequence: '顺序播放', repeat: '单曲循环', shuffle: '随机播放' })[mode.value]
-);
 function locate() {
   target.value = '';
   void nextTick(() => {
@@ -30,15 +27,7 @@ watch(queueIndex, locate);
   <sheet-frame :title="`播放队列（${queue.length}）`" @close="emit('close')"
     ><view class="queue-tools"
       ><button role="button" @click="cycleMode">
-        <text
-          :class="
-            mode === 'shuffle'
-              ? 'ri-shuffle-line'
-              : mode === 'repeat'
-                ? 'ri-repeat-one-line'
-                : 'ri-order-play-line'
-          "
-        /><text>{{ modeName }}</text></button
+        <text :class="modeInfo.icon" /><text>{{ modeInfo.label }}</text></button
       ><button role="button" :disabled="!current" @click="locate">
         <text class="ri-focus-3-line" /><text>定位当前</text>
       </button></view

@@ -18,9 +18,11 @@ export default {
   consecutiveFailsError:
     '재생 오류가 발생했습니다. 네트워크 문제 또는 유효하지 않은 음원일 수 있습니다. 재생 목록을 변경하거나 나중에 다시 시도하세요',
   playMode: {
-    sequence: '순차 재생',
-    loop: '한 곡 반복',
-    random: '랜덤 재생'
+    single: '한 곡 재생',
+    repeat: '한 곡 반복',
+    sequence: '순서대로 재생',
+    loop: '전체 반복',
+    shuffle: '랜덤 재생'
   },
   fullscreen: {
     enter: '전체화면',
@@ -58,9 +60,11 @@ export default {
     playList: '재생 목록',
     reparse: '재분석',
     playMode: {
-      sequence: '순차 재생',
-      loop: '반복 재생',
-      random: '랜덤 재생'
+      single: '한 곡 재생',
+      repeat: '한 곡 반복',
+      sequence: '순서대로 재생',
+      loop: '전체 반복',
+      shuffle: '랜덤 재생'
     },
     play: '재생 시작',
     pause: '재생 일시정지',

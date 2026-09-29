@@ -18,9 +18,11 @@ export default {
   consecutiveFailsError:
     '再生エラーが発生しました。ネットワークの問題または無効な音源の可能性があります。プレイリストを切り替えるか、後でもう一度お試しください',
   playMode: {
+    single: '1曲再生',
+    repeat: '1曲リピート',
     sequence: '順次再生',
-    loop: 'リピート再生',
-    random: 'ランダム再生'
+    loop: '全曲リピート',
+    shuffle: 'シャッフル再生'
   },
   fullscreen: {
     enter: 'フルスクリーン',
@@ -58,9 +60,11 @@ export default {
     playList: 'プレイリスト',
     reparse: '再解析',
     playMode: {
+      single: '1曲再生',
+      repeat: '1曲リピート',
       sequence: '順次再生',
-      loop: 'ループ再生',
-      random: 'ランダム再生'
+      loop: '全曲リピート',
+      shuffle: 'シャッフル再生'
     },
     play: '再生開始',
     pause: '再生一時停止',

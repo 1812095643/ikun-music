@@ -11,6 +11,13 @@ import type { SongResult } from '@/types/music';
 import { getImgUrl, isAndroidRuntime } from '@/utils';
 import { performShuffle, preloadCoverImage } from '@/utils/playerUtils';
 
+import {
+  desktopPlaybackMode,
+  getQueueTarget,
+  nextPlaybackMode,
+  playbackModeInfo,
+  type PlaybackTrigger
+} from '../../../shared/playbackMode';
 import { useIntelligenceModeStore } from './intelligenceMode';
 import { usePlayerCoreStore } from './playerCore';
 import { useSleepTimerStore } from './sleepTimer';
@@ -159,7 +166,7 @@ export const usePlaylistStore = defineStore(
 
     const ensureYoutubeRecommendationsNearEnd = async (currentIndex: number) => {
       const remainingCount = playList.value.length - currentIndex - 1;
-      if (remainingCount > 2) return;
+      if (remainingCount > 2 || playMode.value !== 3) return;
       await appendYoutubeRecommendations(playList.value[currentIndex]);
     };
 
@@ -233,18 +240,10 @@ export const usePlaylistStore = defineStore(
       if (isAndroidRuntime) return;
       if (playList.value.length <= 1) return;
 
-      let nextIndex: number;
-
-      if (playMode.value === 0) {
-        // 顺序播放模式
-        if (currentIndex >= playList.value.length - 1) {
-          return;
-        }
-        nextIndex = currentIndex + 1;
-      } else {
-        // 循环播放和随机播放模式
-        nextIndex = (currentIndex + 1) % playList.value.length;
-      }
+      const mode = desktopPlaybackMode(playMode.value);
+      if (mode === 'single' || mode === 'repeat') return;
+      const nextIndex = getQueueTarget(mode, currentIndex, playList.value.length, 'ended');
+      if (nextIndex === null) return;
 
       const endIndex = Math.min(nextIndex + 2, playList.value.length);
 
@@ -253,7 +252,7 @@ export const usePlaylistStore = defineStore(
 
         // 循环模式且接近列表末尾，预加载列表开头
         if (
-          (playMode.value === 1 || playMode.value === 2) &&
+          (mode === 'loop' || mode === 'shuffle') &&
           nextIndex + 1 >= playList.value.length &&
           playList.value.length > 2
         ) {
@@ -305,7 +304,9 @@ export const usePlaylistStore = defineStore(
 
       // 找到当前歌曲在原始列表中的索引
       if (currentSong) {
-        const index = playList.value.findIndex((s) => s.id === currentSong.id);
+        const index = playList.value.findIndex(
+          (s) => s.id === currentSong.id && s.source === currentSong.source
+        );
         if (index !== -1) {
           playListIndex.value = index;
         }
@@ -367,7 +368,9 @@ export const usePlaylistStore = defineStore(
         const shuffledList = performShuffle(list, currentSong);
 
         if (currentSong && currentSong.id) {
-          const currentSongIndex = shuffledList.findIndex((song) => song.id === currentSong.id);
+          const currentSongIndex = shuffledList.findIndex(
+            (song) => song.id === currentSong.id && song.source === currentSong.source
+          );
           playListIndex.value =
             currentSongIndex !== -1 ? 0 : keepIndex ? Math.max(0, playListIndex.value) : 0;
         } else {
@@ -382,7 +385,9 @@ export const usePlaylistStore = defineStore(
         }
 
         if (!keepIndex) {
-          const foundIndex = list.findIndex((item) => item.id === playMusic.value.id);
+          const foundIndex = list.findIndex(
+            (item) => item.id === playMusic.value.id && item.source === playMusic.value.source
+          );
           playListIndex.value = foundIndex !== -1 ? foundIndex : 0;
         }
 
@@ -468,7 +473,9 @@ export const usePlaylistStore = defineStore(
 
       // 心动模式(3)不参与循环切换，仅通过 SearchBar 入口进入
       // 如果当前是心动模式，切换回顺序播放
-      const newMode = wasIntelligence ? 0 : (playMode.value + 1) % 3;
+      const newMode = wasIntelligence
+        ? 0
+        : playbackModeInfo(nextPlaybackMode(desktopPlaybackMode(playMode.value))).desktopValue;
 
       const isRandom = newMode === 2;
 
@@ -496,22 +503,30 @@ export const usePlaylistStore = defineStore(
     };
 
     /** 快速点击只加载最后选择的歌曲，旧请求和失败重试不能改写新目标。 */
-    const requestNavigation = (direction: 1 | -1): Promise<void> => {
+    const requestNavigation = (trigger: PlaybackTrigger): Promise<void> => {
       if (!playList.value.length) return Promise.resolve();
       const playerCore = usePlayerCoreStore();
+      const automatic = trigger === 'ended';
+      // 旧音频的结束通知不能覆盖用户正在选择的新歌曲，也不能让已暂停的播放自行恢复。
+      if (
+        automatic &&
+        (navigationTimer || playerCore.playMusic.playLoading || !playerCore.userPlayIntent)
+      )
+        return Promise.resolve();
       const fromIndex = playListIndex.value;
-      const atEnd =
-        direction === 1 && playMode.value === 0 && fromIndex >= playList.value.length - 1;
-      if (atEnd && (navigationTimer || playerCore.playMusic.playLoading)) return Promise.resolve();
+      const targetIndex = getQueueTarget(
+        desktopPlaybackMode(playMode.value),
+        fromIndex,
+        playList.value.length,
+        trigger
+      );
+      if (targetIndex === null && !automatic) return Promise.resolve();
       cancelNavigation();
       playbackRequestManager.cancelAllRequests();
       playerCore.userPlayIntent = true;
       const version = navigationVersion;
-      const targetIndex = atEnd
-        ? fromIndex
-        : (fromIndex + direction + playList.value.length) % playList.value.length;
-      playListIndex.value = targetIndex;
-      const target = playList.value[targetIndex];
+      if (targetIndex !== null) playListIndex.value = targetIndex;
+      const target = playList.value[targetIndex ?? fromIndex];
       return new Promise<void>((resolve) => {
         settleNavigation = resolve;
         navigationTimer = setTimeout(() => {
@@ -519,11 +534,13 @@ export const usePlaylistStore = defineStore(
           void (async () => {
             try {
               if (version !== navigationVersion || !playerCore.userPlayIntent) return;
-              if (atEnd) {
-                const appended = await appendYoutubeRecommendations(target);
+              if (targetIndex === null) {
+                // 普通列表播完必须停止；追加推荐仅属于显式开启的心动模式。
+                const appended =
+                  playMode.value === 3 && (await appendYoutubeRecommendations(target));
                 if (version !== navigationVersion) return;
                 if (appended) {
-                  void requestNavigation(1);
+                  void requestNavigation('ended');
                   return;
                 }
                 await playerCore.handlePause();
@@ -531,10 +548,20 @@ export const usePlaylistStore = defineStore(
                 if (sleepTimer.sleepTimer.type === 'end') sleepTimer.stopPlayback();
                 return;
               }
-              const success = await playerCore.handlePlayMusic({ ...target }, true);
+              const song = { ...target };
+              if (
+                automatic &&
+                targetIndex === fromIndex &&
+                !song.localFilePath &&
+                !song.playMusicUrl?.startsWith('local://')
+              ) {
+                song.playMusicUrl = undefined;
+                song.expiredAt = undefined;
+              }
+              const success = await playerCore.handlePlayMusic(song, true);
               if (version !== navigationVersion) return;
               if (success) {
-                void ensureYoutubeRecommendationsNearEnd(targetIndex);
+                void ensureYoutubeRecommendationsNearEnd(playListIndex.value);
                 useSleepTimerStore().handleSongChange();
               }
             } catch (error) {
@@ -548,8 +575,9 @@ export const usePlaylistStore = defineStore(
       });
     };
 
-    const nextPlay = () => requestNavigation(1);
-    const prevPlay = () => requestNavigation(-1);
+    const nextPlay = () => requestNavigation('next');
+    const prevPlay = () => requestNavigation('previous');
+    const handleTrackEnded = () => requestNavigation('ended');
 
     /**
      * 设置播放列表抽屉显示状态
@@ -658,6 +686,9 @@ export const usePlaylistStore = defineStore(
      * 这里只需要处理特殊逻辑（如随机模式的恢复）
      */
     const initializePlaylist = async () => {
+      if (playMode.value !== 3) {
+        playMode.value = playbackModeInfo(desktopPlaybackMode(playMode.value)).desktopValue;
+      }
       // 重启后恢复随机播放状态
       if (playMode.value === 2 && playList.value.length > 0) {
         if (originalPlayList.value.length === 0) {
@@ -692,6 +723,7 @@ export const usePlaylistStore = defineStore(
       preloadNextSongs,
       nextPlay,
       prevPlay,
+      handleTrackEnded,
       setPlayListDrawerVisible,
       setPlay,
       initializePlaylist,

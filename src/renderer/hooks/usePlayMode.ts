@@ -3,6 +3,8 @@ import { useI18n } from 'vue-i18n';
 
 import { usePlayerStore } from '@/store/modules/player';
 
+import { desktopPlaybackMode, playbackModeInfo } from '../../shared/playbackMode';
+
 /**
  * 播放模式相关的 Hook
  * 提供播放模式的图标、文本和切换功能
@@ -15,32 +17,10 @@ export function usePlayMode() {
   const playMode = computed(() => playerStore.playMode);
 
   // 播放模式图标（心动模式已移至 SearchBar，不参与循环切换）
-  const playModeIcon = computed(() => {
-    switch (playMode.value) {
-      case 0:
-        return 'ri-repeat-2-line';
-      case 1:
-        return 'ri-repeat-one-line';
-      case 2:
-        return 'ri-shuffle-line';
-      default:
-        return 'ri-repeat-2-line';
-    }
-  });
+  const playModeIcon = computed(() => playbackModeInfo(desktopPlaybackMode(playMode.value)).icon);
 
   // 播放模式文本
-  const playModeText = computed(() => {
-    switch (playMode.value) {
-      case 0:
-        return t('player.playBar.playMode.sequence');
-      case 1:
-        return t('player.playBar.playMode.loop');
-      case 2:
-        return t('player.playBar.playMode.random');
-      default:
-        return t('player.playBar.playMode.sequence');
-    }
-  });
+  const playModeText = computed(() => t(`player.playMode.${desktopPlaybackMode(playMode.value)}`));
 
   // 切换播放模式
   const togglePlayMode = () => {

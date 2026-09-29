@@ -6,6 +6,7 @@ import type { SongResult } from '@/types/music';
 import { getImgUrl, secondToMinute } from '@/utils';
 
 import { EMPTY_SPECTRUM, type SpectrumFrame } from '../../../shared/audioSpectrum';
+import { desktopPlaybackMode, playbackModeInfo } from '../../../shared/playbackMode';
 
 type TrayPanelState = {
   song?: SongResult;
@@ -99,26 +100,9 @@ const volumeIcon = computed(() => {
   if (volume.value <= 0.5) return 'ri-volume-down-line';
   return 'ri-volume-up-line';
 });
-const playModeIcon = computed(() => {
-  switch (externalState.playMode) {
-    case 1:
-      return 'ri-repeat-one-line';
-    case 2:
-      return 'ri-shuffle-line';
-    default:
-      return 'ri-repeat-2-line';
-  }
-});
-const playModeText = computed(() => {
-  switch (externalState.playMode) {
-    case 1:
-      return '单曲循环';
-    case 2:
-      return '随机播放';
-    default:
-      return '列表循环';
-  }
-});
+const modeInfo = computed(() => playbackModeInfo(desktopPlaybackMode(externalState.playMode)));
+const playModeIcon = computed(() => modeInfo.value.icon);
+const playModeText = computed(() => modeInfo.value.label);
 const playlistMeta = computed(() => {
   const count = externalState.playListCount || 0;
   const index = Math.min(Math.max((externalState.playListIndex || 0) + 1, 1), Math.max(count, 1));

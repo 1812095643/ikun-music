@@ -17,9 +17,11 @@ export default {
   parseFailedPlayNext: '歌曲解析失败，播放下一首',
   consecutiveFailsError: '播放遇到错误，可能是网络波动或解析源失效，请切换播放列表或稍后重试',
   playMode: {
-    sequence: '顺序播放',
-    loop: '单曲循环',
-    random: '随机播放'
+    single: '单曲播放',
+    repeat: '单曲循环',
+    sequence: '列表播放',
+    loop: '列表循环',
+    shuffle: '随机播放'
   },
   fullscreen: {
     enter: '全屏',
@@ -57,9 +59,11 @@ export default {
     playList: '播放列表',
     reparse: '重新解析',
     playMode: {
-      sequence: '顺序播放',
-      loop: '循环播放',
-      random: '随机播放'
+      single: '单曲播放',
+      repeat: '单曲循环',
+      sequence: '列表播放',
+      loop: '列表循环',
+      shuffle: '随机播放'
     },
     play: '开始播放',
     pause: '暂停播放',

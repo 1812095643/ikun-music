@@ -456,53 +456,14 @@ const setupAudioListeners = () => {
     }
   });
 
-  const replayMusic = async () => {
-    try {
-      // 如果当前有音频实例，先停止并销毁
-      const currentSound = audioService.getCurrentSound();
-      if (currentSound) {
-        currentSound.stop();
-        currentSound.unload();
-      }
-      sound.value = null;
-
-      // 重新播放当前歌曲
-      if (playMusic.value?.id) {
-        // 根因：单曲循环旧逻辑直接复用 playerStore.playMusicUrl。酷我等直链过期或上一轮
-        // 播放失败后，这里会反复把同一个坏 URL 交给 Howler，表现为循环/重新播放卡很久。
-        // 解决：单曲循环也走统一播放链路，在线歌曲先清掉易失 URL，让酷我接口重新现取。
-        const store = getPlayerStore();
-        const song = {
-          ...playMusic.value,
-          isFirstPlay: true,
-          playMusicUrl: playMusic.value.playMusicUrl?.startsWith('local://')
-            ? playMusic.value.playMusicUrl
-            : undefined,
-          expiredAt: playMusic.value.playMusicUrl?.startsWith('local://')
-            ? playMusic.value.expiredAt
-            : undefined
-        };
-        const success = await store.handlePlayMusic(song, true);
-        // 统一播放链路已负责失败状态；被手动切歌取消后不再排入延迟重播。
-        if (!success) return;
-      } else {
-        console.error('单曲循环：无可用 URL 或歌曲数据');
-        getPlayerStore().nextPlay();
-      }
-    } catch (error) {
-      console.error('单曲循环重播失败:', error);
-    }
-  };
-
   // 监听结束
   audioService.on('end', async () => {
     console.log('音频播放结束事件触发');
     clearInterval();
 
-    if (getPlayerStore().playMode === 1) {
-      // 单曲循环模式
-      replayMusic();
-    } else if (getPlayerStore().isFmPlaying) {
+    const store = getPlayerStore();
+    if (!store.userPlayIntent || store.playMusic.playLoading) return;
+    if (store.isFmPlaying && store.playMode !== 1 && store.playMode !== 4) {
       // 私人FM模式：自动获取下一首
       const requestId = playbackRequestManager.getCurrentRequestId();
       try {
@@ -540,8 +501,8 @@ const setupAudioListeners = () => {
         getPlayerStore().setIsPlay(false);
       }
     } else {
-      // 顺序播放、列表循环、随机播放模式都使用统一的nextPlay方法
-      getPlayerStore().nextPlay();
+      // 所有普通播放模式由队列统一处理，避免界面模式与结束事件各用一套规则。
+      void store.handleTrackEnded();
     }
   });
 

@@ -28,8 +28,9 @@ import {
   setDisplayMode
 } from '@/stores/device';
 import { lyricFontSize, setLyricFontSize, setTheme, theme } from '@/stores/library';
-import { mode, quality, setMode } from '@/stores/player';
+import { mode, modeInfo, quality, setMode } from '@/stores/player';
 
+import { PLAYBACK_MODES } from '../../../src/shared/playbackMode';
 import { version } from '../../package.json';
 const emit = defineEmits<{ quality: [] }>();
 const appearance = shallowRef(false);
@@ -62,10 +63,7 @@ const fontLabel = computed(() =>
         <text>播放音质</text><text class="settings-value">{{ qualityLabel }}</text
         ><text class="ri-arrow-right-s-line" /></button
       ><button role="button" class="settings-row" @click="modeSettings = true">
-        <text>播放方式</text
-        ><text class="settings-value">{{
-          { sequence: '顺序播放', repeat: '单曲循环', shuffle: '随机播放' }[mode]
-        }}</text
+        <text>播放方式</text><text class="settings-value">{{ modeInfo.label }}</text
         ><text class="ri-arrow-right-s-line" /></button
       ><button
         v-if="notificationStatus"
@@ -242,16 +240,12 @@ const fontLabel = computed(() =>
     ></sheet-frame
   ><sheet-frame v-if="modeSettings" title="播放方式" @close="modeSettings = false"
     ><button
-      v-for="item in [
-        { key: 'sequence', label: '顺序播放', icon: 'ri-order-play-line' },
-        { key: 'shuffle', label: '随机播放', icon: 'ri-shuffle-line' },
-        { key: 'repeat', label: '单曲循环', icon: 'ri-repeat-one-line' }
-      ]"
+      v-for="item in PLAYBACK_MODES"
       :key="item.key"
       role="button"
       class="sheet-row"
       @click="
-        setMode(item.key as typeof mode);
+        setMode(item.key);
         modeSettings = false;
       "
     >

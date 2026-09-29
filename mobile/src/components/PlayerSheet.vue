@@ -18,7 +18,7 @@ import {
   lyricIndex,
   lyrics,
   lyricsLoading,
-  mode,
+  modeInfo,
   nextTrack,
   pendingTrack,
   playerError,
@@ -170,20 +170,10 @@ function changeFont() {
           ><button
             role="button"
             class="button-icon mode-button"
-            :aria-label="
-              mode === 'repeat' ? '单曲循环' : mode === 'shuffle' ? '随机播放' : '顺序播放'
-            "
+            :aria-label="modeInfo.label"
             @click="cycleMode"
           >
-            <text
-              :class="
-                mode === 'repeat'
-                  ? 'ri-repeat-one-line'
-                  : mode === 'shuffle'
-                    ? 'ri-shuffle-line'
-                    : 'ri-order-play-line'
-              "
-            /></button
+            <text :class="modeInfo.icon" /></button
           ><button
             role="button"
             class="button-icon skip-button"

@@ -16,11 +16,18 @@ const deferred = () => {
 const silent = { log() {}, warn() {}, error() {}, info() {} };
 const storage = { getItem: (key) => key === 'playProgress' ? JSON.stringify({ songId: 2, progress: 60 }) : null, setItem() {}, removeItem() {} };
 const load = (filename, dependencies = {}, globals = {}) => {
-  const source = fs.readFileSync(path.join(__dirname, '..', 'src/renderer', filename), 'utf8');
+  const source = fs.readFileSync(path.join(__dirname, '..', 'src/renderer', filename), 'utf8').replaceAll('import.meta.hot', 'undefined');
   const code = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
   const module = { exports: {} };
   vm.runInNewContext(code, {
-    module, exports: module.exports, require: (id) => dependencies[id] || require(id),
+    module, exports: module.exports, require: (id) => {
+      if (dependencies[id]) return dependencies[id];
+      if (id.startsWith('.')) {
+        const relative = path.join(path.dirname(filename), `${id}.ts`);
+        if (fs.existsSync(path.join(__dirname, '..', 'src/renderer', relative))) return load(relative, dependencies, globals);
+      }
+      return require(id);
+    },
     console: silent, setTimeout, clearTimeout, AbortController, AbortSignal, DOMException, atob, TextDecoder, URL, URLSearchParams,
     localStorage: storage, document: { title: '', createElement: () => ({ set innerHTML(text) { this.value=text; } }) }, navigator: {},
     window: { addEventListener() {}, dispatchEvent() {} }, CustomEvent: class {}, ...globals
@@ -324,4 +331,224 @@ test('cancelling an audio load releases native media without trying direct playb
   await assert.rejects(task, { name: 'AbortError' });
   assert.equal(prepared, 1);
   assert.equal(released, 1);
+});
+
+const playbackModes = load('../shared/playbackMode.ts');
+const modeCases = [
+  { mode: 'single', desktop: 4, middle: null, last: null, only: null },
+  { mode: 'repeat', desktop: 1, middle: 1, last: 2, only: 0 },
+  { mode: 'sequence', desktop: 0, middle: 2, last: null, only: null },
+  { mode: 'loop', desktop: 5, middle: 2, last: 0, only: 0 },
+  { mode: 'shuffle', desktop: 2, middle: 2, last: 0, only: 0 }
+];
+
+function desktopQueue() {
+  setActivePinia(createPinia());
+  const starts = [];
+  const core = {
+    playMusic: song(0), userPlayIntent: true, isPlay: true,
+    handlePlayMusic: async (track) => {
+      core.playMusic = track;
+      core.isPlay = true;
+      starts.push(track.id);
+      return true;
+    },
+    handlePause: async () => { core.isPlay = false; core.userPlayIntent = false; }
+  };
+  const playlist = load('store/modules/playlist.ts', {
+    ...commonDependencies,
+    '@/hooks/usePlayerHooks': { useSongDetail: () => ({}) },
+    '@/services/preloadService': { preloadService: {} },
+    '@/services/playbackRequestManager': load('services/playbackRequestManager.ts'),
+    '@/utils/playerUtils': load('utils/playerUtils.ts'),
+    './intelligenceMode': { useIntelligenceModeStore: () => ({ isIntelligenceMode: false }) },
+    './playerCore': { usePlayerCoreStore: () => core },
+    './sleepTimer': { useSleepTimerStore: () => ({ sleepTimer: { type: 'none' }, handleSongChange() {} }) }
+  }).usePlaylistStore();
+  return { playlist, core, starts };
+}
+
+function mobileQueue(saved = {}, resolve = async (id) => ({ url: `https://audio.test/${id}.mp3`, type: 'mp3' })) {
+  const listeners = {};
+  const starts = [];
+  const audio = {
+    src: '', currentTime: 0, duration: 180, paused: true, startTime: 0,
+    play() {
+      if (audio.paused) {
+        starts.push({ id: audio.trackId, src: audio.src });
+        audio.paused = false;
+        listeners.play?.();
+      }
+    },
+    pause() { audio.paused = true; listeners.pause?.(); },
+    stop() { audio.paused = true; listeners.stop?.(); },
+    seek(value) { audio.currentTime = value; },
+    setNavigation(previous, next) { audio.navigation = { previous, next }; }
+  };
+  for (const name of ['Play', 'Pause', 'Stop', 'Ended', 'Error', 'Waiting', 'Canplay', 'TimeUpdate', 'Next', 'Prev', 'PlaybackIntent']) {
+    audio[`on${name}`] = (handler) => { listeners[name.toLowerCase()] = handler; };
+  }
+  const vue = require('vue');
+  const state = load('../../mobile/src/stores/player.ts', {
+    '@/services/audioEngine': { createMusicAudio: () => audio },
+    '@/services/musicApi': {
+      createCancellation: () => new AbortController(),
+      isCanceled: (error) => error.name === 'AbortError',
+      loadLyrics: async () => [], previewMediaUrl: (url) => url, resolveTrack: resolve
+    },
+    './library': {
+      downloadRecords: vue.shallowRef([]), readStorage: (key, fallback) => saved[key] ?? fallback,
+      writeStorage(key, value) { saved[key] = value; }, recordPlayed() {}, toast() {}
+    }
+  });
+  const ready = async () => { await wait(120); listeners.canplay?.(); };
+  const end = () => { audio.paused = true; audio.currentTime = 180; listeners.ended?.(); };
+  return { state, starts, audio, listeners, ready, end, saved };
+}
+const mobileSong = (id) => ({ id: String(id), title: `Track ${id}`, artist: 'Singer', album: '', cover: '', duration: 180 });
+
+for (const item of modeCases) {
+  for (const [size, index, expected] of [[3, 1, item.middle], [3, 2, item.last], [1, 0, item.only]]) {
+    test(`desktop ${item.mode}: natural end at ${index}/${size}`, async () => {
+      const { playlist, core, starts } = desktopQueue();
+      playlist.playMode = item.desktop;
+      playlist.playList = Array.from({ length: size }, (_, id) => song(id));
+      playlist.playListIndex = index;
+      core.playMusic = song(index);
+      await playlist.handleTrackEnded();
+      assert.deepEqual(starts, expected === null ? [] : [expected]);
+      assert.equal(playlist.playListIndex, expected ?? index);
+      assert.equal(core.isPlay, expected !== null);
+      playlist.$dispose();
+    });
+    test(`mobile ${item.mode}: natural end at ${index}/${size}`, async () => {
+      const { state, starts, ready, end, listeners, audio } = mobileQueue();
+      state.queue.value = Array.from({ length: size }, (_, id) => mobileSong(id));
+      state.mode.value = item.mode;
+      state.requestTrack(index);
+      await ready();
+      starts.length = 0;
+      end();
+      listeners.ended();
+      await ready();
+      assert.deepEqual(starts.map((entry) => entry.id), expected === null ? [] : [String(expected)]);
+      assert.equal(state.queueIndex.value, expected ?? index);
+      assert.equal(state.playing.value, expected !== null);
+      if (expected === null) {
+        listeners.canplay();
+        assert.equal(audio.paused, true);
+        state.togglePlay();
+        assert.equal(state.position.value, 0);
+        assert.equal(audio.currentTime, 0);
+        assert.equal(state.playing.value, true);
+      }
+    });
+  }
+  test(`${item.mode}: manual next and previous do not follow the end-of-track rule`, async () => {
+    const { playlist, starts } = desktopQueue();
+    playlist.playMode = item.desktop;
+    playlist.playList = [song(0), song(1), song(2)];
+    await playlist.nextPlay();
+    await playlist.prevPlay();
+    assert.deepEqual(starts, [1, 0]);
+    playlist.$dispose();
+    const { state, ready, listeners } = mobileQueue();
+    state.queue.value = [mobileSong(0), mobileSong(1), mobileSong(2)];
+    state.mode.value = item.mode;
+    state.requestTrack(0);
+    await ready();
+    listeners.next();
+    await ready();
+    assert.equal(state.current.value.id, '1');
+    listeners.prev();
+    await ready();
+    assert.equal(state.current.value.id, '0');
+  });
+}
+
+test('mode cycle exposes exactly five choices and keeps legacy desktop values', () => {
+  assert.equal(playbackModes.desktopPlaybackMode(0), 'sequence');
+  assert.equal(playbackModes.desktopPlaybackMode(1), 'repeat');
+  assert.equal(playbackModes.desktopPlaybackMode(2), 'shuffle');
+  assert.equal(playbackModes.normalizePlaybackMode('unknown'), 'sequence');
+  let mode = 'single';
+  const visited = [];
+  for (let i = 0; i < 5; i++) { visited.push(mode); mode = playbackModes.nextPlaybackMode(mode); }
+  assert.deepEqual(visited, ['single', 'repeat', 'sequence', 'loop', 'shuffle']);
+  assert.equal(mode, 'single');
+  for (const value of visited) assert.equal(playbackModes.getQueueTarget(value, 0, 0, 'ended'), null);
+});
+
+test('desktop ignores an old end event while a user navigation is pending', async () => {
+  const { playlist, core, starts } = desktopQueue();
+  playlist.playList = [song(0), song(1), song(2)];
+  const next = playlist.nextPlay();
+  await playlist.handleTrackEnded();
+  await next;
+  assert.deepEqual(starts, [1]);
+  core.userPlayIntent = false;
+  await playlist.handleTrackEnded();
+  assert.deepEqual(starts, [1]);
+  playlist.$dispose();
+});
+
+test('desktop mode switches keep the playing identity and restore queue order', async () => {
+  const { playlist, core, starts } = desktopQueue();
+  playlist.playList = [song(0), song(1), song(2), { ...song(1), source: 'netease' }];
+  playlist.playListIndex = 3;
+  core.playMusic = playlist.playList[3];
+  playlist.playMode = 5;
+  await playlist.togglePlayMode();
+  assert.equal(playlist.playMode, 2);
+  assert.equal(playlist.playList[0].source, 'netease');
+  assert.equal(new Set(playlist.playList.map((track) => `${track.source}:${track.id}`)).size, 4);
+  await playlist.togglePlayMode();
+  assert.equal(playlist.playMode, 4);
+  assert.equal(playlist.playListIndex, 3);
+  assert.deepEqual(starts, []);
+  playlist.$dispose();
+});
+
+test('mobile shuffle visits every queued song before repeating and previous follows history', async () => {
+  const { state, ready } = mobileQueue();
+  const tracks = Array.from({ length: 5 }, (_, id) => mobileSong(id));
+  state.playTracks(tracks, 2);
+  await ready();
+  state.setMode('shuffle');
+  const visited = [state.current.value.id];
+  for (let i = 1; i < 5; i++) {
+    state.nextTrack(); await ready(); visited.push(state.current.value.id);
+  }
+  assert.equal(new Set(visited).size, 5);
+  state.previousTrack(); await ready();
+  assert.equal(state.current.value.id, visited[3]);
+  state.setMode('sequence');
+  assert.deepEqual(Array.from(state.queue.value, (track) => track.id), ['0', '1', '2', '3', '4']);
+  assert.equal(state.queue.value[state.queueIndex.value].id, visited[3]);
+});
+
+test('mobile rapid navigation and late end notifications only start the final target', async () => {
+  const { state, starts, ready, listeners } = mobileQueue();
+  state.playTracks(Array.from({ length: 8 }, (_, id) => mobileSong(id)));
+  await ready(); starts.length = 0;
+  state.nextTrack(); state.nextTrack(); state.previousTrack(); state.nextTrack();
+  listeners.ended();
+  await ready();
+  assert.equal(state.current.value.id, '2');
+  assert.equal(state.queueIndex.value, 2);
+  assert.deepEqual(starts, [{ id: '2', src: 'https://audio.test/2.mp3' }]);
+});
+
+test('mobile changing modes during URL resolution preserves the pending song identity', async () => {
+  const first = deferred();
+  let calls = 0;
+  const { state, ready, starts } = mobileQueue({}, (id) => ++calls === 1 ? first.promise : Promise.resolve({ url: `https://audio.test/${id}.mp3`, type: 'mp3' }));
+  state.playTracks([mobileSong(0), mobileSong(1), mobileSong(2)], 1);
+  await wait(120);
+  state.setMode('shuffle');
+  first.resolve({ url: 'https://audio.test/obsolete.mp3', type: 'mp3' });
+  await ready();
+  assert.equal(state.current.value.id, '1');
+  assert.equal(state.queue.value[state.queueIndex.value].id, '1');
+  assert.deepEqual(starts, [{ id: '1', src: 'https://audio.test/1.mp3' }]);
 });

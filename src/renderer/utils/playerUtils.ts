@@ -1,5 +1,7 @@
 import type { SongResult } from '@/types/music';
 
+import { shuffleQueue } from '../../shared/playbackMode';
+
 /**
  * 从 localStorage 获取项目，带类型安全和错误处理
  */
@@ -75,33 +77,10 @@ export const isBilibiliIdMatch = (id1: string | number, id2: string | number): b
  * @param currentSong 当前歌曲（会被放在第一位）
  */
 export const performShuffle = (list: SongResult[], currentSong?: SongResult): SongResult[] => {
-  if (list.length <= 1) return [...list];
-
-  const result: SongResult[] = [];
-  const remainingSongs = [...list];
-
-  // 如果指定了当前歌曲，先把它放在第一位
-  if (currentSong && currentSong.id) {
-    const currentSongIndex = remainingSongs.findIndex((song) => song.id === currentSong.id);
-    if (currentSongIndex !== -1) {
-      // 把当前歌曲放在第一位
-      result.push(remainingSongs.splice(currentSongIndex, 1)[0]);
-    }
-  }
-
-  // 对剩余歌曲进行洗牌
-  if (remainingSongs.length > 0) {
-    // Fisher-Yates 洗牌算法
-    for (let i = remainingSongs.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [remainingSongs[i], remainingSongs[j]] = [remainingSongs[j], remainingSongs[i]];
-    }
-
-    // 把洗牌后的歌曲添加到结果中
-    result.push(...remainingSongs);
-  }
-
-  return result;
+  return shuffleQueue(
+    list,
+    list.findIndex((song) => song.id === currentSong?.id && song.source === currentSong?.source)
+  );
 };
 
 /**
